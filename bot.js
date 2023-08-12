@@ -238,9 +238,9 @@ function onMessageHandler(chatroom, tags, msg, self) {
         }
         if (rooms.length > 1) {
             const lastRoom = rooms[rooms.length - 1].slice()
-            rooms[rooms.length - 1] = `and ${lastRoom}!`
+            rooms[rooms.length - 1] = `and ${lastRoom}`
         }
-        response += rooms.join(`, `)
+        response += `${rooms.join(`, `)}!`
         talk(response)
     }
 
