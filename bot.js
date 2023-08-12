@@ -111,44 +111,42 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
     users[username] = {
         turbo: tags.turbo,
-        color: tags.color,
-        vip: tags.vip
+        color: tags.color
     }
     users[username][channel] = {
         sub: tags.subscriber,
         mod: tags.mod,
+        vip: tags.vip,
         lastMessage: msg
     }
 
     console.log(`${color in chatColors ? chatColors[color].terminalColor : whiteTxt}<${channel}> ${username}: ${msg}${resetTxt}`)
     // console.log(username, color in chatColors ? chatColors[color].name : color)
 
-    if (msg === `show`) {
-        console.log(`all users:`)
+    if (msg.includes(`show`)) {
         console.log(users)
-        talk(users.toString())
+        return
     }
-    // client.say(chatroom, `Hi, ${tags.username}!`)
 
     if (colorChanged) {
         talk(`Acknowledging ${displayName}'s color change :)`)
         return
     }
 
-    if (becameSubbed) {
-        talk(`Wow, ${displayName} is subbed now!`)
-        return
-    }
+    // if (becameSubbed) {
+    //     talk(`Wow, ${displayName} is subbed now!`)
+    //     return
+    // }
 
-    if (becameAMod) {
-        talk(`Wow, ${displayName} became a mod!`)
-        return
-    }
+    // if (becameAMod) {
+    //     talk(`Wow, ${displayName} became a mod!`)
+    //     return
+    // }
 
-    if (becameVIP) {
-        talk(`Wow, ${displayName} became a VIP!`)
-        return
-    }
+    // if (becameVIP) {
+    //     talk(`Wow, ${displayName} became a VIP!`)
+    //     return
+    // }
 
     if (msg.toLowerCase().includes(`lemony_friend`)) {
         const onlineMsg = [
@@ -157,6 +155,53 @@ function onMessageHandler(chatroom, tags, msg, self) {
         ]
         const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
         talk(response)
+    }
+
+    if (command === `am` && args[0].toLowerCase() === `i`) {
+        if (msg.toLowerCase().includes(`sub`)) {
+            users[username][channel].sub ? talk(`You are subbed! :)`) : talk(`You are not subbed! :(`)
+            return
+        }
+        if (msg.toLowerCase().includes(`mod`)) {
+            users[username][channel].mod ? talk(`You are a mod! :)`) : talk(`You are not a mod! :(`)
+            return
+        }
+        if (msg.toLowerCase().includes(`vip`)) {
+            users[username][channel].vip ? talk(`You are a vip! :)`) : talk(`You are not a vip! :(`)
+            return
+        }
+    }
+
+    if (command === `do` && args[0].toLowerCase() === `i`) {
+        if (msg.toLowerCase().includes(`sub`)) {
+            users[username][channel].sub ? talk(`You are subbed! :)`) : talk(`You are not subbed! :(`)
+            return
+        }
+        if (msg.toLowerCase().includes(`mod`)) {
+            users[username][channel].mod ? talk(`You are a mod! :)`) : talk(`You are not a mod! :(`)
+            return
+        }
+        if (msg.toLowerCase().includes(`vip`)) {
+            users[username][channel].vip ? talk(`You are a vip! :)`) : talk(`You are not a vip! :(`)
+            return
+        }
+    }
+
+    if ([`is`, `does`].includes(command)) {
+        if (!(toUser.toLowerCase() in users)) { return }
+        const userAttr = users[toUser.toLowerCase()][channel]
+        if (msg.toLowerCase().includes(`sub`)) {
+            userAttr.sub ? talk(`${toUser} is subbed! :)`) : talk(`${toUser} is not subbed! :(`)
+            return
+        }
+        if (msg.toLowerCase().includes(`mod`)) {
+            userAttr.mod ? talk(`${toUser} is a mod! :)`) : talk(`${toUser} is not a mod! :(`)
+            return
+        }
+        if (msg.toLowerCase().includes(`vip`)) {
+            userAttr.vip ? talk(`${toUser} is a vip! :)`) : talk(`${toUser} is not a vip! :(`)
+            return
+        }
     }
 
     function talk(resp) {
