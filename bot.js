@@ -46,14 +46,12 @@ const whiteBg = `\x1b[47m`
 const grayBg = `\x1b[100m`
 const orangeBg = `\x1b[48;2;255;164;0m`
 
-
-
 const chatColors = {
     "#0000FF": { name: "blue", terminalColor: blueTxt },
     "#8A2BE2": { name: "blue-violet", terminalColor: blueTxt },
     "#5F9EA0": { name: "cadet blue", terminalColor: cyanTxt },
     "#D2691E": { name: "chocolate", terminalColor: magentaTxt },
-    "#FF7F50": { name: "coral", terminalColor: redTxt },
+    "#FF7F50": { name: "coral", terminalColor: magentaTxt },
     "#1E90FF": { name: "dodger blue", terminalColor: cyanTxt },
     "#B22222": { name: "firebrick", terminalColor: redTxt },
     "#DAA520": { name: "goldenrod", terminalColor: yellowTxt },
@@ -99,19 +97,11 @@ function onMessageHandler(chatroom, tags, msg, self) {
     const toUser = args[0] ? getToUser(args[0]) : ``
 
     const colorChanged = username in users && color !== users[username]?.color
-    // console.log("username in users", username in users)
-    // console.log(color)
 
+    const gotTurbo = username in users && tags.turbo !== users[username]?.turbo
     const becameSubbed = users[username]?.[channel]?.sub !== undefined && tags.subscriber !== users[username]?.[channel]?.sub
     const becameAMod = users[username]?.[channel]?.mod !== undefined && tags.mod !== users[username]?.[channel]?.mod
     const becameVIP = users[username]?.[channel]?.vip !== undefined && tags.vip !== users[username]?.[channel]?.vip
-
-    // if (username in users) {
-    //     console.log("color changed?", color !== users[username]?.color, color, users[username]?.color)
-    //     console.log("sub status changed?", tags.subscriber !== users[username]?.[channel]?.sub, tags.subscriber, users[username]?.[channel]?.sub)
-    //     console.log("mod status changed?", tags.mod !== users[username]?.[channel]?.mod, tags.mod, users[username]?.[channel]?.mod)
-    //     console.log("vip status changed?", tags.vip !== users[username]?.[channel]?.vip, tags.vip, users[username]?.[channel]?.vip)
-    // }
 
     if (self) { return }
 
@@ -132,31 +122,42 @@ function onMessageHandler(chatroom, tags, msg, self) {
         }
     }
     users[username][channel].msgCount++
+    users[username][channel].lastMessage = msg
 
     console.log(`${color in chatColors ? chatColors[color].terminalColor : whiteTxt}<${channel}> ${username}: ${msg}${resetTxt}`)
     // console.log(username, color in chatColors ? chatColors[color].name : color)
 
     if (msg.includes(`show`)) {
         console.log(users)
-        return
+        // return
     }
 
     if (colorChanged) {
+        users[username].color = tags.color
         talk(`Acknowledging ${displayName}'s color change :)`)
         return
     }
 
+    if (gotTurbo) {
+        users[username].turbo = tags.turbo
+        talk(`Wow, ${displayName} got Turbo?`)
+        return
+    }
+
     if (becameSubbed) {
+        users[username][channel].sub = tags.subscriber
         talk(`Wow, ${displayName} is subbed now!`)
         return
     }
 
     if (becameAMod) {
+        users[username][channel].mod = tags.mod
         talk(`Wow, ${displayName} became a mod!`)
         return
     }
 
     if (becameVIP) {
+        users[username][channel].vip = tags.vip
         talk(`Wow, ${displayName} became a VIP!`)
         return
     }
@@ -208,7 +209,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
         }
     }
 
-    if (command === `!color`) {
+    if ([`!color`, `!colour`].includes(command)) {
         const target = toUser.toLowerCase() in users ? users[toUser.toLowerCase()] : users[username]
         if (target.color in chatColors) {
             talk(`${target.displayName}'s chat color is ${chatColors[target.color].name}!`)
@@ -220,8 +221,27 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
     if (command === `!lastmsg`) {
         const target = toUser.toLowerCase() in users ? users[toUser.toLowerCase()] : users[username]
-        talk(`${target.displayName} last said: ${target[channel].lastMessage}`)
+        const room = args[1]?.toLowerCase()
+        room in target ? talk(`${target.displayName} last said: "${target[room].lastMessage}" in ${args[1]}'s chat!`) : talk(`${target.displayName} last said: "${target[channel].lastMessage}" in ${channel}'s chat!`)
         return
+    }
+
+    if (command === `!msgcount`) {
+        const target = toUser.toLowerCase() in users ? users[toUser.toLowerCase()] : users[username]
+        let response = `${target.displayName} has sent `
+        const rooms = []
+        for (const room in target) {
+            if (target[room]?.msgCount) {
+                console.log(`${target.displayName} has sent ${target[room].msgCount} ${target[room].msgCount === 1 ? `message` : `messages`} in ${room}'s chat!`)
+                rooms.push(`${target[room].msgCount} ${target[room].msgCount === 1 ? `message` : `messages`} in ${room}'s chat`)
+            }
+        }
+        if (rooms.length > 1) {
+            const lastRoom = rooms[rooms.length - 1].slice()
+            rooms[rooms.length - 1] = `and ${lastRoom}!`
+        }
+        response += rooms.join(`, `)
+        talk(response)
     }
 
     if (msg.toLowerCase().includes(`lemony_friend`)) {
@@ -243,9 +263,9 @@ function onMessageHandler(chatroom, tags, msg, self) {
 function onConnectedHandler(addr, port) {
     console.log(`* Connected to ${addr}:${port}`)
     const onlineMsg = [
-        // `I'm awake :)`,
-        // `Let's see how long before I crash`,
-        // `🍋️`,
+        `I'm awake :)`,
+        `Let's see how long before I crash`,
+        `🍋️`,
         `don't mind me`,
         `(just rebooting again)`
     ]
