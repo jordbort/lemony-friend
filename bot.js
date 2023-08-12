@@ -93,6 +93,11 @@ function onMessageHandler(chatroom, tags, msg, self) {
     const channel = chatroom.slice(1)
     const color = tags.color || "white, sure"
 
+    // Command and arguments parser
+    const args = msg.split(` `)
+    const command = args.shift().toLowerCase()
+    const toUser = args[0] ? getToUser(args[0]) : ``
+
     if (self) { return }
 
     const colorChanged = username in users && color !== users[username]?.color
@@ -100,9 +105,14 @@ function onMessageHandler(chatroom, tags, msg, self) {
     //     talk(`Acknowledging ${displayName}'s color change :)`)
     // }
 
+    const becameSubbed = username in users && tags.subscriber !== users[username]?.sub
+    const becameAMod = username in users && tags.mod !== users[username]?.mod
+    const becameVIP = username in users && tags.vip !== users[username]?.vip
+
     users[username] = {
         turbo: tags.turbo,
-        color: tags.color
+        color: tags.color,
+        vip: tags.vip
     }
     users[username][channel] = {
         sub: tags.subscriber,
@@ -122,6 +132,21 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
     if (colorChanged) {
         talk(`Acknowledging ${displayName}'s color change :)`)
+        return
+    }
+
+    if (becameSubbed) {
+        talk(`Wow, ${displayName} is subbed now!`)
+        return
+    }
+
+    if (becameAMod) {
+        talk(`Wow, ${displayName} became a mod!`)
+        return
+    }
+
+    if (becameVIP) {
+        talk(`Wow, ${displayName} became a VIP!`)
         return
     }
 
@@ -151,4 +176,12 @@ function onConnectedHandler(addr, port) {
     const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
     client.say(`#${e1ectroma}`, `${response}`)
     console.log(`${yellowBg}<${e1ectroma}> lemony_friend: ${response}${resetTxt}`)
+}
+
+function getToUser(str) {
+    if (str.startsWith(`@`)) {
+        return str.substring(1)
+    } else {
+        return str
+    }
 }
