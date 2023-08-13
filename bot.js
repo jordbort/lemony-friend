@@ -132,10 +132,9 @@ function onMessageHandler(chatroom, tags, msg, self) {
         return
     }
 
-    if (msg.includes(`show`)) {
-        console.log(users)
-        // return
-    }
+    if (msg === `show`) { console.log(users) }
+
+    if (msg === `tags`) { console.log(tags) }
 
     if (colorChanged) {
         users[username].color = tags.color
@@ -216,15 +215,8 @@ function onMessageHandler(chatroom, tags, msg, self) {
         }
     }
 
-    if ([
-        `!color`,
-        `!colour`].includes(command)) {
-        const target = toUser.toLowerCase() in users ? users[toUser.toLowerCase()] : users[username]
-        if (target.color in chatColors) {
-            talk(`${target.displayName}'s chat color is ${chatColors[target.color].name}!`)
-        } else {
-            talk(`${target.displayName}'s chat color is hex code ${target.color}`)
-        }
+    if ([`!color`, `!colour`].includes(command)) {
+        sayColor(chatroom, users[toUser.toLowerCase()] || users[username])
         return
     }
 
@@ -262,11 +254,20 @@ function onMessageHandler(chatroom, tags, msg, self) {
         talk(response)
         return
     }
+}
 
-    function talk(resp) {
-        client.say(chatroom, resp)
-        console.log(`${yellowBg}<${channel}> ${BOT_USERNAME}: ${resp}${resetTxt}`)
+function sayColor(chatroom, target) {
+    // const target = toUser.toLowerCase() in users ? users[toUser.toLowerCase()] : users[username]
+    if (target.color in chatColors) {
+        talk(chatroom, `${target.displayName}'s chat color is ${chatColors[target.color].name}!`)
+    } else {
+        talk(chatroom, `${target.displayName}'s chat color is hex code ${target.color}`)
     }
+}
+
+function talk(chatroom, msg) {
+    client.say(chatroom, msg)
+    console.log(`${yellowBg}<${chatroom.slice(1)}> ${BOT_USERNAME}: ${msg}${resetTxt}`)
 }
 
 function getToUser(str) {
