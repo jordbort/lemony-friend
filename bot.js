@@ -90,6 +90,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
     const displayName = tags[`display-name`]
     const channel = chatroom.slice(1)
     const color = tags.color || "white, sure"
+    const firstMsg = tags['first-msg']
 
     // Command and arguments parser
     const args = msg.split(` `)
@@ -125,7 +126,11 @@ function onMessageHandler(chatroom, tags, msg, self) {
     if (self) { return }
 
     console.log(`${color in chatColors ? chatColors[color].terminalColor : whiteTxt}<${channel}> ${username}: ${msg}${resetTxt}`)
-    // console.log(username, color in chatColors ? chatColors[color].name : color)
+
+    if (firstMsg) {
+        talk(`Hi ${displayName}, welcome to the stream!`)
+        return
+    }
 
     if (msg.includes(`show`)) {
         console.log(users)
