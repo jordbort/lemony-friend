@@ -3,14 +3,14 @@ const tmi = require('tmi.js')
 const BOT_USERNAME = process.env.BOT_USERNAME
 const OAUTH_TOKEN = process.env.OAUTH_TOKEN
 
-const jpegstripes = 'jpegstripes'
-const sclarf = 'sclarf'
-const e1ectroma = 'e1ectroma'
-const domonintendo1 = 'domonintendo1'
-const ppuyya = 'ppuyya'
+const jpegstripes = `#jpegstripes`
+const sclarf = `#sclarf`
+const e1ectroma = `#e1ectroma`
+const domonintendo1 = `#domonintendo1`
+const ppuyya = `#ppuyya`
 
 const lemonyFresh = [
-    BOT_USERNAME,
+    `#${BOT_USERNAME}`,
     jpegstripes,
     sclarf,
     e1ectroma,
@@ -192,7 +192,9 @@ function onMessageHandler(chatroom, tags, msg, self) {
         }
     }
 
-    if ([`is`, `does`].includes(command)) {
+    if ([
+        `is`,
+        `does`].includes(command)) {
         if (!(toUser.toLowerCase() in users)) { return }
         const userAttr = users[toUser.toLowerCase()][channel]
         if (msg.toLowerCase().includes(`sub`)) {
@@ -209,7 +211,9 @@ function onMessageHandler(chatroom, tags, msg, self) {
         }
     }
 
-    if ([`!color`, `!colour`].includes(command)) {
+    if ([
+        `!color`,
+        `!colour`].includes(command)) {
         const target = toUser.toLowerCase() in users ? users[toUser.toLowerCase()] : users[username]
         if (target.color in chatColors) {
             talk(`${target.displayName}'s chat color is ${chatColors[target.color].name}!`)
@@ -244,19 +248,27 @@ function onMessageHandler(chatroom, tags, msg, self) {
         talk(response)
     }
 
-    if (msg.toLowerCase().includes(`lemony_friend`)) {
-        const onlineMsg = [
+    if (msg.toLowerCase().includes(`${BOT_USERNAME}`)) {
+        const messages = [
             `Acknowledgement :)`,
             `🍋️`
         ]
-        const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
+        const response = messages[Math.floor(Math.random() * messages.length)]
         talk(response)
         return
     }
 
     function talk(resp) {
         client.say(chatroom, resp)
-        console.log(`${yellowBg}<${channel}> lemony_friend: ${resp}${resetTxt}`)
+        console.log(`${yellowBg}<${channel}> ${BOT_USERNAME}: ${resp}${resetTxt}`)
+    }
+}
+
+function getToUser(str) {
+    if (str.startsWith(`@`)) {
+        return str.substring(1)
+    } else {
+        return str
     }
 }
 
@@ -267,17 +279,10 @@ function onConnectedHandler(addr, port) {
         `Let's see how long before I crash`,
         `🍋️`,
         `don't mind me`,
-        `(just rebooting again)`
+        `(just rebooting again)`,
+        `(Windows 95 startup sound plays)`
     ]
     const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
-    // client.say(`#${e1ectroma}`, `${response}`)
-    // console.log(`${yellowBg}<${e1ectroma}> lemony_friend: ${response}${resetTxt}`)
-}
-
-function getToUser(str) {
-    if (str.startsWith(`@`)) {
-        return str.substring(1)
-    } else {
-        return str
-    }
+    client.say(jpegstripes, response)
+    console.log(`${yellowBg}<${jpegstripes.slice(1)}> ${BOT_USERNAME}: ${response}${resetTxt}`)
 }
