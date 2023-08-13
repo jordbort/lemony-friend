@@ -103,8 +103,6 @@ function onMessageHandler(chatroom, tags, msg, self) {
     const becameAMod = users[username]?.[channel]?.mod !== undefined && tags.mod !== users[username]?.[channel]?.mod
     const becameVIP = users[username]?.[channel]?.vip !== undefined && tags.vip !== users[username]?.[channel]?.vip
 
-    if (self) { return }
-
     if (!(username in users)) {
         users[username] = {
             displayName: tags[`display-name`],
@@ -123,6 +121,8 @@ function onMessageHandler(chatroom, tags, msg, self) {
     }
     users[username][channel].msgCount++
     users[username][channel].lastMessage = msg
+
+    if (self) { return }
 
     console.log(`${color in chatColors ? chatColors[color].terminalColor : whiteTxt}<${channel}> ${username}: ${msg}${resetTxt}`)
     // console.log(username, color in chatColors ? chatColors[color].name : color)
@@ -285,4 +285,5 @@ function onConnectedHandler(addr, port) {
     const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
     client.say(jpegstripes, response)
     console.log(`${yellowBg}<${jpegstripes.slice(1)}> ${BOT_USERNAME}: ${response}${resetTxt}`)
+    delete users.undefined
 }
