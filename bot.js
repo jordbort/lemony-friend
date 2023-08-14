@@ -82,7 +82,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
     const username = tags.username
     const displayName = tags[`display-name`]
     const channel = chatroom.slice(1)
-    const color = tags.color || "white, sure"
+    const color = tags.color
     const firstMsg = tags['first-msg']
 
     // Command and arguments parser
@@ -176,23 +176,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
     if (command === `!lastmsg`) { return getLastMessage(chatroom, users[toUser.toLowerCase()] || users[username], args[1]?.toLowerCase()) }
 
-    if (command === `!msgcount`) {
-        const target = toUser.toLowerCase() in users ? users[toUser.toLowerCase()] : users[username]
-        let response = `${target.displayName} has sent `
-        const rooms = []
-        for (const room in target) {
-            if (target[room]?.msgCount) {
-                console.log(`${target.displayName} has sent ${target[room].msgCount} ${target[room].msgCount === 1 ? `message` : `messages`} in ${room}'s chat!`)
-                rooms.push(`${target[room].msgCount} ${target[room].msgCount === 1 ? `message` : `messages`} in ${room}'s chat`)
-            }
-        }
-        if (rooms.length > 1) {
-            const lastRoom = rooms[rooms.length - 1].slice()
-            rooms[rooms.length - 1] = `and ${lastRoom}`
-        }
-        response += `${rooms.join(`, `)}!`
-        talk(chatroom, response)
-    }
+    if (command === `!msgcount`) { return getMessageCount(chatroom, users[toUser.toLowerCase()] || users[username]) }
 
     if (msg === `show`) { console.log(users) }
 
@@ -214,13 +198,29 @@ function onMessageHandler(chatroom, tags, msg, self) {
             `🍋️`
         ]
         const response = messages[Math.floor(Math.random() * messages.length)]
-        talk(response)
+        talk(chatroom, response)
         return
     }
 }
 
 function getLastMessage(chatroom, target, room) {
     room in target ? talk(chatroom, `${target.displayName} last said: "${target[room].lastMessage}" in ${args[1]}'s chat!`) : talk(chatroom, `${target.displayName} last said: "${target[`${chatroom.slice(1)}`].lastMessage}" in ${chatroom.slice(1)}'s chat!`)
+}
+
+function getMessageCount(chatroom, target) {
+    let response = `${target.displayName} has sent `
+    const rooms = []
+    for (const room in target) {
+        if (target[room]?.msgCount) {
+            rooms.push(`${target[room].msgCount} ${target[room].msgCount === 1 ? `message` : `messages`} in ${room}'s chat`)
+        }
+    }
+    if (rooms.length > 1) {
+        const lastRoom = rooms[rooms.length - 1].slice()
+        rooms[rooms.length - 1] = `and ${lastRoom}`
+    }
+    response += `${rooms.join(`, `)}!`
+    talk(chatroom, response)
 }
 
 function handleColorChange(chatroom, target, newColor) {
