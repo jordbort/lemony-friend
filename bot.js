@@ -180,7 +180,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
         }
     }
 
-    if ([`!color`, `!colour`].includes(command)) { return sayColor(chatroom, users[toUser.toLowerCase()] || users[username]) }
+    if ([`!color`, `!colour`].includes(command)) { return getColor(chatroom, users[toUser.toLowerCase()] || users[username]) }
 
     if (command === `!lastmsg`) { return getLastMessage(chatroom, users[toUser.toLowerCase()] || users[username], args[1]?.toLowerCase()) }
 
@@ -231,6 +231,14 @@ function getMessageCount(chatroom, target) {
     talk(chatroom, response)
 }
 
+function getColor(chatroom, target) {
+    if (target.color in chatColors) {
+        talk(chatroom, `${target.displayName}'s chat color is ${chatColors[target.color].name}!`)
+    } else {
+        talk(chatroom, `${target.displayName}'s chat color is hex code ${target.color}`)
+    }
+}
+
 function handleColorChange(chatroom, target, newColor) {
     target.color = newColor
     talk(chatroom, `Acknowledging ${target.displayName}'s color change :)`)
@@ -254,14 +262,6 @@ function handleModChange(chatroom, target, modStatus) {
 function handleVIPChange(chatroom, target, vipStatus) {
     target[`${chatroom.slice(1)}`].vip = vipStatus
     vipStatus ? talk(chatroom, `Wow, ${target.displayName} became a VIP! :D`) : talk(chatroom, `Did ${target.displayName} just lose VIP status? :O`)
-}
-
-function sayColor(chatroom, target) {
-    if (target.color in chatColors) {
-        talk(chatroom, `${target.displayName}'s chat color is ${chatColors[target.color].name}!`)
-    } else {
-        talk(chatroom, `${target.displayName}'s chat color is hex code ${target.color}`)
-    }
 }
 
 function talk(chatroom, msg) {
