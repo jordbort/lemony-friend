@@ -92,10 +92,10 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
     const colorChanged = username in users && color !== users[username]?.color
 
-    const gotTurbo = username in users && tags.turbo !== users[username]?.turbo
-    const becameSubbed = users[username]?.[channel]?.sub !== undefined && tags.subscriber !== users[username]?.[channel]?.sub
-    const becameAMod = users[username]?.[channel]?.mod !== undefined && tags.mod !== users[username]?.[channel]?.mod
-    const becameVIP = users[username]?.[channel]?.vip !== undefined && tags.vip !== users[username]?.[channel]?.vip
+    const turboChange = username in users && tags.turbo !== users[username]?.turbo
+    const subChange = users[username]?.[channel]?.sub !== undefined && tags.subscriber !== users[username]?.[channel]?.sub
+    const modChange = users[username]?.[channel]?.mod !== undefined && tags.mod !== users[username]?.[channel]?.mod
+    const vipChange = users[username]?.[channel]?.vip !== undefined && tags.vip !== users[username]?.[channel]?.vip
 
     if (!(username in users)) {
         users[username] = {
@@ -130,27 +130,27 @@ function onMessageHandler(chatroom, tags, msg, self) {
     if (msg === `tags`) { console.log(tags) }
 
     if (colorChanged) {
-        acknowledgeColorChange(chatroom, users[username], tags.color)
+        handleColorChange(chatroom, users[username], tags.color)
         return
     }
 
-    if (gotTurbo) {
-        acknowledgeNewTurbo(chatroom, users[username], tags.turbo)
+    if (turboChange) {
+        handleTurboChange(chatroom, users[username], tags.turbo)
         return
     }
 
-    if (becameSubbed) {
-        acknowledgeNewSub(chatroom, users[username], tags.subscriber)
+    if (subChange) {
+        handleSubChange(chatroom, users[username], tags.subscriber)
         return
     }
 
-    if (becameAMod) {
-        acknowledgeNewMod(chatroom, users[username], tags.mod)
+    if (modChange) {
+        handleModChange(chatroom, users[username], tags.mod)
         return
     }
 
-    if (becameVIP) {
-        acknowledgeNewVIP(chatroom, users[username], tags.vip)
+    if (vipChange) {
+        handleVIPChange(chatroom, users[username], tags.vip)
         return
     }
 
@@ -244,29 +244,29 @@ function onMessageHandler(chatroom, tags, msg, self) {
     }
 }
 
-function acknowledgeColorChange(chatroom, target, newColor) {
+function handleColorChange(chatroom, target, newColor) {
     target.color = newColor
     talk(chatroom, `Acknowledging ${target.displayName}'s color change :)`)
 }
 
-function acknowledgeNewTurbo(chatroom, target, turboStatus) {
+function handleTurboChange(chatroom, target, turboStatus) {
     target.turbo = tags.turbo
-    turboStatus ? talk(chatroom, `Wow, ${target.displayName} got Turbo?`) : talk(chatroom, `Did ${target.displayName} stop having Turbo?`)
+    turboStatus ? talk(chatroom, `Wow, ${target.displayName} got Turbo? :D`) : talk(chatroom, `Did ${target.displayName} stop having Turbo? :O`)
 }
 
-function acknowledgeNewSub(chatroom, target, subStatus) {
+function handleSubChange(chatroom, target, subStatus) {
     target[`${chatroom.slice(1)}`].sub = subStatus
-    subStatus ? talk(chatroom, `Wow, ${target.displayName} is subbed now!`) : talk(chatroom, `Did ${target.displayName} just lose their sub? :O`)
+    subStatus ? talk(chatroom, `Wow, ${target.displayName} is subbed now! :D`) : talk(chatroom, `Did ${target.displayName} just lose their sub? :O`)
 }
 
-function acknowledgeNewMod(chatroom, target, modStatus) {
+function handleModChange(chatroom, target, modStatus) {
     target[`${chatroom.slice(1)}`].mod = modStatus
-    modStatus ? talk(chatroom, `Wow, ${target.displayName} became a mod!`) : talk(chatroom, `Was ${target.displayName} just unmodded? :O`)
+    modStatus ? talk(chatroom, `Wow, ${target.displayName} became a mod! :D`) : talk(chatroom, `Was ${target.displayName} just unmodded? :O`)
 }
 
-function acknowledgeNewVIP(chatroom, target, vipStatus) {
+function handleVIPChange(chatroom, target, vipStatus) {
     target[`${chatroom.slice(1)}`].vip = vipStatus
-    vipStatus ? talk(chatroom, `Wow, ${target.displayName} became a VIP!`) : talk(chatroom, `Did ${target.displayName} just lose VIP status?`)
+    vipStatus ? talk(chatroom, `Wow, ${target.displayName} became a VIP! :D`) : talk(chatroom, `Did ${target.displayName} just lose VIP status? :O`)
 }
 
 function sayColor(chatroom, target) {
