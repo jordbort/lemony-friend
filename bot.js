@@ -71,18 +71,11 @@ const opts = {
     },
     channels: lemonyFresh
 }
-
-// Create a client with our options
 const client = new tmi.client(opts)
-
-// Register our event handlers (defined below)
 client.on('message', onMessageHandler)
 client.on('connected', onConnectedHandler)
-
-// Connect to Twitch:
 client.connect()
 
-// 'first-msg': true??
 let users = {}
 
 function onMessageHandler(chatroom, tags, msg, self) {
@@ -137,32 +130,27 @@ function onMessageHandler(chatroom, tags, msg, self) {
     if (msg === `tags`) { console.log(tags) }
 
     if (colorChanged) {
-        users[username].color = tags.color
-        talk(`Acknowledging ${displayName}'s color change :)`)
+        acknowledgeColorChange(chatroom, users[username], tags.color)
         return
     }
 
     if (gotTurbo) {
-        users[username].turbo = tags.turbo
-        talk(`Wow, ${displayName} got Turbo?`)
+        acknowledgeNewTurbo(chatroom, users[username], tags.turbo)
         return
     }
 
     if (becameSubbed) {
-        users[username][channel].sub = tags.subscriber
-        talk(`Wow, ${displayName} is subbed now!`)
+        acknowledgeNewSub(chatroom, users[username], tags.subscriber)
         return
     }
 
     if (becameAMod) {
-        users[username][channel].mod = tags.mod
-        talk(`Wow, ${displayName} became a mod!`)
+        acknowledgeNewMod(chatroom, users[username], tags.mod)
         return
     }
 
     if (becameVIP) {
-        users[username][channel].vip = tags.vip
-        talk(`Wow, ${displayName} became a VIP!`)
+        acknowledgeNewVIP(chatroom, users[username], tags.vip)
         return
     }
 
@@ -256,8 +244,32 @@ function onMessageHandler(chatroom, tags, msg, self) {
     }
 }
 
+function acknowledgeColorChange(chatroom, target, newColor) {
+    target.color = newColor
+    talk(chatroom, `Acknowledging ${target.displayName}'s color change :)`)
+}
+
+function acknowledgeNewTurbo(chatroom, target, turboStatus) {
+    target.turbo = tags.turbo
+    turboStatus ? talk(chatroom, `Wow, ${target.displayName} got Turbo?`) : talk(chatroom, `Did ${target.displayName} stop having Turbo?`)
+}
+
+function acknowledgeNewSub(chatroom, target, subStatus) {
+    target[`${chatroom.slice(1)}`].sub = subStatus
+    subStatus ? talk(chatroom, `Wow, ${target.displayName} is subbed now!`) : talk(chatroom, `Did ${target.displayName} just lose their sub? :O`)
+}
+
+function acknowledgeNewMod(chatroom, target, modStatus) {
+    target[`${chatroom.slice(1)}`].mod = modStatus
+    modStatus ? talk(chatroom, `Wow, ${target.displayName} became a mod!`) : talk(chatroom, `Was ${target.displayName} just unmodded? :O`)
+}
+
+function acknowledgeNewVIP(chatroom, target, vipStatus) {
+    target[`${chatroom.slice(1)}`].vip = vipStatus
+    vipStatus ? talk(chatroom, `Wow, ${target.displayName} became a VIP!`) : talk(chatroom, `Did ${target.displayName} just lose VIP status?`)
+}
+
 function sayColor(chatroom, target) {
-    // const target = toUser.toLowerCase() in users ? users[toUser.toLowerCase()] : users[username]
     if (target.color in chatColors) {
         talk(chatroom, `${target.displayName}'s chat color is ${chatColors[target.color].name}!`)
     } else {
