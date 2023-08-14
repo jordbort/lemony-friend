@@ -261,13 +261,7 @@ function talk(chatroom, msg) {
     console.log(`${yellowBg}<${chatroom.slice(1)}> ${BOT_USERNAME}: ${msg}${resetTxt}`)
 }
 
-function getToUser(str) {
-    if (str.startsWith(`@`)) {
-        return str.substring(1)
-    } else {
-        return str
-    }
-}
+function getToUser(str) { return str.startsWith(`@`) ? str.substring(1) : str }
 
 function onConnectedHandler(addr, port) {
     console.log(`* Connected to ${addr}:${port}`)
