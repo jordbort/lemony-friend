@@ -46,6 +46,7 @@ const whiteBg = `\x1b[47m`
 const grayBg = `\x1b[100m`
 const orangeBg = `\x1b[48;2;255;164;0m`
 
+// Twitch color names and terminal color references
 const chatColors = {
     "#0000FF": { name: "blue", terminalColor: blueTxt },
     "#8A2BE2": { name: "blue-violet", terminalColor: blueTxt },
@@ -64,6 +65,7 @@ const chatColors = {
     "#ADFF2F": { name: "yellow-green", terminalColor: yellowTxt }
 }
 
+// Create bot client
 const opts = {
     identity: {
         username: BOT_USERNAME,
@@ -90,20 +92,22 @@ function onMessageHandler(chatroom, tags, msg, self) {
     const command = args.shift().toLowerCase()
     const toUser = args[0] ? getToUser(args[0]) : ``
 
+    // User attribute change detection
     const colorChanged = username in users && color !== users[username]?.color
-
     const turboChange = username in users && tags.turbo !== users[username]?.turbo
     const subChange = users[username]?.[channel]?.sub !== undefined && tags.subscriber !== users[username]?.[channel]?.sub
     const modChange = users[username]?.[channel]?.mod !== undefined && tags.mod !== users[username]?.[channel]?.mod
     const vipChange = users[username]?.[channel]?.vip !== undefined && tags.vip !== users[username]?.[channel]?.vip
 
+    // Initialize new user
     if (!(username in users)) {
         users[username] = {
             displayName: tags[`display-name`],
             turbo: tags.turbo,
-            color: tags.color
+            color: color
         }
     }
+    // Initialize user in a new chatroom
     if (!(channel in users[username])) {
         users[username][channel] = {
             sub: tags.subscriber,
@@ -113,12 +117,16 @@ function onMessageHandler(chatroom, tags, msg, self) {
             lastMessage: msg
         }
     }
-    users[username][channel].msgCount++
+    // Update last message in a chatroom, and increment counter by 1
     users[username][channel].lastMessage = msg
+    users[username][channel].msgCount++
 
-    if (self) { return }
+    // Stop here if bot, otherwise log user's chat message
+    if (self) { return } else { console.log(`${color in chatColors ? chatColors[color].terminalColor : whiteTxt}<${channel}> ${username}: ${msg}${resetTxt}`) }
 
-    console.log(`${color in chatColors ? chatColors[color].terminalColor : whiteTxt}<${channel}> ${username}: ${msg}${resetTxt}`)
+    /*********\
+    REPLY CASES
+    \*********/
 
     if (firstMsg) {
         talk(chatroom, `Hi ${displayName}, welcome to the stream!`)
@@ -182,7 +190,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
     if (msg === `tags`) { console.log(tags) }
 
-    if (colorChanged) { return handleColorChange(chatroom, users[username], tags.color) }
+    if (colorChanged) { return handleColorChange(chatroom, users[username], color) }
 
     if (turboChange) { return handleTurboChange(chatroom, users[username], tags.turbo) }
 
