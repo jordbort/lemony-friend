@@ -121,99 +121,60 @@ function onMessageHandler(chatroom, tags, msg, self) {
     console.log(`${color in chatColors ? chatColors[color].terminalColor : whiteTxt}<${channel}> ${username}: ${msg}${resetTxt}`)
 
     if (firstMsg) {
-        talk(`Hi ${displayName}, welcome to the stream!`)
-        return
-    }
-
-    if (msg === `show`) { console.log(users) }
-
-    if (msg === `tags`) { console.log(tags) }
-
-    if (colorChanged) {
-        handleColorChange(chatroom, users[username], tags.color)
-        return
-    }
-
-    if (turboChange) {
-        handleTurboChange(chatroom, users[username], tags.turbo)
-        return
-    }
-
-    if (subChange) {
-        handleSubChange(chatroom, users[username], tags.subscriber)
-        return
-    }
-
-    if (modChange) {
-        handleModChange(chatroom, users[username], tags.mod)
-        return
-    }
-
-    if (vipChange) {
-        handleVIPChange(chatroom, users[username], tags.vip)
+        talk(chatroom, `Hi ${displayName}, welcome to the stream!`)
         return
     }
 
     if (command === `am` && args[0].toLowerCase() === `i`) {
         if (msg.toLowerCase().includes(`sub`)) {
-            users[username][channel].sub ? talk(`You are subbed! :)`) : talk(`You are not subbed! :(`)
+            users[username][channel].sub ? talk(chatroom, `You are subbed! :)`) : talk(chatroom, `You are not subbed! :(`)
             return
         }
         if (msg.toLowerCase().includes(`mod`)) {
-            users[username][channel].mod ? talk(`You are a mod! :)`) : talk(`You are not a mod! :(`)
+            users[username][channel].mod ? talk(chatroom, `You are a mod! :)`) : talk(chatroom, `You are not a mod! :(`)
             return
         }
         if (msg.toLowerCase().includes(`vip`)) {
-            users[username][channel].vip ? talk(`You are a vip! :)`) : talk(`You are not a vip! :(`)
+            users[username][channel].vip ? talk(chatroom, `You are a vip! :)`) : talk(chatroom, `You are not a vip! :(`)
             return
         }
     }
 
     if (command === `do` && args[0].toLowerCase() === `i`) {
         if (msg.toLowerCase().includes(`sub`)) {
-            users[username][channel].sub ? talk(`You are subbed! :)`) : talk(`You are not subbed! :(`)
+            users[username][channel].sub ? talk(chatroom, `You are subbed! :)`) : talk(chatroom, `You are not subbed! :(`)
             return
         }
         if (msg.toLowerCase().includes(`mod`)) {
-            users[username][channel].mod ? talk(`You are a mod! :)`) : talk(`You are not a mod! :(`)
+            users[username][channel].mod ? talk(chatroom, `You are a mod! :)`) : talk(chatroom, `You are not a mod! :(`)
             return
         }
         if (msg.toLowerCase().includes(`vip`)) {
-            users[username][channel].vip ? talk(`You are a vip! :)`) : talk(`You are not a vip! :(`)
+            users[username][channel].vip ? talk(chatroom, `You are a vip! :)`) : talk(chatroom, `You are not a vip! :(`)
             return
         }
     }
 
-    if ([
-        `is`,
-        `does`].includes(command)) {
+    if ([`is`, `does`].includes(command)) {
         if (!(toUser.toLowerCase() in users)) { return }
         const userAttr = users[toUser.toLowerCase()][channel]
         if (msg.toLowerCase().includes(`sub`)) {
-            userAttr.sub ? talk(`${toUser} is subbed! :)`) : talk(`${toUser} is not subbed! :(`)
+            userAttr.sub ? talk(chatroom, `${toUser} is subbed! :)`) : talk(chatroom, `${toUser} is not subbed! :(`)
             return
         }
         if (msg.toLowerCase().includes(`mod`)) {
-            userAttr.mod ? talk(`${toUser} is a mod! :)`) : talk(`${toUser} is not a mod! :(`)
+            userAttr.mod ? talk(chatroom, `${toUser} is a mod! :)`) : talk(chatroom, `${toUser} is not a mod! :(`)
             return
         }
         if (msg.toLowerCase().includes(`vip`)) {
-            userAttr.vip ? talk(`${toUser} is a vip! :)`) : talk(`${toUser} is not a vip! :(`)
+            userAttr.vip ? talk(chatroom, `${toUser} is a vip! :)`) : talk(chatroom, `${toUser} is not a vip! :(`)
             return
         }
     }
 
-    if ([`!color`, `!colour`].includes(command)) {
-        sayColor(chatroom, users[toUser.toLowerCase()] || users[username])
-        return
-    }
+    if ([`!color`, `!colour`].includes(command)) { return sayColor(chatroom, users[toUser.toLowerCase()] || users[username]) }
 
-    if (command === `!lastmsg`) {
-        const target = toUser.toLowerCase() in users ? users[toUser.toLowerCase()] : users[username]
-        const room = args[1]?.toLowerCase()
-        room in target ? talk(`${target.displayName} last said: "${target[room].lastMessage}" in ${args[1]}'s chat!`) : talk(`${target.displayName} last said: "${target[channel].lastMessage}" in ${channel}'s chat!`)
-        return
-    }
+    if (command === `!lastmsg`) { return getLastMessage(chatroom, users[toUser.toLowerCase()] || users[username], args[1]?.toLowerCase()) }
 
     if (command === `!msgcount`) {
         const target = toUser.toLowerCase() in users ? users[toUser.toLowerCase()] : users[username]
@@ -230,8 +191,22 @@ function onMessageHandler(chatroom, tags, msg, self) {
             rooms[rooms.length - 1] = `and ${lastRoom}`
         }
         response += `${rooms.join(`, `)}!`
-        talk(response)
+        talk(chatroom, response)
     }
+
+    if (msg === `show`) { console.log(users) }
+
+    if (msg === `tags`) { console.log(tags) }
+
+    if (colorChanged) { return handleColorChange(chatroom, users[username], tags.color) }
+
+    if (turboChange) { return handleTurboChange(chatroom, users[username], tags.turbo) }
+
+    if (subChange) { return handleSubChange(chatroom, users[username], tags.subscriber) }
+
+    if (modChange) { return handleModChange(chatroom, users[username], tags.mod) }
+
+    if (vipChange) { return handleVIPChange(chatroom, users[username], tags.vip) }
 
     if (msg.toLowerCase().includes(`${BOT_USERNAME}`)) {
         const messages = [
@@ -242,6 +217,10 @@ function onMessageHandler(chatroom, tags, msg, self) {
         talk(response)
         return
     }
+}
+
+function getLastMessage(chatroom, target, room) {
+    room in target ? talk(chatroom, `${target.displayName} last said: "${target[room].lastMessage}" in ${args[1]}'s chat!`) : talk(chatroom, `${target.displayName} last said: "${target[`${chatroom.slice(1)}`].lastMessage}" in ${chatroom.slice(1)}'s chat!`)
 }
 
 function handleColorChange(chatroom, target, newColor) {
