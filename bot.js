@@ -160,7 +160,10 @@ function onMessageHandler(chatroom, tags, msg, self) {
         }
     }
 
-    if ([`is`, `does`].includes(command)) {
+    if ([
+        `is`,
+        `does`
+    ].includes(command)) {
         if (!(toUser.toLowerCase() in users)) { return }
         const userAttr = users[toUser.toLowerCase()][channel]
         if (msg.toLowerCase().includes(`sub`)) {
@@ -177,7 +180,10 @@ function onMessageHandler(chatroom, tags, msg, self) {
         }
     }
 
-    if ([`!color`, `!colour`].includes(command)) { return getColor(chatroom, users[toUser.toLowerCase()] || users[username]) }
+    if ([
+        `!color`,
+        `!colour`
+    ].includes(command)) { return getColor(chatroom, users[toUser.toLowerCase()] || users[username]) }
 
     if (command === `!lastmsg`) { return getLastMessage(chatroom, users[toUser.toLowerCase()] || users[username], args[1]?.toLowerCase()) }
 
@@ -197,14 +203,92 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
     if (vipChange) { return handleVIPChange(chatroom, users[username], tags.vip) }
 
-    if (msg.toLowerCase().includes(`${BOT_USERNAME}`)) {
-        const messages = [
-            `Acknowledgement :)`,
-            `🍋️`
+    if (msg.includes(BOT_USERNAME)) {
+        // If the first word is a greeting
+        const greetings = [
+            `hello`,
+            `howdy`,
+            `howdi`,
+            `hemblo`,
+            `hemlo`,
+            `henlo`,
+            `helo`,
+            `heyyyyyyyy`,
+            `heyyyyyyy`,
+            `heyyyyyy`,
+            `heyyyyy`,
+            `heyyyy`,
+            `heyyy`,
+            `heyy`,
+            `hey`,
+            `hi`,
+            `sup`,
+            `whatsup`,
+            `whassup`,
+            `whaddup`,
+            `whadup`,
+            `watsup`,
+            `wadsup`,
+            `wassup`,
+            `whasup`,
+            `wasup`,
+            `wadup`,
+            `whutsup`,
+            `whussup`,
+            `whuddup`,
+            `whudup`,
+            `wutsup`,
+            `wudsup`,
+            `wussup`,
+            `whusup`,
+            `wusup`,
+            `wudup`
         ]
-        const response = messages[Math.floor(Math.random() * messages.length)]
-        talk(chatroom, response)
-        return
+        if (greetings.includes(command)) { return handleGreet(chatroom, users[username]) }
+
+        const lowercaseArgs = args.map(str => str.toLowerCase())
+
+        // If the first word is saying what's up
+        const whatsUpPrefix = [
+            `what"s`,
+            `what's`,
+            `whats`,
+            `what`,
+            `whas`,
+            `wats`,
+            `wat`,
+            `was`,
+            `whut"s`,
+            `whut's`,
+            `whuts`,
+            `whut`,
+            `whus`,
+            `wuts`,
+            `wut`,
+            `wus`
+        ]
+        if (whatsUpPrefix.includes(command)) {
+            for (const i in lowercaseArgs) {
+                if (lowercaseArgs[i].slice(0, 2) === `up`) {
+                    return handleGreet(chatroom, users[username])
+                }
+            }
+        }
+
+        for (const i in lowercaseArgs) {
+            // Checking for greeting
+            if (greetings.includes(lowercaseArgs[i])) { return handleGreet(chatroom, users[username]) }
+
+            // Checking all the args for (what's) up
+            if (lowercaseArgs[i].slice(0, 2) === `up`) {
+                for (const j in whatsUpPrefix) {
+                    const wordLength = whatsUpPrefix[j].length
+                    if (lowercaseArgs[i - 1].slice(0, wordLength) === whatsUpPrefix[j]) {
+                        return handleGreet(chatroom, users[username])
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -237,6 +321,50 @@ function getColor(chatroom, target) {
     } else {
         talk(chatroom, `${target.displayName}'s chat color is hex code ${target.color}`)
     }
+}
+
+function handleGreet(chatroom, target) {
+    const greetings = [
+        `Howdy,`,
+        `Hello,`,
+        `Hey,`,
+        `Hi,`,
+        `Hey there,`,
+        `Hello`,
+        `Hey`,
+        `Hi`,
+        `Hey there`
+    ]
+    const greeting = Math.floor(Math.random() * greetings.length)
+    let response = `${greetings[greeting]} ${target.displayName}`
+
+    // If the greeting is "Howdy"
+    if (greeting === 0) {
+        response += `! :)`
+    } else if (greeting < greetings.indexOf(`Hello`)) {
+        // If there's a comma after the greeting
+        const appends = [
+            `How are you doing today?`,
+            `How are you, today?`,
+            `How are you doing?`,
+            `How are you?`,
+            `How's it going?`,
+            `How goes it?`
+        ]
+        response += `! ${appends[Math.floor(Math.random() * appends.length)]} :)`
+    } else {
+        // If there's no comma after the greeting
+        const appends = [
+            `how are you doing today?`,
+            `how are you today?`,
+            `how are you doing?`,
+            `how are you?`,
+            `how's it going?`,
+            `how goes it?`
+        ]
+        response += `, ${appends[Math.floor(Math.random() * appends.length)]} :)`
+    }
+    talk(chatroom, response)
 }
 
 function handleColorChange(chatroom, target, newColor) {
@@ -284,3 +412,24 @@ function onConnectedHandler(addr, port) {
     const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
     setTimeout(() => talk(jpegstripes, response), 3000)
 }
+
+/*
+    // GN BOT
+    if (msg.toLowerCase().includes(`gn bot`)
+        || msg.toLowerCase().includes(`undertalebot gn`)
+        || msg.toLowerCase().includes(`undertalebot good night`)
+        || msg.toLowerCase().includes(`undertalebot night`)
+        || msg.toLowerCase().includes(`gn undertalebot`)
+        || msg.toLowerCase().includes(`night undertalebot`)
+        || msg.toLowerCase().includes(`gn @undertalebot`)
+        || msg.toLowerCase().includes(`night @undertalebot`)) {
+        // Log message
+        console.log(`${inverted}${channel} ${resetTxt}`, `${boldTxt}${sendingPlayer[`dead`] ? redTxt : greenTxt}${sender}:${resetTxt}`, msg)
+
+        const greetings = [`Good night`, `Sleep well`, `See you later`]
+        const greeting = greetings[Math.floor(Math.random() * greetings.length)]
+        const response = `${greeting}, ${sender}! :)`
+        talk(channel, response)
+        return
+    }
+*/
