@@ -128,10 +128,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
     REPLY CASES
     \*********/
 
-    if (firstMsg) {
-        talk(chatroom, `Hi ${displayName}, welcome to the stream!`)
-        return
-    }
+    if (firstMsg) { return handleNewChatter(chatroom, users[username]) }
 
     if (command === `am` && args[0].toLowerCase() === `i`) {
         if (msg.toLowerCase().includes(`sub`)) {
@@ -211,6 +208,9 @@ function onMessageHandler(chatroom, tags, msg, self) {
     }
 }
 
+// Helper functions
+function handleNewChatter(chatroom, target) { talk(chatroom, `Hi ${target.displayName}, welcome to the stream!`) }
+
 function getLastMessage(chatroom, target, room) {
     room in target ? talk(chatroom, `${target.displayName} last said: "${target[room].lastMessage}" in ${args[1]}'s chat!`) : talk(chatroom, `${target.displayName} last said: "${target[`${chatroom.slice(1)}`].lastMessage}" in ${chatroom.slice(1)}'s chat!`)
 }
@@ -282,7 +282,5 @@ function onConnectedHandler(addr, port) {
         `(Windows 95 startup sound plays)`
     ]
     const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
-    client.say(jpegstripes, response)
-    console.log(`${yellowBg}<${jpegstripes.slice(1)}> ${BOT_USERNAME}: ${response}${resetTxt}`)
-    delete users.undefined
+    setTimeout(() => talk(jpegstripes, response), 3000)
 }
