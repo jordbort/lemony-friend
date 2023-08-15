@@ -228,7 +228,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
         // In case saying "what's up" first, and/or `up` doesn't come immediately
         if (whatsUpPrefix.includes(command)) {
             for (const i in lowercaseArgs) {
-                if (lowercaseArgs[i].slice(0, 2) === `up`) {
+                if (lowercaseArgs[Number(i)].slice(0, 2) === `up`) {
                     return handleGreet(chatroom, users[username])
                 }
             }
@@ -238,8 +238,8 @@ function onMessageHandler(chatroom, tags, msg, self) {
         for (const j in lowercaseArgs) {
             // Checking if greeting came later in message
             for (const i in greetings) {
-                const wordLength = greetings[i].length
-                if (lowercaseArgs[Number(j)].slice(0, wordLength) === greetings[i]) { return handleGreet(chatroom, users[username]) }
+                const wordLength = greetings[Number(i)].length
+                if (lowercaseArgs[Number(j)].slice(0, wordLength) === greetings[Number(i)]) { return handleGreet(chatroom, users[username]) }
             }
 
             // If `gn` came later in the message
@@ -274,9 +274,9 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
         for (const i in lowercaseArgs) {
             // Asking about channel info
-            if (lowercaseArgs[i].slice(0, 3) === `sub`) { return users[username][channel].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to ${channel}! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to ${channel}! :(`) }
-            if (lowercaseArgs[i].slice(0, 3) === `mod`) { return users[username][channel].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in ${channel}'s chat! :(`) }
-            if (lowercaseArgs[i].slice(0, 3) === `vip`) { return users[username][channel].vip ? talk(chatroom, `Yes ${displayName}, you are a vip in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a vip in ${channel}'s chat! :(`) }
+            if (lowercaseArgs[Number(i)].slice(0, 3) === `sub`) { return users[username][channel].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to ${channel}! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to ${channel}! :(`) }
+            if (lowercaseArgs[Number(i)].slice(0, 3) === `mod`) { return users[username][channel].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in ${channel}'s chat! :(`) }
+            if (lowercaseArgs[Number(i)].slice(0, 3) === `vip`) { return users[username][channel].vip ? talk(chatroom, `Yes ${displayName}, you are a vip in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a vip in ${channel}'s chat! :(`) }
         }
     }
 
@@ -288,9 +288,9 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
         for (const i in lowercaseArgs) {
             // Asking about channel info
-            if (lowercaseArgs[i].slice(0, 3) === `sub`) { return users[username][channel].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to ${channel}! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to ${channel}! :(`) }
-            if (lowercaseArgs[i].slice(0, 3) === `mod`) { return users[username][channel].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in ${channel}'s chat! :(`) }
-            if (lowercaseArgs[i].slice(0, 3) === `vip`) { return users[username][channel].vip ? talk(chatroom, `Yes ${displayName}, you are a vip in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a vip in ${channel}'s chat! :(`) }
+            if (lowercaseArgs[Number(i)].slice(0, 3) === `sub`) { return users[username][channel].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to ${channel}! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to ${channel}! :(`) }
+            if (lowercaseArgs[Number(i)].slice(0, 3) === `mod`) { return users[username][channel].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in ${channel}'s chat! :(`) }
+            if (lowercaseArgs[Number(i)].slice(0, 3) === `vip`) { return users[username][channel].vip ? talk(chatroom, `Yes ${displayName}, you are a vip in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a vip in ${channel}'s chat! :(`) }
         }
     }
 
@@ -308,9 +308,9 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
         for (const i in lowercaseArgs) {
             // Asking about other user's channel info
-            if (lowercaseArgs[i].slice(0, 3) === `sub`) { return target[channel].sub ? talk(chatroom, `Yes, ${target.displayName} is subbed to ${channel}! :)`) : talk(chatroom, `No, ${target.displayName} is not subbed to ${channel}! :(`) }
-            if (lowercaseArgs[i].slice(0, 3) === `mod`) { return target[channel].mod ? talk(chatroom, `Yes, ${target.displayName} is a mod in ${channel}'s chat! :)`) : talk(chatroom, `No, ${target.displayName} is not a mod in ${channel}'s chat! :(`) }
-            if (lowercaseArgs[i].slice(0, 3) === `vip`) { return target[channel].vip ? talk(chatroom, `Yes, ${target.displayName} is a VIP in ${channel}'s chat! :)`) : talk(chatroom, `No, ${target.displayName} is not a VIP in ${channel}'s chat! :(`) }
+            if (lowercaseArgs[Number(i)].slice(0, 3) === `sub`) { return target[channel].sub ? talk(chatroom, `Yes, ${target.displayName} is subbed to ${channel}! :)`) : talk(chatroom, `No, ${target.displayName} is not subbed to ${channel}! :(`) }
+            if (lowercaseArgs[Number(i)].slice(0, 3) === `mod`) { return target[channel].mod ? talk(chatroom, `Yes, ${target.displayName} is a mod in ${channel}'s chat! :)`) : talk(chatroom, `No, ${target.displayName} is not a mod in ${channel}'s chat! :(`) }
+            if (lowercaseArgs[Number(i)].slice(0, 3) === `vip`) { return target[channel].vip ? talk(chatroom, `Yes, ${target.displayName} is a VIP in ${channel}'s chat! :)`) : talk(chatroom, `No, ${target.displayName} is not a VIP in ${channel}'s chat! :(`) }
         }
     }
 
