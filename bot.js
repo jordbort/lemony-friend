@@ -148,7 +148,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
     ].includes(command)) { return getColor(chatroom, users[toUser.toLowerCase()] || users[username]) }
 
     // If bot mentioned by username in message
-    if (msg.includes(BOT_USERNAME)) {
+    if (msg.toLowerCase().includes(BOT_USERNAME)) {
         // If the first word is a greeting
         const greetings = [
             `hello`,
@@ -191,6 +191,18 @@ function onMessageHandler(chatroom, tags, msg, self) {
         ]
         if (greetings.includes(command)) { return handleGreet(chatroom, users[username]) }
 
+        // If the first word is `gn`
+        if (command === `gn`) { return sayGoodnight(chatroom, users[username]) }
+
+        // If the first word is `good` followed by "night"-like word
+        if (command === `good`) {
+            const nights = [
+                `night`,
+                `nite`
+            ]
+            if (nights.includes(args[0].toLowerCase())) { return sayGoodnight(chatroom, users[username]) }
+        }
+
         // All words after the first, in lower case
         const lowercaseArgs = args.map(str => str.toLowerCase())
 
@@ -227,14 +239,26 @@ function onMessageHandler(chatroom, tags, msg, self) {
             // Checking if greeting came later in message
             for (const i in greetings) {
                 const wordLength = greetings[i].length
-                if (lowercaseArgs[j].slice(0, wordLength) === greetings[i]) { return handleGreet(chatroom, users[username]) }
+                if (lowercaseArgs[Number(j)].slice(0, wordLength) === greetings[i]) { return handleGreet(chatroom, users[username]) }
+            }
+
+            // If `gn` came later in the message
+            if (lowercaseArgs[Number(j)] === `gn`) { return sayGoodnight(chatroom, users[username]) }
+
+            // If `good` followed by "night"-like word came later in the message
+            if (lowercaseArgs[Number(j)] === `good`) {
+                const nights = [
+                    `night`,
+                    `nite`
+                ]
+                if (nights.includes(lowercaseArgs[Number(j) + 1].toLowerCase())) { return sayGoodnight(chatroom, users[username]) }
             }
 
             // Checking if `up` (and preceeding "what's"-like word) came later in message
-            if (lowercaseArgs[j].slice(0, 2) === `up`) {
+            if (lowercaseArgs[Number(j)].slice(0, 2) === `up`) {
                 for (const i in whatsUpPrefix) {
-                    const wordLength = whatsUpPrefix[i].length
-                    if (lowercaseArgs[j - 1].slice(0, wordLength) === whatsUpPrefix[i]) {
+                    const wordLength = whatsUpPrefix[Number(i)].length
+                    if (lowercaseArgs[Number(j) - 1].slice(0, wordLength) === whatsUpPrefix[Number(i)]) {
                         return handleGreet(chatroom, users[username])
                     }
                 }
@@ -369,6 +393,28 @@ function handleGreet(chatroom, target) {
         ]
         response += `, ${appends[Math.floor(Math.random() * appends.length)]} :)`
     }
+    talk(chatroom, response)
+}
+
+function sayGoodnight(chatroom, target) {
+    const greetings = [
+        `Bye`,
+        `Good night,`,
+        `Sleep well,`,
+        `See you next time,`,
+        `Have a good night,`
+    ]
+    const greeting = Math.floor(Math.random() * greetings.length)
+    let response = `${greetings[greeting]} ${target.displayName}`
+    if (greeting === 0) {
+        const appends = [
+            `sleep well`,
+            `see you next time`,
+            `have a good night`,
+        ]
+        response += `, ${appends[Math.floor(Math.random() * appends.length)]}`
+    }
+    response += `! :)`
     talk(chatroom, response)
 }
 
