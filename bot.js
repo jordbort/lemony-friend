@@ -128,81 +128,26 @@ function onMessageHandler(chatroom, tags, msg, self) {
     REPLY CASES
     \*********/
 
+    // For testing/debugging
+    if (msg === `show`) { console.log(users) }
+    if (msg === `tags`) { console.log(tags) }
+
+    // !lastmsg (Show a user's last message, optionally in a specified stream)
+    if (command === `!lastmsg`) { return getLastMessage(chatroom, users[toUser.toLowerCase()] || users[username], args[1]?.toLowerCase()) }
+
+    // !msgcount (Show a user's last message)
+    if (command === `!msgcount`) { return getMessageCount(chatroom, users[toUser.toLowerCase()] || users[username]) }
+
+    // User's first message in a given channel
     if (firstMsg) { return handleNewChatter(chatroom, users[username]) }
 
-    if (command === `am` && args[0].toLowerCase() === `i`) {
-        if (msg.toLowerCase().includes(`sub`)) {
-            users[username][channel].sub ? talk(chatroom, `You are subbed! :)`) : talk(chatroom, `You are not subbed! :(`)
-            return
-        }
-        if (msg.toLowerCase().includes(`mod`)) {
-            users[username][channel].mod ? talk(chatroom, `You are a mod! :)`) : talk(chatroom, `You are not a mod! :(`)
-            return
-        }
-        if (msg.toLowerCase().includes(`vip`)) {
-            users[username][channel].vip ? talk(chatroom, `You are a vip! :)`) : talk(chatroom, `You are not a vip! :(`)
-            return
-        }
-    }
-
-    if (command === `do` && args[0].toLowerCase() === `i`) {
-        if (msg.toLowerCase().includes(`sub`)) {
-            users[username][channel].sub ? talk(chatroom, `You are subbed! :)`) : talk(chatroom, `You are not subbed! :(`)
-            return
-        }
-        if (msg.toLowerCase().includes(`mod`)) {
-            users[username][channel].mod ? talk(chatroom, `You are a mod! :)`) : talk(chatroom, `You are not a mod! :(`)
-            return
-        }
-        if (msg.toLowerCase().includes(`vip`)) {
-            users[username][channel].vip ? talk(chatroom, `You are a vip! :)`) : talk(chatroom, `You are not a vip! :(`)
-            return
-        }
-    }
-
-    if ([
-        `is`,
-        `does`
-    ].includes(command)) {
-        if (!(toUser.toLowerCase() in users)) { return }
-        const userAttr = users[toUser.toLowerCase()][channel]
-        if (msg.toLowerCase().includes(`sub`)) {
-            userAttr.sub ? talk(chatroom, `${toUser} is subbed! :)`) : talk(chatroom, `${toUser} is not subbed! :(`)
-            return
-        }
-        if (msg.toLowerCase().includes(`mod`)) {
-            userAttr.mod ? talk(chatroom, `${toUser} is a mod! :)`) : talk(chatroom, `${toUser} is not a mod! :(`)
-            return
-        }
-        if (msg.toLowerCase().includes(`vip`)) {
-            userAttr.vip ? talk(chatroom, `${toUser} is a vip! :)`) : talk(chatroom, `${toUser} is not a vip! :(`)
-            return
-        }
-    }
-
+    // !color / !colour
     if ([
         `!color`,
         `!colour`
     ].includes(command)) { return getColor(chatroom, users[toUser.toLowerCase()] || users[username]) }
 
-    if (command === `!lastmsg`) { return getLastMessage(chatroom, users[toUser.toLowerCase()] || users[username], args[1]?.toLowerCase()) }
-
-    if (command === `!msgcount`) { return getMessageCount(chatroom, users[toUser.toLowerCase()] || users[username]) }
-
-    if (msg === `show`) { console.log(users) }
-
-    if (msg === `tags`) { console.log(tags) }
-
-    if (colorChanged) { return handleColorChange(chatroom, users[username], color) }
-
-    if (turboChange) { return handleTurboChange(chatroom, users[username], tags.turbo) }
-
-    if (subChange) { return handleSubChange(chatroom, users[username], tags.subscriber) }
-
-    if (modChange) { return handleModChange(chatroom, users[username], tags.mod) }
-
-    if (vipChange) { return handleVIPChange(chatroom, users[username], tags.vip) }
-
+    // If bot mentioned by username in message
     if (msg.includes(BOT_USERNAME)) {
         // If the first word is a greeting
         const greetings = [
@@ -246,9 +191,10 @@ function onMessageHandler(chatroom, tags, msg, self) {
         ]
         if (greetings.includes(command)) { return handleGreet(chatroom, users[username]) }
 
+        // All words after the first, in lower case
         const lowercaseArgs = args.map(str => str.toLowerCase())
 
-        // If the first word is saying what's up
+        // Checking for "what's up"
         const whatsUpPrefix = [
             `what"s`,
             `what's`,
@@ -267,6 +213,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
             `wut`,
             `wus`
         ]
+        // In case saying "what's up" first, and/or `up` doesn't come immediately
         if (whatsUpPrefix.includes(command)) {
             for (const i in lowercaseArgs) {
                 if (lowercaseArgs[i].slice(0, 2) === `up`) {
@@ -275,21 +222,79 @@ function onMessageHandler(chatroom, tags, msg, self) {
             }
         }
 
-        for (const i in lowercaseArgs) {
-            // Checking for greeting
-            if (greetings.includes(lowercaseArgs[i])) { return handleGreet(chatroom, users[username]) }
+        // Check all words in message after the first
+        for (const j in lowercaseArgs) {
+            // Checking if greeting came later in message
+            for (const i in greetings) {
+                const wordLength = greetings[i].length
+                if (lowercaseArgs[j].slice(0, wordLength) === greetings[i]) { return handleGreet(chatroom, users[username]) }
+            }
 
-            // Checking all the args for (what's) up
-            if (lowercaseArgs[i].slice(0, 2) === `up`) {
-                for (const j in whatsUpPrefix) {
-                    const wordLength = whatsUpPrefix[j].length
-                    if (lowercaseArgs[i - 1].slice(0, wordLength) === whatsUpPrefix[j]) {
+            // Checking if `up` (and preceeding "what's"-like word) came later in message
+            if (lowercaseArgs[j].slice(0, 2) === `up`) {
+                for (const i in whatsUpPrefix) {
+                    const wordLength = whatsUpPrefix[i].length
+                    if (lowercaseArgs[j - 1].slice(0, wordLength) === whatsUpPrefix[i]) {
                         return handleGreet(chatroom, users[username])
                     }
                 }
             }
         }
     }
+
+    // User asking an "am i ...?" question about themselves
+    if (command === `am`
+        && args[0].toLowerCase() === `i`) {
+        args.shift()
+        const lowercaseArgs = args.map(str => str.toLowerCase())
+
+        for (const i in lowercaseArgs) {
+            // Asking about channel info
+            if (lowercaseArgs[i].slice(0, 3) === `sub`) { return users[username][channel].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to ${channel}! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to ${channel}! :(`) }
+            if (lowercaseArgs[i].slice(0, 3) === `mod`) { return users[username][channel].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in ${channel}'s chat! :(`) }
+            if (lowercaseArgs[i].slice(0, 3) === `vip`) { return users[username][channel].vip ? talk(chatroom, `Yes ${displayName}, you are a vip in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a vip in ${channel}'s chat! :(`) }
+        }
+    }
+
+    // User asking a "do i ...?" question about themselves
+    if (command === `do`
+        && args[0].toLowerCase() === `i`) {
+        args.shift()
+        const lowercaseArgs = args.map(str => str.toLowerCase())
+
+        for (const i in lowercaseArgs) {
+            // Asking about channel info
+            if (lowercaseArgs[i].slice(0, 3) === `sub`) { return users[username][channel].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to ${channel}! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to ${channel}! :(`) }
+            if (lowercaseArgs[i].slice(0, 3) === `mod`) { return users[username][channel].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in ${channel}'s chat! :(`) }
+            if (lowercaseArgs[i].slice(0, 3) === `vip`) { return users[username][channel].vip ? talk(chatroom, `Yes ${displayName}, you are a vip in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a vip in ${channel}'s chat! :(`) }
+        }
+    }
+
+    // User asking a question about another user
+    if ([
+        `is`,
+        `does`
+    ].includes(command)) {
+        // Ignore if other user isn't known
+        if (!(toUser.toLowerCase() in users)) { return }
+
+        const target = users[toUser.toLowerCase()]
+        args.shift()
+        const lowercaseArgs = args.map(str => str.toLowerCase())
+
+        for (const i in lowercaseArgs) {
+            // Asking about other user's channel info
+            if (lowercaseArgs[i].slice(0, 3) === `sub`) { return target[channel].sub ? talk(chatroom, `Yes, ${target.displayName} is subbed to ${channel}! :)`) : talk(chatroom, `No, ${target.displayName} is not subbed to ${channel}! :(`) }
+            if (lowercaseArgs[i].slice(0, 3) === `mod`) { return target[channel].mod ? talk(chatroom, `Yes, ${target.displayName} is a mod in ${channel}'s chat! :)`) : talk(chatroom, `No, ${target.displayName} is not a mod in ${channel}'s chat! :(`) }
+            if (lowercaseArgs[i].slice(0, 3) === `vip`) { return target[channel].vip ? talk(chatroom, `Yes, ${target.displayName} is a VIP in ${channel}'s chat! :)`) : talk(chatroom, `No, ${target.displayName} is not a VIP in ${channel}'s chat! :(`) }
+        }
+    }
+
+    if (colorChanged) { return handleColorChange(chatroom, users[username], color) }
+    if (turboChange) { return handleTurboChange(chatroom, users[username], tags.turbo) }
+    if (subChange) { return handleSubChange(chatroom, users[username], tags.subscriber) }
+    if (modChange) { return handleModChange(chatroom, users[username], tags.mod) }
+    if (vipChange) { return handleVIPChange(chatroom, users[username], tags.vip) }
 }
 
 // Helper functions
@@ -412,24 +417,3 @@ function onConnectedHandler(addr, port) {
     const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
     setTimeout(() => talk(jpegstripes, response), 3000)
 }
-
-/*
-    // GN BOT
-    if (msg.toLowerCase().includes(`gn bot`)
-        || msg.toLowerCase().includes(`undertalebot gn`)
-        || msg.toLowerCase().includes(`undertalebot good night`)
-        || msg.toLowerCase().includes(`undertalebot night`)
-        || msg.toLowerCase().includes(`gn undertalebot`)
-        || msg.toLowerCase().includes(`night undertalebot`)
-        || msg.toLowerCase().includes(`gn @undertalebot`)
-        || msg.toLowerCase().includes(`night @undertalebot`)) {
-        // Log message
-        console.log(`${inverted}${channel} ${resetTxt}`, `${boldTxt}${sendingPlayer[`dead`] ? redTxt : greenTxt}${sender}:${resetTxt}`, msg)
-
-        const greetings = [`Good night`, `Sleep well`, `See you later`]
-        const greeting = greetings[Math.floor(Math.random() * greetings.length)]
-        const response = `${greeting}, ${sender}! :)`
-        talk(channel, response)
-        return
-    }
-*/
