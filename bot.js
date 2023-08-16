@@ -314,6 +314,15 @@ function onMessageHandler(chatroom, tags, msg, self) {
         }
     }
 
+    // Parsing each message word
+    const lowercaseArgs = args.map(str => str.toLowerCase())
+    for (const i in lowercaseArgs) {
+        // If a word starts with "but", and has a 4th letter that isn't T, make it "BUTT-(rest of word)"
+        if (lowercaseArgs[Number(i)].slice(0, 3).toLowerCase() === `but` && lowercaseArgs[Number(i)][3] && lowercaseArgs[Number(i)][3].toLowerCase() !== `t`) {
+            return talk(chatroom, `${lowercaseArgs[Number(i)][0].toUpperCase()}${lowercaseArgs[Number(i)].slice(1).toLowerCase()}? More like BUTT-${lowercaseArgs[Number(i)].slice(3).toLowerCase()}`)
+        }
+    }
+
     if (colorChanged) { return handleColorChange(chatroom, users[username], color) }
     if (turboChange) { return handleTurboChange(chatroom, users[username], tags.turbo) }
     if (subChange) { return handleSubChange(chatroom, users[username], tags.subscriber) }
@@ -461,5 +470,5 @@ function onConnectedHandler(addr, port) {
         `(Windows 95 startup sound plays)`
     ]
     const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
-    setTimeout(() => talk(jpegstripes, response), 3000)
+    setTimeout(() => talk(e1ectroma, response), 3000)
 }
