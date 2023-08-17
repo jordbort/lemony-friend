@@ -133,6 +133,12 @@ function onMessageHandler(chatroom, tags, msg, self) {
     if (msg === `show`) { console.log(users) }
     if (msg === `tags`) { console.log(tags) }
 
+    if (colorChanged) { return handleColorChange(chatroom, users[username], color) }
+    if (turboChange) { return handleTurboChange(chatroom, users[username], tags.turbo) }
+    if (subChange) { return handleSubChange(chatroom, users[username], tags.subscriber) }
+    if (modChange) { return handleModChange(chatroom, users[username], tags.mod) }
+    if (vipChange) { return handleVIPChange(chatroom, users[username], tags.vip) }
+
     // !lastmsg (Show a user's last message, optionally in a specified stream)
     if (command === `!lastmsg`) { return getLastMessage(chatroom, users[toUser.toLowerCase()] || users[username], args[1]?.toLowerCase()) }
 
@@ -148,8 +154,8 @@ function onMessageHandler(chatroom, tags, msg, self) {
         `!colour`
     ].includes(command)) { return getColor(chatroom, users[toUser.toLowerCase()] || users[username]) }
 
-    // If bot mentioned by username in message
-    if (msg.toLowerCase().includes(BOT_USERNAME)) {
+    // If bot mentioned in message
+    if (msg.toLowerCase().includes(`lemon`)) {
         // If the first word is a greeting
         const greetings = [
             `hello`,
@@ -329,8 +335,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
         // Looking for a message to be repeated by at least two other users
         let streakCount = 0
         for (const user in users) {
-            if (users[user][channel].lastMessage === msg) { streakCount++ }
-            console.log(streakCount, users[user][channel].lastMessage)
+            if (users[user][channel]?.lastMessage === msg) { streakCount++ }
             if (streakCount >= 3) {
                 delayListening()
                 return talk(chatroom, msg)
@@ -338,11 +343,101 @@ function onMessageHandler(chatroom, tags, msg, self) {
         }
     }
 
-    if (colorChanged) { return handleColorChange(chatroom, users[username], color) }
-    if (turboChange) { return handleTurboChange(chatroom, users[username], tags.turbo) }
-    if (subChange) { return handleSubChange(chatroom, users[username], tags.subscriber) }
-    if (modChange) { return handleModChange(chatroom, users[username], tags.mod) }
-    if (vipChange) { return handleVIPChange(chatroom, users[username], tags.vip) }
+    if (users[username][channel].msgCount % 10 === 0) {
+        const funNumber = Math.floor(Math.random() * 15)
+        console.log(`*** Fun number triggered by`, users[username].displayName, `:`, funNumber)
+        // Make 4-wide message pyramid of first word in message
+        if (funNumber === 0) {
+            const delay = users[BOT_USERNAME][channel].mod || channel === BOT_USERNAME ? 1000 : 2000
+            talk(chatroom, `${command}`)
+            setTimeout(() => talk(chatroom, `${command} ${command}`), delay)
+            setTimeout(() => talk(chatroom, `${command} ${command} ${command}`), delay * 2)
+            setTimeout(() => talk(chatroom, `${command} ${command}`), delay * 3)
+            setTimeout(() => talk(chatroom, `${command}`), delay * 4)
+        }
+        // Turn message count into dollars
+        if (funNumber === 1) {
+            return talk(chatroom, `Give me $${users[username][channel].msgCount}`)
+        }
+        if (funNumber === 2) {
+            let redeems = []
+            if (chatroom === e1ectroma) {
+                redeems = [
+                    `!winner`,
+                    `!soda`,
+                    `!pipe`,
+                    `!nope`,
+                    `!nice`,
+                    `!n64`,
+                    `!bork`,
+                ]
+            } else if (chatroom === jpegstripes) {
+                redeems = [
+                    `!redeem bigshot`,
+                    `!redeem keygen`,
+                    `!redeem spotion`,
+                    `!redeem thebigone`,
+                    `!redeem bowtie`,
+                    `!redeem neo`,
+                    `!redeem workout`,
+                    `!redeem suscr1ber`,
+                    `!redeem mario`,
+                    `!redeem piano`,
+                    `!redeem slip`,
+                    `!redeem hamster`,
+                    `!redeem alarm`,
+                    `!redeem waste`,
+                    `!redeem 25k`,
+                    `!redeem crabrave`,
+                    `!redeem confusion`,
+                    `!redeem soulja`,
+                    `!redeem breakdance`,
+                    `!redeem gigachad`,
+                    `!redeem 4d3d3d3`,
+                    `!redeem feedcat`,
+                    `!redeem polarbear`,
+                    `!redeem graph`,
+                    `!redeem checkmate`,
+                    `!redeem shutup`,
+                    `!redeem doggo`,
+                    `!redeem marshmallows`,
+                    `!redeem chocotaco`,
+                    `!redeem rat`,
+                    `!redeem hamburger`,
+                    `!redeem chickendance`,
+                    `!redeem come`,
+                    `!redeem gauntlet`,
+                    `!redeem princess`,
+                    `!redeem rubbermaid`,
+                    `!redeem peachsyrup`,
+                    `!redeem skype`,
+                    `!redeem ohhimark`,
+                    `!redeem dripgoku`,
+                    `!redeem gelatin`,
+                    `!redeem cheesecake`,
+                    `!redeem fancam`,
+                    `!redeem nicecock`,
+                    `!redeem lieblingsfach`,
+                    `!redeem lavish`,
+                    `!redeem shootme`,
+                    `!redeem disk`,
+                    `!redeem flagranterror`,
+                    `!redeem technology`,
+                    `!redeem bingchilling`,
+                    `!redeem flagranterror`,
+                    `!redeem litlizards`,
+                    `!redeem raccoon`,
+                    `!redeem gay`,
+                    `!redeem turbomaxwaste`,
+                    `!redeem birthday`
+                ]
+            } else {
+                redeems = [`Give me ${users[username][channel].msgCount},000 dollars`]
+            }
+            const redeem = Math.floor(Math.random() * redeems.length)
+            return talk(chatroom, redeems[redeem])
+        }
+    }
 }
 
 // Helper functions
