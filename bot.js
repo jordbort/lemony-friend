@@ -79,6 +79,7 @@ client.on('connected', onConnectedHandler)
 client.connect()
 
 let users = {}
+let listening = true
 
 function onMessageHandler(chatroom, tags, msg, self) {
     const username = tags.username
@@ -314,12 +315,26 @@ function onMessageHandler(chatroom, tags, msg, self) {
         }
     }
 
-    // Parsing each message word
-    const lowercaseArgs = args.map(str => str.toLowerCase())
-    for (const i in lowercaseArgs) {
-        // If a word starts with "but", and has a 4th letter that isn't T, make it "BUTT-(rest of word)"
-        if (lowercaseArgs[Number(i)].slice(0, 3).toLowerCase() === `but` && lowercaseArgs[Number(i)][3] && lowercaseArgs[Number(i)][3].toLowerCase() !== `t`) {
-            return talk(chatroom, `${lowercaseArgs[Number(i)][0].toUpperCase()}${lowercaseArgs[Number(i)].slice(1).toLowerCase()}? More like BUTT-${lowercaseArgs[Number(i)].slice(3).toLowerCase()}`)
+    if (listening || channel === BOT_USERNAME) {
+        // Parsing each message word
+        const lowercaseArgs = args.map(str => str.toLowerCase())
+        for (const i in lowercaseArgs) {
+            // If a word starts with "but", and has a 4th letter that isn't T, make it "BUTT-(rest of word)"
+            if (lowercaseArgs[Number(i)].slice(0, 3).toLowerCase() === `but` && lowercaseArgs[Number(i)][3] && lowercaseArgs[Number(i)][3].toLowerCase() !== `t`) {
+                delayListening()
+                return talk(chatroom, `${lowercaseArgs[Number(i)][0].toUpperCase()}${lowercaseArgs[Number(i)].slice(1).toLowerCase()}? More like BUTT-${lowercaseArgs[Number(i)].slice(3).toLowerCase()}`)
+            }
+        }
+
+        // Looking for a message to be repeated by at least two other users
+        let streakCount = 0
+        for (const user in users) {
+            if (users[user][channel].lastMessage === msg) { streakCount++ }
+            console.log(streakCount, users[user][channel].lastMessage)
+            if (streakCount >= 3) {
+                delayListening()
+                return talk(chatroom, msg)
+            }
         }
     }
 
@@ -450,6 +465,11 @@ function handleModChange(chatroom, target, modStatus) {
 function handleVIPChange(chatroom, target, vipStatus) {
     target[`${chatroom.slice(1)}`].vip = vipStatus
     vipStatus ? talk(chatroom, `Wow, ${target.displayName} became a VIP! :D`) : talk(chatroom, `Did ${target.displayName} just lose VIP status? :O`)
+}
+
+function delayListening() {
+    listening = false
+    setTimeout(() => listening = true, 100000)
 }
 
 function talk(chatroom, msg) {
