@@ -80,6 +80,7 @@ client.connect()
 
 let users = {}
 let listening = true
+let sayOnlineMsg = true
 
 function onMessageHandler(chatroom, tags, msg, self) {
     const username = tags.username
@@ -132,6 +133,21 @@ function onMessageHandler(chatroom, tags, msg, self) {
     // For testing/debugging
     if (msg === `show`) { console.log(users) }
     if (msg === `tags`) { console.log(tags) }
+
+    if (sayOnlineMsg) {
+        const onlineMsg = [
+            `I'm awake :)`,
+            `Let's see how long before I crash`,
+            `🍋️`,
+            `don't mind me`,
+            `(just rebooting again)`,
+            `(Windows 95 startup sound plays)`,
+            `I'm onl`
+        ]
+        const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
+        talk(channel, response)
+        sayOnlineMsg = false
+    }
 
     if (colorChanged) { return handleColorChange(chatroom, users[username], color) }
     if (turboChange) { return handleTurboChange(chatroom, users[username], tags.turbo) }
@@ -622,14 +638,5 @@ function getToUser(str) { return str.startsWith(`@`) ? str.substring(1) : str }
 
 function onConnectedHandler(addr, port) {
     console.log(`* Connected to ${addr}:${port}`)
-    const onlineMsg = [
-        // `I'm awake :)`,
-        // `Let's see how long before I crash`,
-        `🍋️`,
-        `don't mind me`,
-        // `(just rebooting again)`,
-        `(Windows 95 startup sound plays)`
-    ]
-    const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
-    setTimeout(() => talk(sclarf, response), 4000)
+    sayOnlineMsg = true
 }
