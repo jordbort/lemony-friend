@@ -334,7 +334,53 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
         // Looking for a message to be repeated by at least two other users
         let streakCount = 0
+        let emoteStreakCount = 0
+        let popularEmotes = []
+        const sclarfEmotes = [
+            `sclarfRave`,
+            `sclarfWobble`,
+            `sclarfBark`,
+            `sclarfSpin`,
+            `sclarfPls`,
+            `sclarfMad`,
+            `sclarfPog`,
+            `sclarfHuh`,
+            `sclarfHowdy`,
+            `sclarfDog`,
+            `sclarfBlind`,
+            `sclarfPalm`,
+            `sclarfDead`,
+            `sclarfSophisticated`,
+            `sclarfLUL`,
+            `sclarfHiss`,
+            `sclarfHearts`,
+            `sclarfDEEP`,
+            `sclarfGong`,
+            `sclarfOMEGADLUL`
+        ]
+
         for (const user in users) {
+            if (chatroom === sclarf) {
+                popularEmotes.length = sclarfEmotes.length
+                popularEmotes.fill(0)
+                if (users[BOT_USERNAME]?.[channel]?.sub) {
+                    for (const i in sclarfEmotes) {
+                        if (users[user][channel]?.lastMessage.includes(sclarfEmotes[Number(i)])) {
+                            popularEmotes[Number(i)]++
+                            emoteStreakCount++
+                        }
+                    }
+                    const mostVotes = Math.max(...popularEmotes)
+                    const mostPopularEmoteIdx = popularEmotes.indexOf(mostVotes)
+                    const mostPopularEmote = sclarfEmotes[mostPopularEmoteIdx]
+                    if (emoteStreakCount >= 5) {
+                        console.log(popularEmotes, mostPopularEmoteIdx, mostVotes, mostPopularEmote)
+                        delayListening()
+                        return talk(chatroom, `${mostPopularEmote} ${mostPopularEmote} ${mostPopularEmote} ${mostPopularEmote}`)
+                    }
+                }
+            }
+
             if (users[user][channel]?.lastMessage === msg) { streakCount++ }
             if (streakCount >= 3) {
                 delayListening()
@@ -344,7 +390,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
     }
 
     if (users[username][channel].msgCount % 10 === 0) {
-        const funNumber = Math.floor(Math.random() * 15)
+        const funNumber = Math.floor(Math.random() * 50)
         console.log(`*** Fun number triggered by`, users[username].displayName, `:`, funNumber)
         // Make 4-wide message pyramid of first word in message
         if (funNumber === 0) {
@@ -577,13 +623,13 @@ function getToUser(str) { return str.startsWith(`@`) ? str.substring(1) : str }
 function onConnectedHandler(addr, port) {
     console.log(`* Connected to ${addr}:${port}`)
     const onlineMsg = [
-        `I'm awake :)`,
-        `Let's see how long before I crash`,
+        // `I'm awake :)`,
+        // `Let's see how long before I crash`,
         `🍋️`,
         `don't mind me`,
-        `(just rebooting again)`,
+        // `(just rebooting again)`,
         `(Windows 95 startup sound plays)`
     ]
     const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
-    setTimeout(() => talk(e1ectroma, response), 3000)
+    setTimeout(() => talk(sclarf, response), 4000)
 }
