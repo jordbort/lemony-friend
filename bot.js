@@ -171,7 +171,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
     ].includes(command)) { return getColor(chatroom, users[toUser.toLowerCase()] || users[username]) }
 
     // JSON stats of user or toUser
-    if (command === `!mystats`) { return toUser.toLowerCase() in users ? talk(channel, `${toUser.toLowerCase()}:{displayName:${users[toUser.toLowerCase()].displayName},turbo:${users[toUser.toLowerCase()].turbo},color:${users[toUser.toLowerCase()].color},${channel}:{sub:${users[toUser.toLowerCase()][channel].sub},mod:${users[toUser.toLowerCase()][channel].mod},vip:${users[toUser.toLowerCase()][channel].vip},msgCount:${users[toUser.toLowerCase()][channel].msgCount},lastMessage:${users[toUser.toLowerCase()][channel].lastMessage}}}`) : talk(channel, `${username}:{displayName:${users[username].displayName},turbo:{${users[username].turbo}},color:${users[username].color},${channel}:{sub:${users[username][channel].sub},mod:${users[username][channel].mod},vip:${users[username][channel].vip},msgCount:${users[username][channel].msgCount},lastMessage:${users[username][channel].lastMessage}}}`) }
+    if (command === `!mystats`) { return toUser.toLowerCase() in users ? talk(channel, `${toUser.toLowerCase()}:{displayName:${users[toUser.toLowerCase()].displayName},turbo:${users[toUser.toLowerCase()].turbo},color:${users[toUser.toLowerCase()].color},${channel}:{sub:${users[toUser.toLowerCase()][channel].sub},mod:${users[toUser.toLowerCase()][channel].mod},vip:${users[toUser.toLowerCase()][channel].vip},msgCount:${users[toUser.toLowerCase()][channel].msgCount},lastMessage:${users[toUser.toLowerCase()][channel].lastMessage}}}`) : talk(channel, `${username}:{displayName:${users[username].displayName},turbo:${users[username].turbo},color:${users[username].color},${channel}:{sub:${users[username][channel].sub},mod:${users[username][channel].mod},vip:${users[username][channel].vip},msgCount:${users[username][channel].msgCount},lastMessage:${users[username][channel].lastMessage}}}`) }
 
     // If bot mentioned in message
     if (msg.toLowerCase().includes(`lemon`)) {
@@ -408,7 +408,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
         }
     }
 
-    if (users[username][channel].msgCount % 10 === 0) {
+    if (users[username][channel].msgCount % 25 === 0) {
         const funNumber = Math.floor(Math.random() * 50)
         console.log(`*** Fun number triggered by`, users[username].displayName, `:`, funNumber)
         // Make 4-wide message pyramid of first word in message
