@@ -410,7 +410,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
     if (users[username][channel].msgCount % 25 === 0) {
         const funNumber = Math.floor(Math.random() * 50)
-        console.log(`*** Fun number triggered by`, users[username].displayName, `:`, funNumber)
+        console.log(`${boldTxt}*** Fun number triggered by`, users[username].displayName, `:`, funNumber, resetTxt)
         // Make 4-wide message pyramid of first word in message
         if (funNumber === 0) {
             const delay = users[BOT_USERNAME][channel].mod || channel === BOT_USERNAME ? 1000 : 2000
@@ -421,10 +421,11 @@ function onMessageHandler(chatroom, tags, msg, self) {
             setTimeout(() => talk(chatroom, `${command}`), delay * 4)
         }
         // Turn message count into dollars
-        if (funNumber === 1) {
-            return talk(chatroom, `Give me $${users[username][channel].msgCount}`)
-        }
-        if (funNumber === 2) {
+        if (funNumber === 1) { return talk(chatroom, `Give me $${users[username][channel].msgCount}`) }
+        // Turn message count into thousands of dollars
+        if (funNumber === 2) { return talk(chatroom, `Give me ${users[username][channel].msgCount},000 dollars`) }
+        // Activate random redeem
+        if (funNumber === 3) {
             let redeems = []
             if (chatroom === e1ectroma) {
                 redeems = [
@@ -502,6 +503,8 @@ function onMessageHandler(chatroom, tags, msg, self) {
             const redeem = Math.floor(Math.random() * redeems.length)
             return talk(chatroom, redeems[redeem])
         }
+        // Give hundreds of points
+        if (funNumber === 4 && chatroom !== domonintendo1) { return talk(chatroom, `give ${username} ${users[username][channel].msgCount}00`) }
     }
 }
 
