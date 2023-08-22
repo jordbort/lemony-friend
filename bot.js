@@ -3,11 +3,11 @@ const tmi = require('tmi.js')
 const BOT_USERNAME = process.env.BOT_USERNAME
 const OAUTH_TOKEN = process.env.OAUTH_TOKEN
 
-const jpegstripes = `#jpegstripes`
-const sclarf = `#sclarf`
-const e1ectroma = `#e1ectroma`
-const domonintendo1 = `#domonintendo1`
-const ppuyya = `#ppuyya`
+const jpegstripes = process.env.CHANNEL_1
+const sclarf = process.env.CHANNEL_2
+const e1ectroma = process.env.CHANNEL_3
+const domonintendo1 = process.env.CHANNEL_4
+const ppuyya = process.env.CHANNEL_5
 
 const lemonyFresh = [
     `#${BOT_USERNAME}`,
