@@ -408,8 +408,8 @@ function onMessageHandler(chatroom, tags, msg, self) {
         }
     }
 
-    if (users[username][channel].msgCount % 25 === 0) {
-        const funNumber = Math.floor(Math.random() * 50)
+    if (users[username][channel].msgCount % 20 === 0) {
+        const funNumber = Math.floor(Math.random() * 30)
         console.log(`${boldTxt}*** Fun number triggered by`, users[username].displayName, `:`, funNumber, resetTxt)
         // Make 4-wide message pyramid of first word in message
         if (funNumber === 0) {
@@ -421,9 +421,28 @@ function onMessageHandler(chatroom, tags, msg, self) {
             setTimeout(() => talk(chatroom, `${command}`), delay * 4)
         }
         // Turn message count into dollars
-        if (funNumber === 1) { return talk(chatroom, `Give me $${users[username][channel].msgCount}`) }
-        // Turn message count into thousands of dollars
-        if (funNumber === 2) { return talk(chatroom, `Give me ${users[username][channel].msgCount},000 dollars`) }
+        if (funNumber === 1) { return talk(chatroom, `Give me $${users[username][channel].msgCount} USD`) }
+        // Turn message count into thousands of dollars to my account
+        if (funNumber === 2) {
+            const paymentMethods = [
+                `give me`,
+                `give me`,
+                `venmo me`,
+                `venmo me`,
+                `paypal me`,
+                `paypal me`,
+                `cashapp me`,
+                `cashapp me`,
+                `wire transfer me`,
+                `wire transfer me`,
+                `messenger pigeon me`,
+                `messenger pigeon me`,
+                `pls email me`,
+                `write me a travelers check for`
+            ]
+            const paymentMethod = Math.floor(Math.random() * paymentMethods.length)
+            return talk(chatroom, `${paymentMethods[paymentMethod]} ${users[username][channel].msgCount},000 usd`)
+        }
         // Activate random redeem
         if (funNumber === 3) {
             let redeems = []
@@ -497,6 +516,15 @@ function onMessageHandler(chatroom, tags, msg, self) {
                     `!redeem turbomaxwaste`,
                     `!redeem birthday`
                 ]
+            } else if (chatroom === sclarf) {
+                redeems = [
+                    `!redeem balls`,
+                    `!redeem hat`,
+                    `!redeem no`,
+                    `!redeem omg`,
+                    `!redeem why`,
+                    `!redeem yes`
+                ]
             } else {
                 redeems = [`Give me ${users[username][channel].msgCount},000 dollars`]
             }
@@ -504,7 +532,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
             return talk(chatroom, redeems[redeem])
         }
         // Give hundreds of points
-        if (funNumber === 4 && chatroom !== domonintendo1) { return talk(chatroom, `give ${username} ${users[username][channel].msgCount}00`) }
+        if (funNumber === 4 && chatroom !== domonintendo1) { return talk(chatroom, `!give ${username} ${users[username][channel].msgCount}00`) }
     }
 }
 
@@ -512,6 +540,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
 function handleNewChatter(chatroom, target) { talk(chatroom, `Hi ${target.displayName}, welcome to the stream!`) }
 
 function getLastMessage(chatroom, target, room) {
+    if (!(chatroom.slice(1) in target)) { return }
     room in target ? talk(chatroom, `${target.displayName} last said: "${target[room].lastMessage}" in ${args[1]}'s chat!`) : talk(chatroom, `${target.displayName} last said: "${target[`${chatroom.slice(1)}`].lastMessage}" in ${chatroom.slice(1)}'s chat!`)
 }
 
