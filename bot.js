@@ -398,6 +398,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
                     const mostVotes = Math.max(...popularEmotes)
                     const mostPopularEmoteIdx = popularEmotes.indexOf(mostVotes)
                     const mostPopularEmote = sclarfEmotes[mostPopularEmoteIdx]
+                    if (emoteStreakCount >= 2) { console.log(`${boldTxt}Listening for emote streak... ${emoteStreakCount}/5 ${mostPopularEmote}${resetTxt}`) }
                     if (emoteStreakCount >= 5) {
                         console.log(popularEmotes, mostPopularEmoteIdx, mostVotes, mostPopularEmote)
                         delayListening()
@@ -407,6 +408,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
             }
 
             if (users[user][channel]?.lastMessage === msg) { streakCount++ }
+            if (streakCount >= 2) { console.log(`${boldTxt}Listening for message streak... ${streakCount}/3 "${msg}"${resetTxt}`) }
             if (streakCount >= 3) {
                 delayListening()
                 return talk(chatroom, msg)
@@ -683,8 +685,12 @@ function handleVIPChange(chatroom, target, vipStatus) {
 }
 
 function delayListening() {
+    console.log(`${boldTxt}Listening for streaks delayed...${resetTxt}`)
     listening = false
-    setTimeout(() => listening = true, 100000)
+    setTimeout(() => {
+        listening = true
+        console.log(`${boldTxt}Listening for streaks again!${resetTxt}`)
+    }, 10000)
 }
 
 function talk(chatroom, msg) {
