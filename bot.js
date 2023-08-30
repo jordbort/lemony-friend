@@ -171,7 +171,10 @@ function onMessageHandler(chatroom, tags, msg, self) {
     ].includes(command)) { return getColor(chatroom, users[toUser.toLowerCase()] || users[username]) }
 
     // !dadjoke
-    if (command === `!dadjoke`) { return getDadJoke(chatroom, users[username]) }
+    if (command === `!dadjoke`) { return getDadJoke(chatroom) }
+
+    // !pokemon
+    if (command === `!pokemon`) { return getPokemon(chatroom) }
 
     // JSON stats of user or toUser
     if (command === `!mystats`) { return toUser.toLowerCase() in users ? talk(channel, `${toUser.toLowerCase()}:{displayName:${users[toUser.toLowerCase()].displayName},turbo:${users[toUser.toLowerCase()].turbo},color:${users[toUser.toLowerCase()].color},${channel}:{sub:${users[toUser.toLowerCase()][channel].sub},mod:${users[toUser.toLowerCase()][channel].mod},vip:${users[toUser.toLowerCase()][channel].vip},msgCount:${users[toUser.toLowerCase()][channel].msgCount},lastMessage:${users[toUser.toLowerCase()][channel].lastMessage}}}`) : talk(channel, `${username}:{displayName:${users[username].displayName},turbo:${users[username].turbo},color:${users[username].color},${channel}:{sub:${users[username][channel].sub},mod:${users[username][channel].mod},vip:${users[username][channel].vip},msgCount:${users[username][channel].msgCount},lastMessage:${users[username][channel].lastMessage}}}`) }
@@ -563,7 +566,7 @@ function getMessageCount(chatroom, target) {
     talk(chatroom, response)
 }
 
-async function getDadJoke(chatroom, target) {
+async function getDadJoke(chatroom) {
     const response = await fetch("https://icanhazdadjoke.com/", {
         headers: {
             "Accept": "application/json",
@@ -571,6 +574,13 @@ async function getDadJoke(chatroom, target) {
     })
     const data = await response.json()
     data.status === 200 ? talk(chatroom, data.joke) : talk(chatroom, `Error fetching dad joke! :(`)
+}
+
+async function getPokemon(chatroom) {
+    const randNum = Math.ceil(Math.random() * 1281)
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randNum}`)
+    const data = await response.json()
+    talk(chatroom, data.name)
 }
 
 function getColor(chatroom, target) {
