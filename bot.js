@@ -136,7 +136,6 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
     if (sayOnlineMsg) {
         const onlineMsg = [
-            `I'm awake :)`,
             `Let's see how long before I crash`,
             `🍋️`,
             `don't mind me`,
@@ -177,7 +176,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
     if (command === `!pokemon`) { return getPokemon(chatroom) }
 
     // JSON stats of user or toUser
-    if (command === `!mystats`) { return toUser.toLowerCase() in users ? talk(channel, `${toUser.toLowerCase()}:{displayName:${users[toUser.toLowerCase()].displayName},turbo:${users[toUser.toLowerCase()].turbo},color:${users[toUser.toLowerCase()].color},${channel}:{sub:${users[toUser.toLowerCase()][channel].sub},mod:${users[toUser.toLowerCase()][channel].mod},vip:${users[toUser.toLowerCase()][channel].vip},msgCount:${users[toUser.toLowerCase()][channel].msgCount},lastMessage:${users[toUser.toLowerCase()][channel].lastMessage}}}`) : talk(channel, `${username}:{displayName:${users[username].displayName},turbo:${users[username].turbo},color:${users[username].color},${channel}:{sub:${users[username][channel].sub},mod:${users[username][channel].mod},vip:${users[username][channel].vip},msgCount:${users[username][channel].msgCount},lastMessage:${users[username][channel].lastMessage}}}`) }
+    if (command === `!mystats`) { return toUser.toLowerCase() in users ? talk(channel, JSON.stringify(users[toUser.toLowerCase()])) : talk(channel, JSON.stringify(users[username])) }
 
     // If bot mentioned in message
     if (msg.toLowerCase().includes(`lemon`)) {
@@ -393,31 +392,33 @@ function onMessageHandler(chatroom, tags, msg, self) {
                         if (users[user][channel]?.lastMessage.includes(sclarfEmotes[Number(i)])) {
                             popularEmotes[Number(i)]++
                             emoteStreakCount++
+                            if (emoteStreakCount >= 2) { console.log(`${boldTxt}Listening for emote streak... ${sclarfEmotes}/5 ${popularEmotes[Number(i)]}${resetTxt}`) }
                         }
                     }
-                    const mostVotes = Math.max(...popularEmotes)
-                    const mostPopularEmoteIdx = popularEmotes.indexOf(mostVotes)
-                    const mostPopularEmote = sclarfEmotes[mostPopularEmoteIdx]
-                    if (emoteStreakCount >= 2) { console.log(`${boldTxt}Listening for emote streak... ${emoteStreakCount}/5 ${mostPopularEmote}${resetTxt}`) }
                     if (emoteStreakCount >= 5) {
+                        const mostVotes = Math.max(...popularEmotes)
+                        const mostPopularEmoteIdx = popularEmotes.indexOf(mostVotes)
+                        const mostPopularEmote = sclarfEmotes[mostPopularEmoteIdx]
                         console.log(popularEmotes, mostPopularEmoteIdx, mostVotes, mostPopularEmote)
                         delayListening()
-                        return talk(chatroom, `${mostPopularEmote} ${mostPopularEmote} ${mostPopularEmote} ${mostPopularEmote}`)
+                        setTimeout(() => { return talk(chatroom, `${mostPopularEmote} ${mostPopularEmote} ${mostPopularEmote} ${mostPopularEmote}`) }, 2000)
                     }
                 }
             }
 
-            if (users[user][channel]?.lastMessage === msg) { streakCount++ }
-            if (streakCount >= 2) { console.log(`${boldTxt}Listening for message streak... ${streakCount}/3 "${msg}"${resetTxt}`) }
+            if (users[user][channel]?.lastMessage === msg) {
+                streakCount++
+                if (streakCount >= 2) { console.log(`${boldTxt}Listening for message streak... ${streakCount}/3 "${msg}"${resetTxt}`) }
+            }
             if (streakCount >= 3) {
                 delayListening()
-                return talk(chatroom, msg)
+                setTimeout(() => { return talk(chatroom, msg) }, 3000)
             }
         }
     }
 
-    if (users[username][channel].msgCount % 20 === 0) {
-        const funNumber = Math.floor(Math.random() * 30)
+    if (users[username][channel].msgCount % 25 === 0) {
+        const funNumber = Math.floor(Math.random() * 50)
         console.log(`${boldTxt}*** Fun number triggered by`, users[username].displayName, `:`, funNumber, resetTxt)
         // Make 4-wide message pyramid of first word in message
         if (funNumber === 0) {
@@ -579,10 +580,16 @@ async function getDadJoke(chatroom) {
 }
 
 async function getPokemon(chatroom) {
-    const randNum = Math.ceil(Math.random() * 1281)
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randNum}`)
+    let randNum = Math.ceil(Math.random() * 1281)
+    console.log(`Looking up Pokemon #${randNum}...`)
+    let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randNum}`)
+    while (response.statusText !== `OK`) {
+        randNum = Math.ceil(Math.random() * 1281)
+        console.log(`Not Found! Looking up Pokemon #${randNum}...`)
+        response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randNum}`)
+    }
     const data = await response.json()
-    talk(chatroom, data.name)
+    talk(chatroom, `${data.name}: ${data.sprites.front_default}`)
 }
 
 function getColor(chatroom, target) {
@@ -690,7 +697,7 @@ function delayListening() {
     setTimeout(() => {
         listening = true
         console.log(`${boldTxt}Listening for streaks again!${resetTxt}`)
-    }, 10000)
+    }, 30000)
 }
 
 function talk(chatroom, msg) {
