@@ -392,7 +392,12 @@ function onMessageHandler(chatroom, tags, msg, self) {
                         if (users[user][channel]?.lastMessage.includes(sclarfEmotes[Number(i)])) {
                             popularEmotes[Number(i)]++
                             emoteStreakCount++
-                            if (emoteStreakCount >= 2) { console.log(`${boldTxt}Listening for emote streak... ${sclarfEmotes}/5 ${popularEmotes[Number(i)]}${resetTxt}`) }
+                            if (emoteStreakCount >= 2) {
+                                const mostVotes = Math.max(...popularEmotes)
+                                const mostPopularEmoteIdx = popularEmotes.indexOf(mostVotes)
+                                const mostPopularEmote = sclarfEmotes[mostPopularEmoteIdx]
+                                console.log(`${boldTxt}Listening for emote streak... ${emoteStreakCount}/5 ${mostPopularEmote}${resetTxt}`)
+                            }
                         }
                     }
                     if (emoteStreakCount >= 5) {
@@ -401,7 +406,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
                         const mostPopularEmote = sclarfEmotes[mostPopularEmoteIdx]
                         console.log(popularEmotes, mostPopularEmoteIdx, mostVotes, mostPopularEmote)
                         delayListening()
-                        setTimeout(() => { return talk(chatroom, `${mostPopularEmote} ${mostPopularEmote} ${mostPopularEmote} ${mostPopularEmote}`) }, 2000)
+                        return setTimeout(() => { return talk(chatroom, `${mostPopularEmote} ${mostPopularEmote} ${mostPopularEmote} ${mostPopularEmote}`) }, 2000)
                     }
                 }
             }
@@ -412,7 +417,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
             }
             if (streakCount >= 3) {
                 delayListening()
-                setTimeout(() => { return talk(chatroom, msg) }, 3000)
+                return etTimeout(() => { return talk(chatroom, msg) }, 3000)
             }
         }
     }
