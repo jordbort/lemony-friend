@@ -154,14 +154,30 @@ function onMessageHandler(chatroom, tags, msg, self) {
     if (modChange) { return handleModChange(chatroom, users[username], tags.mod) }
     if (vipChange) { return handleVIPChange(chatroom, users[username], tags.vip) }
 
+    // User's first message in a given channel
+    if (firstMsg) { return handleNewChatter(chatroom, users[username]) }
+
     // !lastmsg (Show a user's last message, optionally in a specified stream)
     if (command === `!lastmsg`) { return getLastMessage(chatroom, users[toUser.toLowerCase()] || users[username], args[1]?.toLowerCase()) }
 
     // !msgcount (Show a user's last message)
     if (command === `!msgcount`) { return getMessageCount(chatroom, users[toUser.toLowerCase()] || users[username]) }
 
-    // User's first message in a given channel
-    if (firstMsg) { return handleNewChatter(chatroom, users[username]) }
+    // !greet a user or whoever
+    if (command === `!greet`) {
+        if (toUser.toLowerCase() in users) { return handleGreet(chatroom, users[toUser.toLowerCase()]) }
+        else if (args[0]) { return talk(chatroom, `hi ${args[0]}`) }
+        else { return talk(chatroom, `Greetings, ${users[username].displayName}! :)`) }
+    }
+
+    // !bye OR !gn OR !goodnight
+    if (command === `!bye`
+        || command === `!gn`
+        || command === `!goodnight`) {
+        if (toUser.toLowerCase() in users) { return sayGoodnight(chatroom, users[toUser.toLowerCase()]) }
+        else if (args[0]) { return talk(chatroom, `see ya ${args[0]}`) }
+        else { return sayGoodnight(chatroom, users[username]) }
+    }
 
     // !color / !colour
     if ([
@@ -627,7 +643,7 @@ function handleGreet(chatroom, target) {
         // If there's a comma after the greeting
         const appends = [
             `How are you doing today?`,
-            `How are you, today?`,
+            `How are you today?`,
             `How are you doing?`,
             `How are you?`,
             `How's it going?`,
