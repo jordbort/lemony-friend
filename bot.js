@@ -449,8 +449,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
                 `sclarfHiss`,
                 `sclarfHearts`,
                 `sclarfDEEP`,
-                `sclarfGong`,
-                `sclarfOMEGADLUL`
+                `sclarfGong`
             ]
             checkEmoteStreak(chatroom, sclarfEmotes, channel, msg)
         }
