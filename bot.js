@@ -466,6 +466,54 @@ function onMessageHandler(chatroom, tags, msg, self) {
             ]
             checkEmoteStreak(chatroom, domoEmotes, channel, msg)
         }
+        if (users[BOT_USERNAME]?.[`e1ectroma`]?.sub) {
+            const tromEmotes = [
+                `e1ectr4Lfg`,
+                `e1ectr4Pikadance`,
+                `e1ectr4Tromadance`,
+                `e1ectr4Coop`,
+                `e1ectr4Ocha`,
+                `e1ectr4Hello`,
+                `e1ectr4Hi`,
+                `e1ectr4Bye`,
+                `e1ectr4Laugh`,
+                `e1ectr4Wazzah`,
+                `e1ectr4Smile`,
+                `e1ectr4Devil`,
+                `e1ectr4Ram`,
+                `e1ectr4Salute`,
+                `e1ectr4Lemfresh`,
+                `e1ectr4Moses`,
+                `e1ectr4Josie`,
+                `e1ectr4Malort`,
+                `e1ectr4Kim`
+            ]
+            checkEmoteStreak(chatroom, tromEmotes, channel, msg)
+        }
+        if (users[BOT_USERNAME]?.[`jpegstripes`]?.sub) {
+            const jpegEmotes = [
+                `jpegstCoin`,
+                `jpegstTimber`,
+                `jpegstBamJAM`,
+                `jpegstKylePls`,
+                `jpegstJulian`,
+                `jpegstHeyGuys`,
+                `jpegstKylePog`,
+                `jpegstSpamton`,
+                `jpegstJPEG`,
+                `jpegstRAID`,
+                `jpegstYes`,
+                `jpegstNo`,
+                `jpegstOkay`,
+                `jpegstSlay`,
+                `jpegstBonk`,
+                `jpegstMegamind`,
+                `jpegstTapeEnd`,
+                `jpegstDog`,
+                `jpegstBlank`
+            ]
+            checkEmoteStreak(chatroom, jpegEmotes, channel, msg)
+        }
 
         // Looking for a message to be repeated by at least two other users
         let streakCount = 0
@@ -812,7 +860,7 @@ function delayListening() {
 
 function ping(arr) {
     for (const idx in arr) {
-        setTimeout(() => { talk(arr[Number(idx)], `hi :)`)}, 1000 * Number(idx))
+        setTimeout(() => { talk(arr[Number(idx)], `hi :)`) }, 1000 * Number(idx))
     }
 }
 
