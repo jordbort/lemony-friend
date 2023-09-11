@@ -133,6 +133,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
     // For testing/debugging
     if (msg === `show`) { console.log(users) }
     if (msg === `tags`) { console.log(tags) }
+    if (msg === `ping`) { ping(lemonyFresh) }
 
     if (sayOnlineMsg) {
         const onlineMsg = [
@@ -427,61 +428,49 @@ function onMessageHandler(chatroom, tags, msg, self) {
             }
         }
 
+        // Look for emote streak (if bot is subbed)
+        if (users[BOT_USERNAME]?.[`sclarf`]?.sub) {
+            const sclarfEmotes = [
+                `sclarfRave`,
+                `sclarfWobble`,
+                `sclarfBark`,
+                `sclarfSpin`,
+                `sclarfPls`,
+                `sclarfMad`,
+                `sclarfPog`,
+                `sclarfHuh`,
+                `sclarfHowdy`,
+                `sclarfDog`,
+                `sclarfBlind`,
+                `sclarfPalm`,
+                `sclarfDead`,
+                `sclarfSophisticated`,
+                `sclarfLUL`,
+                `sclarfHiss`,
+                `sclarfHearts`,
+                `sclarfDEEP`,
+                `sclarfGong`,
+                `sclarfOMEGADLUL`
+            ]
+            checkEmoteStreak(chatroom, sclarfEmotes, channel, msg)
+        }
+        if (users[BOT_USERNAME]?.[`domonintendo1`]?.sub) {
+            const domoEmotes = [
+                `domoni6Really`,
+                `domoni6Bingo`,
+                `domoni6ChefHey`,
+                `domoni6MeincSus`,
+                `domoni6Sneeze`,
+                `domoni6Dum`,
+                `domoni6Love`
+            ]
+            checkEmoteStreak(chatroom, domoEmotes, channel, msg)
+        }
+
         // Looking for a message to be repeated by at least two other users
         let streakCount = 0
-        let emoteStreakCount = 0
-        let popularEmotes = []
-        const sclarfEmotes = [
-            `sclarfRave`,
-            `sclarfWobble`,
-            `sclarfBark`,
-            `sclarfSpin`,
-            `sclarfPls`,
-            `sclarfMad`,
-            `sclarfPog`,
-            `sclarfHuh`,
-            `sclarfHowdy`,
-            `sclarfDog`,
-            `sclarfBlind`,
-            `sclarfPalm`,
-            `sclarfDead`,
-            `sclarfSophisticated`,
-            `sclarfLUL`,
-            `sclarfHiss`,
-            `sclarfHearts`,
-            `sclarfDEEP`,
-            `sclarfGong`,
-            `sclarfOMEGADLUL`
-        ]
 
         for (const user in users) {
-            if (chatroom === sclarf) {
-                popularEmotes.length = sclarfEmotes.length
-                popularEmotes.fill(0)
-                if (users[BOT_USERNAME]?.[channel]?.sub) {
-                    for (const i in sclarfEmotes) {
-                        if (users[user][channel]?.lastMessage.includes(sclarfEmotes[Number(i)])) {
-                            popularEmotes[Number(i)]++
-                            emoteStreakCount++
-                            if (emoteStreakCount >= 2) {
-                                const mostVotes = Math.max(...popularEmotes)
-                                const mostPopularEmoteIdx = popularEmotes.indexOf(mostVotes)
-                                const mostPopularEmote = sclarfEmotes[mostPopularEmoteIdx]
-                                console.log(`${boldTxt}Listening for emote streak... ${emoteStreakCount}/5 ${mostPopularEmote}${resetTxt}`)
-                            }
-                        }
-                    }
-                    if (emoteStreakCount >= 5) {
-                        const mostVotes = Math.max(...popularEmotes)
-                        const mostPopularEmoteIdx = popularEmotes.indexOf(mostVotes)
-                        const mostPopularEmote = sclarfEmotes[mostPopularEmoteIdx]
-                        console.log(popularEmotes, mostPopularEmoteIdx, mostVotes, mostPopularEmote)
-                        delayListening()
-                        return setTimeout(() => { return talk(chatroom, `${mostPopularEmote} ${mostPopularEmote} ${mostPopularEmote} ${mostPopularEmote}`) }, 2000)
-                    }
-                }
-            }
-
             if (users[user][channel]?.lastMessage === msg) {
                 streakCount++
                 if (streakCount >= 2) { console.log(`${boldTxt}Listening for message streak... ${streakCount}/3 "${msg}"${resetTxt}`) }
@@ -767,6 +756,51 @@ function handleVIPChange(chatroom, target, vipStatus) {
     vipStatus ? talk(chatroom, `Wow, ${target.displayName} became a VIP! :D`) : talk(chatroom, `Did ${target.displayName} just lose VIP status? :O`)
 }
 
+function checkEmoteStreak(chatroom, emoteArr, channel, message) {
+    let emoteStreakCount = 0
+    // Checking if message includes any of the provided emotes
+    for (const idx in emoteArr) {
+        if (message.includes(emoteArr[Number(idx)])) {
+            // Checking how many other users' messages in the current channel include sclarf emotes
+            for (const user in users) {
+                for (const i in emoteArr) {
+                    if (users[user][channel]?.lastMessage.includes(emoteArr[Number(i)])) {
+                        emoteStreakCount++
+                        console.log(`${boldTxt}Listening for ${emoteArr[0].substring(0, 4)} emotes... ${emoteStreakCount}/3 heard: ${users[user].displayName} - ${emoteArr[Number(i)]}${resetTxt}`)
+                    }
+                    if (emoteStreakCount >= 3) {
+                        delayListening()
+                        return emoteReply(chatroom, channel, emoteArr)
+                    }
+                }
+            }
+        }
+    }
+}
+
+function emoteReply(chatroom, channel, emoteArr) {
+    console.log(`${boldTxt}> Running emoteReply()${resetTxt}`)
+    const popularEmotes = Array(emoteArr.length).fill(0)
+    for (const idx in emoteArr) {
+        for (const user in users) {
+            if (channel in users[user]) {
+                const words = users[user][channel].lastMessage.split(` `)
+                for (const i in words) {
+                    if (words[Number(i)] === emoteArr[Number(idx)]) {
+                        popularEmotes[Number(idx)]++
+                        console.log(`${boldTxt}...${emoteArr[Number(idx)]} increased to ${popularEmotes[Number(idx)]} from ${users[user].displayName}${resetTxt}`)
+                    }
+                }
+            }
+        }
+    }
+    const mostVotes = Math.max(...popularEmotes)
+    const mostPopularEmoteIdx = popularEmotes.indexOf(mostVotes)
+    const mostPopularEmote = emoteArr[mostPopularEmoteIdx]
+    console.log(popularEmotes, mostPopularEmoteIdx, mostVotes, mostPopularEmote)
+    talk(chatroom, `${mostPopularEmote} ${mostPopularEmote} ${mostPopularEmote} ${mostPopularEmote}`)
+}
+
 function delayListening() {
     console.log(`${boldTxt}Listening for streaks delayed...${resetTxt}`)
     listening = false
@@ -774,6 +808,12 @@ function delayListening() {
         listening = true
         console.log(`${boldTxt}Listening for streaks again!${resetTxt}`)
     }, 30000)
+}
+
+function ping(arr) {
+    for (const idx in arr) {
+        setTimeout(() => { talk(arr[Number(idx)], `hi :)`)}, 1000 * Number(idx))
+    }
 }
 
 function talk(chatroom, msg) {
