@@ -132,7 +132,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
     \*********/
 
     // For testing/debugging
-    if (msg === `show`) { console.log(users, tempCmds) }
+    if (msg === `show`) { console.log(users, `tempCmds:`, tempCmds) }
     if (msg === `tags`) { console.log(tags) }
     if (msg === `ping`) { ping(lemonyFresh) }
 
@@ -487,7 +487,12 @@ function onMessageHandler(chatroom, tags, msg, self) {
                 `sclarfDEEP`,
                 `sclarfGong`
             ]
-            checkEmoteStreak(chatroom, sclarfEmotes, channel, msg)
+            for (const i in sclarfEmotes) {
+                if (msg.includes(sclarfEmotes[Number(i)])) {
+                    checkEmoteStreak(chatroom, sclarfEmotes, channel, msg)
+                    break
+                }
+            }
         }
         if (users[BOT_USERNAME]?.[`domonintendo1`]?.sub) {
             const domoEmotes = [
@@ -499,7 +504,12 @@ function onMessageHandler(chatroom, tags, msg, self) {
                 `domoni6Dum`,
                 `domoni6Love`
             ]
-            checkEmoteStreak(chatroom, domoEmotes, channel, msg)
+            for (const i in domoEmotes) {
+                if (msg.includes(domoEmotes[Number(i)])) {
+                    checkEmoteStreak(chatroom, domoEmotes, channel, msg)
+                    break
+                }
+            }
         }
         if (users[BOT_USERNAME]?.[`e1ectroma`]?.sub) {
             const tromEmotes = [
@@ -523,7 +533,12 @@ function onMessageHandler(chatroom, tags, msg, self) {
                 `e1ectr4Malort`,
                 `e1ectr4Kim`
             ]
-            checkEmoteStreak(chatroom, tromEmotes, channel, msg)
+            for (const i in tromEmotes) {
+                if (msg.includes(tromEmotes[Number(i)])) {
+                    checkEmoteStreak(chatroom, tromEmotes, channel, msg)
+                    break
+                }
+            }
         }
         if (users[BOT_USERNAME]?.[`jpegstripes`]?.sub) {
             const jpegEmotes = [
@@ -547,7 +562,12 @@ function onMessageHandler(chatroom, tags, msg, self) {
                 `jpegstDog`,
                 `jpegstBlank`
             ]
-            checkEmoteStreak(chatroom, jpegEmotes, channel, msg)
+            for (const i in jpegEmotes) {
+                if (msg.includes(jpegEmotes[Number(i)])) {
+                    checkEmoteStreak(chatroom, jpegEmotes, channel, msg)
+                    break
+                }
+            }
         }
 
         // Looking for a message to be repeated by at least two other users
@@ -565,6 +585,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
         }
     }
 
+    // *** FUN NUMBER! ***
     if (users[username][channel].msgCount % 25 === 0) {
         const funNumber = Math.floor(Math.random() * 50)
         console.log(`${boldTxt}*** Fun number triggered by`, users[username].displayName, `:`, funNumber, resetTxt)
@@ -846,12 +867,13 @@ function checkEmoteStreak(chatroom, emoteArr, channel, message) {
         for (const i in emoteArr) {
             if (users[user][channel]?.lastMessage.includes(emoteArr[Number(i)])) {
                 emoteStreakCount++
-                console.log(`${boldTxt}Looking for ${emoteArr[0].substring(0, 4)} emotes... ${emoteStreakCount}/4 messages: ${users[user].displayName} - ${emoteArr[Number(i)]}${resetTxt}`)
+                console.log(`${boldTxt}Looking for ${emoteArr[0].substring(0, 4)} emotes... ${emoteStreakCount}/4 messages: (${users[user].displayName})${resetTxt}`)
+                break
             }
-            if (emoteStreakCount >= 4) {
-                delayListening()
-                return emoteReply(chatroom, channel, emoteArr)
-            }
+        }
+        if (emoteStreakCount >= 4) {
+            delayListening()
+            return emoteReply(chatroom, channel, emoteArr)
         }
     }
 }
