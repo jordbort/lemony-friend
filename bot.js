@@ -78,7 +78,8 @@ client.on('message', onMessageHandler)
 client.on('connected', onConnectedHandler)
 client.connect()
 
-let users = {}
+const users = {}
+const tempCmds = {}
 let listening = true
 let sayOnlineMsg = true
 
@@ -145,7 +146,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
             `I'm onl`
         ]
         const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
-        talk(channel, response)
+        talk(chatroom, response)
         sayOnlineMsg = false
     }
 
@@ -170,6 +171,39 @@ function onMessageHandler(chatroom, tags, msg, self) {
         else if (args[0]) { return talk(chatroom, `hi ${args[0]}`) }
         else { return talk(chatroom, `Greetings, ${users[username].displayName}! :)`) }
     }
+
+    // !tempcmd
+    if (command === `!tempcmd`) {
+        if (!args[0] || !args[1]) {
+            return talk(chatroom, `Hey ${users[username].displayName}, use this command like: !tempcmd [commandname] [response...]! :)`)
+        } else if (args[0].toLowerCase() === `delete`) {
+            if (args[1].toLowerCase() in tempCmds) {
+                delete tempCmds[args[1].toLowerCase()]
+                return talk(chatroom, `Command "${args[1].toLowerCase()}" has been deleted! :)`)
+            } else {
+                return talk(chatroom, `No command "${args[1].toLowerCase()}" was found! :(`)
+            }
+        }
+        else if (args[0].toLowerCase() in tempCmds) {
+            tempCmds[args[0].toLowerCase()] = args.slice(1).join(` `)
+            return talk(chatroom, `Temporary command "${args[0].toLowerCase()}" has been edited! :)`)
+        } else {
+            tempCmds[args[0].toLowerCase()] = args.slice(1).join(` `)
+            return talk(chatroom, `Temporary command "${args[0].toLowerCase()}" has been added! :)`)
+        }
+    }
+
+    // !tempcmds - return tempCmds opbject
+    if (command === `!tempcmds`) {
+        const commands = []
+        for (key in tempCmds) {
+            commands.push(`${key}: ${tempCmds[key]}`)
+        }
+        return talk(chatroom, `All commands => ${commands.join(', ')}`)
+    }
+
+    // Check for tempCmd
+    if (command in tempCmds) { return talk(chatroom, tempCmds[command]) }
 
     // sclarf SUBtember goals
     if (command === `!goals`
@@ -209,7 +243,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
         if (isNaN(subs)) {
             return talk(chatroom, subs)
         } else if (subs in goals) {
-            return talk(channel, `At ${subs} subs, ${goals[subs]}`)
+            return talk(chatroom, `At ${subs} subs, ${goals[subs]}`)
         } else {
             const adjectives = [
                 `nice`,
@@ -248,7 +282,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
     if (command === `!pokemon`) { return getPokemon(chatroom) }
 
     // JSON stats of user or toUser
-    if (command === `!mystats`) { return toUser.toLowerCase() in users ? talk(channel, JSON.stringify(users[toUser.toLowerCase()])) : talk(channel, JSON.stringify(users[username])) }
+    if (command === `!mystats`) { return toUser.toLowerCase() in users ? talk(chatroom, JSON.stringify(users[toUser.toLowerCase()])) : talk(chatroom, JSON.stringify(users[username])) }
 
     // If bot mentioned in message
     if (msg.toLowerCase().includes(`lemon`)) {
