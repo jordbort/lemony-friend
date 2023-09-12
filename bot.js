@@ -524,7 +524,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
             }
             if (streakCount >= 3) {
                 delayListening()
-                return etTimeout(() => { return talk(chatroom, msg) }, 3000)
+                return setTimeout(() => { return talk(chatroom, msg) }, 3000)
             }
         }
     }
