@@ -328,8 +328,9 @@ function onMessageHandler(chatroom, tags, msg, self) {
         ]
         if (greetings.includes(command)) { return handleGreet(chatroom, users[username]) }
 
-        // If the first word is `gn`
-        if (command === `gn`) { return sayGoodnight(chatroom, users[username]) }
+        // If the first word is `gn` or `bye`
+        if (command === `gn`
+            || command === `bye`) { return sayGoodnight(chatroom, users[username]) }
 
         // If the first word is `good` followed by "night"-like word
         if (command === `good`) {
