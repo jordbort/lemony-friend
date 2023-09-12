@@ -132,7 +132,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
     \*********/
 
     // For testing/debugging
-    if (msg === `show`) { console.log(users) }
+    if (msg === `show`) { console.log(users, tempCmds) }
     if (msg === `tags`) { console.log(tags) }
     if (msg === `ping`) { ping(lemonyFresh) }
 
@@ -146,8 +146,8 @@ function onMessageHandler(chatroom, tags, msg, self) {
             `I'm onl`
         ]
         const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
-        talk(chatroom, response)
         sayOnlineMsg = false
+        return talk(chatroom, response)
     }
 
     if (colorChanged) { return handleColorChange(chatroom, users[username], color) }
@@ -186,14 +186,14 @@ function onMessageHandler(chatroom, tags, msg, self) {
         }
         else if (args[0].toLowerCase() in tempCmds) {
             tempCmds[args[0].toLowerCase()] = args.slice(1).join(` `)
-            return talk(chatroom, `Temporary command "${args[0].toLowerCase()}" has been edited! :)`)
+            return talk(chatroom, `Command "${args[0].toLowerCase()}" has been edited! :)`)
         } else {
             tempCmds[args[0].toLowerCase()] = args.slice(1).join(` `)
             return talk(chatroom, `Temporary command "${args[0].toLowerCase()}" has been added! :)`)
         }
     }
 
-    // !tempcmds - return tempCmds opbject
+    // !tempcmds
     if (command === `!tempcmds`) {
         const commands = []
         for (key in tempCmds) {
@@ -241,23 +241,24 @@ function onMessageHandler(chatroom, tags, msg, self) {
             700: `sclarf will go see trom!`
         }
         if (isNaN(subs)) {
-            return talk(chatroom, subs)
+            return talk(chatroom, args.join(` `))
         } else if (subs in goals) {
             return talk(chatroom, `At ${subs} subs, ${goals[subs]}`)
-        } else {
-            const adjectives = [
-                `nice`,
-                `nice`,
-                `friendly`,
-                `friendly`,
-                `sweet`,
-                `lovely`,
-                `warm`,
-                `special`,
-                `consensual`
-            ]
-            return talk(chatroom, `At ${subs} subs, sclarf will give @lemony_friend a ${adjectives[Math.floor(Math.random() * adjectives.length)]} hug! :)`)
         }
+        // else {
+        //     const adjectives = [
+        //         `nice`,
+        //         `nice`,
+        //         `friendly`,
+        //         `friendly`,
+        //         `sweet`,
+        //         `lovely`,
+        //         `warm`,
+        //         `special`,
+        //         `consensual`
+        //     ]
+        //     return talk(chatroom, `At ${subs} subs, sclarf will give @lemony_friend a ${adjectives[Math.floor(Math.random() * adjectives.length)]} hug! :)`)
+        // }
     }
 
     // !bye OR !gn OR !goodnight
@@ -559,7 +560,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
             }
             if (streakCount >= 3) {
                 delayListening()
-                return setTimeout(() => { return talk(chatroom, msg) }, 3000)
+                return setTimeout(() => { return talk(chatroom, msg) }, 1000)
             }
         }
     }
@@ -841,20 +842,15 @@ function handleVIPChange(chatroom, target, vipStatus) {
 function checkEmoteStreak(chatroom, emoteArr, channel, message) {
     let emoteStreakCount = 0
     // Checking if message includes any of the provided emotes
-    for (const idx in emoteArr) {
-        if (message.includes(emoteArr[Number(idx)])) {
-            // Checking how many other users' messages in the current channel include sclarf emotes
-            for (const user in users) {
-                for (const i in emoteArr) {
-                    if (users[user][channel]?.lastMessage.includes(emoteArr[Number(i)])) {
-                        emoteStreakCount++
-                        console.log(`${boldTxt}Listening for ${emoteArr[0].substring(0, 4)} emotes... ${emoteStreakCount}/3 heard: ${users[user].displayName} - ${emoteArr[Number(i)]}${resetTxt}`)
-                    }
-                    if (emoteStreakCount >= 3) {
-                        delayListening()
-                        return emoteReply(chatroom, channel, emoteArr)
-                    }
-                }
+    for (const user in users) {
+        for (const i in emoteArr) {
+            if (users[user][channel]?.lastMessage.includes(emoteArr[Number(i)])) {
+                emoteStreakCount++
+                console.log(`${boldTxt}Looking for ${emoteArr[0].substring(0, 4)} emotes... ${emoteStreakCount}/4 messages: ${users[user].displayName} - ${emoteArr[Number(i)]}${resetTxt}`)
+            }
+            if (emoteStreakCount >= 4) {
+                delayListening()
+                return emoteReply(chatroom, channel, emoteArr)
             }
         }
     }
