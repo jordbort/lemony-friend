@@ -719,7 +719,7 @@ function handleNewChatter(chatroom, target) { talk(chatroom, `Hi ${target.displa
 
 function getLastMessage(chatroom, target, room) {
     if (!(chatroom.slice(1) in target)) { return }
-    room in target ? talk(chatroom, `${target.displayName} last said: "${target[room].lastMessage}" in ${args[1]}'s chat!`) : talk(chatroom, `${target.displayName} last said: "${target[`${chatroom.slice(1)}`].lastMessage}" in ${chatroom.slice(1)}'s chat!`)
+    room in target ? talk(chatroom, `${target.displayName} last said: "${target[room].lastMessage}" in ${room}'s chat!`) : talk(chatroom, `${target.displayName} last said: "${target[`${chatroom.slice(1)}`].lastMessage}" in ${chatroom.slice(1)}'s chat!`)
 }
 
 function getMessageCount(chatroom, target) {
