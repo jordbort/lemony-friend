@@ -168,7 +168,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
     // !greet a user or whoever
     if (command === `!greet`) {
         if (toUser.toLowerCase() in users) { return handleGreet(chatroom, users[toUser.toLowerCase()]) }
-        else if (args[0]) { return talk(chatroom, `hi ${args[0]}`) }
+        else if (args.length) { return talk(chatroom, `hi ${args.join(` `)}`) }
         else { return talk(chatroom, `Greetings, ${users[username].displayName}! :)`) }
     }
 
