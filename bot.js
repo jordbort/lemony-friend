@@ -343,26 +343,32 @@ function onMessageHandler(chatroom, tags, msg, self) {
         }
 
         // If the first word is `thanks`-like
-        if (command === `thanks`
-            || command === `thabks`
-            || command === `thonks`
-            || command === `thamks`
-            || command === `ty`
-            || command === `thx`) { return sayYoureWelcome(chatroom, users[username]) }
+        const thanks = [
+            `thanks`,
+            `thabks`,
+            `thonks`,
+            `thamks`,
+            `ty`,
+            `thx`
+        ]
+        if (thanks.includes(command)) { return sayYoureWelcome(chatroom, users[username]) }
 
         // If the first word is `thank`-like and followed by "you"-like word
-        if (command === `thank`
-            || command === `thx`
-            || command === `thnk`
-            || command === `thk`
-            || command === `thabk`
-            || command === `thonk`) {
-            const yous = [
-                `you`,
-                `yew`,
-                `yu`,
-                `u`
-            ]
+        const thankLike = [
+            `thank`,
+            `thx`,
+            `thnk`,
+            `thk`,
+            `thabk`,
+            `thonk`
+        ]
+        const yous = [
+            `you`,
+            `yew`,
+            `yu`,
+            `u`
+        ]
+        if (thankLike.includes(command)) {
             if (yous.includes(args[0].toLowerCase())) { return sayYoureWelcome(chatroom, users[username]) }
         }
 
@@ -409,6 +415,25 @@ function onMessageHandler(chatroom, tags, msg, self) {
             if (lowercaseArgs[Number(j)] === `gn`) { return sayGoodnight(chatroom, users[username]) }
 
             // If `good` followed by "night"-like word came later in the message
+            if (lowercaseArgs[Number(j)] === `good`) {
+                const nights = [
+                    `night`,
+                    `nite`
+                ]
+                if (nights.includes(lowercaseArgs[Number(j) + 1].toLowerCase())) { return sayGoodnight(chatroom, users[username]) }
+            }
+
+            // If thanks came later in message
+            for (const i in thanks) {
+                if (lowercaseArgs[Number(j)] === thanks[Number(i)]) { return sayYoureWelcome(chatroom, users[username]) }
+            }
+
+            // If "thank"-like followed by "you"-like word came later in the message
+            for (const i in thankLike) {
+                if (lowercaseArgs[Number(j)] === thankLike[Number(i)]) {
+                    if (yous.includes(lowercaseArgs[Number(j) + 1].toLowerCase())) { return sayYoureWelcome(chatroom, users[username]) }
+                }
+            }
             if (lowercaseArgs[Number(j)] === `good`) {
                 const nights = [
                     `night`,
