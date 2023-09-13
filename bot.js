@@ -434,13 +434,6 @@ function onMessageHandler(chatroom, tags, msg, self) {
                     if (yous.includes(lowercaseArgs[Number(j) + 1].toLowerCase())) { return sayYoureWelcome(chatroom, users[username]) }
                 }
             }
-            if (lowercaseArgs[Number(j)] === `good`) {
-                const nights = [
-                    `night`,
-                    `nite`
-                ]
-                if (nights.includes(lowercaseArgs[Number(j) + 1].toLowerCase())) { return sayGoodnight(chatroom, users[username]) }
-            }
 
             // Checking if `up` (and preceeding "what's"-like word) came later in message
             if (lowercaseArgs[Number(j)].slice(0, 2) === `up`) {
