@@ -531,7 +531,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
             ]
             for (const i in sclarfEmotes) {
                 if (msg.includes(sclarfEmotes[Number(i)])) {
-                    checkEmoteStreak(chatroom, sclarfEmotes, channel, msg)
+                    checkEmoteStreak(chatroom, sclarfEmotes, channel)
                     break
                 }
             }
@@ -548,7 +548,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
             ]
             for (const i in domoEmotes) {
                 if (msg.includes(domoEmotes[Number(i)])) {
-                    checkEmoteStreak(chatroom, domoEmotes, channel, msg)
+                    checkEmoteStreak(chatroom, domoEmotes, channel)
                     break
                 }
             }
@@ -577,7 +577,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
             ]
             for (const i in tromEmotes) {
                 if (msg.includes(tromEmotes[Number(i)])) {
-                    checkEmoteStreak(chatroom, tromEmotes, channel, msg)
+                    checkEmoteStreak(chatroom, tromEmotes, channel)
                     break
                 }
             }
@@ -606,7 +606,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
             ]
             for (const i in jpegEmotes) {
                 if (msg.includes(jpegEmotes[Number(i)])) {
-                    checkEmoteStreak(chatroom, jpegEmotes, channel, msg)
+                    checkEmoteStreak(chatroom, jpegEmotes, channel)
                     break
                 }
             }
@@ -614,11 +614,13 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
         // Looking for a message to be repeated by at least two other users
         let streakCount = 0
+        const streakUsers = []
 
         for (const user in users) {
             if (users[user][channel]?.lastMessage === msg) {
                 streakCount++
-                if (streakCount >= 2) { console.log(`${boldTxt}Listening for message streak... ${streakCount}/3 "${msg}"${resetTxt}`) }
+                streakUsers.push(users[user].displayName)
+                if (streakCount >= 2) { console.log(`${boldTxt}Listening for message streak... ${streakCount}/3 "${msg}" - ${streakUsers.join(`, `)}${resetTxt}`) }
             }
             if (streakCount >= 3) {
                 delayListening()
@@ -923,14 +925,16 @@ function handleVIPChange(chatroom, target, vipStatus) {
     vipStatus ? talk(chatroom, `Wow, ${target.displayName} became a VIP! :D`) : talk(chatroom, `Did ${target.displayName} just lose VIP status? :O`)
 }
 
-function checkEmoteStreak(chatroom, emoteArr, channel, message) {
+function checkEmoteStreak(chatroom, emoteArr, channel) {
     let emoteStreakCount = 0
+    const emoteStreakUsers = []
     // Checking if message includes any of the provided emotes
     for (const user in users) {
         for (const i in emoteArr) {
             if (users[user][channel]?.lastMessage.includes(emoteArr[Number(i)])) {
                 emoteStreakCount++
-                console.log(`${boldTxt}Looking for ${emoteArr[0].substring(0, 4)} emotes... ${emoteStreakCount}/4 messages: (${users[user].displayName})${resetTxt}`)
+                emoteStreakUsers.push(users[user].displayName)
+                if (emoteStreakCount >= 2) { console.log(`${boldTxt}Looking for ${emoteArr[0].substring(0, 4)} emotes... ${emoteStreakCount}/4 messages - ${emoteStreakUsers.join(`, `)}${resetTxt}`) }
                 break
             }
         }
