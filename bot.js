@@ -342,6 +342,30 @@ function onMessageHandler(chatroom, tags, msg, self) {
             if (nights.includes(args[0].toLowerCase())) { return sayGoodnight(chatroom, users[username]) }
         }
 
+        // If the first word is `thanks`-like
+        if (command === `thanks`
+            || command === `thabks`
+            || command === `thonks`
+            || command === `thamks`
+            || command === `ty`
+            || command === `thx`) { return sayYoureWelcome(chatroom, users[username]) }
+
+        // If the first word is `thank`-like and followed by "you"-like word
+        if (command === `thank`
+            || command === `thx`
+            || command === `thnk`
+            || command === `thk`
+            || command === `thabk`
+            || command === `thonk`) {
+            const yous = [
+                `you`,
+                `yew`,
+                `yu`,
+                `u`
+            ]
+            if (yous.includes(args[0].toLowerCase())) { return sayYoureWelcome(chatroom, users[username]) }
+        }
+
         // All words after the first, in lower case
         const lowercaseArgs = args.map(str => str.toLowerCase())
 
@@ -830,6 +854,27 @@ function sayGoodnight(chatroom, target) {
             `have a good night`,
         ]
         response += `, ${appends[Math.floor(Math.random() * appends.length)]}`
+    }
+    response += `! :)`
+    talk(chatroom, response)
+}
+
+function sayYoureWelcome(chatroom, target) {
+    const welcomes = [
+        `${target.displayName}`,
+        `You're welcome, ${target.displayName}`,
+        `No problem, ${target.displayName}`,
+        `My pleasure, ${target.displayName}`,
+    ]
+    const welcome = Math.floor(Math.random() * welcomes.length)
+    let response = `${welcomes[welcome]}`
+    if (welcome === 0) {
+        const appends = [
+            `you're welcome`,
+            `no problem`,
+            `my pleasure`
+        ]
+        response += ` ${appends[Math.floor(Math.random() * appends.length)]}`
     }
     response += `! :)`
     talk(chatroom, response)
