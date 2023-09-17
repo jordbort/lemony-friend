@@ -906,7 +906,7 @@ function handleColorChange(chatroom, target, newColor) {
 }
 
 function handleTurboChange(chatroom, target, turboStatus) {
-    target.turbo = tags.turbo
+    target.turbo = turboStatus
     turboStatus ? talk(chatroom, `Wow, ${target.displayName} got Turbo? :D`) : talk(chatroom, `Did ${target.displayName} stop having Turbo? :O`)
 }
 
