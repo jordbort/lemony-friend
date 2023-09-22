@@ -400,50 +400,48 @@ function onMessageHandler(chatroom, tags, msg, self) {
         ]
         // In case saying "what's up" first, and/or `up` doesn't come immediately
         if (whatsUpPrefix.includes(command)) {
-            for (const i in lowercaseArgs) {
-                if (lowercaseArgs[Number(i)].slice(0, 2) === `up`) {
+            for (const str of lowercaseArgs) {
+                if (str.slice(0, 2) === `up`) {
                     return handleGreet(chatroom, users[username])
                 }
             }
         }
 
         // Check all words in message after the first
-        for (const j in lowercaseArgs) {
+        for (const [i, val] of lowercaseArgs.entries()) {
             // Checking if greeting came later in message
-            for (const i in greetings) {
-                const wordLength = greetings[Number(i)].length
-                if (lowercaseArgs[Number(j)].slice(0, wordLength) === greetings[Number(i)]) { return handleGreet(chatroom, users[username]) }
+            for (const str of greetings) {
+                if (val.slice(0, str.length) === str) { return handleGreet(chatroom, users[username]) }
             }
 
             // If `gn` came later in the message
-            if (lowercaseArgs[Number(j)] === `gn`) { return sayGoodnight(chatroom, users[username]) }
+            if (val === `gn`) { return sayGoodnight(chatroom, users[username]) }
 
             // If `good` followed by "night"-like word came later in the message
-            if (lowercaseArgs[Number(j)] === `good`) {
+            if (val === `good`) {
                 const nights = [
                     `night`,
                     `nite`
                 ]
-                if (nights.includes(lowercaseArgs[Number(j) + 1].toLowerCase())) { return sayGoodnight(chatroom, users[username]) }
+                if (nights.includes(lowercaseArgs[i + 1].toLowerCase())) { return sayGoodnight(chatroom, users[username]) }
             }
 
             // If thanks came later in message
-            for (const i in thanks) {
-                if (lowercaseArgs[Number(j)] === thanks[Number(i)]) { return sayYoureWelcome(chatroom, users[username]) }
+            for (const str of thanks) {
+                if (val === str) { return sayYoureWelcome(chatroom, users[username]) }
             }
 
             // If "thank"-like followed by "you"-like word came later in the message
-            for (const i in thankLike) {
-                if (lowercaseArgs[Number(j)] === thankLike[Number(i)]) {
-                    if (yous.includes(lowercaseArgs[Number(j) + 1].toLowerCase())) { return sayYoureWelcome(chatroom, users[username]) }
+            for (const str of thankLike) {
+                if (val === str) {
+                    if (yous.includes(lowercaseArgs[i + 1].toLowerCase())) { return sayYoureWelcome(chatroom, users[username]) }
                 }
             }
 
             // Checking if `up` (and preceeding "what's"-like word) came later in message
-            if (lowercaseArgs[Number(j)].slice(0, 2) === `up`) {
-                for (const i in whatsUpPrefix) {
-                    const wordLength = whatsUpPrefix[Number(i)].length
-                    if (lowercaseArgs[Number(j) - 1].slice(0, wordLength) === whatsUpPrefix[Number(i)]) {
+            if (val.slice(0, 2) === `up`) {
+                for (const str of whatsUpPrefix) {
+                    if (lowercaseArgs[i - 1].slice(0, str.length) === str) {
                         return handleGreet(chatroom, users[username])
                     }
                 }
@@ -457,11 +455,11 @@ function onMessageHandler(chatroom, tags, msg, self) {
         args.shift()
         const lowercaseArgs = args.map(str => str.toLowerCase())
 
-        for (const i in lowercaseArgs) {
+        for (const str of lowercaseArgs) {
             // Asking about channel info
-            if (lowercaseArgs[Number(i)].slice(0, 3) === `sub`) { return users[username][channel].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to ${channel}! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to ${channel}! :(`) }
-            if (lowercaseArgs[Number(i)].slice(0, 3) === `mod`) { return users[username][channel].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in ${channel}'s chat! :(`) }
-            if (lowercaseArgs[Number(i)].slice(0, 3) === `vip`) { return users[username][channel].vip ? talk(chatroom, `Yes ${displayName}, you are a vip in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a vip in ${channel}'s chat! :(`) }
+            if (str.slice(0, 3) === `sub`) { return users[username][channel].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to ${channel}! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to ${channel}! :(`) }
+            if (str.slice(0, 3) === `mod`) { return users[username][channel].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in ${channel}'s chat! :(`) }
+            if (str.slice(0, 3) === `vip`) { return users[username][channel].vip ? talk(chatroom, `Yes ${displayName}, you are a vip in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a vip in ${channel}'s chat! :(`) }
         }
     }
 
@@ -471,11 +469,11 @@ function onMessageHandler(chatroom, tags, msg, self) {
         args.shift()
         const lowercaseArgs = args.map(str => str.toLowerCase())
 
-        for (const i in lowercaseArgs) {
+        for (const str of lowercaseArgs) {
             // Asking about channel info
-            if (lowercaseArgs[Number(i)].slice(0, 3) === `sub`) { return users[username][channel].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to ${channel}! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to ${channel}! :(`) }
-            if (lowercaseArgs[Number(i)].slice(0, 3) === `mod`) { return users[username][channel].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in ${channel}'s chat! :(`) }
-            if (lowercaseArgs[Number(i)].slice(0, 3) === `vip`) { return users[username][channel].vip ? talk(chatroom, `Yes ${displayName}, you are a vip in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a vip in ${channel}'s chat! :(`) }
+            if (str.slice(0, 3) === `sub`) { return users[username][channel].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to ${channel}! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to ${channel}! :(`) }
+            if (str.slice(0, 3) === `mod`) { return users[username][channel].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in ${channel}'s chat! :(`) }
+            if (str.slice(0, 3) === `vip`) { return users[username][channel].vip ? talk(chatroom, `Yes ${displayName}, you are a vip in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a vip in ${channel}'s chat! :(`) }
         }
     }
 
@@ -491,21 +489,21 @@ function onMessageHandler(chatroom, tags, msg, self) {
         args.shift()
         const lowercaseArgs = args.map(str => str.toLowerCase())
 
-        for (const i in lowercaseArgs) {
+        for (const str of lowercaseArgs) {
             // Asking about other user's channel info
-            if (lowercaseArgs[Number(i)].slice(0, 3) === `sub`) { return target[channel].sub ? talk(chatroom, `Yes, ${target.displayName} is subbed to ${channel}! :)`) : talk(chatroom, `No, ${target.displayName} is not subbed to ${channel}! :(`) }
-            if (lowercaseArgs[Number(i)].slice(0, 3) === `mod`) { return target[channel].mod ? talk(chatroom, `Yes, ${target.displayName} is a mod in ${channel}'s chat! :)`) : talk(chatroom, `No, ${target.displayName} is not a mod in ${channel}'s chat! :(`) }
-            if (lowercaseArgs[Number(i)].slice(0, 3) === `vip`) { return target[channel].vip ? talk(chatroom, `Yes, ${target.displayName} is a VIP in ${channel}'s chat! :)`) : talk(chatroom, `No, ${target.displayName} is not a VIP in ${channel}'s chat! :(`) }
+            if (str.slice(0, 3) === `sub`) { return target[channel].sub ? talk(chatroom, `Yes, ${target.displayName} is subbed to ${channel}! :)`) : talk(chatroom, `No, ${target.displayName} is not subbed to ${channel}! :(`) }
+            if (str.slice(0, 3) === `mod`) { return target[channel].mod ? talk(chatroom, `Yes, ${target.displayName} is a mod in ${channel}'s chat! :)`) : talk(chatroom, `No, ${target.displayName} is not a mod in ${channel}'s chat! :(`) }
+            if (str.slice(0, 3) === `vip`) { return target[channel].vip ? talk(chatroom, `Yes, ${target.displayName} is a VIP in ${channel}'s chat! :)`) : talk(chatroom, `No, ${target.displayName} is not a VIP in ${channel}'s chat! :(`) }
         }
     }
 
     if (listening || channel === BOT_USERNAME) {
         // Parsing each message word
         const lowercaseArgs = args.map(str => str.toLowerCase())
-        for (const i in lowercaseArgs) {
+        for (const str of lowercaseArgs) {
             // If a word starts with "but", and has a 4th letter that isn't T or punctuation, make it "BUTT-(rest of word)"
-            if (lowercaseArgs[Number(i)].slice(0, 3).toLowerCase() === `but`
-                && lowercaseArgs[Number(i)][3]
+            if (str.slice(0, 3).toLowerCase() === `but`
+                && str[3]
                 && ![
                     `t`,
                     `T`,
@@ -513,9 +511,9 @@ function onMessageHandler(chatroom, tags, msg, self) {
                     `,`,
                     `!`,
                     `?`
-                ].includes(lowercaseArgs[Number(i)][3])) {
+                ].includes(str[3])) {
                 delayListening()
-                return talk(chatroom, `${lowercaseArgs[Number(i)][0].toUpperCase()}${lowercaseArgs[Number(i)].slice(1).toLowerCase()}? More like BUTT-${lowercaseArgs[Number(i)].slice(3).toLowerCase()}`)
+                return talk(chatroom, `${str[0].toUpperCase()}${str.slice(1).toLowerCase()}? More like BUTT-${str.slice(3).toLowerCase()}`)
             }
         }
 
@@ -542,8 +540,8 @@ function onMessageHandler(chatroom, tags, msg, self) {
                 `sclarfDEEP`,
                 `sclarfGong`
             ]
-            for (const i in sclarfEmotes) {
-                if (msg.includes(sclarfEmotes[Number(i)])) {
+            for (const str of sclarfEmotes) {
+                if (msg.includes(str)) {
                     checkEmoteStreak(chatroom, sclarfEmotes, channel)
                     break
                 }
@@ -559,8 +557,8 @@ function onMessageHandler(chatroom, tags, msg, self) {
                 `domoni6Dum`,
                 `domoni6Love`
             ]
-            for (const i in domoEmotes) {
-                if (msg.includes(domoEmotes[Number(i)])) {
+            for (const str of domoEmotes) {
+                if (msg.includes(str)) {
                     checkEmoteStreak(chatroom, domoEmotes, channel)
                     break
                 }
@@ -588,8 +586,8 @@ function onMessageHandler(chatroom, tags, msg, self) {
                 `e1ectr4Malort`,
                 `e1ectr4Kim`
             ]
-            for (const i in tromEmotes) {
-                if (msg.includes(tromEmotes[Number(i)])) {
+            for (const str of tromEmotes) {
+                if (msg.includes(str)) {
                     checkEmoteStreak(chatroom, tromEmotes, channel)
                     break
                 }
@@ -617,8 +615,8 @@ function onMessageHandler(chatroom, tags, msg, self) {
                 `jpegstDog`,
                 `jpegstBlank`
             ]
-            for (const i in jpegEmotes) {
-                if (msg.includes(jpegEmotes[Number(i)])) {
+            for (const str of jpegEmotes) {
+                if (msg.includes(str)) {
                     checkEmoteStreak(chatroom, jpegEmotes, channel)
                     break
                 }
@@ -888,12 +886,12 @@ function handleMassGreet(chatroom, arr) {
     if (users[BOT_USERNAME]?.[`e1ectroma`]?.sub) { emotes.push(`e1ectr4Pikadance`, `e1ectr4Tromadance`, `e1ectr4Hello`, `e1ectr4Hi`, `e1ectr4Smile`, `e1ectr4Ram`, `e1ectr4Salute`, `e1ectr4Lemfresh`) }
     if (users[BOT_USERNAME]?.[`jpegstripes`]?.sub) { emotes.push(`jpegstBamJAM`, `jpegstKylePls`, `jpegstJulian`, `jpegstHeyGuys`, `jpegstSlay`) }
     const randomEmote = emotes[Math.floor(Math.random() * emotes.length)]
-    for (const idx in arr) {
-        if (arr[Number(idx)].startsWith(`@`)) { arr[Number(idx)] = arr[Number(idx)].substring(1) }
-        if (arr[Number(idx)].toLowerCase() in users) {
-            response.push(`${randomGreeting} ${users[arr[Number(idx)].toLowerCase()].displayName} ${randomEmote}`)
+    for (let str of arr) {
+        if (str.startsWith(`@`)) { str = str.substring(1) }
+        if (str.toLowerCase() in users) {
+            response.push(`${randomGreeting} ${users[str.toLowerCase()].displayName} ${randomEmote}`)
         } else {
-            response.push(`${randomGreeting} ${arr[Number(idx)]} ${randomEmote}`)
+            response.push(`${randomGreeting} ${str} ${randomEmote}`)
         }
     }
     talk(chatroom, response.join(` `))
@@ -972,8 +970,8 @@ function checkEmoteStreak(chatroom, emoteArr, channel) {
     const emoteStreakUsers = []
     // Checking if message includes any of the provided emotes
     for (const user in users) {
-        for (const i in emoteArr) {
-            if (users[user][channel]?.lastMessage.includes(emoteArr[Number(i)])) {
+        for (const str of emoteArr) {
+            if (users[user][channel]?.lastMessage.includes(str)) {
                 emoteStreakCount++
                 emoteStreakUsers.push(users[user].displayName)
                 if (emoteStreakCount >= 2) { console.log(`${boldTxt}Looking for ${emoteArr[0].substring(0, 4)} emotes... ${emoteStreakCount}/4 messages - ${emoteStreakUsers.join(`, `)}${resetTxt}`) }
@@ -990,14 +988,14 @@ function checkEmoteStreak(chatroom, emoteArr, channel) {
 function emoteReply(chatroom, channel, emoteArr) {
     console.log(`${boldTxt}> Running emoteReply()${resetTxt}`)
     const popularEmotes = Array(emoteArr.length).fill(0)
-    for (const idx in emoteArr) {
+    for (const [i, val] of emoteArr.entries()) {
         for (const user in users) {
             if (channel in users[user]) {
                 const words = users[user][channel].lastMessage.split(` `)
-                for (const i in words) {
-                    if (words[Number(i)] === emoteArr[Number(idx)]) {
-                        popularEmotes[Number(idx)]++
-                        console.log(`${boldTxt}...${emoteArr[Number(idx)]} increased to ${popularEmotes[Number(idx)]} from ${users[user].displayName}${resetTxt}`)
+                for (const str of words) {
+                    if (str === val) {
+                        popularEmotes[i]++
+                        console.log(`${boldTxt}...${val} increased to ${popularEmotes[i]} from ${users[user].displayName}${resetTxt}`)
                     }
                 }
             }
@@ -1020,8 +1018,8 @@ function delayListening() {
 }
 
 function ping(arr) {
-    for (const idx in arr) {
-        setTimeout(() => { talk(arr[Number(idx)], `hi :)`) }, 1000 * Number(idx))
+    for (const [i, str] of arr.entries()) {
+        setTimeout(() => { talk(str, `hi :)`) }, 1000 * i)
     }
 }
 
