@@ -172,11 +172,25 @@ function onMessageHandler(chatroom, tags, msg, self) {
         // If multiple args are used
         else if (args.length) {
             const response = []
+            const greetings = [
+                `hello`,
+                `howdy`,
+                `hey`,
+                `hi`
+            ]
+            const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)]
+            const emotes = [`HeyGuys`]
+            if (users[BOT_USERNAME]?.[`sclarf`]?.sub) { emotes.push(`sclarfWobble`, `sclarfPls`, `sclarfPog`, `sclarfHowdy`, `sclarfDog`, `sclarfHearts`) }
+            if (users[BOT_USERNAME]?.[`domonintendo1`]?.sub) { emotes.push(`domoni6ChefHey`, `domoni6Sneeze`, `domoni6Love`) }
+            if (users[BOT_USERNAME]?.[`e1ectroma`]?.sub) { emotes.push(`e1ectr4Pikadance`, `e1ectr4Tromadance`, `e1ectr4Hello`, `e1ectr4Hi`, `e1ectr4Smile`, `e1ectr4Ram`, `e1ectr4Salute`, `e1ectr4Lemfresh`) }
+            if (users[BOT_USERNAME]?.[`jpegstripes`]?.sub) { emotes.push(`jpegstBamJAM`, `jpegstKylePls`, `jpegstJulian`, `jpegstHeyGuys`, `jpegstSlay`) }
+            const randomEmote = emotes[Math.floor(Math.random() * emotes.length)]
             for (const idx in args) {
+                if (args[Number(idx)].startsWith(`@`)) { args[Number(idx)] = args[Number(idx)].substring(1) }
                 if (args[Number(idx)].toLowerCase() in users) {
-                    response.push(`hi ${users[args[Number(idx)].toLowerCase()].displayName} HeyGuys`)
+                    response.push(`${randomGreeting} ${users[args[Number(idx)].toLowerCase()].displayName} ${randomEmote}`)
                 } else {
-                    response.push(`hi ${args[Number(idx)]} HeyGuys`)
+                    response.push(`${randomGreeting} ${args[Number(idx)]} ${randomEmote}`)
                 }
             }
             return talk(chatroom, response.join(` `))
