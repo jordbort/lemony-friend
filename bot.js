@@ -289,7 +289,8 @@ function onMessageHandler(chatroom, tags, msg, self) {
     if (command === `!mystats`) { return toUser.toLowerCase() in users ? talk(chatroom, JSON.stringify(users[toUser.toLowerCase()])) : talk(chatroom, JSON.stringify(users[username])) }
 
     // If bot mentioned in message
-    if (msg.toLowerCase().includes(`lemon`)) {
+    if (msg.toLowerCase().includes(`lemon`)
+        || msg.toLowerCase().includes(`melon`)) {
         // If the first word is a greeting
         const greetings = [
             `hello`,
