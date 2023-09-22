@@ -179,7 +179,10 @@ function onMessageHandler(chatroom, tags, msg, self) {
                 `hi`
             ]
             const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)]
-            const emotes = [`HeyGuys`]
+            const emotes = [
+                `HeyGuys`,
+                `:)`
+            ]
             if (users[BOT_USERNAME]?.[`sclarf`]?.sub) { emotes.push(`sclarfWobble`, `sclarfPls`, `sclarfPog`, `sclarfHowdy`, `sclarfDog`, `sclarfHearts`) }
             if (users[BOT_USERNAME]?.[`domonintendo1`]?.sub) { emotes.push(`domoni6ChefHey`, `domoni6Sneeze`, `domoni6Love`) }
             if (users[BOT_USERNAME]?.[`e1ectroma`]?.sub) { emotes.push(`e1ectr4Pikadance`, `e1ectr4Tromadance`, `e1ectr4Hello`, `e1ectr4Hi`, `e1ectr4Smile`, `e1ectr4Ram`, `e1ectr4Salute`, `e1ectr4Lemfresh`) }
