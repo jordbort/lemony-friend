@@ -124,6 +124,11 @@ function onMessageHandler(chatroom, tags, msg, self) {
     users[username][channel].lastMessage = msg
     users[username][channel].msgCount++
 
+    // These checks happen earlier in case they happened to the bot
+    if (subChange) { return handleSubChange(chatroom, users[username], tags.subscriber) }
+    if (modChange) { return handleModChange(chatroom, users[username], tags.mod) }
+    if (vipChange) { return handleVIPChange(chatroom, users[username], tags.vip) }
+
     // Stop here if bot, otherwise log user's chat message
     if (self) { return } else { console.log(`${color in chatColors ? chatColors[color].terminalColor : whiteTxt}<${channel}> ${username}: ${msg}${resetTxt}`) }
 
@@ -152,9 +157,6 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
     if (colorChanged) { return handleColorChange(chatroom, users[username], color) }
     if (turboChange) { return handleTurboChange(chatroom, users[username], tags.turbo) }
-    if (subChange) { return handleSubChange(chatroom, users[username], tags.subscriber) }
-    if (modChange) { return handleModChange(chatroom, users[username], tags.mod) }
-    if (vipChange) { return handleVIPChange(chatroom, users[username], tags.vip) }
 
     // User's first message in a given channel
     if (firstMsg) { return handleNewChatter(chatroom, users[username]) }
@@ -952,17 +954,29 @@ function handleTurboChange(chatroom, target, turboStatus) {
 
 function handleSubChange(chatroom, target, subStatus) {
     target[`${chatroom.slice(1)}`].sub = subStatus
-    subStatus ? talk(chatroom, `Wow, ${target.displayName} is subbed now! :D`) : talk(chatroom, `Did ${target.displayName} just lose their sub? :O`)
+    if (target.displayName.toLowerCase() === BOT_USERNAME) {
+        setTimeout(() => subStatus ? talk(chatroom, `Thank you for the gift sub! :D`) : talk(chatroom, `Aww, did I lose my sub? :(`), 2000)
+    } else {
+        subStatus ? talk(chatroom, `Wow, ${target.displayName} is subbed now! :D`) : talk(chatroom, `Did ${target.displayName} just lose their sub? :O`)
+    }
 }
 
 function handleModChange(chatroom, target, modStatus) {
     target[`${chatroom.slice(1)}`].mod = modStatus
-    modStatus ? talk(chatroom, `Wow, ${target.displayName} became a mod! :D`) : talk(chatroom, `Was ${target.displayName} just unmodded? :O`)
+    if (target.displayName.toLowerCase() === BOT_USERNAME) {
+        setTimeout(() => modStatus ? talk(chatroom, `Thank you for modding me! :D`) : talk(chatroom, `Was I just unmodded? :O`), 2000)
+    } else {
+        modStatus ? talk(chatroom, `Wow, ${target.displayName} became a mod! :D`) : talk(chatroom, `Was ${target.displayName} just unmodded? :O`)
+    }
 }
 
 function handleVIPChange(chatroom, target, vipStatus) {
     target[`${chatroom.slice(1)}`].vip = vipStatus
-    vipStatus ? talk(chatroom, `Wow, ${target.displayName} became a VIP! :D`) : talk(chatroom, `Did ${target.displayName} just lose VIP status? :O`)
+    if (target.displayName.toLowerCase() === BOT_USERNAME) {
+        setTimeout(() => vipStatus ? talk(chatroom, `Thank you for giving me VIP! :D`) : talk(chatroom, `Did I just lose VIP? :O`), 2000)
+    } else {
+        vipStatus ? talk(chatroom, `Wow, ${target.displayName} became a VIP! :D`) : talk(chatroom, `Did ${target.displayName} just lose VIP status? :O`)
+    }
 }
 
 function checkEmoteStreak(chatroom, emoteArr, channel) {
