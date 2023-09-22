@@ -491,9 +491,9 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
         for (const str of lowercaseArgs) {
             // Asking about other user's channel info
-            if (str.slice(0, 3) === `sub`) { return target[channel].sub ? talk(chatroom, `Yes, ${target.displayName} is subbed to ${channel}! :)`) : talk(chatroom, `No, ${target.displayName} is not subbed to ${channel}! :(`) }
-            if (str.slice(0, 3) === `mod`) { return target[channel].mod ? talk(chatroom, `Yes, ${target.displayName} is a mod in ${channel}'s chat! :)`) : talk(chatroom, `No, ${target.displayName} is not a mod in ${channel}'s chat! :(`) }
-            if (str.slice(0, 3) === `vip`) { return target[channel].vip ? talk(chatroom, `Yes, ${target.displayName} is a VIP in ${channel}'s chat! :)`) : talk(chatroom, `No, ${target.displayName} is not a VIP in ${channel}'s chat! :(`) }
+            if (str.slice(0, 3) === `sub`) { return target[channel]?.sub ? talk(chatroom, `Yes, ${target.displayName} is subbed to ${channel}! :)`) : talk(chatroom, `No, ${target.displayName} is not subbed to ${channel}! :(`) }
+            if (str.slice(0, 3) === `mod`) { return target[channel]?.mod ? talk(chatroom, `Yes, ${target.displayName} is a mod in ${channel}'s chat! :)`) : talk(chatroom, `No, ${target.displayName} is not a mod in ${channel}'s chat! :(`) }
+            if (str.slice(0, 3) === `vip`) { return target[channel]?.vip ? talk(chatroom, `Yes, ${target.displayName} is a VIP in ${channel}'s chat! :)`) : talk(chatroom, `No, ${target.displayName} is not a VIP in ${channel}'s chat! :(`) }
         }
     }
 
