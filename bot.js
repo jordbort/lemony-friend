@@ -167,8 +167,21 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
     // !greet a user or whoever
     if (command === `!greet`) {
-        if (toUser.toLowerCase() in users) { return handleGreet(chatroom, users[toUser.toLowerCase()]) }
-        else if (args.length) { return talk(chatroom, `hi ${args.join(` `)}`) }
+        // If one (known) username is used, greet normally
+        if (toUser.toLowerCase() in users && !args[1]) { return handleGreet(chatroom, users[toUser.toLowerCase()]) }
+        // If multiple args are used
+        else if (args.length) {
+            const response = []
+            for (const idx in args) {
+                if (args[Number(idx)].toLowerCase() in users) {
+                    response.push(`hi ${users[args[Number(idx)].toLowerCase()].displayName} HeyGuys`)
+                } else {
+                    response.push(`hi ${args[Number(idx)]} HeyGuys`)
+                }
+            }
+            return talk(chatroom, response.join(` `))
+        }
+        // If no args are used
         else { return talk(chatroom, `Greetings, ${users[username].displayName}! :)`) }
     }
 
