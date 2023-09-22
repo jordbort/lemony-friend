@@ -170,34 +170,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
         // If one (known) username is used, greet normally
         if (toUser.toLowerCase() in users && !args[1]) { return handleGreet(chatroom, users[toUser.toLowerCase()]) }
         // If multiple args are used
-        else if (args.length) {
-            const response = []
-            const greetings = [
-                `hello`,
-                `howdy`,
-                `hey`,
-                `hi`
-            ]
-            const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)]
-            const emotes = [
-                `HeyGuys`,
-                `:)`
-            ]
-            if (users[BOT_USERNAME]?.[`sclarf`]?.sub) { emotes.push(`sclarfWobble`, `sclarfPls`, `sclarfPog`, `sclarfHowdy`, `sclarfDog`, `sclarfHearts`) }
-            if (users[BOT_USERNAME]?.[`domonintendo1`]?.sub) { emotes.push(`domoni6ChefHey`, `domoni6Sneeze`, `domoni6Love`) }
-            if (users[BOT_USERNAME]?.[`e1ectroma`]?.sub) { emotes.push(`e1ectr4Pikadance`, `e1ectr4Tromadance`, `e1ectr4Hello`, `e1ectr4Hi`, `e1ectr4Smile`, `e1ectr4Ram`, `e1ectr4Salute`, `e1ectr4Lemfresh`) }
-            if (users[BOT_USERNAME]?.[`jpegstripes`]?.sub) { emotes.push(`jpegstBamJAM`, `jpegstKylePls`, `jpegstJulian`, `jpegstHeyGuys`, `jpegstSlay`) }
-            const randomEmote = emotes[Math.floor(Math.random() * emotes.length)]
-            for (const idx in args) {
-                if (args[Number(idx)].startsWith(`@`)) { args[Number(idx)] = args[Number(idx)].substring(1) }
-                if (args[Number(idx)].toLowerCase() in users) {
-                    response.push(`${randomGreeting} ${users[args[Number(idx)].toLowerCase()].displayName} ${randomEmote}`)
-                } else {
-                    response.push(`${randomGreeting} ${args[Number(idx)]} ${randomEmote}`)
-                }
-            }
-            return talk(chatroom, response.join(` `))
-        }
+        else if (args.length) { return handleMassGreet(chatroom, args) }
         // If no args are used
         else { return talk(chatroom, `Greetings, ${users[username].displayName}! :)`) }
     }
@@ -885,6 +858,35 @@ function handleGreet(chatroom, target) {
         response += `, ${appends[Math.floor(Math.random() * appends.length)]} :)`
     }
     talk(chatroom, response)
+}
+
+function handleMassGreet(chatroom, arr) {
+    const response = []
+    const greetings = [
+        `hello`,
+        `howdy`,
+        `hey`,
+        `hi`
+    ]
+    const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)]
+    const emotes = [
+        `HeyGuys`,
+        `:)`
+    ]
+    if (users[BOT_USERNAME]?.[`sclarf`]?.sub) { emotes.push(`sclarfWobble`, `sclarfPls`, `sclarfPog`, `sclarfHowdy`, `sclarfDog`, `sclarfHearts`) }
+    if (users[BOT_USERNAME]?.[`domonintendo1`]?.sub) { emotes.push(`domoni6ChefHey`, `domoni6Sneeze`, `domoni6Love`) }
+    if (users[BOT_USERNAME]?.[`e1ectroma`]?.sub) { emotes.push(`e1ectr4Pikadance`, `e1ectr4Tromadance`, `e1ectr4Hello`, `e1ectr4Hi`, `e1ectr4Smile`, `e1ectr4Ram`, `e1ectr4Salute`, `e1ectr4Lemfresh`) }
+    if (users[BOT_USERNAME]?.[`jpegstripes`]?.sub) { emotes.push(`jpegstBamJAM`, `jpegstKylePls`, `jpegstJulian`, `jpegstHeyGuys`, `jpegstSlay`) }
+    const randomEmote = emotes[Math.floor(Math.random() * emotes.length)]
+    for (const idx in arr) {
+        if (arr[Number(idx)].startsWith(`@`)) { arr[Number(idx)] = arr[Number(idx)].substring(1) }
+        if (arr[Number(idx)].toLowerCase() in users) {
+            response.push(`${randomGreeting} ${users[arr[Number(idx)].toLowerCase()].displayName} ${randomEmote}`)
+        } else {
+            response.push(`${randomGreeting} ${arr[Number(idx)]} ${randomEmote}`)
+        }
+    }
+    talk(chatroom, response.join(` `))
 }
 
 function sayGoodnight(chatroom, target) {
