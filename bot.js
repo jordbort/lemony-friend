@@ -502,8 +502,17 @@ function onMessageHandler(chatroom, tags, msg, self) {
         // Parsing each message word
         const lowercaseArgs = args.map(str => str.toLowerCase())
         for (const i in lowercaseArgs) {
-            // If a word starts with "but", and has a 4th letter that isn't T, make it "BUTT-(rest of word)"
-            if (lowercaseArgs[Number(i)].slice(0, 3).toLowerCase() === `but` && lowercaseArgs[Number(i)][3] && lowercaseArgs[Number(i)][3].toLowerCase() !== `t`) {
+            // If a word starts with "but", and has a 4th letter that isn't T or punctuation, make it "BUTT-(rest of word)"
+            if (lowercaseArgs[Number(i)].slice(0, 3).toLowerCase() === `but`
+                && lowercaseArgs[Number(i)][3]
+                && ![
+                    `t`,
+                    `T`,
+                    `.`,
+                    `,`,
+                    `!`,
+                    `?`
+                ].includes(lowercaseArgs[Number(i)][3])) {
                 delayListening()
                 return talk(chatroom, `${lowercaseArgs[Number(i)][0].toUpperCase()}${lowercaseArgs[Number(i)].slice(1).toLowerCase()}? More like BUTT-${lowercaseArgs[Number(i)].slice(3).toLowerCase()}`)
             }
