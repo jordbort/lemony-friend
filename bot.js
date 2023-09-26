@@ -425,7 +425,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
                     `night`,
                     `nite`
                 ]
-                if (nights.includes(lowercaseArgs[i + 1].toLowerCase())) { return sayGoodnight(chatroom, users[username]) }
+                if (lowercaseArgs[i + 1] && nights.includes(lowercaseArgs[i + 1].toLowerCase())) { return sayGoodnight(chatroom, users[username]) }
             }
 
             // If thanks came later in message
@@ -436,7 +436,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
             // If "thank"-like followed by "you"-like word came later in the message
             for (const str of thankLike) {
                 if (val === str) {
-                    if (yous.includes(lowercaseArgs[i + 1].toLowerCase())) { return sayYoureWelcome(chatroom, users[username]) }
+                    if (lowercaseArgs[i + 1] && yous.includes(lowercaseArgs[i + 1].toLowerCase())) { return sayYoureWelcome(chatroom, users[username]) }
                 }
             }
 
