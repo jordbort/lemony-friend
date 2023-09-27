@@ -167,6 +167,8 @@ function onMessageHandler(chatroom, tags, msg, self) {
     // !msgcount (Show a user's last message)
     if (command === `!msgcount`) { return getMessageCount(chatroom, users[toUser.toLowerCase()] || users[username]) }
 
+    if (command === `!yell`) { return yell(users[username], msg) }
+
     // !greet a user or whoever
     if (command === `!greet`) {
         // If one (known) username is used, greet normally
@@ -871,6 +873,12 @@ function getMessageCount(chatroom, target) {
     }
     response += `${rooms.join(`, `)}!`
     talk(chatroom, response)
+}
+
+function yell(target, msg) {
+    for (chatroom of lemonyFresh) {
+        talk(chatroom, `${target.displayName} says: ${msg.substring(6)}`)
+    }
 }
 
 async function getDadJoke(chatroom) {
