@@ -167,7 +167,16 @@ function onMessageHandler(chatroom, tags, msg, self) {
     // !msgcount (Show a user's last message)
     if (command === `!msgcount`) { return getMessageCount(chatroom, users[toUser.toLowerCase()] || users[username]) }
 
+    // !yell across all lemonyFresh chatrooms
     if (command === `!yell`) { return yell(users[username], msg) }
+
+    // lemonify
+    if (command === `!lemonify`) {
+        const target = users[toUser.toLowerCase() || username]
+        const channelMsg = target[channel]?.lastMessage || getRandomChannelMessage(target)
+        const lemonMsg = lemonify(channelMsg)
+        return talk(chatroom, lemonMsg)
+    }
 
     // !greet a user or whoever
     if (command === `!greet`) {
@@ -724,11 +733,13 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
     // *** FUN NUMBER! ***
     if (users[username][channel].msgCount % 25 === 0) {
+        const randomTarget = getRandomTarget()
         const funNumber = Math.floor(Math.random() * 50)
         console.log(`${boldTxt}*** Fun number triggered by`, users[username].displayName, `:`, funNumber, resetTxt)
+
         // Make 4-wide message pyramid of first word in message
         if (funNumber === 0) {
-            const delay = users[BOT_USERNAME][channel].mod || channel === BOT_USERNAME ? 1000 : 2000
+            const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
             talk(chatroom, `${command}`)
             setTimeout(() => talk(chatroom, `${command} ${command}`), delay)
             setTimeout(() => talk(chatroom, `${command} ${command} ${command}`), delay * 2)
@@ -846,8 +857,14 @@ function onMessageHandler(chatroom, tags, msg, self) {
             const redeem = Math.floor(Math.random() * redeems.length)
             return talk(chatroom, redeems[redeem])
         }
-        // Give hundreds of points
+        // Give hundreds of points (requires StreamElements)
         if (funNumber === 4 && chatroom !== domonintendo1) { return talk(chatroom, `!give ${username} ${users[username][channel].msgCount}00`) }
+        // Lemonify a random user's random chat message
+        if (funNumber === 5) {
+            const randomMsg = getRandomChannelMessage(randomTarget)
+            const lemonMsg = lemonify(randomMsg)
+            return talk(channel, lemonMsg)
+        }
     }
 }
 
@@ -910,6 +927,42 @@ function getColor(chatroom, target) {
     } else {
         talk(chatroom, `${target.displayName}'s chat color is hex code ${target.color}`)
     }
+}
+
+function getRandomTarget() {
+    const arr = Object.keys(users)
+    const randomTarget = users[arr[Math.floor(Math.random() * arr.length)]]
+    return randomTarget
+}
+
+function getRandomChannelMessage(target) {
+    const allKeys = Object.keys(target)
+    let channelKey = Math.floor(Math.random() * allKeys.length)
+    while (![
+        `lemony_friend`,
+        `jpegstripes`,
+        `sclarf`,
+        `e1ectroma`,
+        `domonintendo1`,
+        `ppuyya`
+    ].includes(allKeys[channelKey])) { channelKey = Math.floor(Math.random() * allKeys.length) }
+    const randomMessage = target[allKeys[channelKey]].lastMessage
+    return randomMessage
+}
+
+function lemonify(str) {
+    const words = str.split(` `)
+    for (const word of words) {
+        if (
+            (word.toLowerCase() === `a`
+                || word.toLowerCase() === `an`
+                || word.toLowerCase() === `the`
+            ) && words[words.indexOf(word) + 1]) {
+            words[words.indexOf(word) + 1] = `lemon`
+        }
+    }
+    const lemonifiedString = words.join(` `)
+    return lemonifiedString
 }
 
 function handleGreet(chatroom, target) {
