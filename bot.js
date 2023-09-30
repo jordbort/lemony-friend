@@ -172,7 +172,8 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
     // lemonify
     if (command === `!lemonify`) {
-        const target = users[toUser.toLowerCase() || username]
+        if (!(toUser.toLowerCase() in users)) { talk(chatroom, `🍋️🍋️🍋️`) }
+        const target = users[toUser.toLowerCase()]
         const channelMsg = target[channel]?.lastMessage || getRandomChannelMessage(target)
         const lemonMsg = lemonify(channelMsg)
         return talk(chatroom, lemonMsg)
