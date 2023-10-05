@@ -733,8 +733,8 @@ function onMessageHandler(chatroom, tags, msg, self) {
     }
 
     // *** FUN NUMBER! ***
-    if (users[username][channel].msgCount % 25 === 0) {
-        const randomTarget = getRandomTarget()
+    if (users[username][channel].msgCount % 22 === 0) {
+        let randomUser = getRandomUser()
         const funNumber = Math.floor(Math.random() * 50)
         console.log(`${boldTxt}*** Fun number triggered by`, users[username].displayName, `:`, funNumber, resetTxt)
 
@@ -862,9 +862,20 @@ function onMessageHandler(chatroom, tags, msg, self) {
         if (funNumber === 4 && chatroom !== domonintendo1) { return talk(chatroom, `!give ${username} ${users[username][channel].msgCount}00`) }
         // Lemonify a random user's random chat message
         if (funNumber === 5) {
-            const randomMsg = getRandomChannelMessage(randomTarget)
+            while (randomUser === BOT_USERNAME) { randomUser = getRandomUser() }
+            const randomMsg = getRandomChannelMessage(users[randomUser])
             const lemonMsg = lemonify(randomMsg)
-            return talk(channel, lemonMsg)
+            return talk(chatroom, lemonMsg)
+        }
+        // Check for UndertaleBot and interact with a random user
+        if (funNumber === 6 && `undertalebot` in users && Object.keys(users.undertalebot).includes(channel)) {
+            while ([BOT_USERNAME, `undertalebot`].includes(randomUser)) { randomUser = getRandomUser() }
+            const actions = [
+                `!fight ${users[randomUser].displayName}`,
+                `!act ${users[randomUser].displayName}`,
+                `!mercy ${users[randomUser].displayName}`
+            ]
+            return talk(chatroom, actions[Math.floor(Math.random() * actions.length)])
         }
     }
 }
@@ -930,10 +941,10 @@ function getColor(chatroom, target) {
     }
 }
 
-function getRandomTarget() {
+function getRandomUser() {
     const arr = Object.keys(users)
-    const randomTarget = users[arr[Math.floor(Math.random() * arr.length)]]
-    return randomTarget
+    const randomUser = arr[Math.floor(Math.random() * arr.length)]
+    return randomUser
 }
 
 function getRandomChannelMessage(target) {
