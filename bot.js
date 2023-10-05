@@ -720,7 +720,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
         const streakUsers = []
 
         for (const user in users) {
-            if (users[user][channel]?.lastMessage === msg) {
+            if (user !== BOT_USERNAME && users[user][channel]?.lastMessage === msg) {
                 streakCount++
                 streakUsers.push(users[user].displayName)
                 if (streakCount >= 2) { console.log(`${boldTxt}Listening for message streak... ${streakCount}/3 "${msg}" - ${streakUsers.join(`, `)}${resetTxt}`) }
@@ -1136,7 +1136,7 @@ function checkEmoteStreak(chatroom, emoteArr, channel) {
     // Checking if message includes any of the provided emotes
     for (const user in users) {
         for (const str of emoteArr) {
-            if (users[user][channel]?.lastMessage.includes(str)) {
+            if (user !== BOT_USERNAME && users[user][channel]?.lastMessage.includes(str)) {
                 emoteStreakCount++
                 emoteStreakUsers.push(users[user].displayName)
                 if (emoteStreakCount >= 2) { console.log(`${boldTxt}Looking for ${emoteArr[0].substring(0, 4)} emotes... ${emoteStreakCount}/4 messages - ${emoteStreakUsers.join(`, `)}${resetTxt}`) }
