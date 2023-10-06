@@ -148,7 +148,10 @@ function onMessageHandler(chatroom, tags, msg, self) {
             `don't mind me`,
             `(just rebooting again)`,
             `(Windows 95 startup sound plays)`,
-            `I'm onl`
+            `I'm onl`,
+            `reconnecting...`,
+            `I know ${Object.keys(users).length} ${Object.keys(users).length === 1 ? `person` : `people`}! :D`,
+            `(there are ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`
         ]
         const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
         sayOnlineMsg = false
