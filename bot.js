@@ -150,7 +150,7 @@ function onMessageHandler(chatroom, tags, msg, self) {
             `(Windows 95 startup sound plays)`,
             `I'm onl`,
             `reconnecting...`,
-            `I know ${Object.keys(users).length} ${Object.keys(users).length === 1 ? `person` : `people`}! :D`,
+            `I have ${Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`,
             `(there are ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`
         ]
         const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
@@ -172,6 +172,12 @@ function onMessageHandler(chatroom, tags, msg, self) {
 
     // !yell across all lemonyFresh chatrooms
     if (command === `!yell`) { return yell(users[username], msg) }
+
+    // !friend(s) count
+    if ([
+        `!friend`,
+        `!friends`
+    ].includes(command)) { return talk(chatroom, `I have ${Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`) }
 
     // lemonify
     if (command === `!lemonify`) {
