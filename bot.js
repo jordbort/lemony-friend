@@ -1006,19 +1006,19 @@ function onMessageHandler(chatroom, tags, msg, self) {
 }
 
 // Helper functions
-function handleNewChatter(chatroom, target) { talk(chatroom, `Hi ${target.displayName}, welcome to the stream!`) }
+function handleNewChatter(chatroom, user) { talk(chatroom, `Hi ${user.displayName}, welcome to the stream!`) }
 
-function getLastMessage(chatroom, target, room) {
-    if (!(chatroom.slice(1) in target)) { return }
-    room in target ? talk(chatroom, `${target.displayName} last said: "${target[room].lastMessage}" in ${room}'s chat!`) : talk(chatroom, `${target.displayName} last said: "${target[`${chatroom.slice(1)}`].lastMessage}" in ${chatroom.slice(1)}'s chat!`)
+function getLastMessage(chatroom, user, room) {
+    if (!(chatroom.slice(1) in user)) { return }
+    room in user ? talk(chatroom, `${user.displayName} last said: "${user[room].lastMessage}" in ${room}'s chat!`) : talk(chatroom, `${user.displayName} last said: "${user[chatroom.slice(1)].lastMessage}" in ${chatroom.slice(1)}'s chat!`)
 }
 
-function getMessageCount(chatroom, target) {
-    let response = `${target.displayName} has sent `
+function getMessageCount(chatroom, user) {
+    let response = `${user.displayName} has sent `
     const rooms = []
-    for (const room in target) {
-        if (target[room]?.msgCount) {
-            rooms.push(`${target[room].msgCount} ${target[room].msgCount === 1 ? `message` : `messages`} in ${room}'s chat`)
+    for (const room in user) {
+        if (user[room]?.msgCount) {
+            rooms.push(`${user[room].msgCount} ${user[room].msgCount === 1 ? `message` : `messages`} in ${room}'s chat`)
         }
     }
     if (rooms.length > 1) {
@@ -1029,9 +1029,9 @@ function getMessageCount(chatroom, target) {
     talk(chatroom, response)
 }
 
-function yell(target, msg) {
+function yell(user, msg) {
     for (chatroom of lemonyFresh) {
-        talk(chatroom, `${target.displayName} says: ${msg.substring(6)}`)
+        talk(chatroom, `${user.displayName} says: ${msg.substring(6)}`)
     }
 }
 
@@ -1058,11 +1058,11 @@ async function getPokemon(chatroom) {
     talk(chatroom, `${data.name}: ${data.sprites.front_default}`)
 }
 
-function getColor(chatroom, target) {
-    if (target.color in chatColors) {
-        talk(chatroom, `${target.displayName}'s chat color is ${chatColors[target.color].name}!`)
+function getColor(chatroom, user) {
+    if (user.color in chatColors) {
+        talk(chatroom, `${user.displayName}'s chat color is ${chatColors[user.color].name}!`)
     } else {
-        talk(chatroom, `${target.displayName}'s chat color is hex code ${target.color}`)
+        talk(chatroom, `${user.displayName}'s chat color is hex code ${user.color}`)
     }
 }
 
@@ -1072,8 +1072,8 @@ function getRandomUser() {
     return randomUser
 }
 
-function getRandomChannelMessage(target) {
-    const allKeys = Object.keys(target)
+function getRandomChannelMessage(user) {
+    const allKeys = Object.keys(user)
     let channelKey = Math.floor(Math.random() * allKeys.length)
     while (![
         `lemony_friend`,
@@ -1083,7 +1083,7 @@ function getRandomChannelMessage(target) {
         `domonintendo1`,
         `ppuyya`
     ].includes(allKeys[channelKey])) { channelKey = Math.floor(Math.random() * allKeys.length) }
-    const randomMessage = target[allKeys[channelKey]].lastMessage
+    const randomMessage = user[allKeys[channelKey]].lastMessage
     return randomMessage
 }
 
@@ -1102,7 +1102,7 @@ function lemonify(str) {
     return lemonifiedString
 }
 
-function handleGreet(chatroom, target) {
+function handleGreet(chatroom, user) {
     const greetings = [
         `Howdy,`,
         `Hello,`,
@@ -1115,7 +1115,7 @@ function handleGreet(chatroom, target) {
         `Hey there`
     ]
     const greeting = Math.floor(Math.random() * greetings.length)
-    let response = `${greetings[greeting]} ${target.displayName}`
+    let response = `${greetings[greeting]} ${user.displayName}`
 
     // If the greeting is "Howdy"
     if (greeting === 0) {
@@ -1175,7 +1175,7 @@ function handleMassGreet(chatroom, arr) {
     talk(chatroom, response.join(` `))
 }
 
-function sayGoodnight(chatroom, target) {
+function sayGoodnight(chatroom, user) {
     const greetings = [
         `Bye`,
         `Good night,`,
@@ -1184,7 +1184,7 @@ function sayGoodnight(chatroom, target) {
         `Have a good night,`
     ]
     const greeting = Math.floor(Math.random() * greetings.length)
-    let response = `${greetings[greeting]} ${target.displayName}`
+    let response = `${greetings[greeting]} ${user.displayName}`
     if (greeting === 0) {
         const appends = [
             `sleep well`,
@@ -1197,12 +1197,12 @@ function sayGoodnight(chatroom, target) {
     talk(chatroom, response)
 }
 
-function sayYoureWelcome(chatroom, target) {
+function sayYoureWelcome(chatroom, user) {
     const welcomes = [
-        `${target.displayName}`,
-        `You're welcome, ${target.displayName}`,
-        `No problem, ${target.displayName}`,
-        `My pleasure, ${target.displayName}`,
+        `${user.displayName}`,
+        `You're welcome, ${user.displayName}`,
+        `No problem, ${user.displayName}`,
+        `My pleasure, ${user.displayName}`,
     ]
     const welcome = Math.floor(Math.random() * welcomes.length)
     let response = `${welcomes[welcome]}`
@@ -1218,40 +1218,40 @@ function sayYoureWelcome(chatroom, target) {
     talk(chatroom, response)
 }
 
-function handleColorChange(chatroom, target, newColor) {
-    target.color = newColor
-    talk(chatroom, `Acknowledging ${target.displayName}'s color change :)`)
+function handleColorChange(chatroom, user, newColor) {
+    user.color = newColor
+    talk(chatroom, `Acknowledging ${user.displayName}'s color change :)`)
 }
 
-function handleTurboChange(chatroom, target, turboStatus) {
-    target.turbo = turboStatus
-    turboStatus ? talk(chatroom, `Wow, ${target.displayName} got Turbo? :D`) : talk(chatroom, `Did ${target.displayName} stop having Turbo? :O`)
+function handleTurboChange(chatroom, user, turboStatus) {
+    user.turbo = turboStatus
+    turboStatus ? talk(chatroom, `Wow, ${user.displayName} got Turbo? :D`) : talk(chatroom, `Did ${user.displayName} stop having Turbo? :O`)
 }
 
-function handleSubChange(chatroom, target, subStatus) {
-    target[`${chatroom.slice(1)}`].sub = subStatus
-    if (target.displayName.toLowerCase() === BOT_USERNAME) {
+function handleSubChange(chatroom, user, subStatus) {
+    user[chatroom.slice(1)].sub = subStatus
+    if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => subStatus ? talk(chatroom, `Thank you for the gift sub! :D`) : talk(chatroom, `Aww, did I lose my sub? :(`), 2000)
     } else {
-        subStatus ? talk(chatroom, `Wow, ${target.displayName} is subbed now! :D`) : talk(chatroom, `Did ${target.displayName} just lose their sub? :O`)
+        subStatus ? talk(chatroom, `Wow, ${user.displayName} is subbed now! :D`) : talk(chatroom, `Did ${user.displayName} just lose their sub? :O`)
     }
 }
 
-function handleModChange(chatroom, target, modStatus) {
-    target[`${chatroom.slice(1)}`].mod = modStatus
-    if (target.displayName.toLowerCase() === BOT_USERNAME) {
+function handleModChange(chatroom, user, modStatus) {
+    user[chatroom.slice(1)].mod = modStatus
+    if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => modStatus ? talk(chatroom, `Thank you for modding me! :D`) : talk(chatroom, `Was I just unmodded? :O`), 2000)
     } else {
-        modStatus ? talk(chatroom, `Wow, ${target.displayName} became a mod! :D`) : talk(chatroom, `Was ${target.displayName} just unmodded? :O`)
+        modStatus ? talk(chatroom, `Wow, ${user.displayName} became a mod! :D`) : talk(chatroom, `Was ${user.displayName} just unmodded? :O`)
     }
 }
 
-function handleVIPChange(chatroom, target, vipStatus) {
-    target[`${chatroom.slice(1)}`].vip = vipStatus
-    if (target.displayName.toLowerCase() === BOT_USERNAME) {
+function handleVIPChange(chatroom, user, vipStatus) {
+    user[chatroom.slice(1)].vip = vipStatus
+    if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => vipStatus ? talk(chatroom, `Thank you for giving me VIP! :D`) : talk(chatroom, `Did I just lose VIP? :O`), 2000)
     } else {
-        vipStatus ? talk(chatroom, `Wow, ${target.displayName} became a VIP! :D`) : talk(chatroom, `Did ${target.displayName} just lose VIP status? :O`)
+        vipStatus ? talk(chatroom, `Wow, ${user.displayName} became a VIP! :D`) : talk(chatroom, `Did ${user.displayName} just lose VIP status? :O`)
     }
 }
 
