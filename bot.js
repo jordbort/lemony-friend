@@ -1089,15 +1089,46 @@ function getRandomChannelMessage(user) {
 
 function lemonify(str) {
     const words = str.split(` `)
-    for (const word of words) {
-        if (
-            (word.toLowerCase() === `a`
-                || word.toLowerCase() === `an`
-                || word.toLowerCase() === `the`
-            ) && words[words.indexOf(word) + 1]) {
-            words[words.indexOf(word) + 1] = `lemon`
-        }
+    for (const [i, word] of words.entries()) {
+        const number = Number(word)
+
+        // Definitely singular
+        if ((
+            number === 1
+            || [
+                `a`,
+                `an`,
+                `this`,
+                `that`
+            ].includes(word.toLowerCase()))
+            && words[i + 1]
+        ) { words[i + 1] = `lemon` }
+
+        // Definitely plural
+        else if ((
+            ((number || number === 0) && number !== 1)
+            || [
+                `these`,
+                `those`
+            ].includes(word.toLowerCase()))
+            && words[i + 1]
+        ) { words[i + 1] = `lemons` }
+
+        // Ambiguous count
+        else if ((
+            [`the`,
+                `my`,
+                `your`,
+                `his`,
+                `her`,
+                `its`,
+                `our`,
+                `their`
+            ].includes(word.toLowerCase()))
+            && words[i + 1]
+        ) { words[i + 1] = words[i + 1].toLowerCase().endsWith(`s`) ? `lemons` : `lemon` }
     }
+
     const lemonifiedString = words.join(` `)
     return lemonifiedString
 }
