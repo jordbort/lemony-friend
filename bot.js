@@ -83,7 +83,8 @@ const tempCmds = {}
 let listening = true
 let sayOnlineMsg = true
 
-function onMessageHandler(chatroom, tags, msg, self) {
+function onMessageHandler(chatroom, tags, message, self) {
+    const msg = cleanupSpaces(message)
     const username = tags.username
     const displayName = tags[`display-name`]
     const channel = chatroom.slice(1)
@@ -1342,6 +1343,16 @@ function ping(arr) {
     for (const [i, str] of arr.entries()) {
         setTimeout(() => { talk(str, `hi :)`) }, 1000 * i)
     }
+}
+
+function cleanupSpaces(str) {
+    let newStr = ``
+    for (let i = 0; i < str.length; i++) {
+        if (!(str[i] === ` ` && str[i + 1] === ` `)) {
+            newStr += str[i]
+        }
+    }
+    return newStr
 }
 
 function talk(chatroom, msg) {
