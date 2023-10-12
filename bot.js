@@ -879,7 +879,6 @@ function onMessageHandler(chatroom, tags, message, self) {
         const funNumber = Math.floor(Math.random() * 50)
 
         console.log(`${boldTxt}*** Fun number triggered by`, users[username].displayName, `:`, funNumber, resetTxt)
-        if (DEBUG_MODE) { talk(chatroom, `*** Fun number triggered by ${users[username].displayName}: ${funNumber}`) }
 
         // Make 4-wide message pyramid of first word in message
         if (funNumber === 0) {
@@ -891,9 +890,9 @@ function onMessageHandler(chatroom, tags, message, self) {
             setTimeout(() => talk(chatroom, `${command}`), delay * 4)
         }
         // Turn message count into dollars
-        if (funNumber === 1) { return talk(chatroom, `Give me $${users[username][channel].msgCount} USD`) }
+        else if (funNumber === 1) { return talk(chatroom, `Give me $${users[username][channel].msgCount} USD`) }
         // Turn message count into thousands of dollars to my account
-        if (funNumber === 2) {
+        else if (funNumber === 2) {
             const paymentMethods = [
                 `give me`,
                 `give me`,
@@ -914,7 +913,7 @@ function onMessageHandler(chatroom, tags, message, self) {
             return talk(chatroom, `${paymentMethods[paymentMethod]} ${users[username][channel].msgCount},000 usd`)
         }
         // Activate random redeem
-        if (funNumber === 3) {
+        else if (funNumber === 3) {
             let redeems = []
             if (chatroom === e1ectroma) {
                 redeems = [
@@ -1002,16 +1001,16 @@ function onMessageHandler(chatroom, tags, message, self) {
             return talk(chatroom, redeems[redeem])
         }
         // Give hundreds of points (requires StreamElements)
-        if (funNumber === 4 && chatroom !== domonintendo1) { return talk(chatroom, `!give ${username} ${users[username][channel].msgCount}00`) }
+        else if (funNumber === 4 && chatroom !== domonintendo1) { return talk(chatroom, `!give ${username} ${users[username][channel].msgCount}00`) }
         // Lemonify a random user's random chat message
-        if (funNumber === 5) {
+        else if (funNumber === 5) {
             while (randomUser === BOT_USERNAME) { randomUser = getRandomUser() }
             const randomMsg = getRandomChannelMessage(users[randomUser])
             const lemonMsg = lemonify(randomMsg)
             return talk(chatroom, lemonMsg)
         }
         // Check for UndertaleBot and interact with a random user
-        if (funNumber === 6 && `undertalebot` in users && Object.keys(users.undertalebot).includes(channel)) {
+        else if (funNumber === 6 && `undertalebot` in users && Object.keys(users.undertalebot).includes(channel)) {
             while ([BOT_USERNAME, `undertalebot`].includes(randomUser)) { randomUser = getRandomUser() }
             const actions = [
                 `!fight ${users[randomUser].displayName}`,
@@ -1020,6 +1019,7 @@ function onMessageHandler(chatroom, tags, message, self) {
             ]
             return talk(chatroom, actions[Math.floor(Math.random() * actions.length)])
         }
+        else if (DEBUG_MODE) { talk(chatroom, `*** Fun number triggered by ${users[username].displayName}: ${funNumber}`) }
     }
 }
 
