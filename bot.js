@@ -82,6 +82,7 @@ const users = {}
 const tempCmds = {}
 let listening = true
 let sayOnlineMsg = true
+let DEBUG_MODE = false
 
 function onMessageHandler(chatroom, tags, message, self) {
     const msg = cleanupSpaces(message)
@@ -205,7 +206,8 @@ function onMessageHandler(chatroom, tags, message, self) {
             `I'm onl`,
             `reconnecting...`,
             `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`,
-            `(there are ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`
+            `(there are ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`,
+            `Debug mode is currently ${DEBUG_MODE ? `on` : `off`}! :)`
         ]
         const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
         sayOnlineMsg = false
@@ -217,6 +219,18 @@ function onMessageHandler(chatroom, tags, message, self) {
 
     // User's first message in a given channel
     if (firstMsg) { return handleNewChatter(chatroom, users[username]) }
+
+    // Toggle DEBUG_MODE
+    if ([
+        `!debug`,
+        `!debugmode`
+    ].includes(command)) {
+        const initialDebugState = DEBUG_MODE
+        if (args[0]?.toLowerCase() === `on`) { DEBUG_MODE = true }
+        else if (args[0]?.toLowerCase() === `off`) { DEBUG_MODE = false }
+        else { DEBUG_MODE = !DEBUG_MODE }
+        DEBUG_MODE === initialDebugState ? talk(channel, `Debug mode is currently ${DEBUG_MODE ? `on` : `off`}! :)`) : talk(channel, `Debug mode is now ${DEBUG_MODE ? `on` : `off`}! :)`)
+    }
 
     // !lastmsg (Show a user's last message, optionally in a specified stream)
     if (command === `!lastmsg`) { return getLastMessage(chatroom, users[target] || users[username], args[1]?.toLowerCase()) }
@@ -856,13 +870,16 @@ function onMessageHandler(chatroom, tags, message, self) {
                 return setTimeout(() => { return talk(chatroom, msg) }, 1000)
             }
         }
+        // if (DEBUG_MODE) { talk(chatroom, `Listening for message streak... ${streakCount}/3 "${msg}" - ${streakUsers.join(`, `)}`) }
     }
 
     // *** FUN NUMBER! ***
     if (users[username][channel].msgCount % 22 === 0) {
         let randomUser = getRandomUser()
         const funNumber = Math.floor(Math.random() * 50)
+
         console.log(`${boldTxt}*** Fun number triggered by`, users[username].displayName, `:`, funNumber, resetTxt)
+        if (DEBUG_MODE) { talk(chatroom, `*** Fun number triggered by ${users[username].displayName}: ${funNumber}`) }
 
         // Make 4-wide message pyramid of first word in message
         if (funNumber === 0) {
@@ -1007,14 +1024,19 @@ function onMessageHandler(chatroom, tags, message, self) {
 }
 
 // Helper functions
-function handleNewChatter(chatroom, user) { talk(chatroom, `Hi ${user.displayName}, welcome to the stream!`) }
+function handleNewChatter(chatroom, user) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> handleNewChatter(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
+    talk(chatroom, `Hi ${user.displayName}, welcome to the stream!`)
+}
 
 function getLastMessage(chatroom, user, room) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> getLastMessage(chatroom: ${chatroom}, user: ${user.displayName}, room: ${room})${resetTxt}`) }
     if (!(chatroom.slice(1) in user)) { return }
     room in user ? talk(chatroom, `${user.displayName} last said: "${user[room].lastMessage}" in ${room}'s chat!`) : talk(chatroom, `${user.displayName} last said: "${user[chatroom.slice(1)].lastMessage}" in ${chatroom.slice(1)}'s chat!`)
 }
 
 function getMessageCount(chatroom, user) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> getMessageCount(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
     let response = `${user.displayName} has sent `
     const rooms = []
     for (const room in user) {
@@ -1043,16 +1065,23 @@ async function getDadJoke(chatroom) {
         }
     })
     const data = await response.json()
+    if (DEBUG_MODE) { console.log(data) }
     data.status === 200 ? talk(chatroom, data.joke) : talk(chatroom, `Error fetching dad joke! :(`)
 }
 
 async function getPokemon(chatroom) {
     let randNum = Math.ceil(Math.random() * 1281)
+
     console.log(`Looking up Pokemon #${randNum}...`)
+    if (DEBUG_MODE) { talk(chatroom, `Looking up Pokemon #${randNum}...`) }
+
     let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randNum}`)
     while (response.statusText !== `OK`) {
         randNum = Math.ceil(Math.random() * 1281)
+
         console.log(`Not Found! Looking up Pokemon #${randNum}...`)
+        if (DEBUG_MODE) { talk(chatroom, `Not Found! Looking up Pokemon #${randNum}...`) }
+
         response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randNum}`)
     }
     const data = await response.json()
@@ -1060,6 +1089,7 @@ async function getPokemon(chatroom) {
 }
 
 function getColor(chatroom, user) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> getColor(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
     if (user.color in chatColors) {
         talk(chatroom, `${user.displayName}'s chat color is ${chatColors[user.color].name}!`)
     } else {
@@ -1068,12 +1098,14 @@ function getColor(chatroom, user) {
 }
 
 function getRandomUser() {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> getRandomUser()${resetTxt}`) }
     const arr = Object.keys(users)
     const randomUser = arr[Math.floor(Math.random() * arr.length)]
     return randomUser
 }
 
 function getRandomChannelMessage(user) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> getRandomChannelMessage(user: ${user.displayName})${resetTxt}`) }
     const allKeys = Object.keys(user)
     let channelKey = Math.floor(Math.random() * allKeys.length)
     while (![
@@ -1089,6 +1121,7 @@ function getRandomChannelMessage(user) {
 }
 
 function lemonify(str) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> lemonify(str: ${str})${resetTxt}`) }
     const words = str.split(` `)
     for (const [i, word] of words.entries()) {
         const number = Number(word)
@@ -1135,6 +1168,7 @@ function lemonify(str) {
 }
 
 function handleGreet(chatroom, user) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> handleGreet(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
     const greetings = [
         `Howdy,`,
         `Hello,`,
@@ -1179,6 +1213,7 @@ function handleGreet(chatroom, user) {
 }
 
 function handleMassGreet(chatroom, arr) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> handleGreet(chatroom: ${chatroom}, arr: ${arr})${resetTxt}`) }
     const response = []
     const greetings = [
         `hello`,
@@ -1208,6 +1243,7 @@ function handleMassGreet(chatroom, arr) {
 }
 
 function sayGoodnight(chatroom, user) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> handleGreet(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
     const greetings = [
         `Bye`,
         `Good night,`,
@@ -1230,6 +1266,7 @@ function sayGoodnight(chatroom, user) {
 }
 
 function sayYoureWelcome(chatroom, user) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
     const welcomes = [
         `${user.displayName}`,
         `You're welcome, ${user.displayName}`,
@@ -1251,16 +1288,19 @@ function sayYoureWelcome(chatroom, user) {
 }
 
 function handleColorChange(chatroom, user, newColor) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName}, newColor: ${newColor})${resetTxt}`) }
     user.color = newColor
     talk(chatroom, `Acknowledging ${user.displayName}'s color change :)`)
 }
 
 function handleTurboChange(chatroom, user, turboStatus) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName}, turboStatus: ${turboStatus})${resetTxt}`) }
     user.turbo = turboStatus
     turboStatus ? talk(chatroom, `Wow, ${user.displayName} got Turbo? :D`) : talk(chatroom, `Did ${user.displayName} stop having Turbo? :O`)
 }
 
 function handleSubChange(chatroom, user, subStatus) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName}, subStatus: ${subStatus})${resetTxt}`) }
     user[chatroom.slice(1)].sub = subStatus
     if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => subStatus ? talk(chatroom, `Thank you for the gift sub! :D`) : talk(chatroom, `Aww, did I lose my sub? :(`), 2000)
@@ -1270,6 +1310,7 @@ function handleSubChange(chatroom, user, subStatus) {
 }
 
 function handleModChange(chatroom, user, modStatus) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName}, modStatus: ${modStatus})${resetTxt}`) }
     user[chatroom.slice(1)].mod = modStatus
     if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => modStatus ? talk(chatroom, `Thank you for modding me! :D`) : talk(chatroom, `Was I just unmodded? :O`), 2000)
@@ -1279,6 +1320,7 @@ function handleModChange(chatroom, user, modStatus) {
 }
 
 function handleVIPChange(chatroom, user, vipStatus) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName}, vipStatus: ${vipStatus})${resetTxt}`) }
     user[chatroom.slice(1)].vip = vipStatus
     if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => vipStatus ? talk(chatroom, `Thank you for giving me VIP! :D`) : talk(chatroom, `Did I just lose VIP? :O`), 2000)
@@ -1288,6 +1330,7 @@ function handleVIPChange(chatroom, user, vipStatus) {
 }
 
 function checkEmoteStreak(chatroom, emoteArr, channel) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, emoteArr: ${emoteArr}, channel: ${channel})${resetTxt}`) }
     let emoteStreakCount = 0
     const emoteStreakUsers = []
     // Checking if message includes any of the provided emotes
@@ -1305,10 +1348,11 @@ function checkEmoteStreak(chatroom, emoteArr, channel) {
             return emoteReply(chatroom, channel, emoteArr)
         }
     }
+    if (DEBUG_MODE) { talk(chatroom, `Looking for ${emoteArr[0].substring(0, 4)} emotes... ${emoteStreakCount}/4 messages - ${emoteStreakUsers.join(`, `)}`) }
 }
 
 function emoteReply(chatroom, channel, emoteArr) {
-    console.log(`${boldTxt}> Running emoteReply()${resetTxt}`)
+    if (DEBUG_MODE) { console.log(`${boldTxt}> emoteReply(chatroom: ${chatroom}, channel: ${channel}, emoteArr: ${emoteArr})${resetTxt}`) }
     const popularEmotes = Array(emoteArr.length).fill(0)
     for (const [i, val] of emoteArr.entries()) {
         for (const user in users) {
