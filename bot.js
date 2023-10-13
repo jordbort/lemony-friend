@@ -874,11 +874,57 @@ function onMessageHandler(chatroom, tags, message, self) {
     }
 
     // *** FUN NUMBER! ***
-    if (users[username][channel].msgCount % 22 === 0) {
+    if (users[username][channel].msgCount % 27 === 0) {
         let randomUser = getRandomUser()
         const funNumber = Math.floor(Math.random() * 50)
 
         console.log(`${boldTxt}*** Fun number triggered by`, users[username].displayName, `:`, funNumber, resetTxt)
+        const currencies = [
+            {
+                name: `dollars`,
+                abbreviation: `usd`,
+                symbol: `$`,
+                zeroes: ``
+            },
+            {
+                name: `japanese yen`,
+                abbreviation: `jpy`,
+                symbol: `¥`,
+                zeroes: `00`
+            },
+            {
+                name: `korean won`,
+                abbreviation: `krw`,
+                symbol: `₩`,
+                zeroes: `000`
+            },
+            {
+                name: `turkish lira`,
+                abbreviation: ``,
+                symbol: `₺`,
+                zeroes: `00`
+            },
+            {
+                name: `british pound sterling`,
+                abbreviation: `gbp`,
+                symbol: `£`,
+                zeroes: ``
+            },
+            {
+                name: `mexican pesos`,
+                abbreviation: `mxn`,
+                symbol: `mex$`,
+                zeroes: `0`
+            },
+            {
+                name: `canadian dollars`,
+                abbreviation: `cad`,
+                symbol: `cad$`,
+                zeroes: `0`
+            }
+        ]
+        const randCurrency = Math.floor(Math.random() * currencies.length)
+        const currency = currencies[randCurrency]
 
         // Make 4-wide message pyramid of first word in message
         if (funNumber === 0) {
@@ -889,9 +935,9 @@ function onMessageHandler(chatroom, tags, message, self) {
             setTimeout(() => talk(chatroom, `${command} ${command}`), delay * 3)
             setTimeout(() => talk(chatroom, `${command}`), delay * 4)
         }
-        // Turn message count into dollars
-        else if (funNumber === 1) { return talk(chatroom, `Give me $${users[username][channel].msgCount} USD`) }
-        // Turn message count into thousands of dollars to my account
+        // Turn message count into money
+        else if (funNumber === 1) { return talk(chatroom, `Give me ${currency.symbol}${users[username][channel].msgCount}${currency.zeroes} ${currency.abbreviation.toUpperCase()}`) }
+        // Turn message count into money to my account
         else if (funNumber === 2) {
             const paymentMethods = [
                 `give me`,
@@ -910,7 +956,7 @@ function onMessageHandler(chatroom, tags, message, self) {
                 `write me a travelers check for`
             ]
             const paymentMethod = Math.floor(Math.random() * paymentMethods.length)
-            return talk(chatroom, `${paymentMethods[paymentMethod]} ${users[username][channel].msgCount},000 usd`)
+            return talk(chatroom, `${paymentMethods[paymentMethod]} ${users[username][channel].msgCount}${currency.zeroes} ${currency.name}`)
         }
         // Activate random redeem
         else if (funNumber === 3) {
@@ -995,7 +1041,7 @@ function onMessageHandler(chatroom, tags, message, self) {
                     `!redeem yes`
                 ]
             } else {
-                redeems = [`Give me ${users[username][channel].msgCount},000 dollars`]
+                redeems = [`Give me ${users[username][channel].msgCount}${currency.zeroes} ${currency.name}`]
             }
             const redeem = Math.floor(Math.random() * redeems.length)
             return talk(chatroom, redeems[redeem])
@@ -1116,6 +1162,7 @@ function getRandomChannelMessage(user) {
         `domonintendo1`,
         `ppuyya`
     ].includes(allKeys[channelKey])) { channelKey = Math.floor(Math.random() * allKeys.length) }
+    if (DEBUG_MODE) { console.log(`${boldTxt}...from ${allKeys[channelKey]}'s channel${resetTxt}`) }
     const randomMessage = user[allKeys[channelKey]].lastMessage
     return randomMessage
 }
@@ -1348,7 +1395,7 @@ function checkEmoteStreak(chatroom, emoteArr, channel) {
             return emoteReply(chatroom, channel, emoteArr)
         }
     }
-    if (DEBUG_MODE) { talk(chatroom, `Looking for ${emoteArr[0].substring(0, 4)} emotes... ${emoteStreakCount}/4 messages - ${emoteStreakUsers.join(`, `)}`) }
+    // if (DEBUG_MODE) { talk(chatroom, `Looking for ${emoteArr[0].substring(0, 4)} emotes... ${emoteStreakCount}/4 messages - ${emoteStreakUsers.join(`, `)}`) }
 }
 
 function emoteReply(chatroom, channel, emoteArr) {
