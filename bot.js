@@ -1168,10 +1168,113 @@ function getRandomChannelMessage(user) {
 }
 
 function lemonify(str) {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> lemonify(str: ${str})${resetTxt}`) }
     const words = str.split(` `)
-    for (const [i, word] of words.entries()) {
-        const number = Number(word)
+    const reservedKeywords = [
+        `a`,
+        `an`,
+        `this`,
+        `that`,
+        `one`,
+        `the`,
+        `my`,
+        `your`,
+        `his`,
+        `her`,
+        `its`,
+        `our`,
+        `their`,
+        `for`,
+        `and`,
+        `nor`,
+        `by`,
+        `or`,
+        `yet`,
+        `so`,
+        `if`,
+        `when`,
+        `of`,
+        `on`,
+        `these`,
+        `those`,
+        `many`,
+        `some`,
+        `zero`,
+        `one`,
+        `two`,
+        `three`,
+        `four`,
+        `five`,
+        `six`,
+        `seven`,
+        `eight`,
+        `nine`,
+        `ten`,
+        `eleven`,
+        `twelve`,
+        `thirteen`,
+        `fourteen`,
+        `fifteen`,
+        `sixteen`,
+        `seventeen`,
+        `eightteen`,
+        `nineteen`,
+        `twenty`,
+        `thirty`,
+        `forty`,
+        `fifty`,
+        `sixty`,
+        `seventy`,
+        `eighty`,
+        `ninety`,
+        `hundred`,
+        `thousand`,
+        `million`,
+        `billion`,
+        `trillion`,
+        `quadrillion`
+    ]
+
+    // Reading from last word to first
+    for (let i = words.length - 1; i >= 0; i--) {
+        const number = Number(words[i])
+        const punctuation = [
+            `.`,
+            `!`,
+            `?`,
+            `:`,
+            `;`,
+            `-`,
+            `"`,
+            `'`,
+            `,`,
+            `.`,
+            `/`,
+            `<`,
+            `>`,
+            `@`,
+            `#`,
+            `$`,
+            `%`,
+            `^`,
+            `&`,
+            `*`,
+            `(`,
+            `)`,
+            `-`,
+            `_`,
+            `+`,
+            `=`,
+            `~`
+        ]
+        let append = ``
+        while (words[i + 1] && punctuation.includes(words[i + 1][words[i + 1].length - 1])) {
+            for (const symbol of punctuation) {
+                if (words[i + 1].endsWith(symbol)) {
+                    append += symbol
+                    words[i + 1] = words[i + 1].substring(0, words[i + 1].length - 1)
+                }
+            }
+        }
 
         // Definitely singular
         if ((
@@ -1180,20 +1283,61 @@ function lemonify(str) {
                 `a`,
                 `an`,
                 `this`,
-                `that`
-            ].includes(word.toLowerCase()))
+                `that`,
+                `one`
+            ].includes(words[i].toLowerCase())
+            && !reservedKeywords.includes(words[i + 1]))
             && words[i + 1]
-        ) { words[i + 1] = `lemon` }
+        ) {
+            if (words[i].toLowerCase() === `an`) { words[i] = `a` }
+            words[i + 1] = `lemon${append}`
+        }
 
         // Definitely plural
         else if ((
             ((number || number === 0) && number !== 1)
             || [
                 `these`,
-                `those`
-            ].includes(word.toLowerCase()))
+                `those`,
+                `many`,
+                `some`,
+                `zero`,
+                `two`,
+                `three`,
+                `four`,
+                `five`,
+                `six`,
+                `seven`,
+                `eight`,
+                `nine`,
+                `ten`,
+                `eleven`,
+                `twelve`,
+                `thirteen`,
+                `fourteen`,
+                `fifteen`,
+                `sixteen`,
+                `seventeen`,
+                `eightteen`,
+                `nineteen`,
+                `twenty`,
+                `thirty`,
+                `forty`,
+                `fifty`,
+                `sixty`,
+                `seventy`,
+                `eighty`,
+                `ninety`,
+                `hundred`,
+                `thousand`,
+                `million`,
+                `billion`,
+                `trillion`,
+                `quadrillion`
+            ].includes(words[i].toLowerCase()))
             && words[i + 1]
-        ) { words[i + 1] = `lemons` }
+            && !reservedKeywords.includes(words[i + 1])
+        ) { words[i + 1] = `lemons${append}` }
 
         // Ambiguous count
         else if ((
@@ -1203,11 +1347,26 @@ function lemonify(str) {
                 `his`,
                 `her`,
                 `its`,
+                `whose`,
                 `our`,
-                `their`
-            ].includes(word.toLowerCase()))
+                `their`,
+                `for`,
+                `and`,
+                `nor`,
+                `by`,
+                `or`,
+                `yet`,
+                `so`,
+                `if`,
+                `when`,
+                `of`,
+                `on`,
+                `to`
+            ].includes(words[i].toLowerCase()))
             && words[i + 1]
-        ) { words[i + 1] = words[i + 1].toLowerCase().endsWith(`s`) ? `lemons` : `lemon` }
+            && !reservedKeywords.includes(words[i + 1])
+        ) { words[i + 1] = words[i + 1].toLowerCase().endsWith(`s`) ? `lemons${append}` : `lemon${append}` }
+        else if (words[i + 1]) { words[i + 1] = `${words[i + 1]}${append}` }
     }
 
     const lemonifiedString = words.join(` `)
