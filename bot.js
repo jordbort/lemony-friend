@@ -206,8 +206,8 @@ function onMessageHandler(chatroom, tags, message, self) {
             `I'm onl`,
             `reconnecting...`,
             `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`,
-            `(there are ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`,
-            `Debug mode is currently ${DEBUG_MODE ? `on` : `off`}! :)`
+            `(there ${Object.keys(tempCmds).length === 1 ? `is` : `are`} ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`,
+            `Debug mode is currently ${DEBUG_MODE ? `ON` : `OFF`}! :)`
         ]
         const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
         sayOnlineMsg = false
@@ -229,7 +229,7 @@ function onMessageHandler(chatroom, tags, message, self) {
         if (args[0]?.toLowerCase() === `on`) { DEBUG_MODE = true }
         else if (args[0]?.toLowerCase() === `off`) { DEBUG_MODE = false }
         else { DEBUG_MODE = !DEBUG_MODE }
-        DEBUG_MODE === initialDebugState ? talk(channel, `Debug mode is currently ${DEBUG_MODE ? `on` : `off`}! :)`) : talk(channel, `Debug mode is now ${DEBUG_MODE ? `on` : `off`}! :)`)
+        DEBUG_MODE === initialDebugState ? talk(channel, `Debug mode is currently ${DEBUG_MODE ? `ON` : `OFF`}! :)`) : talk(channel, `Debug mode is now ${DEBUG_MODE ? `ON` : `OFF`}! :)`)
     }
 
     // !lastmsg (Show a user's last message, optionally in a specified stream)
