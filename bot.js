@@ -346,7 +346,7 @@ function onMessageHandler(chatroom, tags, message, self) {
         for (key in tempCmds) {
             commands.push(`${key}: ${tempCmds[key]}`)
         }
-        return talk(chatroom, `All commands => ${commands.join(', ')}`)
+        return talk(chatroom, `There ${commands.length === 1 ? `is` : `are`} ${commands.length} temporary command${commands.length === 1 ? `` : `s`} ${commands.length === 0 ? `:(` : `=> ${commands.join(', ')}`}`)
     }
 
     // Check for tempCmd
