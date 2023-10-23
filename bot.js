@@ -874,9 +874,11 @@ function onMessageHandler(chatroom, tags, message, self) {
     }
 
     // *** FUN NUMBER! ***
-    if (users[username][channel].msgCount % 27 === 0) {
+    const funNumberCount = 25
+    const funNumberTotal = 50
+    if (users[username][channel].msgCount % funNumberCount === 0) {
         let randomUser = getRandomUser()
-        const funNumber = Math.floor(Math.random() * 50)
+        const funNumber = Math.floor(Math.random() * funNumberTotal)
 
         console.log(`${boldTxt}*** Fun number triggered by`, users[username].displayName, `:`, funNumber, resetTxt)
         const currencies = [
@@ -1179,6 +1181,7 @@ function onMessageHandler(chatroom, tags, message, self) {
             ]
             return talk(chatroom, actions[Math.floor(Math.random() * actions.length)])
         }
+        else if (funNumber === 7) { return talk(chatroom, `This message has a 1 / ${(funNumberCount * funNumberTotal).toLocaleString()} chance of appearing`) }
         else if (DEBUG_MODE) { talk(chatroom, `*** Fun number triggered by ${users[username].displayName}: ${funNumber}`) }
     }
 }
