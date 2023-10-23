@@ -887,10 +887,46 @@ function onMessageHandler(chatroom, tags, message, self) {
                 zeroes: ``
             },
             {
+                name: `dollars`,
+                abbreviation: `usd`,
+                symbol: `$`,
+                zeroes: ``
+            },
+            {
+                name: `dollars`,
+                abbreviation: `usd`,
+                symbol: `$`,
+                zeroes: ``
+            },
+            {
+                name: `dollars`,
+                abbreviation: `usd`,
+                symbol: `$`,
+                zeroes: ``
+            },
+            {
+                name: `dollars`,
+                abbreviation: `usd`,
+                symbol: `$`,
+                zeroes: ``
+            },
+            {
                 name: `japanese yen`,
                 abbreviation: `jpy`,
                 symbol: `¥`,
                 zeroes: `00`
+            },
+            {
+                name: `japanese yen`,
+                abbreviation: `jpy`,
+                symbol: `¥`,
+                zeroes: `00`
+            },
+            {
+                name: `korean won`,
+                abbreviation: `krw`,
+                symbol: `₩`,
+                zeroes: `000`
             },
             {
                 name: `korean won`,
@@ -905,6 +941,18 @@ function onMessageHandler(chatroom, tags, message, self) {
                 zeroes: `00`
             },
             {
+                name: `turkish lira`,
+                abbreviation: ``,
+                symbol: `₺`,
+                zeroes: `00`
+            },
+            {
+                name: `british pound sterling`,
+                abbreviation: `gbp`,
+                symbol: `£`,
+                zeroes: ``
+            },
+            {
                 name: `british pound sterling`,
                 abbreviation: `gbp`,
                 symbol: `£`,
@@ -913,14 +961,80 @@ function onMessageHandler(chatroom, tags, message, self) {
             {
                 name: `mexican pesos`,
                 abbreviation: `mxn`,
-                symbol: `mex$`,
+                symbol: `$`,
+                zeroes: `0`
+            },
+            {
+                name: `mexican pesos`,
+                abbreviation: `mxn`,
+                symbol: `$`,
                 zeroes: `0`
             },
             {
                 name: `canadian dollars`,
                 abbreviation: `cad`,
-                symbol: `cad$`,
+                symbol: `$`,
                 zeroes: `0`
+            },
+            {
+                name: `canadian dollars`,
+                abbreviation: `cad`,
+                symbol: `$`,
+                zeroes: `0`
+            },
+            {
+                name: `euro`,
+                abbreviation: `eur`,
+                symbol: `€`,
+                zeroes: ``
+            },
+            {
+                name: `euro`,
+                abbreviation: `eur`,
+                symbol: `€`,
+                zeroes: ``
+            },
+            {
+                name: `australian dollars`,
+                abbreviation: `aud`,
+                symbol: `$`,
+                zeroes: `0`
+            },
+            {
+                name: `australian dollars`,
+                abbreviation: `aud`,
+                symbol: `$`,
+                zeroes: `0`
+            },
+            {
+                name: `malaysian ringgit`,
+                abbreviation: `myr`,
+                symbol: `RM`,
+                zeroes: `0`
+            },
+            {
+                name: `malaysian ringgit`,
+                abbreviation: `myr`,
+                symbol: `RM`,
+                zeroes: `0`
+            },
+            {
+                name: `indian rupees`,
+                abbreviation: `inr`,
+                symbol: `₹`,
+                zeroes: `00`
+            },
+            {
+                name: `indian rupees`,
+                abbreviation: `inr`,
+                symbol: `₹`,
+                zeroes: `00`
+            },
+            {
+                name: `zimbabwean dollars`,
+                abbreviation: `zwd`,
+                symbol: `$`,
+                zeroes: `0000000000000000`
             }
         ]
         const randCurrency = Math.floor(Math.random() * currencies.length)
