@@ -427,7 +427,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     if (command === `!dadjoke`) { return getDadJoke(chatroom) }
 
     // !pokemon
-    if (command === `!pokemon`) { return getPokemon(chatroom) }
+    if (command === `!pokemon`) { return getPokemon(chatroom, args[0]) }
 
     // JSON stats of user or toUser
     if (command === `!mystats`) {
@@ -1232,23 +1232,126 @@ async function getDadJoke(chatroom) {
     data.status === 200 ? talk(chatroom, data.joke) : talk(chatroom, `Error fetching dad joke! :(`)
 }
 
-async function getPokemon(chatroom) {
-    let randNum = Math.ceil(Math.random() * 1281)
+async function getPokemon(chatroom, pokemon) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> getPokemon(chatroom: ${chatroom}, pokemon: ${pokemon})${resetTxt}`) }
+    if (!pokemon) { return }
 
-    console.log(`Looking up Pokemon #${randNum}...`)
-    if (DEBUG_MODE) { talk(chatroom, `Looking up Pokemon #${randNum}...`) }
-
-    let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randNum}`)
-    while (response.statusText !== `OK`) {
-        randNum = Math.ceil(Math.random() * 1281)
-
-        console.log(`Not Found! Looking up Pokemon #${randNum}...`)
-        if (DEBUG_MODE) { talk(chatroom, `Not Found! Looking up Pokemon #${randNum}...`) }
-
-        response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randNum}`)
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`)
+    if (response.statusText !== `OK`) {
+        talk(chatroom, `Pokemon ${pokemon} was not found! :(`)
+        return
     }
     const data = await response.json()
-    talk(chatroom, `${data.name}: ${data.sprites.front_default}`)
+
+    let message = `#${data.id} ${pokemon.toUpperCase()} `
+
+    const pokemonTypes = []
+    for (const types of data.types) { pokemonTypes.push(types.type.name) }
+    message += `(${pokemonTypes.join(`/`)}) - ${data.abilities.length === 1 ? `Ability` : `Abilities`}: `
+
+    const pokemonAbilities = []
+    for (const abilities of data.abilities) { pokemonAbilities.push(`${abilities.ability.name}${abilities.is_hidden ? ` (hidden)` : ``}`) }
+    message += `${pokemonAbilities.join(`, `)}. `
+
+    if (DEBUG_MODE) {
+        console.log(data.types)
+        console.log(data.abilities)
+    }
+
+    let type1Data
+    let type2Data
+    const doubleDamageTo = []
+    const doubleDamageFrom = []
+    const halfDamageTo = []
+    const halfDamageFrom = []
+    const immuneTo = []
+    const immuneFrom = []
+
+    if (pokemonTypes[0]) {
+        // look up one type
+        const response1 = await fetch(`https://pokeapi.co/api/v2/type/${pokemonTypes[0]}`)
+        type1Data = await response1.json()
+        for (const damageType of type1Data.damage_relations.double_damage_to) {
+            if (!doubleDamageTo.includes(damageType.name)) { doubleDamageTo.push(damageType.name) }
+        }
+        for (const damageType of type1Data.damage_relations.double_damage_from) {
+            if (!doubleDamageFrom.includes(damageType.name)) { doubleDamageFrom.push(damageType.name) }
+        }
+        for (const damageType of type1Data.damage_relations.half_damage_to) {
+            if (!halfDamageTo.includes(damageType.name)) { halfDamageTo.push(damageType.name) }
+        }
+        for (const damageType of type1Data.damage_relations.half_damage_from) {
+            if (!halfDamageFrom.includes(damageType.name)) { halfDamageFrom.push(damageType.name) }
+        }
+        for (const damageType of type1Data.damage_relations.no_damage_to) {
+            if (!immuneTo.includes(damageType.name)) { immuneTo.push(damageType.name) }
+        }
+        for (const damageType of type1Data.damage_relations.no_damage_from) {
+            if (!immuneFrom.includes(damageType.name)) { immuneFrom.push(damageType.name) }
+        }
+    }
+    if (pokemonTypes[1]) {
+        // look up two types
+        const response2 = await fetch(`https://pokeapi.co/api/v2/type/${pokemonTypes[1]}`)
+        type2Data = await response2.json()
+        for (const damageType of type2Data.damage_relations.double_damage_to) {
+            if (!doubleDamageTo.includes(damageType.name)) { doubleDamageTo.push(damageType.name) }
+        }
+        for (const damageType of type2Data.damage_relations.double_damage_from) {
+            if (!doubleDamageFrom.includes(damageType.name)) { doubleDamageFrom.push(damageType.name) }
+        }
+        for (const damageType of type2Data.damage_relations.half_damage_to) {
+            if (!halfDamageTo.includes(damageType.name)) { halfDamageTo.push(damageType.name) }
+        }
+        for (const damageType of type2Data.damage_relations.half_damage_from) {
+            if (!halfDamageFrom.includes(damageType.name)) { halfDamageFrom.push(damageType.name) }
+        }
+        for (const damageType of type2Data.damage_relations.no_damage_to) {
+            if (!immuneTo.includes(damageType.name)) { immuneTo.push(damageType.name) }
+        }
+        for (const damageType of type2Data.damage_relations.no_damage_from) {
+            if (!immuneFrom.includes(damageType.name)) { immuneFrom.push(damageType.name) }
+        }
+    }
+
+    if (DEBUG_MODE) {
+        console.log(`type1Data.damage_relations:`, type1Data.damage_relations)
+        console.log(`type2Data.damage_relations:`, type2Data.damage_relations)
+    }
+
+    // if it TAKES double damage AND half damage FROM a type, remove from BOTH arrays
+    const nullify = []
+    for (const type of doubleDamageFrom) {
+        console.log(`Looking at:`, doubleDamageFrom.indexOf(type), type)
+        if (halfDamageFrom.includes(type)) {
+            console.log(`Found in both:`, type)
+            // doubleDamageFrom.splice(doubleDamageFrom.indexOf(type), 1)
+            // halfDamageFrom.splice(halfDamageFrom.indexOf(type), 1)
+            nullify.push(type)
+        }
+    }
+    for (const dupe of nullify) {
+        doubleDamageFrom.splice(doubleDamageFrom.indexOf(dupe), 1)
+        halfDamageFrom.splice(halfDamageFrom.indexOf(dupe), 1)
+    }
+
+    if (DEBUG_MODE) {
+        console.log(`nullify:`, nullify)
+        console.log(`doubleDamageTo:`, doubleDamageTo)
+        console.log(`doubleDamageFrom:`, doubleDamageFrom)
+        console.log(`halfDamageTo:`, halfDamageTo)
+        console.log(`halfDamageFrom:`, halfDamageFrom)
+        console.log(`immuneTo:`, immuneTo)
+        console.log(`immuneFrom:`, immuneFrom)
+    }
+
+    if (doubleDamageTo.length > 0) { message += `Super effective against ${doubleDamageTo.join(`/`)}-type Pokemon. ` }
+    if (doubleDamageFrom.length > 0) { message += `Weak against ${doubleDamageFrom.join(`/`)}-type moves. ` }
+    if (halfDamageTo.length > 0) { message += `Not very effective against ${halfDamageTo.join(`/`)}-type Pokemon. ` }
+    if (halfDamageFrom.length > 0) { message += `Resistant to ${halfDamageFrom.join(`/`)}-type moves. ` }
+    if (immuneTo.length > 0) { message += `No effect to ${immuneTo.join(`/`)}-type Pokemon. ` }
+    if (immuneFrom.length > 0) { message += `No effect from ${immuneFrom.join(`/`)}-type moves.` }
+    talk(chatroom, message)
 }
 
 function getColor(chatroom, user) {
