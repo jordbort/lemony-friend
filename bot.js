@@ -587,7 +587,7 @@ function onMessageHandler(chatroom, tags, message, self) {
 
     // User asking an "am i ...?" question about themselves
     if (command === `am`
-        && args[0].toLowerCase() === `i`) {
+        && args[0]?.toLowerCase() === `i`) {
         args.shift()
         const lowercaseArgs = args.map(str => str.toLowerCase())
 
