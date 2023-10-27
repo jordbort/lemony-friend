@@ -383,29 +383,11 @@ function onMessageHandler(chatroom, tags, message, self) {
             575: `cooking adjacent goal`,
             600: `sclarf will END STREAM IMMEDIATELY`,
             625: `sclarf will Call shannon wonderwall`,
-            650: `sclarf will tace bell irl stream?`,
+            650: `sclarf will taco bell irl stream?`,
             675: `sclarf will sexc sclarf corp calendar`,
             700: `sclarf will go see trom!`
         }
-        if (isNaN(subs)) {
-            return talk(chatroom, args.join(` `))
-        } else if (subs in goals) {
-            return talk(chatroom, `At ${subs} subs, ${goals[subs]}`)
-        }
-        // else {
-        //     const adjectives = [
-        //         `nice`,
-        //         `nice`,
-        //         `friendly`,
-        //         `friendly`,
-        //         `sweet`,
-        //         `lovely`,
-        //         `warm`,
-        //         `special`,
-        //         `consensual`
-        //     ]
-        //     return talk(chatroom, `At ${subs} subs, sclarf will give @lemony_friend a ${adjectives[Math.floor(Math.random() * adjectives.length)]} hug! :)`)
-        // }
+        if (!isNaN(subs) && subs in goals) { return talk(chatroom, `At ${subs} subs, ${goals[subs]}`) }
     }
 
     // !bye OR !gn OR !goodnight
