@@ -547,7 +547,7 @@ function onMessageHandler(chatroom, tags, message, self) {
         // In case saying "what's up" first, and/or `up` doesn't come immediately
         if (whatsUpPrefix.includes(command)) {
             for (const str of lowercaseArgs) {
-                if (str.slice(0, 2) === `up`) {
+                if (str.startsWith(`up`)) {
                     return handleGreet(chatroom, users[username])
                 }
             }
@@ -557,7 +557,7 @@ function onMessageHandler(chatroom, tags, message, self) {
         for (const [i, val] of lowercaseArgs.entries()) {
             // Checking if greeting came later in message
             for (const str of greetings) {
-                if (val.slice(0, str.length) === str) { return handleGreet(chatroom, users[username]) }
+                if (val.startsWith(str)) { return handleGreet(chatroom, users[username]) }
             }
 
             // If `gn` came later in the message
@@ -585,9 +585,9 @@ function onMessageHandler(chatroom, tags, message, self) {
             }
 
             // Checking if `up` (and preceeding "what's"-like word) came later in message
-            if (val.slice(0, 2) === `up`) {
+            if (val.startsWith(`up`)) {
                 for (const str of whatsUpPrefix) {
-                    if (lowercaseArgs[i - 1].slice(0, str.length) === str) {
+                    if (lowercaseArgs[i - 1].startsWith(str)) {
                         return handleGreet(chatroom, users[username])
                     }
                 }
@@ -605,7 +605,7 @@ function onMessageHandler(chatroom, tags, message, self) {
             const idx = lowercaseArgs.indexOf(str)
 
             // Asking about channel info
-            if (str.slice(0, 3) === `sub`) {
+            if (str.startsWith(`sub`)) {
                 if (lowercaseArgs[idx + 2]) {
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`jpeg`) && `jpegstripes` in users[username]) { return users[username][`jpegstripes`].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to JPEGSTRIPES! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to JPEGSTRIPES! :(`) }
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`scl`) && `sclarf` in users[username]) { return users[username][`sclarf`].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to sclarf! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to sclarf! :(`) }
@@ -614,7 +614,7 @@ function onMessageHandler(chatroom, tags, message, self) {
                 }
                 return users[username][channel].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to ${channel}! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to ${channel}! :(`)
             }
-            if (str.slice(0, 3) === `mod`) {
+            if (str.startsWith(`mod`)) {
                 if (lowercaseArgs[idx + 2]) {
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`jpeg`) && `jpegstripes` in users[username]) { return users[username][`jpegstripes`].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in JPEGSTRIPES's chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in JPEGSTRIPES's chat! :(`) }
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`scl`) && `sclarf` in users[username]) { return users[username][`sclarf`].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in sclarf's chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in sclarf's chat! :(`) }
@@ -623,7 +623,7 @@ function onMessageHandler(chatroom, tags, message, self) {
                 }
                 return users[username][channel].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in ${channel}'s chat! :(`)
             }
-            if (str.slice(0, 3) === `vip`) {
+            if (str.startsWith(`vip`)) {
                 if (lowercaseArgs[idx + 2]) {
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`jpeg`) && `jpegstripes` in users[username]) { return users[username][`jpegstripes`].vip ? talk(chatroom, `Yes ${displayName}, you are a vip in JPEGSTRIPES's chat! :)`) : talk(chatroom, `No ${displayName}, you are not a vip in JPEGSTRIPES's chat! :(`) }
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`scl`) && `sclarf` in users[username]) { return users[username][`sclarf`].vip ? talk(chatroom, `Yes ${displayName}, you are a vip in sclarf's chat! :)`) : talk(chatroom, `No ${displayName}, you are not a vip in sclarf's chat! :(`) }
@@ -645,7 +645,7 @@ function onMessageHandler(chatroom, tags, message, self) {
             const idx = lowercaseArgs.indexOf(str)
 
             // Asking about channel info
-            if (str.slice(0, 3) === `sub`) {
+            if (str.startsWith(`sub`)) {
                 if (lowercaseArgs[idx + 2]) {
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`jpeg`) && `jpegstripes` in users[username]) { return users[username][`jpegstripes`].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to JPEGSTRIPES! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to JPEGSTRIPES! :(`) }
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`scl`) && `sclarf` in users[username]) { return users[username][`sclarf`].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to sclarf! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to sclarf! :(`) }
@@ -654,7 +654,7 @@ function onMessageHandler(chatroom, tags, message, self) {
                 }
                 return users[username][channel].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to ${channel}! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to ${channel}! :(`)
             }
-            if (str.slice(0, 3) === `mod`) {
+            if (str.startsWith(`mod`)) {
                 if (lowercaseArgs[idx + 2]) {
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`jpeg`) && `jpegstripes` in users[username]) { return users[username][`jpegstripes`].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in JPEGSTRIPES's chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in JPEGSTRIPES's chat! :(`) }
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`scl`) && `sclarf` in users[username]) { return users[username][`sclarf`].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in sclarf's chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in sclarf's chat! :(`) }
@@ -663,7 +663,7 @@ function onMessageHandler(chatroom, tags, message, self) {
                 }
                 return users[username][channel].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in ${channel}'s chat! :(`)
             }
-            if (str.slice(0, 3) === `vip`) {
+            if (str.startsWith(`vip`)) {
                 if (lowercaseArgs[idx + 2]) {
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`jpeg`) && `jpegstripes` in users[username]) { return users[username][`jpegstripes`].vip ? talk(chatroom, `Yes ${displayName}, you are a vip in JPEGSTRIPES's chat! :)`) : talk(chatroom, `No ${displayName}, you are not a vip in JPEGSTRIPES's chat! :(`) }
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`scl`) && `sclarf` in users[username]) { return users[username][`sclarf`].vip ? talk(chatroom, `Yes ${displayName}, you are a vip in sclarf's chat! :)`) : talk(chatroom, `No ${displayName}, you are not a vip in sclarf's chat! :(`) }
@@ -691,7 +691,7 @@ function onMessageHandler(chatroom, tags, message, self) {
             const idx = lowercaseArgs.indexOf(str)
 
             // Asking about other user's channel info
-            if (str.slice(0, 3) === `sub`) {
+            if (str.startsWith(`sub`)) {
                 if (lowercaseArgs[idx + 2]) {
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`jpeg`) && `jpegstripes` in targetedUser) { return targetedUser[`jpegstripes`].sub ? talk(chatroom, `Yes, ${targetedUser.displayName} is subbed to JPEGSTRIPES! :)`) : talk(chatroom, `No, ${targetedUser.displayName} is not subbed to JPEGSTRIPES! :(`) }
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`scl`) && `sclarf` in targetedUser) { return targetedUser[`sclarf`].sub ? talk(chatroom, `Yes, ${targetedUser.displayName} is subbed to sclarf! :)`) : talk(chatroom, `No, ${targetedUser.displayName} is not subbed to sclarf! :(`) }
@@ -700,7 +700,7 @@ function onMessageHandler(chatroom, tags, message, self) {
                 }
                 return targetedUser[channel]?.sub ? talk(chatroom, `Yes, ${targetedUser.displayName} is subbed to ${channel}! :)`) : talk(chatroom, `No, ${targetedUser.displayName} is not subbed to ${channel}! :(`)
             }
-            if (str.slice(0, 3) === `mod`) {
+            if (str.startsWith(`mod`)) {
                 if (lowercaseArgs[idx + 2]) {
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`jpeg`) && `jpegstripes` in targetedUser) { return targetedUser[`jpegstripes`].mod ? talk(chatroom, `Yes, ${targetedUser.displayName} is a mod in JPEGSTRIPES's chat! :)`) : talk(chatroom, `No, ${targetedUser.displayName} is not a mod in JPEGSTRIPES's chat! :(`) }
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`scl`) && `sclarf` in targetedUser) { return targetedUser[`sclarf`].mod ? talk(chatroom, `Yes, ${targetedUser.displayName} is a mod in sclarf's chat! :)`) : talk(chatroom, `No, ${targetedUser.displayName} is not a mod in sclarf's chat! :(`) }
@@ -709,7 +709,7 @@ function onMessageHandler(chatroom, tags, message, self) {
                 }
                 return targetedUser[channel]?.mod ? talk(chatroom, `Yes, ${targetedUser.displayName} is a mod in ${channel}'s chat! :)`) : talk(chatroom, `No, ${targetedUser.displayName} is not a mod in ${channel}'s chat! :(`)
             }
-            if (str.slice(0, 3) === `vip`) {
+            if (str.startsWith(`vip`)) {
                 if (lowercaseArgs[idx + 2]) {
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`jpeg`) && `jpegstripes` in targetedUser) { return targetedUser[`jpegstripes`].vip ? talk(chatroom, `Yes, ${targetedUser.displayName} is a VIP in JPEGSTRIPES's chat! :)`) : talk(chatroom, `No, ${targetedUser.displayName} is not a VIP in JPEGSTRIPES's chat! :(`) }
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`scl`) && `sclarf` in targetedUser) { return targetedUser[`sclarf`].vip ? talk(chatroom, `Yes, ${targetedUser.displayName} is a VIP in sclarf's chat! :)`) : talk(chatroom, `No, ${targetedUser.displayName} is not a VIP in sclarf's chat! :(`) }
@@ -726,7 +726,7 @@ function onMessageHandler(chatroom, tags, message, self) {
         const lowercaseArgs = args.map(str => str.toLowerCase())
         for (const str of lowercaseArgs) {
             // If a word starts with "but", and has a 4th letter that isn't T or punctuation, make it "BUTT-(rest of word)"
-            if (str.slice(0, 3).toLowerCase() === `but`
+            if (str.toLowerCase().startsWith(`but`)
                 && str[3]
                 && ![
                     `t`,
