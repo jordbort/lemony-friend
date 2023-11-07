@@ -488,8 +488,11 @@ function onMessageHandler(chatroom, tags, message, self) {
         if (command === `gj`
             || command === `nj`) { return sayThanks(chatroom, users[username]) }
 
-        // If the first word is `good`/`nice` followed by `job`
-        if ([`good`, `nice`].includes(command) && args[0]?.startsWith(`job`)) { return sayThanks(chatroom, users[username]) }
+        // If the first word is `good`/`nice` followed by `job` or `work`
+        if ([`good`, `nice`].includes(command)
+            && (args[0]?.startsWith(`job`) || args[0]?.startsWith(`work`))) {
+            return sayThanks(chatroom, users[username])
+        }
 
         // If the first word is `well` followed by `done`
         if (command === `well` && args[0]?.startsWith(`done`)) { return sayThanks(chatroom, users[username]) }
@@ -597,8 +600,11 @@ function onMessageHandler(chatroom, tags, message, self) {
             // If `gj` or `nj` came later in the message
             if ([`gj`, `nj`].includes(val)) { return sayThanks(chatroom, users[username]) }
 
-            // If `good` or `nice` followed by `job` came later in the message
-            if ([`good`, `nice`].includes(val) && lowercaseArgs[i + 1].startsWith(`job`)) { return sayThanks(chatroom, users[username]) }
+            // If `good`/`nice` followed by `job`/`work` came later in the message
+            if ([`good`, `nice`].includes(val)
+                && (lowercaseArgs[i + 1]?.startsWith(`job`) || lowercaseArgs[i + 1]?.startsWith(`work`))) {
+                return sayThanks(chatroom, users[username])
+            }
 
             // If `well` followed by `done` came later in the message
             if (val === `well` && lowercaseArgs[i + 1].startsWith(`done`)) { return sayThanks(chatroom, users[username]) }
