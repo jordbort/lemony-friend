@@ -479,16 +479,18 @@ function onMessageHandler(chatroom, tags, message, self) {
                 `night`,
                 `nite`
             ]
-            if (nights.includes(args[0].toLowerCase())) { return sayGoodnight(chatroom, users[username]) }
+            for (const night of nights) {
+                if (args[0].toLowerCase().startsWith(night)) { return sayGoodnight(chatroom, users[username]) }
+            }
         }
 
         // If the first word is `gj` or `nj`
         if (command === `gj`
             || command === `nj`) { return sayThanks(chatroom, users[username]) }
 
-        // If the first word is `good/nice` followed by `job`
+        // If the first word is `good`/`nice` followed by `job`
         if ([`good`, `nice`].includes(command) && args[0]?.startsWith(`job`)) { return sayThanks(chatroom, users[username]) }
-        
+
         // If the first word is `well` followed by `done`
         if (command === `well` && args[0]?.startsWith(`done`)) { return sayThanks(chatroom, users[username]) }
 
@@ -501,7 +503,9 @@ function onMessageHandler(chatroom, tags, message, self) {
             `ty`,
             `thx`
         ]
-        if (thanks.includes(command)) { return sayYoureWelcome(chatroom, users[username]) }
+        for (const thank of thanks) {
+            if (command.startsWith(thank)) { return sayYoureWelcome(chatroom, users[username]) }
+        }
 
         // If the first word is `thank`-like and followed by "you"-like word
         const thankLike = [
@@ -519,7 +523,9 @@ function onMessageHandler(chatroom, tags, message, self) {
             `u`
         ]
         if (thankLike.includes(command)) {
-            if (yous.includes(args[0].toLowerCase())) { return sayYoureWelcome(chatroom, users[username]) }
+            for (const you of yous) {
+                if (args[0].toLowerCase().startsWith(you)) { return sayYoureWelcome(chatroom, users[username]) }
+            }
         }
 
         // All words after the first, in lower case
@@ -569,20 +575,33 @@ function onMessageHandler(chatroom, tags, message, self) {
                     `night`,
                     `nite`
                 ]
-                if (lowercaseArgs[i + 1] && nights.includes(lowercaseArgs[i + 1].toLowerCase())) { return sayGoodnight(chatroom, users[username]) }
+                if (lowercaseArgs[i + 1]) {
+                    for (const night of nights) { if (lowercaseArgs[i + 1].startsWith(night)) { return sayGoodnight(chatroom, users[username]) } }
+                }
             }
 
             // If thanks came later in message
             for (const str of thanks) {
-                if (val === str) { return sayYoureWelcome(chatroom, users[username]) }
+                if (val.startsWith(str)) { return sayYoureWelcome(chatroom, users[username]) }
             }
 
             // If "thank"-like followed by "you"-like word came later in the message
             for (const str of thankLike) {
                 if (val === str) {
-                    if (lowercaseArgs[i + 1] && yous.includes(lowercaseArgs[i + 1].toLowerCase())) { return sayYoureWelcome(chatroom, users[username]) }
+                    for (const you of yous) {
+                        if (lowercaseArgs[i + 1].startsWith(you)) { return sayYoureWelcome(chatroom, users[username]) }
+                    }
                 }
             }
+
+            // If `gj` or `nj` came later in the message
+            if ([`gj`, `nj`].includes(val)) { return sayThanks(chatroom, users[username]) }
+
+            // If `good` or `nice` followed by `job` came later in the message
+            if ([`good`, `nice`].includes(val) && lowercaseArgs[i + 1].startsWith(`job`)) { return sayThanks(chatroom, users[username]) }
+
+            // If `well` followed by `done` came later in the message
+            if (val === `well` && lowercaseArgs[i + 1].startsWith(`done`)) { return sayThanks(chatroom, users[username]) }
 
             // Checking if `up` (and preceeding "what's"-like word) came later in message
             if (val.startsWith(`up`)) {
