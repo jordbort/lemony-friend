@@ -82,7 +82,7 @@ const users = {}
 const tempCmds = {}
 let listening = true
 let sayOnlineMsg = true
-let DEBUG_MODE = false
+let DEBUG_MODE = true
 
 function onMessageHandler(chatroom, tags, message, self) {
     const msg = cleanupSpaces(message)
@@ -481,6 +481,16 @@ function onMessageHandler(chatroom, tags, message, self) {
             ]
             if (nights.includes(args[0].toLowerCase())) { return sayGoodnight(chatroom, users[username]) }
         }
+
+        // If the first word is `gj` or `nj`
+        if (command === `gj`
+            || command === `nj`) { return sayThanks(chatroom, users[username]) }
+
+        // If the first word is `good/nice` followed by `job`
+        if ([`good`, `nice`].includes(command) && args[0]?.startsWith(`job`)) { return sayThanks(chatroom, users[username]) }
+        
+        // If the first word is `well` followed by `done`
+        if (command === `well` && args[0]?.startsWith(`done`)) { return sayThanks(chatroom, users[username]) }
 
         // If the first word is `thanks`-like
         const thanks = [
@@ -1688,6 +1698,34 @@ function sayYoureWelcome(chatroom, user) {
             `you're welcome`,
             `no problem`,
             `my pleasure`
+        ]
+        response += ` ${appends[Math.floor(Math.random() * appends.length)]}`
+    }
+    response += `! :)`
+    talk(chatroom, response)
+}
+
+function sayThanks(chatroom, user) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> sayThanks(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
+    const thanks = [
+        `${user.displayName}`,
+        `Thanks, ${user.displayName}`,
+        `Thanks, ${user.displayName}`,
+        `Thanks, ${user.displayName}`,
+        `Thank you, ${user.displayName}`,
+        `Thank you, ${user.displayName}`,
+        `Thank you, ${user.displayName}`,
+        `Thank you so much, ${user.displayName}`,
+        `Hey thanks, ${user.displayName}`,
+        `Aw thanks, ${user.displayName}`
+    ]
+    const sentiment = Math.floor(Math.random() * thanks.length)
+    let response = `${thanks[sentiment]}`
+    if (sentiment === 0) {
+        const appends = [
+            `thanks`,
+            `thank you`,
+            `thank you so much`
         ]
         response += ` ${appends[Math.floor(Math.random() * appends.length)]}`
     }
