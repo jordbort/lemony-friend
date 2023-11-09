@@ -100,7 +100,7 @@ function onMessageHandler(chatroom, tags, message, self) {
 
     // User attribute change detection
     const colorChanged = username in users && color !== users[username]?.color
-    const turboChange = username in users && tags.turbo !== users[username]?.turbo
+    // const turboChange = username in users && tags.turbo !== users[username]?.turbo
     const subChange = users[username]?.[channel]?.sub !== undefined && tags.subscriber !== users[username]?.[channel]?.sub
     const modChange = users[username]?.[channel]?.mod !== undefined && tags.mod !== users[username]?.[channel]?.mod
     const vipChange = users[username]?.[channel]?.vip !== undefined && (!!tags.vip || !!tags.badges?.vip) !== users[username]?.[channel]?.vip
@@ -215,7 +215,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     }
 
     if (colorChanged) { return handleColorChange(chatroom, users[username], color) }
-    if (turboChange) { return handleTurboChange(chatroom, users[username], tags.turbo) }
+    // if (turboChange) { return handleTurboChange(chatroom, users[username], tags.turbo) }
 
     // User's first message in a given channel
     if (firstMsg) { return handleNewChatter(chatroom, users[username]) }
@@ -662,7 +662,7 @@ function onMessageHandler(chatroom, tags, message, self) {
 
     // User asking a "do i ...?" question about themselves
     if (command === `do`
-        && args[0].toLowerCase() === `i`) {
+        && args[0]?.toLowerCase() === `i`) {
         args.shift()
         const lowercaseArgs = args.map(str => str.toLowerCase())
 
@@ -1199,7 +1199,7 @@ function onMessageHandler(chatroom, tags, message, self) {
             return talk(chatroom, actions[Math.floor(Math.random() * actions.length)])
         }
         else if (funNumber === 7) { return talk(chatroom, `This message has a 1 / ${(funNumberCount * funNumberTotal).toLocaleString()} chance of appearing`) }
-        else if (DEBUG_MODE) { talk(chatroom, `*** Fun number triggered by ${users[username].displayName}: ${funNumber}`) }
+        // else if (DEBUG_MODE) { talk(chatroom, `*** Fun number triggered by ${users[username].displayName}: ${funNumber}`) }
     }
 }
 
@@ -1332,8 +1332,8 @@ async function getPokemon(chatroom, pokemon) {
     }
 
     if (DEBUG_MODE) {
-        console.log(`type1Data.damage_relations:`, type1Data.damage_relations)
-        console.log(`type2Data.damage_relations:`, type2Data.damage_relations)
+        type1Data && console.log(`type1Data.damage_relations:`, type1Data.damage_relations)
+        type2Data && console.log(`type2Data.damage_relations:`, type2Data.damage_relations)
     }
 
     // if it TAKES double damage AND half damage FROM a type, remove from BOTH arrays
@@ -1352,6 +1352,18 @@ async function getPokemon(chatroom, pokemon) {
         halfDamageFrom.splice(halfDamageFrom.indexOf(dupe), 1)
     }
 
+    // Cleaning up immunities
+    for (const type of immuneFrom) {
+        if (halfDamageFrom.includes(type)) {
+            console.log(`"Immunity from" found in halfDamageFrom:`, type)
+            halfDamageFrom.splice(halfDamageFrom.indexOf(type), 1)
+        }
+        if (doubleDamageFrom.includes(type)) {
+            console.log(`"Immunity from" found in doubleDamageFrom:`, type)
+            doubleDamageFrom.splice(doubleDamageFrom.indexOf(type), 1)
+        }
+    }
+
     if (DEBUG_MODE) {
         console.log(`nullify:`, nullify)
         console.log(`doubleDamageTo:`, doubleDamageTo)
@@ -1362,9 +1374,9 @@ async function getPokemon(chatroom, pokemon) {
         console.log(`immuneFrom:`, immuneFrom)
     }
 
-    if (doubleDamageTo.length > 0) { message += `Super effective against ${doubleDamageTo.join(`/`)}-type Pokemon. ` }
-    if (doubleDamageFrom.length > 0) { message += `Weak against ${doubleDamageFrom.join(`/`)}-type moves. ` }
-    if (halfDamageTo.length > 0) { message += `Not very effective against ${halfDamageTo.join(`/`)}-type Pokemon. ` }
+    if (doubleDamageTo.length > 0) { message += `Super effective to ${doubleDamageTo.join(`/`)}-type Pokemon. ` }
+    if (doubleDamageFrom.length > 0) { message += `Weak to ${doubleDamageFrom.join(`/`)}-type moves. ` }
+    if (halfDamageTo.length > 0) { message += `Not very effective to ${halfDamageTo.join(`/`)}-type Pokemon. ` }
     if (halfDamageFrom.length > 0) { message += `Resistant to ${halfDamageFrom.join(`/`)}-type moves. ` }
     if (immuneTo.length > 0) { message += `No effect to ${immuneTo.join(`/`)}-type Pokemon. ` }
     if (immuneFrom.length > 0) { message += `No effect from ${immuneFrom.join(`/`)}-type moves.` }
@@ -1764,11 +1776,11 @@ function handleColorChange(chatroom, user, newColor) {
     talk(chatroom, `Acknowledging ${user.displayName}'s color change :)`)
 }
 
-function handleTurboChange(chatroom, user, turboStatus) {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName}, turboStatus: ${turboStatus})${resetTxt}`) }
-    user.turbo = turboStatus
-    turboStatus ? talk(chatroom, `Wow, ${user.displayName} got Turbo? :D`) : talk(chatroom, `Did ${user.displayName} stop having Turbo? :O`)
-}
+// function handleTurboChange(chatroom, user, turboStatus) {
+//     if (DEBUG_MODE) { console.log(`${boldTxt}> handleTurboChange(chatroom: ${chatroom}, user: ${user.displayName}, turboStatus: ${turboStatus})${resetTxt}`) }
+//     user.turbo = turboStatus
+//     turboStatus ? talk(chatroom, `Wow, ${user.displayName} got Turbo? :D`) : talk(chatroom, `Did ${user.displayName} stop having Turbo? :O`)
+// }
 
 function handleSubChange(chatroom, user, subStatus) {
     if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName}, subStatus: ${subStatus})${resetTxt}`) }
