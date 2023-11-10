@@ -897,7 +897,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     if (users[username][channel].msgCount % funNumberCount === 0) {
         const funNumber = Math.floor(Math.random() * funNumberTotal)
         console.log(`${boldTxt}*** Fun number triggered by`, users[username].displayName, `:`, funNumber, resetTxt)
-        
+
         let randomUser = getRandomUser()
         const currencies = [
             {
@@ -1206,7 +1206,17 @@ function onMessageHandler(chatroom, tags, message, self) {
 // Helper functions
 function handleNewChatter(chatroom, user) {
     if (DEBUG_MODE) { console.log(`${boldTxt}> handleNewChatter(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
-    talk(chatroom, `Hi ${user.displayName}, welcome to the stream!`)
+    const greetings = [
+        `Hi ${user.displayName}, welcome to the stream!`,
+        `Hey ${user.displayName}, welcome to the stream!`,
+        `Welcome to the stream, ${user.displayName}!`,
+        `Hi ${user.displayName}, welcome in!`,
+        `Hi ${user.displayName} :)`,
+        `Hello @${user.displayName} welcome in!`,
+        `@${user.displayName} welcome 2 ${chatroom.substring(1, 5)} strem`,
+    ]
+    const greeting = greetings[Math.floor(Math.random() * greetings.length)]
+    setTimeout(() => talk(chatroom, greeting), 5000)
 }
 
 function getLastMessage(chatroom, user, room) {
@@ -1877,7 +1887,7 @@ function cleanupSpaces(str) {
     for (let i = 0; i < str.length; i++) {
         if (!(str[i] === ` ` && str[i + 1] === ` `)) {
             newStr += str[i]
-        } else if (DEBUG_MODE) { console.log(`${boldTxt}> cleanupSpaces() removed a double space!${resetTxt}`)}
+        } else if (DEBUG_MODE) { console.log(`${boldTxt}> cleanupSpaces() removed a double space!${resetTxt}`) }
     }
     return newStr
 }
