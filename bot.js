@@ -884,7 +884,8 @@ function onMessageHandler(chatroom, tags, message, self) {
             }
             if (streakCount >= 3) {
                 delayListening()
-                return setTimeout(() => { return talk(chatroom, msg) }, 1000)
+                setTimeout(() => { talk(chatroom, msg) }, 1000)
+                return
             }
         }
         // if (DEBUG_MODE) { talk(chatroom, `Listening for message streak... ${streakCount}/3 "${msg}" - ${streakUsers.join(`, `)}`) }
@@ -894,10 +895,10 @@ function onMessageHandler(chatroom, tags, message, self) {
     const funNumberCount = 25
     const funNumberTotal = 50
     if (users[username][channel].msgCount % funNumberCount === 0) {
-        let randomUser = getRandomUser()
         const funNumber = Math.floor(Math.random() * funNumberTotal)
-
         console.log(`${boldTxt}*** Fun number triggered by`, users[username].displayName, `:`, funNumber, resetTxt)
+        
+        let randomUser = getRandomUser()
         const currencies = [
             {
                 name: `dollars`,
@@ -1199,7 +1200,6 @@ function onMessageHandler(chatroom, tags, message, self) {
             return talk(chatroom, actions[Math.floor(Math.random() * actions.length)])
         }
         else if (funNumber === 7) { return talk(chatroom, `This message has a 1 / ${(funNumberCount * funNumberTotal).toLocaleString()} chance of appearing`) }
-        // else if (DEBUG_MODE) { talk(chatroom, `*** Fun number triggered by ${users[username].displayName}: ${funNumber}`) }
     }
 }
 
@@ -1270,10 +1270,10 @@ async function getPokemon(chatroom, pokemon) {
     for (const abilities of data.abilities) { pokemonAbilities.push(`${abilities.ability.name}${abilities.is_hidden ? ` (hidden)` : ``}`) }
     message += `${pokemonAbilities.join(`, `)}. `
 
-    if (DEBUG_MODE) {
-        console.log(data.types)
-        console.log(data.abilities)
-    }
+    // if (DEBUG_MODE) {
+    //     console.log(data.types)
+    //     console.log(data.abilities)
+    // }
 
     let type1Data
     let type2Data
@@ -1331,10 +1331,10 @@ async function getPokemon(chatroom, pokemon) {
         }
     }
 
-    if (DEBUG_MODE) {
-        type1Data && console.log(`type1Data.damage_relations:`, type1Data.damage_relations)
-        type2Data && console.log(`type2Data.damage_relations:`, type2Data.damage_relations)
-    }
+    // if (DEBUG_MODE) {
+    //     type1Data && console.log(`type1Data.damage_relations:`, type1Data.damage_relations)
+    //     type2Data && console.log(`type2Data.damage_relations:`, type2Data.damage_relations)
+    // }
 
     // if it TAKES double damage AND half damage FROM a type, remove from BOTH arrays
     const nullify = []
@@ -1393,9 +1393,9 @@ function getColor(chatroom, user) {
 }
 
 function getRandomUser() {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> getRandomUser()${resetTxt}`) }
     const arr = Object.keys(users)
     const randomUser = arr[Math.floor(Math.random() * arr.length)]
+    if (DEBUG_MODE) { console.log(`${boldTxt}> getRandomUser() picked ${randomUser}${resetTxt}`) }
     return randomUser
 }
 
@@ -1858,11 +1858,11 @@ function emoteReply(chatroom, channel, emoteArr) {
 }
 
 function delayListening() {
-    console.log(`${boldTxt}Listening for streaks delayed...${resetTxt}`)
+    console.log(`${boldTxt}> delayListening() 30 seconds...${resetTxt}`)
     listening = false
     setTimeout(() => {
         listening = true
-        console.log(`${boldTxt}Listening for streaks again!${resetTxt}`)
+        console.log(`${boldTxt}> Listening for streaks again!${resetTxt}`)
     }, 30000)
 }
 
@@ -1877,7 +1877,7 @@ function cleanupSpaces(str) {
     for (let i = 0; i < str.length; i++) {
         if (!(str[i] === ` ` && str[i + 1] === ` `)) {
             newStr += str[i]
-        }
+        } else if (DEBUG_MODE) { console.log(`${boldTxt}> cleanupSpaces() removed a double space!${resetTxt}`)}
     }
     return newStr
 }
