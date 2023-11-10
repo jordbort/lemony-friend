@@ -142,7 +142,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     // For testing/debugging
     if (msg === `show`) { console.log(users, `tempCmds:`, tempCmds) }
     if (msg === `tags`) { console.log(tags) }
-    if (msg === `ping`) { ping(lemonyFresh) }
+    if (command === `!ping`) { ping(args.length ? args : lemonyFresh) }
 
     if (sayOnlineMsg) {
         const numbers = [
