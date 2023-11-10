@@ -1771,7 +1771,7 @@ function sayThanks(chatroom, user) {
 }
 
 function handleColorChange(chatroom, user, newColor) {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName}, newColor: ${newColor})${resetTxt}`) }
+    if (DEBUG_MODE) { console.log(`${boldTxt}> handleColorChange(chatroom: ${chatroom}, user: ${user.displayName}, newColor: ${newColor})${resetTxt}`) }
     user.color = newColor
     talk(chatroom, `Acknowledging ${user.displayName}'s color change :)`)
 }
@@ -1783,7 +1783,7 @@ function handleColorChange(chatroom, user, newColor) {
 // }
 
 function handleSubChange(chatroom, user, subStatus) {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName}, subStatus: ${subStatus})${resetTxt}`) }
+    if (DEBUG_MODE) { console.log(`${boldTxt}> handleSubChange(chatroom: ${chatroom}, user: ${user.displayName}, subStatus: ${subStatus})${resetTxt}`) }
     user[chatroom.slice(1)].sub = subStatus
     if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => subStatus ? talk(chatroom, `Thank you for the gift sub! :D`) : talk(chatroom, `Aww, did I lose my sub? :(`), 2000)
@@ -1793,7 +1793,7 @@ function handleSubChange(chatroom, user, subStatus) {
 }
 
 function handleModChange(chatroom, user, modStatus) {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName}, modStatus: ${modStatus})${resetTxt}`) }
+    if (DEBUG_MODE) { console.log(`${boldTxt}> handleModChange(chatroom: ${chatroom}, user: ${user.displayName}, modStatus: ${modStatus})${resetTxt}`) }
     user[chatroom.slice(1)].mod = modStatus
     if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => modStatus ? talk(chatroom, `Thank you for modding me! :D`) : talk(chatroom, `Was I just unmodded? :O`), 2000)
@@ -1803,7 +1803,7 @@ function handleModChange(chatroom, user, modStatus) {
 }
 
 function handleVIPChange(chatroom, user, vipStatus) {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName}, vipStatus: ${vipStatus})${resetTxt}`) }
+    if (DEBUG_MODE) { console.log(`${boldTxt}> handleVIPChange(chatroom: ${chatroom}, user: ${user.displayName}, vipStatus: ${vipStatus})${resetTxt}`) }
     user[chatroom.slice(1)].vip = vipStatus
     if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => vipStatus ? talk(chatroom, `Thank you for giving me VIP! :D`) : talk(chatroom, `Did I just lose VIP? :O`), 2000)
@@ -1813,7 +1813,7 @@ function handleVIPChange(chatroom, user, vipStatus) {
 }
 
 function checkEmoteStreak(chatroom, emoteArr, channel) {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, emoteArr: ${emoteArr}, channel: ${channel})${resetTxt}`) }
+    if (DEBUG_MODE) { console.log(`${boldTxt}> checkEmoteStreak(chatroom: ${chatroom}, emoteArr: ${emoteArr}, channel: ${channel})${resetTxt}`) }
     let emoteStreakCount = 0
     const emoteStreakUsers = []
     // Checking if message includes any of the provided emotes
