@@ -1104,78 +1104,81 @@ function onMessageHandler(chatroom, tags, message, self) {
                     `!nice`,
                     `!n64`,
                     `!bork`,
+                    `!maxwell`
                 ]
             } else if (chatroom === jpegstripes) {
                 redeems = [
-                    `!redeem bigshot`,
-                    `!redeem keygen`,
-                    `!redeem spotion`,
-                    `!redeem thebigone`,
-                    `!redeem bowtie`,
-                    `!redeem neo`,
-                    `!redeem workout`,
-                    `!redeem suscr1ber`,
-                    `!redeem mario`,
-                    `!redeem piano`,
-                    `!redeem slip`,
-                    `!redeem hamster`,
-                    `!redeem alarm`,
-                    `!redeem waste`,
-                    `!redeem 25k`,
-                    `!redeem crabrave`,
-                    `!redeem confusion`,
-                    `!redeem soulja`,
-                    `!redeem breakdance`,
-                    `!redeem gigachad`,
-                    `!redeem 4d3d3d3`,
-                    `!redeem feedcat`,
-                    `!redeem polarbear`,
-                    `!redeem graph`,
-                    `!redeem checkmate`,
-                    `!redeem shutup`,
-                    `!redeem doggo`,
-                    `!redeem marshmallows`,
-                    `!redeem chocotaco`,
-                    `!redeem rat`,
-                    `!redeem hamburger`,
-                    `!redeem chickendance`,
-                    `!redeem come`,
-                    `!redeem gauntlet`,
-                    `!redeem princess`,
-                    `!redeem rubbermaid`,
-                    `!redeem peachsyrup`,
-                    `!redeem skype`,
-                    `!redeem ohhimark`,
-                    `!redeem dripgoku`,
-                    `!redeem gelatin`,
-                    `!redeem cheesecake`,
-                    `!redeem fancam`,
-                    `!redeem nicecock`,
-                    `!redeem lieblingsfach`,
-                    `!redeem lavish`,
-                    `!redeem shootme`,
-                    `!redeem disk`,
-                    `!redeem flagranterror`,
-                    `!redeem technology`,
-                    `!redeem bingchilling`,
-                    `!redeem flagranterror`,
-                    `!redeem litlizards`,
-                    `!redeem raccoon`,
-                    `!redeem gay`,
-                    `!redeem turbomaxwaste`,
-                    `!redeem birthday`
+                    `!bigshot`,
+                    `!keygen`,
+                    `!spotion`,
+                    `!thebigone`,
+                    `!bowtie`,
+                    `!neo`,
+                    `!workout`,
+                    `!suscr1ber`,
+                    `!mario`,
+                    `!piano`,
+                    `!slip`,
+                    `!hamster`,
+                    `!alarm`,
+                    `!waste`,
+                    `!25k`,
+                    `!crabrave`,
+                    `!confusion`,
+                    `!soulja`,
+                    `!breakdance`,
+                    `!gigachad`,
+                    `!4d3d3d3`,
+                    `!feedcat`,
+                    `!polarbear`,
+                    `!graph`,
+                    `!checkmate`,
+                    `!shutup`,
+                    `!doggo`,
+                    `!marshmallows`,
+                    `!chocotaco`,
+                    `!rat`,
+                    `!hamburger`,
+                    `!chickendance`,
+                    `!come`,
+                    `!gauntlet`,
+                    `!princess`,
+                    `!rubbermaid`,
+                    `!peachsyrup`,
+                    `!skype`,
+                    `!ohhimark`,
+                    `!dripgoku`,
+                    `!gelatin`,
+                    `!cheesecake`,
+                    `!fancam`,
+                    `!nicecock`,
+                    `!lieblingsfach`,
+                    `!lavish`,
+                    `!shootme`,
+                    `!disk`,
+                    `!flagranterror`,
+                    `!technology`,
+                    `!bingchilling`,
+                    `!flagranterror`,
+                    `!litlizards`,
+                    `!raccoon`,
+                    `!gay`,
+                    `!turbomaxwaste`
                 ]
             } else if (chatroom === sclarf) {
                 redeems = [
-                    `!redeem balls`,
-                    `!redeem hat`,
-                    `!redeem no`,
-                    `!redeem omg`,
-                    `!redeem why`,
-                    `!redeem yes`
+                    `!balls`,
+                    `!hat`,
+                    `!no`,
+                    `!omg`,
+                    `!why`,
+                    `!yes`
                 ]
-            } else {
-                redeems = [`Give me ${users[username][channel].msgCount}${currency.zeroes} ${currency.name}`]
+            } else if (chatroom === domonintendo1) {
+                while (randomUser === BOT_USERNAME) { randomUser = getRandomUser() }
+                redeems = [
+                    `!slap ${randomUser}`
+                ]
             }
             const redeem = Math.floor(Math.random() * redeems.length)
             return talk(chatroom, redeems[redeem])
@@ -1405,7 +1408,7 @@ function getColor(chatroom, user) {
 function getRandomUser() {
     const arr = Object.keys(users)
     const randomUser = arr[Math.floor(Math.random() * arr.length)]
-    if (DEBUG_MODE) { console.log(`${boldTxt}> getRandomUser() picked ${randomUser}${resetTxt}`) }
+    if (DEBUG_MODE) { console.log(`${boldTxt}> getRandomUser() picked: ${randomUser}${resetTxt}`) }
     return randomUser
 }
 
@@ -1823,7 +1826,7 @@ function handleVIPChange(chatroom, user, vipStatus) {
 }
 
 function checkEmoteStreak(chatroom, emoteArr, channel) {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> checkEmoteStreak(chatroom: ${chatroom}, emoteArr: ${emoteArr}, channel: ${channel})${resetTxt}`) }
+    if (DEBUG_MODE) { console.log(`${boldTxt}> checkEmoteStreak(chatroom: ${chatroom}, emoteArr.length: ${emoteArr.length}, channel: ${channel})${resetTxt}`) }
     let emoteStreakCount = 0
     const emoteStreakUsers = []
     // Checking if message includes any of the provided emotes
