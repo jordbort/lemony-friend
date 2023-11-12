@@ -242,6 +242,11 @@ function onMessageHandler(chatroom, tags, message, self) {
         return talk(chatroom, data)
     }
 
+    // All commands
+    if (command === `!commands`) {
+        talk(chatroom, `Commands: !greet => Say hi to one or more people, !bye => Say goodnight to someone, !yell => Chat across Lemony Fresh ${users[BOT_USERNAME].e1ectroma?.sub ? `e1ectr4Lemfresh ` : `🍋️`}, !away => (Optionally add an away message), !tempcmd => Make your own command! :)`)
+    }
+
     if (command === `!subs`) {
         const subbedUsers = []
         const allUsers = []
@@ -390,9 +395,9 @@ function onMessageHandler(chatroom, tags, message, self) {
     if (command === `!tempcmds`) {
         const commands = []
         for (key in tempCmds) {
-            commands.push(`${key}: ${tempCmds[key]}`)
+            commands.push(`${key} => "${tempCmds[key]}"`)
         }
-        return talk(chatroom, `There ${commands.length === 1 ? `is` : `are`} ${commands.length} temporary command${commands.length === 1 ? `` : `s`} ${commands.length === 0 ? `:(` : `=> ${commands.join(', ')}`}`)
+        return talk(chatroom, `There ${commands.length === 1 ? `is` : `are`} ${commands.length} temporary command${commands.length === 1 ? `` : `s`}${commands.length === 0 ? ` :(` : `: ${commands.join(', ')}`}`)
     }
 
     // Check for tempCmd
