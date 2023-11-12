@@ -477,65 +477,18 @@ function onMessageHandler(chatroom, tags, message, self) {
         || msg.toLowerCase().includes(`melon`)
         || msg.toLowerCase().includes(`lemfriend`)) {
         // If the first word is a greeting
-        const greetings = [
-            `hello`,
-            `howdy`,
-            `howdi`,
-            `hemblo`,
-            `hemlo`,
-            `henlo`,
-            `helo`,
-            `heyyyyyyyy`,
-            `heyyyyyyy`,
-            `heyyyyyy`,
-            `heyyyyy`,
-            `heyyyy`,
-            `heyyy`,
-            `heyy`,
-            `hey`,
-            `hi`,
-            `sup`,
-            `whatsup`,
-            `whassup`,
-            `whaddup`,
-            `whadup`,
-            `watsup`,
-            `wadsup`,
-            `wassup`,
-            `whasup`,
-            `wasup`,
-            `wadup`,
-            `whutsup`,
-            `whussup`,
-            `whuddup`,
-            `whudup`,
-            `wutsup`,
-            `wudsup`,
-            `wussup`,
-            `whusup`,
-            `wusup`,
-            `wudup`
-        ]
-        if (greetings.includes(command)) { return handleGreet(chatroom, users[username]) }
+        const greetingPattern = /^hey+\b|^hi+\b|^he.*lo+\b|^howd|sup+\b|^wh?[au].*up\b/i
+        if (command.match(greetingPattern)) { return handleGreet(chatroom, users[username]) }
 
         // If the first word is `gn` or `bye`
-        if (command === `gn`
-            || command === `bye`) { return sayGoodnight(chatroom, users[username]) }
+        const goodNightPattern = /^ni(ght|te)|^gn|^(bye+)+/i
+        if (command.match(goodNightPattern)) { return sayGoodnight(chatroom, users[username]) }
 
         // If the first word is `good` followed by "night"-like word
-        if (command === `good`) {
-            const nights = [
-                `night`,
-                `nite`
-            ]
-            for (const night of nights) {
-                if (args[0].toLowerCase().startsWith(night)) { return sayGoodnight(chatroom, users[username]) }
-            }
-        }
+        if (command === `good` && args[0]?.match(goodNightPattern)) { return sayGoodnight(chatroom, users[username]) }
 
         // If the first word is `gj` or `nj`
-        if (command === `gj`
-            || command === `nj`) { return sayThanks(chatroom, users[username]) }
+        if ([`gj`, `nj`].includes(command)) { return sayThanks(chatroom, users[username]) }
 
         // If the first word is `good`/`nice` followed by `job` or `work`
         if ([`good`, `nice`].includes(command)
@@ -547,63 +500,21 @@ function onMessageHandler(chatroom, tags, message, self) {
         if (command === `well` && args[0]?.startsWith(`done`)) { return sayThanks(chatroom, users[username]) }
 
         // If the first word is `thanks`-like
-        const thanks = [
-            `thanks`,
-            `thabks`,
-            `thonks`,
-            `thamks`,
-            `ty`,
-            `thx`
-        ]
-        for (const thank of thanks) {
-            if (command.startsWith(thank)) { return sayYoureWelcome(chatroom, users[username]) }
-        }
+        const thanksLikePattern = /^th*[aeou]*[bmn]*(ks+|x*)\b/i
+        if (command.match(thanksLikePattern)) { return sayYoureWelcome(chatroom, users[username]) }
 
         // If the first word is `thank`-like and followed by "you"-like word
-        const thankLike = [
-            `thank`,
-            `thx`,
-            `thnk`,
-            `thk`,
-            `thabk`,
-            `thonk`
-        ]
-        const yous = [
-            `you`,
-            `yew`,
-            `yu`,
-            `u`
-        ]
-        if (thankLike.includes(command)) {
-            for (const you of yous) {
-                if (args[0].toLowerCase().startsWith(you)) { return sayYoureWelcome(chatroom, users[username]) }
-            }
-        }
+        const thankLikePattern = /^th*[aeou]*[bmn]*[kx]+\b/i
+        const youLikePattern = /^yo?u\b|^yew\b|^u\b/i
+        if (command.match(thankLikePattern) && args[0]?.match(youLikePattern)) { return sayYoureWelcome(chatroom, users[username]) }
 
         // All words after the first, in lower case
         const lowercaseArgs = args.map(str => str.toLowerCase())
 
         // Checking for "what's up"
-        const whatsUpPrefix = [
-            `what"s`,
-            `what's`,
-            `whats`,
-            `what`,
-            `whas`,
-            `wats`,
-            `wat`,
-            `was`,
-            `whut"s`,
-            `whut's`,
-            `whuts`,
-            `whut`,
-            `whus`,
-            `wuts`,
-            `wut`,
-            `wus`
-        ]
+        const whatsUpPrefixPattern = /^wh?[au]t?['"]*s*\b/i
         // In case saying "what's up" first, and/or `up` doesn't come immediately
-        if (whatsUpPrefix.includes(command)) {
+        if (command.match(whatsUpPrefixPattern)) {
             for (const str of lowercaseArgs) {
                 if (str.startsWith(`up`)) {
                     return handleGreet(chatroom, users[username])
@@ -613,38 +524,36 @@ function onMessageHandler(chatroom, tags, message, self) {
 
         // Check all words in message after the first
         for (const [i, val] of lowercaseArgs.entries()) {
-            // Checking if greeting came later in message
-            for (const str of greetings) {
-                if (val.startsWith(str)) { return handleGreet(chatroom, users[username]) }
+            if (DEBUG_MODE) {
+                if (val.match(greetingPattern)) { console.log(`${boldTxt}> "${val}" matched greetingPattern${resetTxt}`) }
+                if (val.match(goodNightPattern)) { console.log(`${boldTxt}> "${val}" matched goodNightPattern${resetTxt}`) }
+                if (val === `good` && lowercaseArgs[i + 1]?.match(goodNightPattern)) { console.log(`${boldTxt}> "${val}" followed by "${lowercaseArgs[i + 1]}" matched goodNightPattern${resetTxt}`) }
+                if (val.match(thanksLikePattern)) { console.log(`${boldTxt}> "${val}" matched thanksLikePattern${resetTxt}`) }
+                if (val.match(thankLikePattern)) { console.log(`${boldTxt}> "${val}" matched thankLikePattern${resetTxt}`) }
+                if (val.match(youLikePattern)) { console.log(`${boldTxt}> "${val}" matched youLikePattern${resetTxt}`) }
+                if (val.match(thankLikePattern) && lowercaseArgs[i + 1]?.match(youLikePattern)) { console.log(`${boldTxt}> "${val}" matched thankLikePattern and "${lowercaseArgs[i + 1]}" matched youLikePattern${resetTxt}`) }
+                if (val.match(thankLikePattern)) { console.log(`${boldTxt}> "${val}" matched thankLikePattern${resetTxt}`) }
+                if (val.match(youLikePattern)) { console.log(`${boldTxt}> "${val}" matched youLikePattern${resetTxt}`) }
+                if (val.match(whatsUpPrefixPattern)) { console.log(`${boldTxt}> "${val}" matched whatsUpPrefixPattern${resetTxt}`) }
+                if (val.startsWith(`up`) && lowercaseArgs[i - 1]?.match(whatsUpPrefixPattern)) { console.log(`${boldTxt}> "${val}" preceded by "${lowercaseArgs[i - 1]}" matched whatsUpPrefixPattern${resetTxt}`) }
             }
+            // Checking if greeting came later in message
+            if (val.match(greetingPattern)) { return handleGreet(chatroom, users[username]) }
+
+            // Checking if `up` (and preceeding "what's"-like word) came later in message
+            if (val.startsWith(`up`) && lowercaseArgs[i - 1]?.match(whatsUpPrefixPattern)) { return handleGreet(chatroom, users[username]) }
 
             // If `gn` came later in the message
-            if (val === `gn`) { return sayGoodnight(chatroom, users[username]) }
+            if (val.match(goodNightPattern)) { return sayGoodnight(chatroom, users[username]) }
 
             // If `good` followed by "night"-like word came later in the message
-            if (val === `good`) {
-                const nights = [
-                    `night`,
-                    `nite`
-                ]
-                if (lowercaseArgs[i + 1]) {
-                    for (const night of nights) { if (lowercaseArgs[i + 1].startsWith(night)) { return sayGoodnight(chatroom, users[username]) } }
-                }
-            }
+            if (val === `good` && lowercaseArgs[i + 1]?.match(goodNightPattern)) { return sayGoodnight(chatroom, users[username]) }
 
             // If thanks came later in message
-            for (const str of thanks) {
-                if (val.startsWith(str)) { return sayYoureWelcome(chatroom, users[username]) }
-            }
+            if (val.match(thanksLikePattern)) { return sayYoureWelcome(chatroom, users[username]) }
 
             // If "thank"-like followed by "you"-like word came later in the message
-            for (const str of thankLike) {
-                if (val === str) {
-                    for (const you of yous) {
-                        if (lowercaseArgs[i + 1].startsWith(you)) { return sayYoureWelcome(chatroom, users[username]) }
-                    }
-                }
-            }
+            if (val.match(thankLikePattern) && lowercaseArgs[i + 1]?.match(youLikePattern)) { return sayYoureWelcome(chatroom, users[username]) }
 
             // If `gj` or `nj` came later in the message
             if ([`gj`, `nj`].includes(val)) { return sayThanks(chatroom, users[username]) }
@@ -657,16 +566,8 @@ function onMessageHandler(chatroom, tags, message, self) {
 
             // If `well` followed by `done` came later in the message
             if (val === `well` && lowercaseArgs[i + 1].startsWith(`done`)) { return sayThanks(chatroom, users[username]) }
-
-            // Checking if `up` (and preceeding "what's"-like word) came later in message
-            if (val.startsWith(`up`)) {
-                for (const str of whatsUpPrefix) {
-                    if (lowercaseArgs[i - 1].startsWith(str)) {
-                        return handleGreet(chatroom, users[username])
-                    }
-                }
-            }
         }
+        if (DEBUG_MODE) {console.log(`${boldTxt}> Bot mentioned, but didn't trigger response${resetTxt}`)}
     }
 
     // User asking an "am i ...?" question about themselves
