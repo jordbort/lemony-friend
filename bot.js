@@ -109,7 +109,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     if (!(username in users)) {
         users[username] = {
             displayName: tags[`display-name`],
-            turbo: tags.turbo,
+            // turbo: tags.turbo,
             color: color
         }
     }
@@ -232,7 +232,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     // JSON stats of user or toUser
     if (command === `!mystats`) {
         const user = target || username
-        let data = `${user}: { displayName: '${users[user].displayName}', turbo: ${users[user].turbo}, color: ${users[user].color}`
+        let data = `${user}: { displayName: '${users[user].displayName}', color: ${users[user].color}`
         for (const key of Object.keys(users[user])) {
             if (typeof users[user][key] === `object`) {
                 data += `, ${key}: { sub: ${users[user][key].sub}, mod: ${users[user][key].mod}, vip: ${users[user][key].vip}, msgCount: ${users[user][key].msgCount}, lastMessage: '${users[user][key].lastMessage}', away: ${users[user][key].away ? `${users[user][key].away}, awayMessage: '${users[user][key].awayMessage}'` : `${users[user][key].away}`} }`
@@ -244,10 +244,16 @@ function onMessageHandler(chatroom, tags, message, self) {
 
     if (command === `!subs`) {
         const subbedUsers = []
+        const allUsers = []
         for (const user of Object.keys(users[BOT_USERNAME])) {
-            if (users[BOT_USERNAME][user]?.sub === true) { subbedUsers.push(user) }
+            console.log(user, typeof users[BOT_USERNAME][user])
+            if (users[BOT_USERNAME][user]?.sub === true) {
+                subbedUsers.push(user)
+            } else if (typeof users[BOT_USERNAME][user] === `object`) {
+                allUsers.push(user)
+            }
         }
-        return talk(chatroom, `I am subbed to: ${subbedUsers.join(`, `)}`)
+        return subbedUsers.length ? talk(chatroom, `I am subbed to: ${subbedUsers.join(`, `)} :)`) : talk(chatroom, `I am not subbed to: ${allUsers.join(`, `)} :(`)
     }
 
     // If user mentions a user who is away
