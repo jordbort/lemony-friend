@@ -120,7 +120,9 @@ function onMessageHandler(chatroom, tags, message, self) {
             mod: tags.mod,
             vip: !!tags.vip || !!tags.badges?.vip,
             msgCount: 0,
-            lastMessage: msg
+            lastMessage: msg,
+            away: false,
+            awayMessage: ``
         }
     }
     // Update last message in a chatroom, and increment counter by 1
@@ -143,6 +145,13 @@ function onMessageHandler(chatroom, tags, message, self) {
     if (msg === `show`) { console.log(users, `tempCmds:`, tempCmds) }
     if (msg === `tags`) { console.log(tags) }
     if (command === `!ping`) { ping(args.length ? args : lemonyFresh) }
+
+    // If first message since being away
+    if (users[username][channel].away) {
+        users[username][channel].away = false
+        users[username][channel].awayMessage = ``
+        return talk(chatroom, `Welcome back, ${displayName}! :)`)
+    }
 
     if (sayOnlineMsg) {
         const numbers = [
@@ -219,6 +228,29 @@ function onMessageHandler(chatroom, tags, message, self) {
 
     // User's first message in a given channel
     if (firstMsg) { return handleNewChatter(chatroom, users[username]) }
+
+    // JSON stats of user or toUser
+    if (command === `!mystats`) {
+        const user = target || username
+        let data = `${user}: { displayName: '${users[user].displayName}', turbo: ${users[user].turbo}, color: ${users[user].color}`
+        for (const key of Object.keys(users[user])) {
+            if (typeof users[user][key] === `object`) {
+                data += `, ${key}: { sub: ${users[user][key].sub}, mod: ${users[user][key].mod}, vip: ${users[user][key].vip}, msgCount: ${users[user][key].msgCount}, lastMessage: '${users[user][key].lastMessage}', away: ${users[user][key].away ? `${users[user][key].away}, awayMessage: '${users[user][key].awayMessage}'` : `${users[user][key].away}`} }`
+            }
+        }
+        data += ` }`
+        return talk(chatroom, data)
+    }
+
+    // If user mentions a user who is away
+    for (const user of Object.keys(users)) {
+        // console.log(`Checking for ${user}...`)
+        if (msg.toLowerCase().includes(user) && users[user][channel]?.away) {
+            let reply = `Unfortunately ${users[user].displayName} is away from chat right now!`
+            users[user][channel].awayMessage ? reply += ` Their away message: "${users[user][channel].awayMessage}"` : ` :(`
+            return talk(chatroom, reply)
+        }
+    }
 
     // Toggle DEBUG_MODE
     if ([
@@ -411,17 +443,14 @@ function onMessageHandler(chatroom, tags, message, self) {
     // !pokemon
     if (command === `!pokemon`) { return getPokemon(chatroom, args[0]) }
 
-    // JSON stats of user or toUser
-    if (command === `!mystats`) {
-        const user = target || username
-        let data = `${user}: { displayName: '${users[user].displayName}', turbo: ${users[user].turbo}, color: ${users[user].color}`
-        for (const key of Object.keys(users[user])) {
-            if (typeof users[user][key] === `object`) {
-                data += `, ${key}: { sub: ${users[user][key].sub}, mod: ${users[user][key].mod}, vip: ${users[user][key].vip}, msgCount: ${users[user][key].msgCount}, lastMessage: '${users[user][key].lastMessage}' }`
-            }
-        }
-        data += ` }`
-        return talk(chatroom, data)
+    // !away or !lurk
+    if ([
+        `!away`,
+        `!lurk`
+    ].includes(command)) {
+        users[username][channel].away = true
+        if (args.length) { users[username][channel].awayMessage = args.join(` `) }
+        return args.length ? talk(chatroom, `See you later, ${displayName}! I'll pass along your away message if they mention you! :)`) : talk(chatroom, `See you later, ${displayName}! I'll let people know you're away if they mention you! :)`)
     }
 
     // If bot mentioned in message
