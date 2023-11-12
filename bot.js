@@ -242,6 +242,14 @@ function onMessageHandler(chatroom, tags, message, self) {
         return talk(chatroom, data)
     }
 
+    if (command === `!subs`) {
+        const subbedUsers = []
+        for (const user of Object.keys(users[BOT_USERNAME])) {
+            if (users[BOT_USERNAME][user]?.sub === true) { subbedUsers.push(user) }
+        }
+        return talk(chatroom, `I am subbed to: ${subbedUsers.join(`, `)}`)
+    }
+
     // If user mentions a user who is away
     for (const user of Object.keys(users)) {
         // console.log(`Checking for ${user}...`)
