@@ -474,7 +474,8 @@ function onMessageHandler(chatroom, tags, message, self) {
 
     // If bot mentioned in message
     if (msg.toLowerCase().includes(`lemon`)
-        || msg.toLowerCase().includes(`melon`)) {
+        || msg.toLowerCase().includes(`melon`)
+        || msg.toLowerCase().includes(`lemfriend`)) {
         // If the first word is a greeting
         const greetings = [
             `hello`,
