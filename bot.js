@@ -216,7 +216,8 @@ function onMessageHandler(chatroom, tags, message, self) {
             `reconnecting...`,
             `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`,
             `(there ${Object.keys(tempCmds).length === 1 ? `is` : `are`} ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`,
-            `Debug mode is currently ${DEBUG_MODE ? `ON` : `OFF`}! :)`
+            `Debug mode is currently ${DEBUG_MODE ? `ON` : `OFF`}! :)`,
+            `thanksLikePattern has been updated to /^t(h*[aeou]*[bmn])*(ks+|x+)\b/i`
         ]
         const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
         sayOnlineMsg = false
@@ -500,7 +501,7 @@ function onMessageHandler(chatroom, tags, message, self) {
         if (command === `well` && args[0]?.startsWith(`done`)) { return sayThanks(chatroom, users[username]) }
 
         // If the first word is `thanks`-like
-        const thanksLikePattern = /^th*[aeou]*[bmn]*(ks+|x*)\b/i
+        const thanksLikePattern = /^t(h*[aeou]*[bmn])*(ks+|x+)\b/i
         if (command.match(thanksLikePattern)) { return sayYoureWelcome(chatroom, users[username]) }
 
         // If the first word is `thank`-like and followed by "you"-like word
