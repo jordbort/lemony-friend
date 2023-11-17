@@ -463,9 +463,10 @@ function onMessageHandler(chatroom, tags, message, self) {
     // !pokemon
     if (command === `!pokemon`) { return getPokemon(chatroom, args[0]) }
 
-    // !away or !lurk
+    // !away or !brb or !lurk
     if ([
         `!away`,
+        `!brb`,
         `!lurk`
     ].includes(command)) {
         users[username][channel].away = true
@@ -696,6 +697,9 @@ function onMessageHandler(chatroom, tags, message, self) {
             }
         }
     }
+
+    // if (username = `streamelements`) {
+    // }
 
     if (listening || channel === BOT_USERNAME) {
         // Parsing each message word
