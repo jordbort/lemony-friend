@@ -569,7 +569,7 @@ function onMessageHandler(chatroom, tags, message, self) {
             // If `well` followed by `done` came later in the message
             if (val === `well` && lowercaseArgs[i + 1].startsWith(`done`)) { return sayThanks(chatroom, users[username]) }
         }
-        if (DEBUG_MODE) {console.log(`${boldTxt}> Bot mentioned, but didn't trigger response${resetTxt}`)}
+        if (DEBUG_MODE) { console.log(`${boldTxt}> Bot mentioned, but didn't trigger response${resetTxt}`) }
     }
 
     // User asking an "am i ...?" question about themselves
@@ -698,8 +698,55 @@ function onMessageHandler(chatroom, tags, message, self) {
         }
     }
 
-    // if (username = `streamelements`) {
-    // }
+    if (username === `streamelements` && (msg.includes(`lemony_friend`))) {
+        console.log(`Current points:`, `points` in users[BOT_USERNAME][channel] ? users[BOT_USERNAME][channel].points : `(not known)`)
+        if (args[0] === `gave` && `points` in users[BOT_USERNAME][channel]) {
+            users[BOT_USERNAME][channel].points += Number(args[1])
+            console.log(`> Received`, Number(args[1]), `points, thanks to`, command, `- now has:`, users[BOT_USERNAME][channel].points)
+        }
+        else if (args[1] === `has`) {
+            users[BOT_USERNAME][channel].points = Number(args[2])
+            console.log(`> Checked points, and has`, Number(args[2]))
+        }
+        else if (msg.includes(`jpegstSpamton`)) {
+            console.log(`*** JPEG MODE ***`)
+            if (msg.toLowerCase().includes(`all`)) {
+                if (msg.toLowerCase().includes(`lost`)) {
+                    users[BOT_USERNAME][channel].points = 0
+                    console.log(`> Gambled ALL, LOST ALL, new amount:`, 0)
+                } else {
+                    users[BOT_USERNAME][channel].points = Number(args[args.length - 3].substring(2, 7))
+                    console.log(`> Gambled ALL, 2x POINTS:`, Number(args[args.length - 3].substring(2, 7)))
+                }
+            } else if (msg.toLowerCase().includes(`lost`)) {
+                users[BOT_USERNAME][channel].points = Number(args[args.length - 3])
+                console.log(`> LOST SOME, new amount:`, Number(args[args.length - 3]))
+            } else if (msg.toLowerCase().includes(`won`)) {
+                users[BOT_USERNAME][channel].points = Number(args[args.length - 3].substring(2, 7))
+                console.log(`> WON SOME, new amount:`, Number(args[args.length - 3].substring(2, 7)))
+            }
+        } else {
+            if (msg.toLowerCase().includes(`all`)) {
+                if (msg.toLowerCase().includes(`lost`)) {
+                    users[BOT_USERNAME][channel].points = 0
+                    console.log(`> Gambled ALL, LOST ALL, new amount:`, 0)
+                } else {
+                    users[BOT_USERNAME][channel].points = Number(args[args.length - 3])
+                    console.log(`> Gambled ALL, 2x POINTS:`, Number(args[args.length - 3]))
+                }
+            } else if (msg.toLowerCase().includes(`lost`)) {
+                users[BOT_USERNAME][channel].points = Number(args[args.length - 3])
+                console.log(`> LOST SOME, new amount:`, Number(args[args.length - 3]))
+            } else if (msg.toLowerCase().includes(`won`)) {
+                users[BOT_USERNAME][channel].points = Number(args[args.length - 3])
+                console.log(`> WON SOME, new amount:`, Number(args[args.length - 3]))
+            }
+        }
+        console.log(`New points:`, `points` in users[BOT_USERNAME][channel] ? users[BOT_USERNAME][channel].points : `(not known)`)
+        if (!(`points` in users[BOT_USERNAME][channel])) {
+            talk(chatroom, `!points`)
+        }
+    }
 
     if (listening || channel === BOT_USERNAME) {
         // Parsing each message word
