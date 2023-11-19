@@ -1492,44 +1492,12 @@ function lemonify(str) {
     // Reading from last word to first
     for (let i = words.length - 1; i >= 0; i--) {
         const number = Number(words[i])
-        const punctuation = [
-            `.`,
-            `!`,
-            `?`,
-            `:`,
-            `;`,
-            `-`,
-            `"`,
-            `'`,
-            `,`,
-            `.`,
-            `/`,
-            `<`,
-            `>`,
-            `@`,
-            `#`,
-            `$`,
-            `%`,
-            `^`,
-            `&`,
-            `*`,
-            `(`,
-            `)`,
-            `-`,
-            `_`,
-            `+`,
-            `=`,
-            `~`
-        ]
-        let append = ``
-        while (words[i + 1] && punctuation.includes(words[i + 1][words[i + 1].length - 1])) {
-            for (const symbol of punctuation) {
-                if (words[i + 1].endsWith(symbol)) {
-                    append += symbol
-                    words[i + 1] = words[i + 1].substring(0, words[i + 1].length - 1)
-                }
-            }
+        const append = []
+        while (words[i + 1] && words[i + 1].match(/[^a-zA-Z]$/)) {
+            append.push(words[i + 1][words[i + 1].length - 1])
+            words[i + 1] = words[i + 1].substring(0, words[i + 1].length - 1)
         }
+        append.reverse()
 
         // Definitely singular
         if ((
@@ -1545,7 +1513,7 @@ function lemonify(str) {
             && words[i + 1]
         ) {
             if (words[i].toLowerCase() === `an`) { words[i] = `a` }
-            words[i + 1] = `lemon${append}`
+            words[i + 1] = `lemon${append.join(``)}`
         }
 
         // Definitely plural
@@ -1592,7 +1560,7 @@ function lemonify(str) {
             ].includes(words[i].toLowerCase()))
             && words[i + 1]
             && !reservedKeywords.includes(words[i + 1])
-        ) { words[i + 1] = `lemons${append}` }
+        ) { words[i + 1] = `lemons${append.join(``)}` }
 
         // Ambiguous count
         else if ((
@@ -1620,8 +1588,8 @@ function lemonify(str) {
             ].includes(words[i].toLowerCase()))
             && words[i + 1]
             && !reservedKeywords.includes(words[i + 1])
-        ) { words[i + 1] = words[i + 1].toLowerCase().endsWith(`s`) ? `lemons${append}` : `lemon${append}` }
-        else if (words[i + 1]) { words[i + 1] = `${words[i + 1]}${append}` }
+        ) { words[i + 1] = words[i + 1].match(/[^s][s]$/i) ? `lemons${append.join(``)}` : `lemon${append.join(``)}` }
+        else if (words[i + 1]) { words[i + 1] = `${words[i + 1]}${append.join(``)}` }
     }
 
     const lemonifiedString = words.join(` `)
