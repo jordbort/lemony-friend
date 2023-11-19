@@ -753,16 +753,7 @@ function onMessageHandler(chatroom, tags, message, self) {
         const lowercaseArgs = args.map(str => str.toLowerCase())
         for (const str of lowercaseArgs) {
             // If a word starts with "but", and has a 4th letter that isn't T or punctuation, make it "BUTT-(rest of word)"
-            if (str.toLowerCase().startsWith(`but`)
-                && str[3]
-                && ![
-                    `t`,
-                    `T`,
-                    `.`,
-                    `,`,
-                    `!`,
-                    `?`
-                ].includes(str[3])) {
+            if (str.match(/^but[a-s|u-z]/i)) {
                 delayListening()
                 return talk(chatroom, `${str[0].toUpperCase()}${str.slice(1).toLowerCase()}? More like BUTT-${str.slice(3).toLowerCase()}`)
             }
