@@ -233,6 +233,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     // JSON stats of user or toUser
     if (command === `!mystats`) {
         const user = target || username
+        if (DEBUG_MODE) { console.log(`${user}:`, users[user]) }
         let data = `${user}: { displayName: '${users[user].displayName}', color: ${users[user].color}`
         for (const key of Object.keys(users[user])) {
             if (typeof users[user][key] === `object`) {
@@ -241,6 +242,10 @@ function onMessageHandler(chatroom, tags, message, self) {
         }
         data += ` }`
         return talk(chatroom, data)
+    }
+
+    if (DEBUG_MODE && command === `test`) {
+        users[username][channel].msgCount = 25
     }
 
     // All commands
@@ -470,7 +475,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     ].includes(command)) {
         users[username][channel].away = true
         if (args.length) { users[username][channel].awayMessage = args.join(` `) }
-        return args.length ? talk(chatroom, `See you later, ${displayName}! I'll pass along your away message if they mention you! :)`) : talk(chatroom, `See you later, ${displayName}! I'll let people know you're away if they mention you! :)`)
+        if (command !== `!lurk`) { return args.length ? talk(chatroom, `See you later, ${displayName}! I'll pass along your away message if they mention you! :)`) : talk(chatroom, `See you later, ${displayName}! I'll let people know you're away if they mention you! :)`) }
     }
 
     // If bot mentioned in message
@@ -1176,7 +1181,10 @@ function onMessageHandler(chatroom, tags, message, self) {
             return talk(chatroom, redeems[redeem])
         }
         // Give hundreds of points (requires StreamElements)
-        else if (funNumber === 4 && chatroom !== domonintendo1) { return talk(chatroom, `!give ${username} ${users[username][channel].msgCount}00`) }
+        else if (funNumber === 4 && chatroom !== domonintendo1) {
+            const pointsToGive = 'points' in users[BOT_USERNAME][channel] ? users[username][channel].msgCount * 100 >= users[BOT_USERNAME][channel].points ? `all` : `${users[username][channel].msgCount * 100}` : `${users[username][channel].msgCount * 100}`
+            return talk(chatroom, `!give ${username} ${pointsToGive}`)
+        }
         // Lemonify a random user's random chat message
         else if (funNumber === 5) {
             while (randomUser === BOT_USERNAME) { randomUser = getRandomUser() }
@@ -1195,6 +1203,8 @@ function onMessageHandler(chatroom, tags, message, self) {
             return talk(chatroom, actions[Math.floor(Math.random() * actions.length)])
         }
         else if (funNumber === 7) { return talk(chatroom, `This message has a 1 / ${(funNumberCount * funNumberTotal).toLocaleString()} chance of appearing`) }
+        else if (funNumber === 8) { return talk(chatroom, `${tags.id}`) }
+        else if (funNumber === 9) { return talk(chatroom, `${tags[`tmi-sent-ts`]}`) }
     }
 }
 
@@ -1870,6 +1880,8 @@ function printLemon() {
     const whSq = `\x1b[47m  \x1b[0m`
     const lemonyFriendTitleSpacedOutTopTextYayyyy = `${yellowBg}${boldTxt}L e m o n y ${resetTxt}`
     const lemonyFriendTitleSpacedOutBottomTextYay = `${yellowBg}${boldTxt}F r i e n d ${resetTxt}`
+    const lemonyFriendTopFaceEyesWinkAtYou = `${yellowBg}${boldTxt} |  -${resetTxt}`
+    const lemonyFriendBottomFaceSmilesHuge = `${yellowBg}${boldTxt}\\____/${resetTxt}`
     console.log(noSq + noSq + noSq + noSq + bkSq)
     console.log(noSq + noSq + noSq + bkSq + gnSq + bkSq)
     console.log(noSq + noSq + noSq + bkSq + gnSq + gnSq + bkSq + noSq + noSq + noSq + noSq + bkSq + bkSq + bkSq + bkSq + bkSq + bkSq + bkSq + bkSq)
@@ -1889,10 +1901,10 @@ function printLemon() {
     console.log(noSq + bkSq + gnSq + gnSq + gnSq + gnSq + gnSq + gnSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq)
     console.log(noSq + bkSq + gnSq + gnSq + gnSq + gnSq + gnSq + gnSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq)
     console.log(noSq + noSq + bkSq + gnSq + gnSq + gnSq + gnSq + bkSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq)
-    console.log(noSq + noSq + noSq + bkSq + gnSq + gnSq + bkSq + noSq + noSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + lemonyFriendTitleSpacedOutTopTextYayyyy + ywSq + ywSq + ywSq + bkSq)
-    console.log(noSq + noSq + noSq + bkSq + gnSq + gnSq + bkSq + noSq + noSq + noSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + lemonyFriendTitleSpacedOutBottomTextYay + ywSq + ywSq + ywSq + bkSq)
-    console.log(noSq + noSq + noSq + noSq + bkSq + bkSq + noSq + noSq + noSq + noSq + noSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq)
-    console.log(noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq)
+    console.log(noSq + noSq + noSq + bkSq + gnSq + gnSq + bkSq + noSq + noSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + lemonyFriendTitleSpacedOutTopTextYayyyy + ywSq + ywSq + ywSq + bkSq) // L e m o n y
+    console.log(noSq + noSq + noSq + bkSq + gnSq + gnSq + bkSq + noSq + noSq + noSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + lemonyFriendTitleSpacedOutBottomTextYay + ywSq + ywSq + ywSq + bkSq) // F r i e n d
+    console.log(noSq + noSq + noSq + noSq + bkSq + bkSq + noSq + noSq + noSq + noSq + noSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq) //           | -
+    console.log(noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq) //         \_____/
     console.log(noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + bkSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq)
     console.log(noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + bkSq + bkSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq + bkSq + bkSq + bkSq + bkSq)
     console.log(noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + bkSq + bkSq + bkSq + bkSq + bkSq)
