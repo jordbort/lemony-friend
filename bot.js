@@ -68,7 +68,8 @@ const chatColors = {
 // Create bot client
 const opts = {
     identity: {
-        BOT_USERNAME,,       password: OAUTH_TOKEN
+        username: BOT_USERNAME,
+        password: OAUTH_TOKEN
     },
     channels: lemonyFresh
 }
@@ -81,7 +82,7 @@ const users = {}
 const tempCmds = {}
 let listening = true
 let sayOnlineMsg = true
-let DEBUG_MODE = false
+let DEBUG_MODE = true
 
 function onMessageHandler(chatroom, tags, message, self) {
     const msg = cleanupSpaces(message)
@@ -99,7 +100,7 @@ function onMessageHandler(chatroom, tags, message, self) {
 
     // User attribute change detection
     const colorChanged = username in users && color !== users[username]?.color
-    const turboChange = username in users && tags.turbo !== users[username]?.turbo
+    // const turboChange = username in users && tags.turbo !== users[username]?.turbo
     const subChange = users[username]?.[channel]?.sub !== undefined && tags.subscriber !== users[username]?.[channel]?.sub
     const modChange = users[username]?.[channel]?.mod !== undefined && tags.mod !== users[username]?.[channel]?.mod
     const vipChange = users[username]?.[channel]?.vip !== undefined && (!!tags.vip || !!tags.badges?.vip) !== users[username]?.[channel]?.vip
@@ -108,7 +109,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     if (!(username in users)) {
         users[username] = {
             displayName: tags[`display-name`],
-            turbo: tags.turbo,
+            // turbo: tags.turbo,
             color: color
         }
     }
@@ -119,7 +120,9 @@ function onMessageHandler(chatroom, tags, message, self) {
             mod: tags.mod,
             vip: !!tags.vip || !!tags.badges?.vip,
             msgCount: 0,
-            lastMessage: msg
+            lastMessage: msg,
+            away: false,
+            awayMessage: ``
         }
     }
     // Update last message in a chatroom, and increment counter by 1
@@ -141,7 +144,14 @@ function onMessageHandler(chatroom, tags, message, self) {
     // For testing/debugging
     if (msg === `show`) { console.log(users, `tempCmds:`, tempCmds) }
     if (msg === `tags`) { console.log(tags) }
-    if (msg === `ping`) { ping(lemonyFresh) }
+    if (command === `!ping`) { ping(args.length ? args : lemonyFresh) }
+
+    // If first message since being away
+    if (users[username][channel].away) {
+        users[username][channel].away = false
+        users[username][channel].awayMessage = ``
+        return talk(chatroom, `Welcome back, ${displayName}! :)`)
+    }
 
     if (sayOnlineMsg) {
         const numbers = [
@@ -205,8 +215,9 @@ function onMessageHandler(chatroom, tags, message, self) {
             `I'm onl`,
             `reconnecting...`,
             `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`,
-            `(there are ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`,
-            `Debug mode is currently ${DEBUG_MODE ? `on` : `off`}! :)`
+            `(there ${Object.keys(tempCmds).length === 1 ? `is` : `are`} ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`,
+            `Debug mode is currently ${DEBUG_MODE ? `ON` : `OFF`}! :)`,
+            `thanksLikePattern has been updated to /^t(h*[aeou]*[bmn])*(ks+|x+)\b/i`
         ]
         const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
         sayOnlineMsg = false
@@ -214,10 +225,51 @@ function onMessageHandler(chatroom, tags, message, self) {
     }
 
     if (colorChanged) { return handleColorChange(chatroom, users[username], color) }
-    if (turboChange) { return handleTurboChange(chatroom, users[username], tags.turbo) }
+    // if (turboChange) { return handleTurboChange(chatroom, users[username], tags.turbo) }
 
     // User's first message in a given channel
     if (firstMsg) { return handleNewChatter(chatroom, users[username]) }
+
+    // JSON stats of user or toUser
+    if (command === `!mystats`) {
+        const user = target || username
+        let data = `${user}: { displayName: '${users[user].displayName}', color: ${users[user].color}`
+        for (const key of Object.keys(users[user])) {
+            if (typeof users[user][key] === `object`) {
+                data += `, ${key}: { sub: ${users[user][key].sub}, mod: ${users[user][key].mod}, vip: ${users[user][key].vip}, msgCount: ${users[user][key].msgCount}, lastMessage: '${users[user][key].lastMessage}', away: ${users[user][key].away ? `${users[user][key].away}, awayMessage: '${users[user][key].awayMessage}'` : `${users[user][key].away}`} }`
+            }
+        }
+        data += ` }`
+        return talk(chatroom, data)
+    }
+
+    // All commands
+    if (command === `!commands`) {
+        talk(chatroom, `Commands: !greet => Say hi to one or more people, !bye => Say goodnight to someone, !yell => Chat across Lemony Fresh ${users[BOT_USERNAME].e1ectroma?.sub ? `e1ectr4Lemfresh ` : `🍋️`}, !away => (Optionally add an away message), !tempcmd => Make your own command! :)`)
+    }
+
+    if (command === `!subs`) {
+        const subbedUsers = []
+        const allUsers = []
+        for (const key of Object.keys(users[BOT_USERNAME])) {
+            if (users[BOT_USERNAME][key]?.sub === true) {
+                subbedUsers.push(key)
+            } else if (typeof users[BOT_USERNAME][key] === `object`) {
+                allUsers.push(key)
+            }
+        }
+        return subbedUsers.length ? talk(chatroom, `I am subbed to: ${subbedUsers.join(`, `)} :)`) : talk(chatroom, `I am not subbed to: ${allUsers.join(`, `)} :(`)
+    }
+
+    // If user mentions a user who is away
+    for (const user of Object.keys(users)) {
+        // console.log(`Checking for ${user}...`)
+        if (msg.toLowerCase().includes(user) && users[user][channel]?.away) {
+            let reply = `Unfortunately ${users[user].displayName} is away from chat right now!`
+            users[user][channel].awayMessage ? reply += ` Their away message: "${users[user][channel].awayMessage}"` : ` :(`
+            return talk(chatroom, reply)
+        }
+    }
 
     // Toggle DEBUG_MODE
     if ([
@@ -228,7 +280,7 @@ function onMessageHandler(chatroom, tags, message, self) {
         if (args[0]?.toLowerCase() === `on`) { DEBUG_MODE = true }
         else if (args[0]?.toLowerCase() === `off`) { DEBUG_MODE = false }
         else { DEBUG_MODE = !DEBUG_MODE }
-        DEBUG_MODE === initialDebugState ? talk(channel, `Debug mode is currently ${DEBUG_MODE ? `on` : `off`}! :)`) : talk(channel, `Debug mode is now ${DEBUG_MODE ? `on` : `off`}! :)`)
+        DEBUG_MODE === initialDebugState ? talk(channel, `Debug mode is currently ${DEBUG_MODE ? `ON` : `OFF`}! :)`) : talk(channel, `Debug mode is now ${DEBUG_MODE ? `ON` : `OFF`}! :)`)
     }
 
     // !lastmsg (Show a user's last message, optionally in a specified stream)
@@ -343,9 +395,9 @@ function onMessageHandler(chatroom, tags, message, self) {
     if (command === `!tempcmds`) {
         const commands = []
         for (key in tempCmds) {
-            commands.push(`${key}: ${tempCmds[key]}`)
+            commands.push(`${key} => "${tempCmds[key]}"`)
         }
-        return talk(chatroom, `All commands => ${commands.join(', ')}`)
+        return talk(chatroom, `There ${commands.length === 1 ? `is` : `are`} ${commands.length} temporary command${commands.length === 1 ? `` : `s`}${commands.length === 0 ? ` :(` : `: ${commands.join(', ')}`}`)
     }
 
     // Check for tempCmd
@@ -382,29 +434,11 @@ function onMessageHandler(chatroom, tags, message, self) {
             575: `cooking adjacent goal`,
             600: `sclarf will END STREAM IMMEDIATELY`,
             625: `sclarf will Call shannon wonderwall`,
-            650: `sclarf will tace bell irl stream?`,
+            650: `sclarf will taco bell irl stream?`,
             675: `sclarf will sexc sclarf corp calendar`,
             700: `sclarf will go see trom!`
         }
-        if (isNaN(subs)) {
-            return talk(chatroom, args.join(` `))
-        } else if (subs in goals) {
-            return talk(chatroom, `At ${subs} subs, ${goals[subs]}`)
-        }
-        // else {
-        //     const adjectives = [
-        //         `nice`,
-        //         `nice`,
-        //         `friendly`,
-        //         `friendly`,
-        //         `sweet`,
-        //         `lovely`,
-        //         `warm`,
-        //         `special`,
-        //         `consensual`
-        //     ]
-        //     return talk(chatroom, `At ${subs} subs, sclarf will give @lemony_friend a ${adjectives[Math.floor(Math.random() * adjectives.length)]} hug! :)`)
-        // }
+        if (!isNaN(subs) && subs in goals) { return talk(chatroom, `At ${subs} subs, ${goals[subs]}`) }
     }
 
     // !bye OR !gn OR !goodnight
@@ -426,135 +460,64 @@ function onMessageHandler(chatroom, tags, message, self) {
     if (command === `!dadjoke`) { return getDadJoke(chatroom) }
 
     // !pokemon
-    if (command === `!pokemon`) { return getPokemon(chatroom) }
+    if (command === `!pokemon`) { return getPokemon(chatroom, args[0]) }
 
-    // JSON stats of user or toUser
-    if (command === `!mystats`) {
-        const user = target || username
-        let data = `${user}: { displayName: '${users[user].displayName}', turbo: ${users[user].turbo}, color: ${users[user].color}`
-        for (const key of Object.keys(users[user])) {
-            if (typeof users[user][key] === `object`) {
-                data += `, ${key}: { sub: ${users[user][key].sub}, mod: ${users[user][key].mod}, vip: ${users[user][key].vip}, msgCount: ${users[user][key].msgCount}, lastMessage: '${users[user][key].lastMessage}' }`
-            }
-        }
-        data += ` }`
-        return talk(chatroom, data)
+    // !away or !brb or !lurk
+    if ([
+        `!away`,
+        `!brb`,
+        `!lurk`
+    ].includes(command)) {
+        users[username][channel].away = true
+        if (args.length) { users[username][channel].awayMessage = args.join(` `) }
+        return args.length ? talk(chatroom, `See you later, ${displayName}! I'll pass along your away message if they mention you! :)`) : talk(chatroom, `See you later, ${displayName}! I'll let people know you're away if they mention you! :)`)
     }
 
     // If bot mentioned in message
     if (msg.toLowerCase().includes(`lemon`)
-        || msg.toLowerCase().includes(`melon`)) {
+        || msg.toLowerCase().includes(`melon`)
+        || msg.toLowerCase().includes(`lemfriend`)) {
         // If the first word is a greeting
-        const greetings = [
-            `hello`,
-            `howdy`,
-            `howdi`,
-            `hemblo`,
-            `hemlo`,
-            `henlo`,
-            `helo`,
-            `heyyyyyyyy`,
-            `heyyyyyyy`,
-            `heyyyyyy`,
-            `heyyyyy`,
-            `heyyyy`,
-            `heyyy`,
-            `heyy`,
-            `hey`,
-            `hi`,
-            `sup`,
-            `whatsup`,
-            `whassup`,
-            `whaddup`,
-            `whadup`,
-            `watsup`,
-            `wadsup`,
-            `wassup`,
-            `whasup`,
-            `wasup`,
-            `wadup`,
-            `whutsup`,
-            `whussup`,
-            `whuddup`,
-            `whudup`,
-            `wutsup`,
-            `wudsup`,
-            `wussup`,
-            `whusup`,
-            `wusup`,
-            `wudup`
-        ]
-        if (greetings.includes(command)) { return handleGreet(chatroom, users[username]) }
+        const greetingPattern = /^hey+\b|^hi+\b|^he.*lo+\b|^howd|sup+\b|^wh?[au].*up\b/i
+        if (command.match(greetingPattern)) { return handleGreet(chatroom, users[username]) }
 
         // If the first word is `gn` or `bye`
-        if (command === `gn`
-            || command === `bye`) { return sayGoodnight(chatroom, users[username]) }
+        const goodNightPattern = /^ni(ght|te)|^gn|^(bye+)+/i
+        if (command.match(goodNightPattern)) { return sayGoodnight(chatroom, users[username]) }
 
         // If the first word is `good` followed by "night"-like word
-        if (command === `good`) {
-            const nights = [
-                `night`,
-                `nite`
-            ]
-            if (nights.includes(args[0].toLowerCase())) { return sayGoodnight(chatroom, users[username]) }
+        if (command === `good` && args[0]?.match(goodNightPattern)) { return sayGoodnight(chatroom, users[username]) }
+
+        // If the first word is `gj` or `nj`
+        if ([`gj`, `nj`].includes(command)) { return sayThanks(chatroom, users[username]) }
+
+        // If the first word is `good`/`nice` followed by `job` or `work`
+        if ([`good`, `nice`].includes(command)
+            && (args[0]?.match(/^job+/i) || args[0]?.match(/^work+/i))) {
+            return sayThanks(chatroom, users[username])
         }
+
+        // If the first word is `well` followed by `done`
+        if (command === `well` && args[0]?.match(/^done+/i)) { return sayThanks(chatroom, users[username]) }
 
         // If the first word is `thanks`-like
-        const thanks = [
-            `thanks`,
-            `thabks`,
-            `thonks`,
-            `thamks`,
-            `ty`,
-            `thx`
-        ]
-        if (thanks.includes(command)) { return sayYoureWelcome(chatroom, users[username]) }
+        const thanksLikePattern = /^t(h*[aeou]*[bmn])*(ks+|x+)\b/i
+        if (command.match(thanksLikePattern)) { return sayYoureWelcome(chatroom, users[username]) }
 
         // If the first word is `thank`-like and followed by "you"-like word
-        const thankLike = [
-            `thank`,
-            `thx`,
-            `thnk`,
-            `thk`,
-            `thabk`,
-            `thonk`
-        ]
-        const yous = [
-            `you`,
-            `yew`,
-            `yu`,
-            `u`
-        ]
-        if (thankLike.includes(command)) {
-            if (yous.includes(args[0].toLowerCase())) { return sayYoureWelcome(chatroom, users[username]) }
-        }
+        const thankLikePattern = /^th*[aeou]*[bmn]*[kx]+\b/i
+        const youLikePattern = /^yo?u\b|^yew\b|^u\b/i
+        if (command.match(thankLikePattern) && args[0]?.match(youLikePattern)) { return sayYoureWelcome(chatroom, users[username]) }
 
         // All words after the first, in lower case
         const lowercaseArgs = args.map(str => str.toLowerCase())
 
         // Checking for "what's up"
-        const whatsUpPrefix = [
-            `what"s`,
-            `what's`,
-            `whats`,
-            `what`,
-            `whas`,
-            `wats`,
-            `wat`,
-            `was`,
-            `whut"s`,
-            `whut's`,
-            `whuts`,
-            `whut`,
-            `whus`,
-            `wuts`,
-            `wut`,
-            `wus`
-        ]
+        const whatsUpPrefixPattern = /^wh?[au]t?['"]*s*\b/i
         // In case saying "what's up" first, and/or `up` doesn't come immediately
-        if (whatsUpPrefix.includes(command)) {
+        if (command.match(whatsUpPrefixPattern)) {
             for (const str of lowercaseArgs) {
-                if (str.slice(0, 2) === `up`) {
+                if (str.match(/^up/i)) {
                     return handleGreet(chatroom, users[username])
                 }
             }
@@ -562,49 +525,55 @@ function onMessageHandler(chatroom, tags, message, self) {
 
         // Check all words in message after the first
         for (const [i, val] of lowercaseArgs.entries()) {
+            if (DEBUG_MODE) {
+                if (val.match(greetingPattern)) { console.log(`${boldTxt}> "${val}" matched greetingPattern${resetTxt}`) }
+                if (val.match(goodNightPattern)) { console.log(`${boldTxt}> "${val}" matched goodNightPattern${resetTxt}`) }
+                if (val === `good` && lowercaseArgs[i + 1]?.match(goodNightPattern)) { console.log(`${boldTxt}> "${val}" followed by "${lowercaseArgs[i + 1]}" matched goodNightPattern${resetTxt}`) }
+                if (val.match(thanksLikePattern)) { console.log(`${boldTxt}> "${val}" matched thanksLikePattern${resetTxt}`) }
+                if (val.match(thankLikePattern)) { console.log(`${boldTxt}> "${val}" matched thankLikePattern${resetTxt}`) }
+                if (val.match(youLikePattern)) { console.log(`${boldTxt}> "${val}" matched youLikePattern${resetTxt}`) }
+                if (val.match(thankLikePattern) && lowercaseArgs[i + 1]?.match(youLikePattern)) { console.log(`${boldTxt}> "${val}" matched thankLikePattern and "${lowercaseArgs[i + 1]}" matched youLikePattern${resetTxt}`) }
+                if (val.match(thankLikePattern)) { console.log(`${boldTxt}> "${val}" matched thankLikePattern${resetTxt}`) }
+                if (val.match(youLikePattern)) { console.log(`${boldTxt}> "${val}" matched youLikePattern${resetTxt}`) }
+                if (val.match(whatsUpPrefixPattern)) { console.log(`${boldTxt}> "${val}" matched whatsUpPrefixPattern${resetTxt}`) }
+                if (val.match(/^up+/) && lowercaseArgs[i - 1]?.match(whatsUpPrefixPattern)) { console.log(`${boldTxt}> "${val}" preceded by "${lowercaseArgs[i - 1]}" matched whatsUpPrefixPattern${resetTxt}`) }
+            }
             // Checking if greeting came later in message
-            for (const str of greetings) {
-                if (val.slice(0, str.length) === str) { return handleGreet(chatroom, users[username]) }
-            }
-
-            // If `gn` came later in the message
-            if (val === `gn`) { return sayGoodnight(chatroom, users[username]) }
-
-            // If `good` followed by "night"-like word came later in the message
-            if (val === `good`) {
-                const nights = [
-                    `night`,
-                    `nite`
-                ]
-                if (lowercaseArgs[i + 1] && nights.includes(lowercaseArgs[i + 1].toLowerCase())) { return sayGoodnight(chatroom, users[username]) }
-            }
-
-            // If thanks came later in message
-            for (const str of thanks) {
-                if (val === str) { return sayYoureWelcome(chatroom, users[username]) }
-            }
-
-            // If "thank"-like followed by "you"-like word came later in the message
-            for (const str of thankLike) {
-                if (val === str) {
-                    if (lowercaseArgs[i + 1] && yous.includes(lowercaseArgs[i + 1].toLowerCase())) { return sayYoureWelcome(chatroom, users[username]) }
-                }
-            }
+            if (val.match(greetingPattern)) { return handleGreet(chatroom, users[username]) }
 
             // Checking if `up` (and preceeding "what's"-like word) came later in message
-            if (val.slice(0, 2) === `up`) {
-                for (const str of whatsUpPrefix) {
-                    if (lowercaseArgs[i - 1].slice(0, str.length) === str) {
-                        return handleGreet(chatroom, users[username])
-                    }
-                }
+            if (val.match(/^up+/) && lowercaseArgs[i - 1]?.match(whatsUpPrefixPattern)) { return handleGreet(chatroom, users[username]) }
+
+            // If `gn` came later in the message
+            if (val.match(goodNightPattern)) { return sayGoodnight(chatroom, users[username]) }
+
+            // If `good` followed by "night"-like word came later in the message
+            if (val === `good` && lowercaseArgs[i + 1]?.match(goodNightPattern)) { return sayGoodnight(chatroom, users[username]) }
+
+            // If thanks came later in message
+            if (val.match(thanksLikePattern)) { return sayYoureWelcome(chatroom, users[username]) }
+
+            // If "thank"-like followed by "you"-like word came later in the message
+            if (val.match(thankLikePattern) && lowercaseArgs[i + 1]?.match(youLikePattern)) { return sayYoureWelcome(chatroom, users[username]) }
+
+            // If `gj` or `nj` came later in the message
+            if ([`gj`, `nj`].includes(val)) { return sayThanks(chatroom, users[username]) }
+
+            // If `good`/`nice` followed by `job`/`work` came later in the message
+            if ([`good`, `nice`].includes(val)
+                && (lowercaseArgs[i + 1]?.match(/^job+/) || lowercaseArgs[i + 1]?.match(/^work+/))) {
+                return sayThanks(chatroom, users[username])
             }
+
+            // If `well` followed by `done` came later in the message
+            if (val === `well` && lowercaseArgs[i + 1].match(/^done+/)) { return sayThanks(chatroom, users[username]) }
         }
+        if (DEBUG_MODE) { console.log(`${boldTxt}> Bot mentioned, but didn't trigger response${resetTxt}`) }
     }
 
     // User asking an "am i ...?" question about themselves
     if (command === `am`
-        && args[0].toLowerCase() === `i`) {
+        && args[0]?.toLowerCase() === `i`) {
         args.shift()
         const lowercaseArgs = args.map(str => str.toLowerCase())
 
@@ -612,7 +581,7 @@ function onMessageHandler(chatroom, tags, message, self) {
             const idx = lowercaseArgs.indexOf(str)
 
             // Asking about channel info
-            if (str.slice(0, 3) === `sub`) {
+            if (str.match(/^sub/i)) {
                 if (lowercaseArgs[idx + 2]) {
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`jpeg`) && `jpegstripes` in users[username]) { return users[username][`jpegstripes`].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to JPEGSTRIPES! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to JPEGSTRIPES! :(`) }
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`scl`) && `sclarf` in users[username]) { return users[username][`sclarf`].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to sclarf! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to sclarf! :(`) }
@@ -621,7 +590,7 @@ function onMessageHandler(chatroom, tags, message, self) {
                 }
                 return users[username][channel].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to ${channel}! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to ${channel}! :(`)
             }
-            if (str.slice(0, 3) === `mod`) {
+            if (str.match(/^mod/i)) {
                 if (lowercaseArgs[idx + 2]) {
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`jpeg`) && `jpegstripes` in users[username]) { return users[username][`jpegstripes`].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in JPEGSTRIPES's chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in JPEGSTRIPES's chat! :(`) }
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`scl`) && `sclarf` in users[username]) { return users[username][`sclarf`].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in sclarf's chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in sclarf's chat! :(`) }
@@ -630,7 +599,7 @@ function onMessageHandler(chatroom, tags, message, self) {
                 }
                 return users[username][channel].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in ${channel}'s chat! :(`)
             }
-            if (str.slice(0, 3) === `vip`) {
+            if (str.match(/^vip/i)) {
                 if (lowercaseArgs[idx + 2]) {
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`jpeg`) && `jpegstripes` in users[username]) { return users[username][`jpegstripes`].vip ? talk(chatroom, `Yes ${displayName}, you are a vip in JPEGSTRIPES's chat! :)`) : talk(chatroom, `No ${displayName}, you are not a vip in JPEGSTRIPES's chat! :(`) }
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`scl`) && `sclarf` in users[username]) { return users[username][`sclarf`].vip ? talk(chatroom, `Yes ${displayName}, you are a vip in sclarf's chat! :)`) : talk(chatroom, `No ${displayName}, you are not a vip in sclarf's chat! :(`) }
@@ -644,7 +613,7 @@ function onMessageHandler(chatroom, tags, message, self) {
 
     // User asking a "do i ...?" question about themselves
     if (command === `do`
-        && args[0].toLowerCase() === `i`) {
+        && args[0]?.toLowerCase() === `i`) {
         args.shift()
         const lowercaseArgs = args.map(str => str.toLowerCase())
 
@@ -652,7 +621,7 @@ function onMessageHandler(chatroom, tags, message, self) {
             const idx = lowercaseArgs.indexOf(str)
 
             // Asking about channel info
-            if (str.slice(0, 3) === `sub`) {
+            if (str.match(/^sub/i)) {
                 if (lowercaseArgs[idx + 2]) {
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`jpeg`) && `jpegstripes` in users[username]) { return users[username][`jpegstripes`].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to JPEGSTRIPES! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to JPEGSTRIPES! :(`) }
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`scl`) && `sclarf` in users[username]) { return users[username][`sclarf`].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to sclarf! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to sclarf! :(`) }
@@ -661,7 +630,7 @@ function onMessageHandler(chatroom, tags, message, self) {
                 }
                 return users[username][channel].sub ? talk(chatroom, `Yes ${displayName}, you are subbed to ${channel}! :)`) : talk(chatroom, `No ${displayName}, you are not subbed to ${channel}! :(`)
             }
-            if (str.slice(0, 3) === `mod`) {
+            if (str.match(/^mod/i)) {
                 if (lowercaseArgs[idx + 2]) {
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`jpeg`) && `jpegstripes` in users[username]) { return users[username][`jpegstripes`].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in JPEGSTRIPES's chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in JPEGSTRIPES's chat! :(`) }
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`scl`) && `sclarf` in users[username]) { return users[username][`sclarf`].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in sclarf's chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in sclarf's chat! :(`) }
@@ -670,7 +639,7 @@ function onMessageHandler(chatroom, tags, message, self) {
                 }
                 return users[username][channel].mod ? talk(chatroom, `Yes ${displayName}, you are a mod in ${channel}'s chat! :)`) : talk(chatroom, `No ${displayName}, you are not a mod in ${channel}'s chat! :(`)
             }
-            if (str.slice(0, 3) === `vip`) {
+            if (str.match(/^vip/i)) {
                 if (lowercaseArgs[idx + 2]) {
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`jpeg`) && `jpegstripes` in users[username]) { return users[username][`jpegstripes`].vip ? talk(chatroom, `Yes ${displayName}, you are a vip in JPEGSTRIPES's chat! :)`) : talk(chatroom, `No ${displayName}, you are not a vip in JPEGSTRIPES's chat! :(`) }
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`scl`) && `sclarf` in users[username]) { return users[username][`sclarf`].vip ? talk(chatroom, `Yes ${displayName}, you are a vip in sclarf's chat! :)`) : talk(chatroom, `No ${displayName}, you are not a vip in sclarf's chat! :(`) }
@@ -698,7 +667,7 @@ function onMessageHandler(chatroom, tags, message, self) {
             const idx = lowercaseArgs.indexOf(str)
 
             // Asking about other user's channel info
-            if (str.slice(0, 3) === `sub`) {
+            if (str.match(/^sub/i)) {
                 if (lowercaseArgs[idx + 2]) {
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`jpeg`) && `jpegstripes` in targetedUser) { return targetedUser[`jpegstripes`].sub ? talk(chatroom, `Yes, ${targetedUser.displayName} is subbed to JPEGSTRIPES! :)`) : talk(chatroom, `No, ${targetedUser.displayName} is not subbed to JPEGSTRIPES! :(`) }
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`scl`) && `sclarf` in targetedUser) { return targetedUser[`sclarf`].sub ? talk(chatroom, `Yes, ${targetedUser.displayName} is subbed to sclarf! :)`) : talk(chatroom, `No, ${targetedUser.displayName} is not subbed to sclarf! :(`) }
@@ -707,7 +676,7 @@ function onMessageHandler(chatroom, tags, message, self) {
                 }
                 return targetedUser[channel]?.sub ? talk(chatroom, `Yes, ${targetedUser.displayName} is subbed to ${channel}! :)`) : talk(chatroom, `No, ${targetedUser.displayName} is not subbed to ${channel}! :(`)
             }
-            if (str.slice(0, 3) === `mod`) {
+            if (str.match(/^mod/i)) {
                 if (lowercaseArgs[idx + 2]) {
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`jpeg`) && `jpegstripes` in targetedUser) { return targetedUser[`jpegstripes`].mod ? talk(chatroom, `Yes, ${targetedUser.displayName} is a mod in JPEGSTRIPES's chat! :)`) : talk(chatroom, `No, ${targetedUser.displayName} is not a mod in JPEGSTRIPES's chat! :(`) }
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`scl`) && `sclarf` in targetedUser) { return targetedUser[`sclarf`].mod ? talk(chatroom, `Yes, ${targetedUser.displayName} is a mod in sclarf's chat! :)`) : talk(chatroom, `No, ${targetedUser.displayName} is not a mod in sclarf's chat! :(`) }
@@ -716,7 +685,7 @@ function onMessageHandler(chatroom, tags, message, self) {
                 }
                 return targetedUser[channel]?.mod ? talk(chatroom, `Yes, ${targetedUser.displayName} is a mod in ${channel}'s chat! :)`) : talk(chatroom, `No, ${targetedUser.displayName} is not a mod in ${channel}'s chat! :(`)
             }
-            if (str.slice(0, 3) === `vip`) {
+            if (str.match(/^vip/i)) {
                 if (lowercaseArgs[idx + 2]) {
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`jpeg`) && `jpegstripes` in targetedUser) { return targetedUser[`jpegstripes`].vip ? talk(chatroom, `Yes, ${targetedUser.displayName} is a VIP in JPEGSTRIPES's chat! :)`) : talk(chatroom, `No, ${targetedUser.displayName} is not a VIP in JPEGSTRIPES's chat! :(`) }
                     if (lowercaseArgs[idx + 2].toLowerCase().includes(`scl`) && `sclarf` in targetedUser) { return targetedUser[`sclarf`].vip ? talk(chatroom, `Yes, ${targetedUser.displayName} is a VIP in sclarf's chat! :)`) : talk(chatroom, `No, ${targetedUser.displayName} is not a VIP in sclarf's chat! :(`) }
@@ -728,21 +697,62 @@ function onMessageHandler(chatroom, tags, message, self) {
         }
     }
 
+    if (username === `streamelements` && (msg.includes(`lemony_friend`))) {
+        console.log(`Current points:`, `points` in users[BOT_USERNAME][channel] ? users[BOT_USERNAME][channel].points : `(not known)`)
+        if (args[0] === `gave` && `points` in users[BOT_USERNAME][channel]) {
+            users[BOT_USERNAME][channel].points += Number(args[1])
+            console.log(`> Received`, Number(args[1]), `points, thanks to`, command, `- now has:`, users[BOT_USERNAME][channel].points)
+        }
+        else if (args[1] === `has`) {
+            users[BOT_USERNAME][channel].points = Number(args[2])
+            console.log(`> Checked points, and has`, Number(args[2]))
+        }
+        else if (msg.includes(`jpegstSpamton`)) {
+            console.log(`*** JPEG MODE ***`)
+            if (msg.toLowerCase().includes(`all`)) {
+                if (msg.toLowerCase().includes(`lost`)) {
+                    users[BOT_USERNAME][channel].points = 0
+                    console.log(`> Gambled ALL, LOST ALL, new amount:`, 0)
+                } else {
+                    users[BOT_USERNAME][channel].points = Number(args[args.length - 3].substring(2, 7))
+                    console.log(`> Gambled ALL, 2x POINTS:`, Number(args[args.length - 3].substring(2, 7)))
+                }
+            } else if (msg.toLowerCase().includes(`lost`)) {
+                users[BOT_USERNAME][channel].points = Number(args[args.length - 3])
+                console.log(`> LOST SOME, new amount:`, Number(args[args.length - 3]))
+            } else if (msg.toLowerCase().includes(`won`)) {
+                users[BOT_USERNAME][channel].points = Number(args[args.length - 3].substring(2, 7))
+                console.log(`> WON SOME, new amount:`, Number(args[args.length - 3].substring(2, 7)))
+            }
+        } else {
+            if (msg.toLowerCase().includes(`all`)) {
+                if (msg.toLowerCase().includes(`lost`)) {
+                    users[BOT_USERNAME][channel].points = 0
+                    console.log(`> Gambled ALL, LOST ALL, new amount:`, 0)
+                } else {
+                    users[BOT_USERNAME][channel].points = Number(args[args.length - 3])
+                    console.log(`> Gambled ALL, 2x POINTS:`, Number(args[args.length - 3]))
+                }
+            } else if (msg.toLowerCase().includes(`lost`)) {
+                users[BOT_USERNAME][channel].points = Number(args[args.length - 3])
+                console.log(`> LOST SOME, new amount:`, Number(args[args.length - 3]))
+            } else if (msg.toLowerCase().includes(`won`)) {
+                users[BOT_USERNAME][channel].points = Number(args[args.length - 3])
+                console.log(`> WON SOME, new amount:`, Number(args[args.length - 3]))
+            }
+        }
+        console.log(`New points:`, `points` in users[BOT_USERNAME][channel] ? users[BOT_USERNAME][channel].points : `(not known)`)
+        if (!(`points` in users[BOT_USERNAME][channel])) {
+            talk(chatroom, `!points`)
+        }
+    }
+
     if (listening || channel === BOT_USERNAME) {
         // Parsing each message word
         const lowercaseArgs = args.map(str => str.toLowerCase())
         for (const str of lowercaseArgs) {
             // If a word starts with "but", and has a 4th letter that isn't T or punctuation, make it "BUTT-(rest of word)"
-            if (str.slice(0, 3).toLowerCase() === `but`
-                && str[3]
-                && ![
-                    `t`,
-                    `T`,
-                    `.`,
-                    `,`,
-                    `!`,
-                    `?`
-                ].includes(str[3])) {
+            if (str.match(/^but[a-s|u-z]/i)) {
                 delayListening()
                 return talk(chatroom, `${str[0].toUpperCase()}${str.slice(1).toLowerCase()}? More like BUTT-${str.slice(3).toLowerCase()}`)
             }
@@ -866,24 +876,57 @@ function onMessageHandler(chatroom, tags, message, self) {
             }
             if (streakCount >= 3) {
                 delayListening()
-                return setTimeout(() => { return talk(chatroom, msg) }, 1000)
+                setTimeout(() => { talk(chatroom, msg) }, 1000)
+                return
             }
         }
         // if (DEBUG_MODE) { talk(chatroom, `Listening for message streak... ${streakCount}/3 "${msg}" - ${streakUsers.join(`, `)}`) }
     }
 
     // *** FUN NUMBER! ***
-    if (users[username][channel].msgCount % 27 === 0) {
-        let randomUser = getRandomUser()
-        const funNumber = Math.floor(Math.random() * 50)
-
+    const funNumberCount = 25
+    const funNumberTotal = 50
+    if (users[username][channel].msgCount % funNumberCount === 0) {
+        const funNumber = Math.floor(Math.random() * funNumberTotal)
         console.log(`${boldTxt}*** Fun number triggered by`, users[username].displayName, `:`, funNumber, resetTxt)
+
+        let randomUser = getRandomUser()
         const currencies = [
             {
                 name: `dollars`,
                 abbreviation: `usd`,
                 symbol: `$`,
                 zeroes: ``
+            },
+            {
+                name: `dollars`,
+                abbreviation: `usd`,
+                symbol: `$`,
+                zeroes: ``
+            },
+            {
+                name: `dollars`,
+                abbreviation: `usd`,
+                symbol: `$`,
+                zeroes: ``
+            },
+            {
+                name: `dollars`,
+                abbreviation: `usd`,
+                symbol: `$`,
+                zeroes: ``
+            },
+            {
+                name: `dollars`,
+                abbreviation: `usd`,
+                symbol: `$`,
+                zeroes: ``
+            },
+            {
+                name: `japanese yen`,
+                abbreviation: `jpy`,
+                symbol: `¥`,
+                zeroes: `00`
             },
             {
                 name: `japanese yen`,
@@ -898,6 +941,18 @@ function onMessageHandler(chatroom, tags, message, self) {
                 zeroes: `000`
             },
             {
+                name: `korean won`,
+                abbreviation: `krw`,
+                symbol: `₩`,
+                zeroes: `000`
+            },
+            {
+                name: `turkish lira`,
+                abbreviation: ``,
+                symbol: `₺`,
+                zeroes: `00`
+            },
+            {
                 name: `turkish lira`,
                 abbreviation: ``,
                 symbol: `₺`,
@@ -910,16 +965,88 @@ function onMessageHandler(chatroom, tags, message, self) {
                 zeroes: ``
             },
             {
+                name: `british pound sterling`,
+                abbreviation: `gbp`,
+                symbol: `£`,
+                zeroes: ``
+            },
+            {
                 name: `mexican pesos`,
                 abbreviation: `mxn`,
-                symbol: `mex$`,
+                symbol: `$`,
+                zeroes: `0`
+            },
+            {
+                name: `mexican pesos`,
+                abbreviation: `mxn`,
+                symbol: `$`,
                 zeroes: `0`
             },
             {
                 name: `canadian dollars`,
                 abbreviation: `cad`,
-                symbol: `cad$`,
+                symbol: `$`,
                 zeroes: `0`
+            },
+            {
+                name: `canadian dollars`,
+                abbreviation: `cad`,
+                symbol: `$`,
+                zeroes: `0`
+            },
+            {
+                name: `euro`,
+                abbreviation: `eur`,
+                symbol: `€`,
+                zeroes: ``
+            },
+            {
+                name: `euro`,
+                abbreviation: `eur`,
+                symbol: `€`,
+                zeroes: ``
+            },
+            {
+                name: `australian dollars`,
+                abbreviation: `aud`,
+                symbol: `$`,
+                zeroes: `0`
+            },
+            {
+                name: `australian dollars`,
+                abbreviation: `aud`,
+                symbol: `$`,
+                zeroes: `0`
+            },
+            {
+                name: `malaysian ringgit`,
+                abbreviation: `myr`,
+                symbol: `RM`,
+                zeroes: `0`
+            },
+            {
+                name: `malaysian ringgit`,
+                abbreviation: `myr`,
+                symbol: `RM`,
+                zeroes: `0`
+            },
+            {
+                name: `indian rupees`,
+                abbreviation: `inr`,
+                symbol: `₹`,
+                zeroes: `00`
+            },
+            {
+                name: `indian rupees`,
+                abbreviation: `inr`,
+                symbol: `₹`,
+                zeroes: `00`
+            },
+            {
+                name: `zimbabwean dollars`,
+                abbreviation: `zwd`,
+                symbol: `$`,
+                zeroes: `0000000000000000`
             }
         ]
         const randCurrency = Math.floor(Math.random() * currencies.length)
@@ -969,78 +1096,81 @@ function onMessageHandler(chatroom, tags, message, self) {
                     `!nice`,
                     `!n64`,
                     `!bork`,
+                    `!maxwell`
                 ]
             } else if (chatroom === jpegstripes) {
                 redeems = [
-                    `!redeem bigshot`,
-                    `!redeem keygen`,
-                    `!redeem spotion`,
-                    `!redeem thebigone`,
-                    `!redeem bowtie`,
-                    `!redeem neo`,
-                    `!redeem workout`,
-                    `!redeem suscr1ber`,
-                    `!redeem mario`,
-                    `!redeem piano`,
-                    `!redeem slip`,
-                    `!redeem hamster`,
-                    `!redeem alarm`,
-                    `!redeem waste`,
-                    `!redeem 25k`,
-                    `!redeem crabrave`,
-                    `!redeem confusion`,
-                    `!redeem soulja`,
-                    `!redeem breakdance`,
-                    `!redeem gigachad`,
-                    `!redeem 4d3d3d3`,
-                    `!redeem feedcat`,
-                    `!redeem polarbear`,
-                    `!redeem graph`,
-                    `!redeem checkmate`,
-                    `!redeem shutup`,
-                    `!redeem doggo`,
-                    `!redeem marshmallows`,
-                    `!redeem chocotaco`,
-                    `!redeem rat`,
-                    `!redeem hamburger`,
-                    `!redeem chickendance`,
-                    `!redeem come`,
-                    `!redeem gauntlet`,
-                    `!redeem princess`,
-                    `!redeem rubbermaid`,
-                    `!redeem peachsyrup`,
-                    `!redeem skype`,
-                    `!redeem ohhimark`,
-                    `!redeem dripgoku`,
-                    `!redeem gelatin`,
-                    `!redeem cheesecake`,
-                    `!redeem fancam`,
-                    `!redeem nicecock`,
-                    `!redeem lieblingsfach`,
-                    `!redeem lavish`,
-                    `!redeem shootme`,
-                    `!redeem disk`,
-                    `!redeem flagranterror`,
-                    `!redeem technology`,
-                    `!redeem bingchilling`,
-                    `!redeem flagranterror`,
-                    `!redeem litlizards`,
-                    `!redeem raccoon`,
-                    `!redeem gay`,
-                    `!redeem turbomaxwaste`,
-                    `!redeem birthday`
+                    `!bigshot`,
+                    `!keygen`,
+                    `!spotion`,
+                    `!thebigone`,
+                    `!bowtie`,
+                    `!neo`,
+                    `!workout`,
+                    `!suscr1ber`,
+                    `!mario`,
+                    `!piano`,
+                    `!slip`,
+                    `!hamster`,
+                    `!alarm`,
+                    `!waste`,
+                    `!25k`,
+                    `!crabrave`,
+                    `!confusion`,
+                    `!soulja`,
+                    `!breakdance`,
+                    `!gigachad`,
+                    `!4d3d3d3`,
+                    `!feedcat`,
+                    `!polarbear`,
+                    `!graph`,
+                    `!checkmate`,
+                    `!shutup`,
+                    `!doggo`,
+                    `!marshmallows`,
+                    `!chocotaco`,
+                    `!rat`,
+                    `!hamburger`,
+                    `!chickendance`,
+                    `!come`,
+                    `!gauntlet`,
+                    `!princess`,
+                    `!rubbermaid`,
+                    `!peachsyrup`,
+                    `!skype`,
+                    `!ohhimark`,
+                    `!dripgoku`,
+                    `!gelatin`,
+                    `!cheesecake`,
+                    `!fancam`,
+                    `!nicecock`,
+                    `!lieblingsfach`,
+                    `!lavish`,
+                    `!shootme`,
+                    `!disk`,
+                    `!flagranterror`,
+                    `!technology`,
+                    `!bingchilling`,
+                    `!flagranterror`,
+                    `!litlizards`,
+                    `!raccoon`,
+                    `!gay`,
+                    `!turbomaxwaste`
                 ]
             } else if (chatroom === sclarf) {
                 redeems = [
-                    `!redeem balls`,
-                    `!redeem hat`,
-                    `!redeem no`,
-                    `!redeem omg`,
-                    `!redeem why`,
-                    `!redeem yes`
+                    `!balls`,
+                    `!hat`,
+                    `!no`,
+                    `!omg`,
+                    `!why`,
+                    `!yes`
                 ]
-            } else {
-                redeems = [`Give me ${users[username][channel].msgCount}${currency.zeroes} ${currency.name}`]
+            } else if (chatroom === domonintendo1) {
+                while (randomUser === BOT_USERNAME) { randomUser = getRandomUser() }
+                redeems = [
+                    `!slap ${randomUser}`
+                ]
             }
             const redeem = Math.floor(Math.random() * redeems.length)
             return talk(chatroom, redeems[redeem])
@@ -1064,14 +1194,24 @@ function onMessageHandler(chatroom, tags, message, self) {
             ]
             return talk(chatroom, actions[Math.floor(Math.random() * actions.length)])
         }
-        else if (DEBUG_MODE) { talk(chatroom, `*** Fun number triggered by ${users[username].displayName}: ${funNumber}`) }
+        else if (funNumber === 7) { return talk(chatroom, `This message has a 1 / ${(funNumberCount * funNumberTotal).toLocaleString()} chance of appearing`) }
     }
 }
 
 // Helper functions
 function handleNewChatter(chatroom, user) {
     if (DEBUG_MODE) { console.log(`${boldTxt}> handleNewChatter(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
-    talk(chatroom, `Hi ${user.displayName}, welcome to the stream!`)
+    const greetings = [
+        `Hi ${user.displayName}, welcome to the stream!`,
+        `Hey ${user.displayName}, welcome to the stream!`,
+        `Welcome to the stream, ${user.displayName}!`,
+        `Hi ${user.displayName}, welcome in!`,
+        `Hi ${user.displayName} :)`,
+        `Hello @${user.displayName} welcome in!`,
+        `@${user.displayName} welcome 2 ${chatroom.substring(1, 5)} strem`,
+    ]
+    const greeting = greetings[Math.floor(Math.random() * greetings.length)]
+    setTimeout(() => talk(chatroom, greeting), 5000)
 }
 
 function getLastMessage(chatroom, user, room) {
@@ -1114,23 +1254,138 @@ async function getDadJoke(chatroom) {
     data.status === 200 ? talk(chatroom, data.joke) : talk(chatroom, `Error fetching dad joke! :(`)
 }
 
-async function getPokemon(chatroom) {
-    let randNum = Math.ceil(Math.random() * 1281)
+async function getPokemon(chatroom, pokemon) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> getPokemon(chatroom: ${chatroom}, pokemon: ${pokemon})${resetTxt}`) }
+    if (!pokemon) { return }
 
-    console.log(`Looking up Pokemon #${randNum}...`)
-    if (DEBUG_MODE) { talk(chatroom, `Looking up Pokemon #${randNum}...`) }
-
-    let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randNum}`)
-    while (response.statusText !== `OK`) {
-        randNum = Math.ceil(Math.random() * 1281)
-
-        console.log(`Not Found! Looking up Pokemon #${randNum}...`)
-        if (DEBUG_MODE) { talk(chatroom, `Not Found! Looking up Pokemon #${randNum}...`) }
-
-        response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randNum}`)
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`)
+    if (response.statusText !== `OK`) {
+        talk(chatroom, `Pokemon ${pokemon} was not found! :(`)
+        return
     }
     const data = await response.json()
-    talk(chatroom, `${data.name}: ${data.sprites.front_default}`)
+
+    let message = `#${data.id} ${pokemon.toUpperCase()} `
+
+    const pokemonTypes = []
+    for (const types of data.types) { pokemonTypes.push(types.type.name) }
+    message += `(${pokemonTypes.join(`/`)}) - ${data.abilities.length === 1 ? `Ability` : `Abilities`}: `
+
+    const pokemonAbilities = []
+    for (const abilities of data.abilities) { pokemonAbilities.push(`${abilities.ability.name}${abilities.is_hidden ? ` (hidden)` : ``}`) }
+    message += `${pokemonAbilities.join(`, `)}. `
+
+    // if (DEBUG_MODE) {
+    //     console.log(data.types)
+    //     console.log(data.abilities)
+    // }
+
+    let type1Data
+    let type2Data
+    const doubleDamageTo = []
+    const doubleDamageFrom = []
+    const halfDamageTo = []
+    const halfDamageFrom = []
+    const immuneTo = []
+    const immuneFrom = []
+
+    if (pokemonTypes[0]) {
+        // look up one type
+        const response1 = await fetch(`https://pokeapi.co/api/v2/type/${pokemonTypes[0]}`)
+        type1Data = await response1.json()
+        for (const damageType of type1Data.damage_relations.double_damage_to) {
+            if (!doubleDamageTo.includes(damageType.name)) { doubleDamageTo.push(damageType.name) }
+        }
+        for (const damageType of type1Data.damage_relations.double_damage_from) {
+            if (!doubleDamageFrom.includes(damageType.name)) { doubleDamageFrom.push(damageType.name) }
+        }
+        for (const damageType of type1Data.damage_relations.half_damage_to) {
+            if (!halfDamageTo.includes(damageType.name)) { halfDamageTo.push(damageType.name) }
+        }
+        for (const damageType of type1Data.damage_relations.half_damage_from) {
+            if (!halfDamageFrom.includes(damageType.name)) { halfDamageFrom.push(damageType.name) }
+        }
+        for (const damageType of type1Data.damage_relations.no_damage_to) {
+            if (!immuneTo.includes(damageType.name)) { immuneTo.push(damageType.name) }
+        }
+        for (const damageType of type1Data.damage_relations.no_damage_from) {
+            if (!immuneFrom.includes(damageType.name)) { immuneFrom.push(damageType.name) }
+        }
+    }
+    if (pokemonTypes[1]) {
+        // look up two types
+        const response2 = await fetch(`https://pokeapi.co/api/v2/type/${pokemonTypes[1]}`)
+        type2Data = await response2.json()
+        for (const damageType of type2Data.damage_relations.double_damage_to) {
+            if (!doubleDamageTo.includes(damageType.name)) { doubleDamageTo.push(damageType.name) }
+        }
+        for (const damageType of type2Data.damage_relations.double_damage_from) {
+            if (!doubleDamageFrom.includes(damageType.name)) { doubleDamageFrom.push(damageType.name) }
+        }
+        for (const damageType of type2Data.damage_relations.half_damage_to) {
+            if (!halfDamageTo.includes(damageType.name)) { halfDamageTo.push(damageType.name) }
+        }
+        for (const damageType of type2Data.damage_relations.half_damage_from) {
+            if (!halfDamageFrom.includes(damageType.name)) { halfDamageFrom.push(damageType.name) }
+        }
+        for (const damageType of type2Data.damage_relations.no_damage_to) {
+            if (!immuneTo.includes(damageType.name)) { immuneTo.push(damageType.name) }
+        }
+        for (const damageType of type2Data.damage_relations.no_damage_from) {
+            if (!immuneFrom.includes(damageType.name)) { immuneFrom.push(damageType.name) }
+        }
+    }
+
+    // if (DEBUG_MODE) {
+    //     type1Data && console.log(`type1Data.damage_relations:`, type1Data.damage_relations)
+    //     type2Data && console.log(`type2Data.damage_relations:`, type2Data.damage_relations)
+    // }
+
+    // if it TAKES double damage AND half damage FROM a type, remove from BOTH arrays
+    const nullify = []
+    for (const type of doubleDamageFrom) {
+        console.log(`Looking at:`, doubleDamageFrom.indexOf(type), type)
+        if (halfDamageFrom.includes(type)) {
+            console.log(`Found in both:`, type)
+            // doubleDamageFrom.splice(doubleDamageFrom.indexOf(type), 1)
+            // halfDamageFrom.splice(halfDamageFrom.indexOf(type), 1)
+            nullify.push(type)
+        }
+    }
+    for (const dupe of nullify) {
+        doubleDamageFrom.splice(doubleDamageFrom.indexOf(dupe), 1)
+        halfDamageFrom.splice(halfDamageFrom.indexOf(dupe), 1)
+    }
+
+    // Cleaning up immunities
+    for (const type of immuneFrom) {
+        if (halfDamageFrom.includes(type)) {
+            console.log(`"Immunity from" found in halfDamageFrom:`, type)
+            halfDamageFrom.splice(halfDamageFrom.indexOf(type), 1)
+        }
+        if (doubleDamageFrom.includes(type)) {
+            console.log(`"Immunity from" found in doubleDamageFrom:`, type)
+            doubleDamageFrom.splice(doubleDamageFrom.indexOf(type), 1)
+        }
+    }
+
+    if (DEBUG_MODE) {
+        console.log(`nullify:`, nullify)
+        console.log(`doubleDamageTo:`, doubleDamageTo)
+        console.log(`doubleDamageFrom:`, doubleDamageFrom)
+        console.log(`halfDamageTo:`, halfDamageTo)
+        console.log(`halfDamageFrom:`, halfDamageFrom)
+        console.log(`immuneTo:`, immuneTo)
+        console.log(`immuneFrom:`, immuneFrom)
+    }
+
+    if (doubleDamageTo.length > 0) { message += `Super effective to ${doubleDamageTo.join(`/`)}-type Pokemon. ` }
+    if (doubleDamageFrom.length > 0) { message += `Weak to ${doubleDamageFrom.join(`/`)}-type moves. ` }
+    if (halfDamageTo.length > 0) { message += `Not very effective to ${halfDamageTo.join(`/`)}-type Pokemon. ` }
+    if (halfDamageFrom.length > 0) { message += `Resistant to ${halfDamageFrom.join(`/`)}-type moves. ` }
+    if (immuneTo.length > 0) { message += `No effect to ${immuneTo.join(`/`)}-type Pokemon. ` }
+    if (immuneFrom.length > 0) { message += `No effect from ${immuneFrom.join(`/`)}-type moves.` }
+    talk(chatroom, message)
 }
 
 function getColor(chatroom, user) {
@@ -1143,9 +1398,9 @@ function getColor(chatroom, user) {
 }
 
 function getRandomUser() {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> getRandomUser()${resetTxt}`) }
     const arr = Object.keys(users)
     const randomUser = arr[Math.floor(Math.random() * arr.length)]
+    if (DEBUG_MODE) { console.log(`${boldTxt}> getRandomUser() picked: ${randomUser}${resetTxt}`) }
     return randomUser
 }
 
@@ -1236,44 +1491,12 @@ function lemonify(str) {
     // Reading from last word to first
     for (let i = words.length - 1; i >= 0; i--) {
         const number = Number(words[i])
-        const punctuation = [
-            `.`,
-            `!`,
-            `?`,
-            `:`,
-            `;`,
-            `-`,
-            `"`,
-            `'`,
-            `,`,
-            `.`,
-            `/`,
-            `<`,
-            `>`,
-            `@`,
-            `#`,
-            `$`,
-            `%`,
-            `^`,
-            `&`,
-            `*`,
-            `(`,
-            `)`,
-            `-`,
-            `_`,
-            `+`,
-            `=`,
-            `~`
-        ]
-        let append = ``
-        while (words[i + 1] && punctuation.includes(words[i + 1][words[i + 1].length - 1])) {
-            for (const symbol of punctuation) {
-                if (words[i + 1].endsWith(symbol)) {
-                    append += symbol
-                    words[i + 1] = words[i + 1].substring(0, words[i + 1].length - 1)
-                }
-            }
+        const append = []
+        while (words[i + 1] && words[i + 1].match(/[^a-zA-Z]$/)) {
+            append.push(words[i + 1][words[i + 1].length - 1])
+            words[i + 1] = words[i + 1].substring(0, words[i + 1].length - 1)
         }
+        append.reverse()
 
         // Definitely singular
         if ((
@@ -1289,7 +1512,7 @@ function lemonify(str) {
             && words[i + 1]
         ) {
             if (words[i].toLowerCase() === `an`) { words[i] = `a` }
-            words[i + 1] = `lemon${append}`
+            words[i + 1] = `lemon${append.join(``)}`
         }
 
         // Definitely plural
@@ -1336,7 +1559,7 @@ function lemonify(str) {
             ].includes(words[i].toLowerCase()))
             && words[i + 1]
             && !reservedKeywords.includes(words[i + 1])
-        ) { words[i + 1] = `lemons${append}` }
+        ) { words[i + 1] = `lemons${append.join(``)}` }
 
         // Ambiguous count
         else if ((
@@ -1364,8 +1587,8 @@ function lemonify(str) {
             ].includes(words[i].toLowerCase()))
             && words[i + 1]
             && !reservedKeywords.includes(words[i + 1])
-        ) { words[i + 1] = words[i + 1].toLowerCase().endsWith(`s`) ? `lemons${append}` : `lemon${append}` }
-        else if (words[i + 1]) { words[i + 1] = `${words[i + 1]}${append}` }
+        ) { words[i + 1] = words[i + 1].match(/[^s][s]$/i) ? `lemons${append.join(``)}` : `lemon${append.join(``)}` }
+        else if (words[i + 1]) { words[i + 1] = `${words[i + 1]}${append.join(``)}` }
     }
 
     const lemonifiedString = words.join(` `)
@@ -1492,20 +1715,48 @@ function sayYoureWelcome(chatroom, user) {
     talk(chatroom, response)
 }
 
+function sayThanks(chatroom, user) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> sayThanks(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
+    const thanks = [
+        `${user.displayName}`,
+        `Thanks, ${user.displayName}`,
+        `Thanks, ${user.displayName}`,
+        `Thanks, ${user.displayName}`,
+        `Thank you, ${user.displayName}`,
+        `Thank you, ${user.displayName}`,
+        `Thank you, ${user.displayName}`,
+        `Thank you so much, ${user.displayName}`,
+        `Hey thanks, ${user.displayName}`,
+        `Aw thanks, ${user.displayName}`
+    ]
+    const sentiment = Math.floor(Math.random() * thanks.length)
+    let response = `${thanks[sentiment]}`
+    if (sentiment === 0) {
+        const appends = [
+            `thanks`,
+            `thank you`,
+            `thank you so much`
+        ]
+        response += ` ${appends[Math.floor(Math.random() * appends.length)]}`
+    }
+    response += `! :)`
+    talk(chatroom, response)
+}
+
 function handleColorChange(chatroom, user, newColor) {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName}, newColor: ${newColor})${resetTxt}`) }
+    if (DEBUG_MODE) { console.log(`${boldTxt}> handleColorChange(chatroom: ${chatroom}, user: ${user.displayName}, newColor: ${newColor})${resetTxt}`) }
     user.color = newColor
     talk(chatroom, `Acknowledging ${user.displayName}'s color change :)`)
 }
 
-function handleTurboChange(chatroom, user, turboStatus) {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName}, turboStatus: ${turboStatus})${resetTxt}`) }
-    user.turbo = turboStatus
-    turboStatus ? talk(chatroom, `Wow, ${user.displayName} got Turbo? :D`) : talk(chatroom, `Did ${user.displayName} stop having Turbo? :O`)
-}
+// function handleTurboChange(chatroom, user, turboStatus) {
+//     if (DEBUG_MODE) { console.log(`${boldTxt}> handleTurboChange(chatroom: ${chatroom}, user: ${user.displayName}, turboStatus: ${turboStatus})${resetTxt}`) }
+//     user.turbo = turboStatus
+//     turboStatus ? talk(chatroom, `Wow, ${user.displayName} got Turbo? :D`) : talk(chatroom, `Did ${user.displayName} stop having Turbo? :O`)
+// }
 
 function handleSubChange(chatroom, user, subStatus) {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName}, subStatus: ${subStatus})${resetTxt}`) }
+    if (DEBUG_MODE) { console.log(`${boldTxt}> handleSubChange(chatroom: ${chatroom}, user: ${user.displayName}, subStatus: ${subStatus})${resetTxt}`) }
     user[chatroom.slice(1)].sub = subStatus
     if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => subStatus ? talk(chatroom, `Thank you for the gift sub! :D`) : talk(chatroom, `Aww, did I lose my sub? :(`), 2000)
@@ -1515,7 +1766,7 @@ function handleSubChange(chatroom, user, subStatus) {
 }
 
 function handleModChange(chatroom, user, modStatus) {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName}, modStatus: ${modStatus})${resetTxt}`) }
+    if (DEBUG_MODE) { console.log(`${boldTxt}> handleModChange(chatroom: ${chatroom}, user: ${user.displayName}, modStatus: ${modStatus})${resetTxt}`) }
     user[chatroom.slice(1)].mod = modStatus
     if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => modStatus ? talk(chatroom, `Thank you for modding me! :D`) : talk(chatroom, `Was I just unmodded? :O`), 2000)
@@ -1525,7 +1776,7 @@ function handleModChange(chatroom, user, modStatus) {
 }
 
 function handleVIPChange(chatroom, user, vipStatus) {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName}, vipStatus: ${vipStatus})${resetTxt}`) }
+    if (DEBUG_MODE) { console.log(`${boldTxt}> handleVIPChange(chatroom: ${chatroom}, user: ${user.displayName}, vipStatus: ${vipStatus})${resetTxt}`) }
     user[chatroom.slice(1)].vip = vipStatus
     if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => vipStatus ? talk(chatroom, `Thank you for giving me VIP! :D`) : talk(chatroom, `Did I just lose VIP? :O`), 2000)
@@ -1535,7 +1786,7 @@ function handleVIPChange(chatroom, user, vipStatus) {
 }
 
 function checkEmoteStreak(chatroom, emoteArr, channel) {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, emoteArr: ${emoteArr}, channel: ${channel})${resetTxt}`) }
+    if (DEBUG_MODE) { console.log(`${boldTxt}> checkEmoteStreak(chatroom: ${chatroom}, emoteArr.length: ${emoteArr.length}, channel: ${channel})${resetTxt}`) }
     let emoteStreakCount = 0
     const emoteStreakUsers = []
     // Checking if message includes any of the provided emotes
@@ -1580,11 +1831,11 @@ function emoteReply(chatroom, channel, emoteArr) {
 }
 
 function delayListening() {
-    console.log(`${boldTxt}Listening for streaks delayed...${resetTxt}`)
+    console.log(`${boldTxt}> delayListening() 30 seconds...${resetTxt}`)
     listening = false
     setTimeout(() => {
         listening = true
-        console.log(`${boldTxt}Listening for streaks again!${resetTxt}`)
+        console.log(`${boldTxt}> Listening for streaks again!${resetTxt}`)
     }, 30000)
 }
 
@@ -1599,7 +1850,7 @@ function cleanupSpaces(str) {
     for (let i = 0; i < str.length; i++) {
         if (!(str[i] === ` ` && str[i + 1] === ` `)) {
             newStr += str[i]
-        }
+        } else if (DEBUG_MODE) { console.log(`${boldTxt}> cleanupSpaces() removed a double space!${resetTxt}`) }
     }
     return newStr
 }
@@ -1611,7 +1862,44 @@ function talk(chatroom, msg) {
 
 function getToUser(str) { return str.startsWith(`@`) ? str.substring(1) : str }
 
+function printLemon() {
+    const noSq = `  `
+    const bkSq = `\x1b[40m  \x1b[0m`
+    const gnSq = `\x1b[42m  \x1b[0m`
+    const ywSq = `\x1b[43m  \x1b[0m`
+    const whSq = `\x1b[47m  \x1b[0m`
+    const lemonyFriendTitleSpacedOutTopTextYayyyy = `${yellowBg}${boldTxt}L e m o n y ${resetTxt}`
+    const lemonyFriendTitleSpacedOutBottomTextYay = `${yellowBg}${boldTxt}F r i e n d ${resetTxt}`
+    console.log(noSq + noSq + noSq + noSq + bkSq)
+    console.log(noSq + noSq + noSq + bkSq + gnSq + bkSq)
+    console.log(noSq + noSq + noSq + bkSq + gnSq + gnSq + bkSq + noSq + noSq + noSq + noSq + bkSq + bkSq + bkSq + bkSq + bkSq + bkSq + bkSq + bkSq)
+    console.log(noSq + noSq + noSq + noSq + bkSq + gnSq + gnSq + bkSq + bkSq + bkSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq + bkSq + bkSq)
+    console.log(noSq + noSq + noSq + noSq + noSq + bkSq + gnSq + gnSq + ywSq + ywSq + ywSq + ywSq + ywSq + whSq + whSq + whSq + whSq + whSq + ywSq + ywSq + ywSq + ywSq + bkSq + bkSq)
+    console.log(noSq + noSq + noSq + noSq + noSq + bkSq + gnSq + gnSq + gnSq + ywSq + ywSq + ywSq + whSq + whSq + whSq + whSq + whSq + whSq + whSq + whSq + ywSq + ywSq + ywSq + ywSq + bkSq)
+    console.log(noSq + noSq + noSq + noSq + bkSq + gnSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + whSq + whSq + whSq + whSq + whSq + whSq + whSq + whSq + whSq + ywSq + ywSq + ywSq + ywSq + bkSq)
+    console.log(noSq + noSq + noSq + bkSq + gnSq + gnSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + whSq + whSq + whSq + whSq + whSq + whSq + whSq + whSq + whSq + ywSq + ywSq + ywSq + ywSq + bkSq)
+    console.log(noSq + noSq + bkSq + gnSq + gnSq + gnSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + whSq + whSq + whSq + whSq + whSq + whSq + whSq + ywSq + ywSq + ywSq + ywSq + bkSq)
+    console.log(noSq + noSq + bkSq + gnSq + gnSq + gnSq + gnSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + whSq + whSq + whSq + whSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq)
+    console.log(noSq + bkSq + gnSq + gnSq + gnSq + gnSq + gnSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + whSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq)
+    console.log(noSq + bkSq + gnSq + gnSq + gnSq + gnSq + gnSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq)
+    console.log(bkSq + gnSq + gnSq + gnSq + gnSq + gnSq + gnSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq)
+    console.log(bkSq + gnSq + gnSq + gnSq + gnSq + gnSq + gnSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq)
+    console.log(bkSq + gnSq + gnSq + gnSq + gnSq + gnSq + gnSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq)
+    console.log(bkSq + gnSq + gnSq + gnSq + gnSq + gnSq + gnSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq)
+    console.log(noSq + bkSq + gnSq + gnSq + gnSq + gnSq + gnSq + gnSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq)
+    console.log(noSq + bkSq + gnSq + gnSq + gnSq + gnSq + gnSq + gnSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq)
+    console.log(noSq + noSq + bkSq + gnSq + gnSq + gnSq + gnSq + bkSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq)
+    console.log(noSq + noSq + noSq + bkSq + gnSq + gnSq + bkSq + noSq + noSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + lemonyFriendTitleSpacedOutTopTextYayyyy + ywSq + ywSq + ywSq + bkSq)
+    console.log(noSq + noSq + noSq + bkSq + gnSq + gnSq + bkSq + noSq + noSq + noSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + lemonyFriendTitleSpacedOutBottomTextYay + ywSq + ywSq + ywSq + bkSq)
+    console.log(noSq + noSq + noSq + noSq + bkSq + bkSq + noSq + noSq + noSq + noSq + noSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq)
+    console.log(noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq)
+    console.log(noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + bkSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq)
+    console.log(noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + bkSq + bkSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq + bkSq + bkSq + bkSq + bkSq)
+    console.log(noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + bkSq + bkSq + bkSq + bkSq + bkSq)
+}
+
 function onConnectedHandler(addr, port) {
+    printLemon()
     console.log(`* Connected to ${addr}:${port}`)
     sayOnlineMsg = true
 }
