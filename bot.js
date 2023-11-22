@@ -68,8 +68,7 @@ const chatColors = {
 // Create bot client
 const opts = {
     identity: {
-        username: BOT_USERNAME,
-        password: OAUTH_TOKEN
+        BOT_USERNAME,,       password: OAUTH_TOKEN
     },
     channels: lemonyFresh
 }
