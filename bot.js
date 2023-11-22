@@ -251,12 +251,11 @@ function onMessageHandler(chatroom, tags, message, self) {
     if (command === `!subs`) {
         const subbedUsers = []
         const allUsers = []
-        for (const user of Object.keys(users[BOT_USERNAME])) {
-            console.log(user, typeof users[BOT_USERNAME][user])
-            if (users[BOT_USERNAME][user]?.sub === true) {
-                subbedUsers.push(user)
-            } else if (typeof users[BOT_USERNAME][user] === `object`) {
-                allUsers.push(user)
+        for (const key of Object.keys(users[BOT_USERNAME])) {
+            if (users[BOT_USERNAME][key]?.sub === true) {
+                subbedUsers.push(key)
+            } else if (typeof users[BOT_USERNAME][key] === `object`) {
+                allUsers.push(key)
             }
         }
         return subbedUsers.length ? talk(chatroom, `I am subbed to: ${subbedUsers.join(`, `)} :)`) : talk(chatroom, `I am not subbed to: ${allUsers.join(`, `)} :(`)
