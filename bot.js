@@ -1084,27 +1084,6 @@ function onMessageHandler(chatroom, tags, message, self) {
 
         // Look for emote streak (if bot is subbed)
         if (users[BOT_USERNAME]?.[`sclarf`]?.sub) {
-            const sclarfEmotes = [
-                `sclarfRave`,
-                `sclarfWobble`,
-                `sclarfBark`,
-                `sclarfSpin`,
-                `sclarfPls`,
-                `sclarfMad`,
-                `sclarfPog`,
-                `sclarfHuh`,
-                `sclarfHowdy`,
-                `sclarfDog`,
-                `sclarfBlind`,
-                `sclarfPalm`,
-                `sclarfDead`,
-                `sclarfSophisticated`,
-                `sclarfLUL`,
-                `sclarfHiss`,
-                `sclarfHearts`,
-                `sclarfDEEP`,
-                `sclarfGong`
-            ]
             for (const str of sclarfEmotes) {
                 if (msg.includes(str)) {
                     checkEmoteStreak(chatroom, sclarfEmotes, channel)
@@ -1113,15 +1092,6 @@ function onMessageHandler(chatroom, tags, message, self) {
             }
         }
         if (users[BOT_USERNAME]?.[`domonintendo1`]?.sub) {
-            const domoEmotes = [
-                `domoni6Really`,
-                `domoni6Bingo`,
-                `domoni6ChefHey`,
-                `domoni6MeincSus`,
-                `domoni6Sneeze`,
-                `domoni6Dum`,
-                `domoni6Love`
-            ]
             for (const str of domoEmotes) {
                 if (msg.includes(str)) {
                     checkEmoteStreak(chatroom, domoEmotes, channel)
@@ -1130,27 +1100,6 @@ function onMessageHandler(chatroom, tags, message, self) {
             }
         }
         if (users[BOT_USERNAME]?.[`e1ectroma`]?.sub) {
-            const tromEmotes = [
-                `e1ectr4Lfg`,
-                `e1ectr4Pikadance`,
-                `e1ectr4Tromadance`,
-                `e1ectr4Coop`,
-                `e1ectr4Ocha`,
-                `e1ectr4Hello`,
-                `e1ectr4Hi`,
-                `e1ectr4Bye`,
-                `e1ectr4Laugh`,
-                `e1ectr4Wazzah`,
-                `e1ectr4Smile`,
-                `e1ectr4Devil`,
-                `e1ectr4Ram`,
-                `e1ectr4Salute`,
-                `e1ectr4Lemfresh`,
-                `e1ectr4Moses`,
-                `e1ectr4Josie`,
-                `e1ectr4Malort`,
-                `e1ectr4Kim`
-            ]
             for (const str of tromEmotes) {
                 if (msg.includes(str)) {
                     checkEmoteStreak(chatroom, tromEmotes, channel)
@@ -1159,27 +1108,6 @@ function onMessageHandler(chatroom, tags, message, self) {
             }
         }
         if (users[BOT_USERNAME]?.[`jpegstripes`]?.sub) {
-            const jpegEmotes = [
-                `jpegstCoin`,
-                `jpegstTimber`,
-                `jpegstBamJAM`,
-                `jpegstKylePls`,
-                `jpegstJulian`,
-                `jpegstHeyGuys`,
-                `jpegstKylePog`,
-                `jpegstSpamton`,
-                `jpegstJPEG`,
-                `jpegstRAID`,
-                `jpegstYes`,
-                `jpegstNo`,
-                `jpegstOkay`,
-                `jpegstSlay`,
-                `jpegstBonk`,
-                `jpegstMegamind`,
-                `jpegstTapeEnd`,
-                `jpegstDog`,
-                `jpegstBlank`
-            ]
             for (const str of jpegEmotes) {
                 if (msg.includes(str)) {
                     checkEmoteStreak(chatroom, jpegEmotes, channel)
