@@ -1136,185 +1136,28 @@ function onMessageHandler(chatroom, tags, message, self) {
     }
 
     // *** FUN NUMBER! ***
-    const funNumberCount = 25
-    const funNumberTotal = 50
-    if (users[username][channel].msgCount % funNumberCount === 0) {
-        const funNumber = Math.floor(Math.random() * funNumberTotal)
-        console.log(`${boldTxt}*** Fun number triggered by`, users[username].displayName, `:`, funNumber, resetTxt)
+    if (users[username][channel].msgCount % funNumberCount === 0) { return rollFunNumber(chatroom, channel, tags, username, msg.split(` `), Math.floor(Math.random() * funNumberTotal)) }
+}
+
+// Helper functions
+function rollFunNumber(chatroom, channel, tags, username, msgArr, funNumber) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> rollFunNumber(channel: ${chatroom.substring(1)}, tags: ${typeof tags}, username: ${username}, msgArr.length: ${msgArr.length}, funNumber: ${funNumber}${resetTxt}`) }
 
         let randomUser = getRandomUser()
-        const currencies = [
-            {
-                name: `dollars`,
-                abbreviation: `usd`,
-                symbol: `$`,
-                zeroes: ``
-            },
-            {
-                name: `dollars`,
-                abbreviation: `usd`,
-                symbol: `$`,
-                zeroes: ``
-            },
-            {
-                name: `dollars`,
-                abbreviation: `usd`,
-                symbol: `$`,
-                zeroes: ``
-            },
-            {
-                name: `dollars`,
-                abbreviation: `usd`,
-                symbol: `$`,
-                zeroes: ``
-            },
-            {
-                name: `dollars`,
-                abbreviation: `usd`,
-                symbol: `$`,
-                zeroes: ``
-            },
-            {
-                name: `japanese yen`,
-                abbreviation: `jpy`,
-                symbol: `¥`,
-                zeroes: `00`
-            },
-            {
-                name: `japanese yen`,
-                abbreviation: `jpy`,
-                symbol: `¥`,
-                zeroes: `00`
-            },
-            {
-                name: `korean won`,
-                abbreviation: `krw`,
-                symbol: `₩`,
-                zeroes: `000`
-            },
-            {
-                name: `korean won`,
-                abbreviation: `krw`,
-                symbol: `₩`,
-                zeroes: `000`
-            },
-            {
-                name: `turkish lira`,
-                abbreviation: ``,
-                symbol: `₺`,
-                zeroes: `00`
-            },
-            {
-                name: `turkish lira`,
-                abbreviation: ``,
-                symbol: `₺`,
-                zeroes: `00`
-            },
-            {
-                name: `british pound sterling`,
-                abbreviation: `gbp`,
-                symbol: `£`,
-                zeroes: ``
-            },
-            {
-                name: `british pound sterling`,
-                abbreviation: `gbp`,
-                symbol: `£`,
-                zeroes: ``
-            },
-            {
-                name: `mexican pesos`,
-                abbreviation: `mxn`,
-                symbol: `$`,
-                zeroes: `0`
-            },
-            {
-                name: `mexican pesos`,
-                abbreviation: `mxn`,
-                symbol: `$`,
-                zeroes: `0`
-            },
-            {
-                name: `canadian dollars`,
-                abbreviation: `cad`,
-                symbol: `$`,
-                zeroes: `0`
-            },
-            {
-                name: `canadian dollars`,
-                abbreviation: `cad`,
-                symbol: `$`,
-                zeroes: `0`
-            },
-            {
-                name: `euro`,
-                abbreviation: `eur`,
-                symbol: `€`,
-                zeroes: ``
-            },
-            {
-                name: `euro`,
-                abbreviation: `eur`,
-                symbol: `€`,
-                zeroes: ``
-            },
-            {
-                name: `australian dollars`,
-                abbreviation: `aud`,
-                symbol: `$`,
-                zeroes: `0`
-            },
-            {
-                name: `australian dollars`,
-                abbreviation: `aud`,
-                symbol: `$`,
-                zeroes: `0`
-            },
-            {
-                name: `malaysian ringgit`,
-                abbreviation: `myr`,
-                symbol: `RM`,
-                zeroes: `0`
-            },
-            {
-                name: `malaysian ringgit`,
-                abbreviation: `myr`,
-                symbol: `RM`,
-                zeroes: `0`
-            },
-            {
-                name: `indian rupees`,
-                abbreviation: `inr`,
-                symbol: `₹`,
-                zeroes: `00`
-            },
-            {
-                name: `indian rupees`,
-                abbreviation: `inr`,
-                symbol: `₹`,
-                zeroes: `00`
-            },
-            {
-                name: `zimbabwean dollars`,
-                abbreviation: `zwd`,
-                symbol: `$`,
-                zeroes: `0000000000000000`
-            }
-        ]
         const randCurrency = Math.floor(Math.random() * currencies.length)
         const currency = currencies[randCurrency]
 
         // Make 4-wide message pyramid of first word in message
         if (funNumber === 0) {
             const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
-            talk(chatroom, `${command}`)
-            setTimeout(() => talk(chatroom, `${command} ${command}`), delay)
-            setTimeout(() => talk(chatroom, `${command} ${command} ${command}`), delay * 2)
-            setTimeout(() => talk(chatroom, `${command} ${command}`), delay * 3)
-            setTimeout(() => talk(chatroom, `${command}`), delay * 4)
+        talk(chatroom, `${msgArr[0]}`)
+        setTimeout(() => talk(chatroom, `${msgArr[0]} ${msgArr[0]}`), delay)
+        setTimeout(() => talk(chatroom, `${msgArr[0]} ${msgArr[0]} ${msgArr[0]}`), delay * 2)
+        setTimeout(() => talk(chatroom, `${msgArr[0]} ${msgArr[0]}`), delay * 3)
+        setTimeout(() => talk(chatroom, `${msgArr[0]}`), delay * 4)
         }
         // Turn message count into money
-        else if (funNumber === 1) { return talk(chatroom, `Give me ${currency.symbol}${users[username][channel].msgCount}${currency.zeroes} ${currency.abbreviation.toUpperCase()}`) }
+    else if (funNumber === 1) { talk(chatroom, `Give me ${currency.symbol}${users[username][channel].msgCount}${currency.zeroes} ${currency.abbreviation.toUpperCase()}`) }
         // Turn message count into money to my account
         else if (funNumber === 2) {
             const paymentMethods = [
@@ -1334,107 +1177,33 @@ function onMessageHandler(chatroom, tags, message, self) {
                 `write me a travelers check for`
             ]
             const paymentMethod = Math.floor(Math.random() * paymentMethods.length)
-            return talk(chatroom, `${paymentMethods[paymentMethod]} ${users[username][channel].msgCount}${currency.zeroes} ${currency.name}`)
+        talk(chatroom, `${paymentMethods[paymentMethod]} ${users[username][channel].msgCount}${currency.zeroes} ${currency.name}`)
         }
         // Activate random redeem
         else if (funNumber === 3) {
-            let redeems = []
-            if (chatroom === e1ectroma) {
-                redeems = [
-                    `!winner`,
-                    `!soda`,
-                    `!pipe`,
-                    `!nope`,
-                    `!nice`,
-                    `!n64`,
-                    `!bork`,
-                    `!maxwell`
-                ]
-            } else if (chatroom === jpegstripes) {
-                redeems = [
-                    `!bigshot`,
-                    `!keygen`,
-                    `!spotion`,
-                    `!thebigone`,
-                    `!bowtie`,
-                    `!neo`,
-                    `!workout`,
-                    `!suscr1ber`,
-                    `!mario`,
-                    `!piano`,
-                    `!slip`,
-                    `!hamster`,
-                    `!alarm`,
-                    `!waste`,
-                    `!25k`,
-                    `!crabrave`,
-                    `!confusion`,
-                    `!soulja`,
-                    `!breakdance`,
-                    `!gigachad`,
-                    `!4d3d3d3`,
-                    `!feedcat`,
-                    `!polarbear`,
-                    `!graph`,
-                    `!checkmate`,
-                    `!shutup`,
-                    `!doggo`,
-                    `!marshmallows`,
-                    `!chocotaco`,
-                    `!rat`,
-                    `!hamburger`,
-                    `!chickendance`,
-                    `!come`,
-                    `!gauntlet`,
-                    `!princess`,
-                    `!rubbermaid`,
-                    `!peachsyrup`,
-                    `!skype`,
-                    `!ohhimark`,
-                    `!dripgoku`,
-                    `!gelatin`,
-                    `!cheesecake`,
-                    `!fancam`,
-                    `!nicecock`,
-                    `!lieblingsfach`,
-                    `!lavish`,
-                    `!shootme`,
-                    `!disk`,
-                    `!flagranterror`,
-                    `!technology`,
-                    `!bingchilling`,
-                    `!flagranterror`,
-                    `!litlizards`,
-                    `!raccoon`,
-                    `!gay`,
-                    `!turbomaxwaste`
-                ]
-            } else if (chatroom === sclarf) {
-                redeems = [
-                    `!balls`,
-                    `!hat`,
-                    `!no`,
-                    `!omg`,
-                    `!why`,
-                    `!yes`
-                ]
-            } else if (chatroom === domonintendo1) {
+        const redeems = []
+        if (chatroom === e1ectroma) { redeems.push(...tromaRedeems) }
+        else if (chatroom === jpegstripes) { redeems.push(...jpegRedeems) }
+        else if (chatroom === sclarf) { redeems.push(...sclarfRedeems) }
+        else if (chatroom === domonintendo1) {
                 while (randomUser === BOT_USERNAME) { randomUser = getRandomUser() }
-                redeems = [
-                    `!slap ${randomUser}`
-                ]
+            redeems.push(`!slap ${randomUser}`)
             }
+        console.log(redeems)
             const redeem = Math.floor(Math.random() * redeems.length)
-            return talk(chatroom, redeems[redeem])
+        talk(chatroom, redeems[redeem])
         }
         // Give hundreds of points (requires StreamElements)
-        else if (funNumber === 4 && chatroom !== domonintendo1) { return talk(chatroom, `!give ${username} ${users[username][channel].msgCount}00`) }
+    else if (funNumber === 4 && chatroom !== domonintendo1) {
+        const pointsToGive = `points` in users[BOT_USERNAME][channel] ? users[username][channel].msgCount * 100 >= users[username][channel].points ? `all` : `${users[username][channel].msgCount * 100}` : `${users[username][channel].msgCount * 100}`
+        talk(chatroom, `!give ${username} ${pointsToGive}`)
+    }
         // Lemonify a random user's random chat message
         else if (funNumber === 5) {
             while (randomUser === BOT_USERNAME) { randomUser = getRandomUser() }
             const randomMsg = getRandomChannelMessage(users[randomUser])
             const lemonMsg = lemonify(randomMsg)
-            return talk(chatroom, lemonMsg)
+        talk(chatroom, lemonMsg)
         }
         // Check for UndertaleBot and interact with a random user
         else if (funNumber === 6 && `undertalebot` in users && Object.keys(users.undertalebot).includes(channel)) {
@@ -1444,13 +1213,13 @@ function onMessageHandler(chatroom, tags, message, self) {
                 `!act ${users[randomUser].displayName}`,
                 `!mercy ${users[randomUser].displayName}`
             ]
-            return talk(chatroom, actions[Math.floor(Math.random() * actions.length)])
+        talk(chatroom, actions[Math.floor(Math.random() * actions.length)])
         }
-        else if (funNumber === 7) { return talk(chatroom, `This message has a 1 / ${(funNumberCount * funNumberTotal).toLocaleString()} chance of appearing`) }
-    }
+    else if (funNumber === 7) { talk(chatroom, `This message has a 1 / ${(funNumberCount * funNumberTotal).toLocaleString()} chance of appearing`) }
+    else if (funNumber === 8) { talk(chatroom, `${tags.id}`) }
+    else if (funNumber === 9) { talk(chatroom, `${tags[`tmi-sent-ts`]}`) }
 }
 
-// Helper functions
 function handleNewChatter(chatroom, user) {
     if (DEBUG_MODE) { console.log(`${boldTxt}> handleNewChatter(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
     const greetings = [
