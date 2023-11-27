@@ -10,7 +10,7 @@ const domonintendo1 = process.env.CHANNEL_4
 const ppuyya = process.env.CHANNEL_5
 
 const lemonyFresh = [
-    `#${BOT_USERNAME}`,
+    // `#${BOT_USERNAME}`,
     jpegstripes,
     sclarf,
     e1ectroma,
@@ -78,82 +78,18 @@ client.on('message', onMessageHandler)
 client.on('connected', onConnectedHandler)
 client.connect()
 
+// Initialize users and temporary commands
 const users = {}
 const tempCmds = {}
+
+// Settings
+const funNumberCount = 25
+const funNumberTotal = 50
 let listening = true
 let sayOnlineMsg = true
 let DEBUG_MODE = true
 
-function onMessageHandler(chatroom, tags, message, self) {
-    const msg = cleanupSpaces(message)
-    const username = tags.username
-    const displayName = tags[`display-name`]
-    const channel = chatroom.slice(1)
-    const color = tags.color
-    const firstMsg = tags['first-msg']
-
-    // Command and arguments parser
-    const args = msg.split(` `)
-    const command = args.shift().toLowerCase()
-    const toUser = args[0] ? getToUser(args[0]) : ``
-    const target = toUser.toLowerCase() in users ? toUser.toLowerCase() : null
-
-    // User attribute change detection
-    const colorChanged = username in users && color !== users[username]?.color
-    // const turboChange = username in users && tags.turbo !== users[username]?.turbo
-    const subChange = users[username]?.[channel]?.sub !== undefined && tags.subscriber !== users[username]?.[channel]?.sub
-    const modChange = users[username]?.[channel]?.mod !== undefined && tags.mod !== users[username]?.[channel]?.mod
-    const vipChange = users[username]?.[channel]?.vip !== undefined && (!!tags.vip || !!tags.badges?.vip) !== users[username]?.[channel]?.vip
-
-    // Initialize new user
-    if (!(username in users)) {
-        users[username] = {
-            displayName: tags[`display-name`],
-            // turbo: tags.turbo,
-            color: color
-        }
-    }
-    // Initialize user in a new chatroom
-    if (!(channel in users[username])) {
-        users[username][channel] = {
-            sub: tags.subscriber,
-            mod: tags.mod,
-            vip: !!tags.vip || !!tags.badges?.vip,
-            msgCount: 0,
-            lastMessage: msg,
-            away: false,
-            awayMessage: ``
-        }
-    }
-    // Update last message in a chatroom, and increment counter by 1
-    users[username][channel].lastMessage = msg
-    users[username][channel].msgCount++
-
-    // These checks happen earlier in case they happened to the bot
-    if (subChange) { return handleSubChange(chatroom, users[username], tags.subscriber) }
-    if (modChange) { return handleModChange(chatroom, users[username], tags.mod) }
-    if (vipChange) { return handleVIPChange(chatroom, users[username], tags.vip) }
-
-    // Stop here if bot, otherwise log user's chat message
-    if (self) { return } else { console.log(`${color in chatColors ? chatColors[color].terminalColor : whiteTxt}<${channel}> ${username}: ${msg}${resetTxt}`) }
-
-    /*********\
-    REPLY CASES
-    \*********/
-
-    // For testing/debugging
-    if (msg === `show`) { console.log(users, `tempCmds:`, tempCmds) }
-    if (msg === `tags`) { console.log(tags) }
-    if (command === `!ping`) { ping(args.length ? args : lemonyFresh) }
-
-    // If first message since being away
-    if (users[username][channel].away) {
-        users[username][channel].away = false
-        users[username][channel].awayMessage = ``
-        return talk(chatroom, `Welcome back, ${displayName}! :)`)
-    }
-
-    if (sayOnlineMsg) {
+// Global variables
         const numbers = [
             `zero`,
             `one`,
@@ -219,9 +155,397 @@ function onMessageHandler(chatroom, tags, message, self) {
             `Debug mode is currently ${DEBUG_MODE ? `ON` : `OFF`}! :)`,
             `thanksLikePattern has been updated to /^t(h*[aeou]*[bmn])*(ks+|x+)\b/i`
         ]
+const currencies = [
+    {
+        name: `dollars`,
+        abbreviation: `usd`,
+        symbol: `$`,
+        zeroes: ``
+    },
+    {
+        name: `dollars`,
+        abbreviation: `usd`,
+        symbol: `$`,
+        zeroes: ``
+    },
+    {
+        name: `dollars`,
+        abbreviation: `usd`,
+        symbol: `$`,
+        zeroes: ``
+    },
+    {
+        name: `dollars`,
+        abbreviation: `usd`,
+        symbol: `$`,
+        zeroes: ``
+    },
+    {
+        name: `dollars`,
+        abbreviation: `usd`,
+        symbol: `$`,
+        zeroes: ``
+    },
+    {
+        name: `japanese yen`,
+        abbreviation: `jpy`,
+        symbol: `¥`,
+        zeroes: `00`
+    },
+    {
+        name: `japanese yen`,
+        abbreviation: `jpy`,
+        symbol: `¥`,
+        zeroes: `00`
+    },
+    {
+        name: `korean won`,
+        abbreviation: `krw`,
+        symbol: `₩`,
+        zeroes: `000`
+    },
+    {
+        name: `korean won`,
+        abbreviation: `krw`,
+        symbol: `₩`,
+        zeroes: `000`
+    },
+    {
+        name: `turkish lira`,
+        abbreviation: ``,
+        symbol: `₺`,
+        zeroes: `00`
+    },
+    {
+        name: `turkish lira`,
+        abbreviation: ``,
+        symbol: `₺`,
+        zeroes: `00`
+    },
+    {
+        name: `british pound sterling`,
+        abbreviation: `gbp`,
+        symbol: `£`,
+        zeroes: ``
+    },
+    {
+        name: `british pound sterling`,
+        abbreviation: `gbp`,
+        symbol: `£`,
+        zeroes: ``
+    },
+    {
+        name: `mexican pesos`,
+        abbreviation: `mxn`,
+        symbol: `$`,
+        zeroes: `0`
+    },
+    {
+        name: `mexican pesos`,
+        abbreviation: `mxn`,
+        symbol: `$`,
+        zeroes: `0`
+    },
+    {
+        name: `canadian dollars`,
+        abbreviation: `cad`,
+        symbol: `$`,
+        zeroes: `0`
+    },
+    {
+        name: `canadian dollars`,
+        abbreviation: `cad`,
+        symbol: `$`,
+        zeroes: `0`
+    },
+    {
+        name: `euro`,
+        abbreviation: `eur`,
+        symbol: `€`,
+        zeroes: ``
+    },
+    {
+        name: `euro`,
+        abbreviation: `eur`,
+        symbol: `€`,
+        zeroes: ``
+    },
+    {
+        name: `australian dollars`,
+        abbreviation: `aud`,
+        symbol: `$`,
+        zeroes: `0`
+    },
+    {
+        name: `australian dollars`,
+        abbreviation: `aud`,
+        symbol: `$`,
+        zeroes: `0`
+    },
+    {
+        name: `malaysian ringgit`,
+        abbreviation: `myr`,
+        symbol: `RM`,
+        zeroes: `0`
+    },
+    {
+        name: `malaysian ringgit`,
+        abbreviation: `myr`,
+        symbol: `RM`,
+        zeroes: `0`
+    },
+    {
+        name: `indian rupees`,
+        abbreviation: `inr`,
+        symbol: `₹`,
+        zeroes: `00`
+    },
+    {
+        name: `indian rupees`,
+        abbreviation: `inr`,
+        symbol: `₹`,
+        zeroes: `00`
+    },
+    {
+        name: `zimbabwean dollars`,
+        abbreviation: `zwd`,
+        symbol: `$`,
+        zeroes: `0000000000000000`
+    }
+]
+
+// Updated list of emotes potentially available to the bot
+const jpegEmotes = [
+    `jpegstHeyGuys`,
+    `jpegstKylePog`,
+    `jpegstSpamton`,
+    `jpegstJPEG`,
+    `jpegstRAID`,
+    `jpegstCoin`,
+    `jpegstTimber`,
+    `jpegstGeno`,
+    `jpegstLucky`,
+    `jpegstKetchup`,
+    `jpegstYes`,
+    `jpegstNo`,
+    `jpegstOkay`,
+    `jpegstSlay`,
+    `jpegstBonk`,
+    `jpegstMegamind`,
+    `jpegstTapeEnd`,
+    `jpegstDog`,
+    `jpegstBlank`
+]
+const sclarfEmotes = [
+    `sclarfMad`,
+    `sclarfPog`,
+    `sclarfHuh`,
+    `sclarfHowdy`,
+    `sclarfDog`,
+    `sclarfRave`,
+    `sclarfWobble`,
+    `sclarfBark`,
+    `sclarfSpin`,
+    `sclarfPls`,
+    `sclarfBlind`,
+    `sclarfPalm`,
+    `sclarfDead`,
+    `sclarfSophisticated`,
+    `sclarfLUL`,
+    `sclarfHiss`,
+    `sclarfHearts`,
+    `sclarfDEEP`,
+    `sclarfWave`
+]
+const tromEmotes = [
+    `e1ectr4Hello`,
+    `e1ectr4Hi`,
+    `e1ectr4Bye`,
+    `e1ectr4Laugh`,
+    `e1ectr4Wazzah`,
+    `e1ectr4Lfg`,
+    `e1ectr4Pikadance`,
+    `e1ectr4Tromadance`,
+    `e1ectr4Coop`,
+    `e1ectr4Ocha`,
+    `e1ectr4Smile`,
+    `e1ectr4Devil`,
+    `e1ectr4Ram`,
+    `e1ectr4Salute`,
+    `e1ectr4Lemfresh`,
+    `e1ectr4Moses`,
+    `e1ectr4Josie`,
+    `e1ectr4Malort`,
+    `e1ectr4Kim`
+]
+const domoEmotes = [
+    `domoni6Really`,
+    `domoni6Bingo`,
+    `domoni6ChefHey`,
+    `domoni6MeincSus`,
+    `domoni6Sneeze`,
+    `domoni6Dum`,
+    `domoni6Love`,
+    `domoni6Boom`
+]
+
+// Updated list of StreamElements channel redemptions
+const jpegRedeems = [
+    `!bigshot`,
+    `!keygen`,
+    `!spotion`,
+    `!thebigone`,
+    `!bowtie`,
+    `!neo`,
+    `!workout`,
+    `!suscr1ber`,
+    `!mario`,
+    `!piano`,
+    `!slip`,
+    `!hamster`,
+    `!alarm`,
+    `!waste`,
+    `!25k`,
+    `!crabrave`,
+    `!confusion`,
+    `!soulja`,
+    `!breakdance`,
+    `!gigachad`,
+    `!4d3d3d3`,
+    `!feedcat`,
+    `!polarbear`,
+    `!graph`,
+    `!checkmate`,
+    `!shutup`,
+    `!doggo`,
+    `!marshmallows`,
+    `!chocotaco`,
+    `!rat`,
+    `!hamburger`,
+    `!chickendance`,
+    `!come`,
+    `!gauntlet`,
+    `!princess`,
+    `!rubbermaid`,
+    `!peachsyrup`,
+    `!skype`,
+    `!ohhimark`,
+    `!dripgoku`,
+    `!gelatin`,
+    `!cheesecake`,
+    `!fancam`,
+    `!nicecock`,
+    `!lieblingsfach`,
+    `!lavish`,
+    `!shootme`,
+    `!disk`,
+    `!flagranterror`,
+    `!technology`,
+    `!bingchilling`,
+    `!flagranterror`,
+    `!litlizards`,
+    `!raccoon`,
+    `!gay`,
+    `!turbomaxwaste`
+]
+const sclarfRedeems = [
+    `!balls`,
+    `!hat`,
+    `!no`,
+    `!omg`,
+    `!why`,
+    `!yes`
+]
+const tromaRedeems = [
+    `!winner`,
+    `!soda`,
+    `!pipe`,
+    `!nope`,
+    `!nice`,
+    `!n64`,
+    `!bork`,
+    `!maxwell`
+]
+
+function onMessageHandler(chatroom, tags, message, self) {
+    const msg = cleanupSpaces(message)
+    const username = tags.username
+    const displayName = tags[`display-name`]
+    const channel = chatroom.slice(1)
+    const color = tags.color
+    const firstMsg = tags['first-msg']
+
+    // Command and arguments parser
+    const args = msg.split(` `)
+    const command = args.shift().toLowerCase()
+    const toUser = args[0] ? getToUser(args[0]) : ``
+    const target = toUser.toLowerCase() in users ? toUser.toLowerCase() : null
+
+    // User attribute change detection
+    const colorChanged = username in users && color !== users[username]?.color
+    // const turboChange = username in users && tags.turbo !== users[username]?.turbo
+    const subChange = users[username]?.[channel]?.sub !== undefined && tags.subscriber !== users[username]?.[channel]?.sub
+    const modChange = users[username]?.[channel]?.mod !== undefined && tags.mod !== users[username]?.[channel]?.mod
+    const vipChange = users[username]?.[channel]?.vip !== undefined && (!!tags.vip || !!tags.badges?.vip) !== users[username]?.[channel]?.vip
+
+    // Initialize new user
+    if (!(username in users)) {
+        users[username] = {
+            displayName: tags[`display-name`],
+            // turbo: tags.turbo,
+            color: color
+        }
+    }
+    // Initialize user in a new chatroom
+    if (!(channel in users[username])) {
+        users[username][channel] = {
+            sub: tags.subscriber,
+            mod: tags.mod,
+            vip: !!tags.vip || !!tags.badges?.vip,
+            msgCount: 0,
+            lastMessage: msg,
+            away: false,
+            awayMessage: ``
+        }
+    }
+    // Update last message in a chatroom, and increment counter by 1
+    users[username][channel].lastMessage = msg
+    users[username][channel].msgCount++
+
+    // These checks happen earlier in case they happened to the bot
+    if (subChange) { return handleSubChange(chatroom, users[username], tags.subscriber) }
+    if (modChange) { return handleModChange(chatroom, users[username], tags.mod) }
+    if (vipChange) { return handleVIPChange(chatroom, users[username], tags.vip) }
+
+    // Stop here if bot, otherwise log user's chat message
+    if (self) { return } else {
+        const time = new Date().toLocaleTimeString()
+        console.log(`${color in chatColors ? chatColors[color].terminalColor : whiteTxt}${time} <${channel}> ${username}: ${msg}${resetTxt}`)
+    }
+
+    /*********\
+    REPLY CASES
+    \*********/
+
+    if (sayOnlineMsg) {
         const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
         sayOnlineMsg = false
         return talk(chatroom, response)
+    }
+
+    // For testing/debugging
+    if (msg === `show`) { console.log(users, `tempCmds:`, tempCmds) }
+    if (msg === `tags`) { console.log(tags) }
+    if (command === `!ping`) { ping(args.length ? args : lemonyFresh) }
+
+    if (command === `test` && !isNaN(args[0])) { return rollFunNumber(chatroom, channel, tags, username, msg.split(` `), Number(args[0])) }
+    // if (command === `!test`) { return apiTest() }
+
+    // If first message since being away
+    if (users[username][channel].away) {
+        users[username][channel].away = false
+        users[username][channel].awayMessage = ``
+        return talk(chatroom, `Welcome back, ${displayName}! :)`)
     }
 
     if (colorChanged) { return handleColorChange(chatroom, users[username], color) }
