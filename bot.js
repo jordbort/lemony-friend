@@ -90,71 +90,71 @@ let sayOnlineMsg = true
 let DEBUG_MODE = true
 
 // Global variables
-        const numbers = [
-            `zero`,
-            `one`,
-            `two`,
-            `three`,
-            `four`,
-            `five`,
-            `six`,
-            `seven`,
-            `eight`,
-            `nine`,
-            `ten`,
-            `eleven`,
-            `twelve`,
-            `thirteen`,
-            `fourteen`,
-            `fifteen`,
-            `sixteen`,
-            `seventeen`,
-            `eighteen`,
-            `nineteen`,
-            `twenty`,
-            `twenty-one`,
-            `twenty-two`,
-            `twenty-three`,
-            `twenty-four`,
-            `twenty-five`,
-            `twenty-six`,
-            `twenty-seven`,
-            `twenty-eight`,
-            `twenty-nine`,
-            `thirty`,
-            `thirty-one`,
-            `thirty-two`,
-            `thirty-three`,
-            `thirty-four`,
-            `thirty-five`,
-            `thirty-six`,
-            `thirty-seven`,
-            `thirty-eight`,
-            `thirty-nine`,
-            `forty`,
-            `forty-one`,
-            `forty-two`,
-            `forty-three`,
-            `forty-four`,
-            `forty-five`,
-            `forty-six`,
-            `forty-seven`,
-            `forty-eight`,
-            `forty-nine`,
-        ]
-        const onlineMsg = [
-            `Let's see how long before I crash`,
-            `🍋️`,
-            `don't mind me`,
-            `(just rebooting again)`,
-            `(Windows 95 startup sound plays)`,
-            `I'm onl`,
-            `reconnecting...`,
-            `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`,
-            `(there ${Object.keys(tempCmds).length === 1 ? `is` : `are`} ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`,
-            `Debug mode is currently ${DEBUG_MODE ? `ON` : `OFF`}! :)`,
-            `thanksLikePattern has been updated to /^t(h*[aeou]*[bmn])*(ks+|x+)\b/i`
-        ]
+const numbers = [
+    `zero`,
+    `one`,
+    `two`,
+    `three`,
+    `four`,
+    `five`,
+    `six`,
+    `seven`,
+    `eight`,
+    `nine`,
+    `ten`,
+    `eleven`,
+    `twelve`,
+    `thirteen`,
+    `fourteen`,
+    `fifteen`,
+    `sixteen`,
+    `seventeen`,
+    `eighteen`,
+    `nineteen`,
+    `twenty`,
+    `twenty-one`,
+    `twenty-two`,
+    `twenty-three`,
+    `twenty-four`,
+    `twenty-five`,
+    `twenty-six`,
+    `twenty-seven`,
+    `twenty-eight`,
+    `twenty-nine`,
+    `thirty`,
+    `thirty-one`,
+    `thirty-two`,
+    `thirty-three`,
+    `thirty-four`,
+    `thirty-five`,
+    `thirty-six`,
+    `thirty-seven`,
+    `thirty-eight`,
+    `thirty-nine`,
+    `forty`,
+    `forty-one`,
+    `forty-two`,
+    `forty-three`,
+    `forty-four`,
+    `forty-five`,
+    `forty-six`,
+    `forty-seven`,
+    `forty-eight`,
+    `forty-nine`,
+]
+const onlineMsg = [
+    `Let's see how long before I crash`,
+    `🍋️`,
+    `don't mind me`,
+    `(just rebooting again)`,
+    `(Windows 95 startup sound plays)`,
+    `I'm onl`,
+    `reconnecting...`,
+    `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`,
+    `(there ${Object.keys(tempCmds).length === 1 ? `is` : `are`} ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`,
+    `Debug mode is currently ${DEBUG_MODE ? `ON` : `OFF`}! :)`,
+    `thanksLikePattern has been updated to /^t(h*[aeou]*[bmn])*(ks+|x+)\b/i`
+]
 const currencies = [
     {
         name: `dollars`,
@@ -520,7 +520,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     // Stop here if bot, otherwise log user's chat message
     if (self) { return } else {
         const time = new Date().toLocaleTimeString()
-        console.log(`${color in chatColors ? chatColors[color].terminalColor : whiteTxt}${time} <${channel}> ${username}: ${msg}${resetTxt}`)
+        console.log(`[${time}] <${channel}> ${color in chatColors ? chatColors[color].terminalColor : whiteTxt}${username}: ${msg}${resetTxt}`)
     }
 
     /*********\
@@ -1144,78 +1144,78 @@ function onMessageHandler(chatroom, tags, message, self) {
 function rollFunNumber(chatroom, channel, tags, username, msgArr, funNumber) {
     if (DEBUG_MODE) { console.log(`${boldTxt}> rollFunNumber(channel: ${chatroom.substring(1)}, tags: ${typeof tags}, username: ${username}, msgArr.length: ${msgArr.length}, funNumber: ${funNumber}${resetTxt}`) }
 
-        let randomUser = getRandomUser()
-        const randCurrency = Math.floor(Math.random() * currencies.length)
-        const currency = currencies[randCurrency]
+    let randomUser = getRandomUser()
+    const randCurrency = Math.floor(Math.random() * currencies.length)
+    const currency = currencies[randCurrency]
 
-        // Make 4-wide message pyramid of first word in message
-        if (funNumber === 0) {
-            const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
+    // Make 4-wide message pyramid of first word in message
+    if (funNumber === 0) {
+        const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
         talk(chatroom, `${msgArr[0]}`)
         setTimeout(() => talk(chatroom, `${msgArr[0]} ${msgArr[0]}`), delay)
         setTimeout(() => talk(chatroom, `${msgArr[0]} ${msgArr[0]} ${msgArr[0]}`), delay * 2)
         setTimeout(() => talk(chatroom, `${msgArr[0]} ${msgArr[0]}`), delay * 3)
         setTimeout(() => talk(chatroom, `${msgArr[0]}`), delay * 4)
-        }
-        // Turn message count into money
+    }
+    // Turn message count into money
     else if (funNumber === 1) { talk(chatroom, `Give me ${currency.symbol}${users[username][channel].msgCount}${currency.zeroes} ${currency.abbreviation.toUpperCase()}`) }
-        // Turn message count into money to my account
-        else if (funNumber === 2) {
-            const paymentMethods = [
-                `give me`,
-                `give me`,
-                `venmo me`,
-                `venmo me`,
-                `paypal me`,
-                `paypal me`,
-                `cashapp me`,
-                `cashapp me`,
-                `wire transfer me`,
-                `wire transfer me`,
-                `messenger pigeon me`,
-                `messenger pigeon me`,
-                `pls email me`,
-                `write me a travelers check for`
-            ]
-            const paymentMethod = Math.floor(Math.random() * paymentMethods.length)
+    // Turn message count into money to my account
+    else if (funNumber === 2) {
+        const paymentMethods = [
+            `give me`,
+            `give me`,
+            `venmo me`,
+            `venmo me`,
+            `paypal me`,
+            `paypal me`,
+            `cashapp me`,
+            `cashapp me`,
+            `wire transfer me`,
+            `wire transfer me`,
+            `messenger pigeon me`,
+            `messenger pigeon me`,
+            `pls email me`,
+            `write me a travelers check for`
+        ]
+        const paymentMethod = Math.floor(Math.random() * paymentMethods.length)
         talk(chatroom, `${paymentMethods[paymentMethod]} ${users[username][channel].msgCount}${currency.zeroes} ${currency.name}`)
-        }
-        // Activate random redeem
-        else if (funNumber === 3) {
+    }
+    // Activate random redeem
+    else if (funNumber === 3) {
         const redeems = []
         if (chatroom === e1ectroma) { redeems.push(...tromaRedeems) }
         else if (chatroom === jpegstripes) { redeems.push(...jpegRedeems) }
         else if (chatroom === sclarf) { redeems.push(...sclarfRedeems) }
         else if (chatroom === domonintendo1) {
-                while (randomUser === BOT_USERNAME) { randomUser = getRandomUser() }
+            while (randomUser === BOT_USERNAME) { randomUser = getRandomUser() }
             redeems.push(`!slap ${randomUser}`)
-            }
-        console.log(redeems)
-            const redeem = Math.floor(Math.random() * redeems.length)
-        talk(chatroom, redeems[redeem])
         }
-        // Give hundreds of points (requires StreamElements)
+        console.log(redeems)
+        const redeem = Math.floor(Math.random() * redeems.length)
+        talk(chatroom, redeems[redeem])
+    }
+    // Give hundreds of points (requires StreamElements)
     else if (funNumber === 4 && chatroom !== domonintendo1) {
         const pointsToGive = `points` in users[BOT_USERNAME][channel] ? users[username][channel].msgCount * 100 >= users[username][channel].points ? `all` : `${users[username][channel].msgCount * 100}` : `${users[username][channel].msgCount * 100}`
         talk(chatroom, `!give ${username} ${pointsToGive}`)
     }
-        // Lemonify a random user's random chat message
-        else if (funNumber === 5) {
-            while (randomUser === BOT_USERNAME) { randomUser = getRandomUser() }
-            const randomMsg = getRandomChannelMessage(users[randomUser])
-            const lemonMsg = lemonify(randomMsg)
+    // Lemonify a random user's random chat message
+    else if (funNumber === 5) {
+        while (randomUser === BOT_USERNAME) { randomUser = getRandomUser() }
+        const randomMsg = getRandomChannelMessage(users[randomUser])
+        const lemonMsg = lemonify(randomMsg)
         talk(chatroom, lemonMsg)
-        }
-        // Check for UndertaleBot and interact with a random user
-        else if (funNumber === 6 && `undertalebot` in users && Object.keys(users.undertalebot).includes(channel)) {
-            while ([BOT_USERNAME, `undertalebot`].includes(randomUser)) { randomUser = getRandomUser() }
-            const actions = [
-                `!fight ${users[randomUser].displayName}`,
-                `!act ${users[randomUser].displayName}`,
-                `!mercy ${users[randomUser].displayName}`
-            ]
+    }
+    // Check for UndertaleBot and interact with a random user
+    else if (funNumber === 6 && `undertalebot` in users && Object.keys(users.undertalebot).includes(channel)) {
+        while ([BOT_USERNAME, `undertalebot`].includes(randomUser)) { randomUser = getRandomUser() }
+        const actions = [
+            `!fight ${users[randomUser].displayName}`,
+            `!act ${users[randomUser].displayName}`,
+            `!mercy ${users[randomUser].displayName}`
+        ]
         talk(chatroom, actions[Math.floor(Math.random() * actions.length)])
-        }
+    }
     else if (funNumber === 7) { talk(chatroom, `This message has a 1 / ${(funNumberCount * funNumberTotal).toLocaleString()} chance of appearing`) }
     else if (funNumber === 8) { talk(chatroom, `${tags.id}`) }
     else if (funNumber === 9) { talk(chatroom, `${tags[`tmi-sent-ts`]}`) }
@@ -1879,8 +1879,9 @@ function cleanupSpaces(str) {
 }
 
 function talk(chatroom, msg) {
+    const time = new Date().toLocaleTimeString()
     client.say(chatroom, msg)
-    console.log(`${yellowBg}<${chatroom.slice(1)}> ${BOT_USERNAME}: ${msg}${resetTxt}`)
+    console.log(`${yellowBg}[${time}] <${chatroom.slice(1)}> ${BOT_USERNAME}: ${msg}${resetTxt}`)
 }
 
 function getToUser(str) { return str.startsWith(`@`) ? str.substring(1) : str }
@@ -1921,8 +1922,18 @@ function printLemon() {
     console.log(noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + bkSq + bkSq + bkSq + bkSq + bkSq)
 }
 
+// async function apiTest() {
+//     const response = await fetch("https://api.twitch.tv/helix/analytics/games", {
+//         headers: {
+//             "Authorization": `Bearer ${OAUTH_TOKEN}`,
+//         }
+//     })
+//     console.log(response)
+// }
+
 function onConnectedHandler(addr, port) {
     printLemon()
-    console.log(`* Connected to ${addr}:${port}`)
+    const time = new Date().toLocaleTimeString()
+    console.log(`[${time}] 🍋 Connected to ${addr}:${port}`)
     sayOnlineMsg = true
 }
