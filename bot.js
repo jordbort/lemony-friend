@@ -10,7 +10,7 @@ const domonintendo1 = process.env.CHANNEL_4
 const ppuyya = process.env.CHANNEL_5
 
 const lemonyFresh = [
-    `#${BOT_USERNAME}`,
+    // `#${BOT_USERNAME}`,
     jpegstripes,
     sclarf,
     e1ectroma,
@@ -78,11 +78,394 @@ client.on('message', onMessageHandler)
 client.on('connected', onConnectedHandler)
 client.connect()
 
+// Initialize users and temporary commands
 const users = {}
 const tempCmds = {}
+
+// Settings
+const funNumberCount = 25
+const funNumberTotal = 50
 let listening = true
 let sayOnlineMsg = true
 let DEBUG_MODE = true
+
+// Global variables
+const numbers = [
+    `zero`,
+    `one`,
+    `two`,
+    `three`,
+    `four`,
+    `five`,
+    `six`,
+    `seven`,
+    `eight`,
+    `nine`,
+    `ten`,
+    `eleven`,
+    `twelve`,
+    `thirteen`,
+    `fourteen`,
+    `fifteen`,
+    `sixteen`,
+    `seventeen`,
+    `eighteen`,
+    `nineteen`,
+    `twenty`,
+    `twenty-one`,
+    `twenty-two`,
+    `twenty-three`,
+    `twenty-four`,
+    `twenty-five`,
+    `twenty-six`,
+    `twenty-seven`,
+    `twenty-eight`,
+    `twenty-nine`,
+    `thirty`,
+    `thirty-one`,
+    `thirty-two`,
+    `thirty-three`,
+    `thirty-four`,
+    `thirty-five`,
+    `thirty-six`,
+    `thirty-seven`,
+    `thirty-eight`,
+    `thirty-nine`,
+    `forty`,
+    `forty-one`,
+    `forty-two`,
+    `forty-three`,
+    `forty-four`,
+    `forty-five`,
+    `forty-six`,
+    `forty-seven`,
+    `forty-eight`,
+    `forty-nine`,
+]
+const onlineMsg = [
+    `Let's see how long before I crash`,
+    `🍋️`,
+    `don't mind me`,
+    `(just rebooting again)`,
+    `(Windows 95 startup sound plays)`,
+    `I'm onl`,
+    `reconnecting...`,
+    `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`,
+    `(there ${Object.keys(tempCmds).length === 1 ? `is` : `are`} ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`,
+    `Debug mode is currently ${DEBUG_MODE ? `ON` : `OFF`}! :)`,
+    `thanksLikePattern has been updated to /^t(h*[aeou]*[bmn])*(ks+|x+)\b/i`
+]
+const currencies = [
+    {
+        name: `dollars`,
+        abbreviation: `usd`,
+        symbol: `$`,
+        zeroes: ``
+    },
+    {
+        name: `dollars`,
+        abbreviation: `usd`,
+        symbol: `$`,
+        zeroes: ``
+    },
+    {
+        name: `dollars`,
+        abbreviation: `usd`,
+        symbol: `$`,
+        zeroes: ``
+    },
+    {
+        name: `dollars`,
+        abbreviation: `usd`,
+        symbol: `$`,
+        zeroes: ``
+    },
+    {
+        name: `dollars`,
+        abbreviation: `usd`,
+        symbol: `$`,
+        zeroes: ``
+    },
+    {
+        name: `japanese yen`,
+        abbreviation: `jpy`,
+        symbol: `¥`,
+        zeroes: `00`
+    },
+    {
+        name: `japanese yen`,
+        abbreviation: `jpy`,
+        symbol: `¥`,
+        zeroes: `00`
+    },
+    {
+        name: `korean won`,
+        abbreviation: `krw`,
+        symbol: `₩`,
+        zeroes: `000`
+    },
+    {
+        name: `korean won`,
+        abbreviation: `krw`,
+        symbol: `₩`,
+        zeroes: `000`
+    },
+    {
+        name: `turkish lira`,
+        abbreviation: ``,
+        symbol: `₺`,
+        zeroes: `00`
+    },
+    {
+        name: `turkish lira`,
+        abbreviation: ``,
+        symbol: `₺`,
+        zeroes: `00`
+    },
+    {
+        name: `british pound sterling`,
+        abbreviation: `gbp`,
+        symbol: `£`,
+        zeroes: ``
+    },
+    {
+        name: `british pound sterling`,
+        abbreviation: `gbp`,
+        symbol: `£`,
+        zeroes: ``
+    },
+    {
+        name: `mexican pesos`,
+        abbreviation: `mxn`,
+        symbol: `$`,
+        zeroes: `0`
+    },
+    {
+        name: `mexican pesos`,
+        abbreviation: `mxn`,
+        symbol: `$`,
+        zeroes: `0`
+    },
+    {
+        name: `canadian dollars`,
+        abbreviation: `cad`,
+        symbol: `$`,
+        zeroes: `0`
+    },
+    {
+        name: `canadian dollars`,
+        abbreviation: `cad`,
+        symbol: `$`,
+        zeroes: `0`
+    },
+    {
+        name: `euro`,
+        abbreviation: `eur`,
+        symbol: `€`,
+        zeroes: ``
+    },
+    {
+        name: `euro`,
+        abbreviation: `eur`,
+        symbol: `€`,
+        zeroes: ``
+    },
+    {
+        name: `australian dollars`,
+        abbreviation: `aud`,
+        symbol: `$`,
+        zeroes: `0`
+    },
+    {
+        name: `australian dollars`,
+        abbreviation: `aud`,
+        symbol: `$`,
+        zeroes: `0`
+    },
+    {
+        name: `malaysian ringgit`,
+        abbreviation: `myr`,
+        symbol: `RM`,
+        zeroes: `0`
+    },
+    {
+        name: `malaysian ringgit`,
+        abbreviation: `myr`,
+        symbol: `RM`,
+        zeroes: `0`
+    },
+    {
+        name: `indian rupees`,
+        abbreviation: `inr`,
+        symbol: `₹`,
+        zeroes: `00`
+    },
+    {
+        name: `indian rupees`,
+        abbreviation: `inr`,
+        symbol: `₹`,
+        zeroes: `00`
+    },
+    {
+        name: `zimbabwean dollars`,
+        abbreviation: `zwd`,
+        symbol: `$`,
+        zeroes: `0000000000000000`
+    }
+]
+
+// Updated list of emotes potentially available to the bot
+const jpegEmotes = [
+    `jpegstHeyGuys`,
+    `jpegstKylePog`,
+    `jpegstSpamton`,
+    `jpegstJPEG`,
+    `jpegstRAID`,
+    `jpegstCoin`,
+    `jpegstTimber`,
+    `jpegstGeno`,
+    `jpegstLucky`,
+    `jpegstKetchup`,
+    `jpegstYes`,
+    `jpegstNo`,
+    `jpegstOkay`,
+    `jpegstSlay`,
+    `jpegstBonk`,
+    `jpegstMegamind`,
+    `jpegstTapeEnd`,
+    `jpegstDog`,
+    `jpegstBlank`
+]
+const sclarfEmotes = [
+    `sclarfMad`,
+    `sclarfPog`,
+    `sclarfHuh`,
+    `sclarfHowdy`,
+    `sclarfDog`,
+    `sclarfRave`,
+    `sclarfWobble`,
+    `sclarfBark`,
+    `sclarfSpin`,
+    `sclarfPls`,
+    `sclarfBlind`,
+    `sclarfPalm`,
+    `sclarfDead`,
+    `sclarfSophisticated`,
+    `sclarfLUL`,
+    `sclarfHiss`,
+    `sclarfHearts`,
+    `sclarfDEEP`,
+    `sclarfWave`
+]
+const tromEmotes = [
+    `e1ectr4Hello`,
+    `e1ectr4Hi`,
+    `e1ectr4Bye`,
+    `e1ectr4Laugh`,
+    `e1ectr4Wazzah`,
+    `e1ectr4Lfg`,
+    `e1ectr4Pikadance`,
+    `e1ectr4Tromadance`,
+    `e1ectr4Coop`,
+    `e1ectr4Ocha`,
+    `e1ectr4Smile`,
+    `e1ectr4Devil`,
+    `e1ectr4Ram`,
+    `e1ectr4Salute`,
+    `e1ectr4Lemfresh`,
+    `e1ectr4Moses`,
+    `e1ectr4Josie`,
+    `e1ectr4Malort`,
+    `e1ectr4Kim`
+]
+const domoEmotes = [
+    `domoni6Really`,
+    `domoni6Bingo`,
+    `domoni6ChefHey`,
+    `domoni6MeincSus`,
+    `domoni6Sneeze`,
+    `domoni6Dum`,
+    `domoni6Love`,
+    `domoni6Boom`
+]
+
+// Updated list of StreamElements channel redemptions
+const jpegRedeems = [
+    `!bigshot`,
+    `!keygen`,
+    `!spotion`,
+    `!thebigone`,
+    `!bowtie`,
+    `!neo`,
+    `!workout`,
+    `!suscr1ber`,
+    `!mario`,
+    `!piano`,
+    `!slip`,
+    `!hamster`,
+    `!alarm`,
+    `!waste`,
+    `!25k`,
+    `!crabrave`,
+    `!confusion`,
+    `!soulja`,
+    `!breakdance`,
+    `!gigachad`,
+    `!4d3d3d3`,
+    `!feedcat`,
+    `!polarbear`,
+    `!graph`,
+    `!checkmate`,
+    `!shutup`,
+    `!doggo`,
+    `!marshmallows`,
+    `!chocotaco`,
+    `!rat`,
+    `!hamburger`,
+    `!chickendance`,
+    `!come`,
+    `!gauntlet`,
+    `!princess`,
+    `!rubbermaid`,
+    `!peachsyrup`,
+    `!skype`,
+    `!ohhimark`,
+    `!dripgoku`,
+    `!gelatin`,
+    `!cheesecake`,
+    `!fancam`,
+    `!nicecock`,
+    `!lieblingsfach`,
+    `!lavish`,
+    `!shootme`,
+    `!disk`,
+    `!flagranterror`,
+    `!technology`,
+    `!bingchilling`,
+    `!flagranterror`,
+    `!litlizards`,
+    `!raccoon`,
+    `!gay`,
+    `!turbomaxwaste`
+]
+const sclarfRedeems = [
+    `!balls`,
+    `!hat`,
+    `!no`,
+    `!omg`,
+    `!why`,
+    `!yes`
+]
+const tromaRedeems = [
+    `!winner`,
+    `!soda`,
+    `!pipe`,
+    `!nope`,
+    `!nice`,
+    `!n64`,
+    `!bork`,
+    `!maxwell`
+]
 
 function onMessageHandler(chatroom, tags, message, self) {
     const msg = cleanupSpaces(message)
@@ -135,93 +518,34 @@ function onMessageHandler(chatroom, tags, message, self) {
     if (vipChange) { return handleVIPChange(chatroom, users[username], tags.vip) }
 
     // Stop here if bot, otherwise log user's chat message
-    if (self) { return } else { console.log(`${color in chatColors ? chatColors[color].terminalColor : whiteTxt}<${channel}> ${username}: ${msg}${resetTxt}`) }
+    if (self) { return } else {
+        const time = new Date().toLocaleTimeString()
+        console.log(`[${time}] <${channel}> ${color in chatColors ? chatColors[color].terminalColor : whiteTxt}${username}: ${msg}${resetTxt}`)
+    }
 
     /*********\
     REPLY CASES
     \*********/
+
+    if (sayOnlineMsg) {
+        const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
+        sayOnlineMsg = false
+        return talk(chatroom, response)
+    }
 
     // For testing/debugging
     if (msg === `show`) { console.log(users, `tempCmds:`, tempCmds) }
     if (msg === `tags`) { console.log(tags) }
     if (command === `!ping`) { ping(args.length ? args : lemonyFresh) }
 
+    if (command === `test` && !isNaN(args[0])) { return rollFunNumber(chatroom, channel, tags, username, msg.split(` `), Number(args[0])) }
+    // if (command === `!test`) { return apiTest() }
+
     // If first message since being away
     if (users[username][channel].away) {
         users[username][channel].away = false
         users[username][channel].awayMessage = ``
         return talk(chatroom, `Welcome back, ${displayName}! :)`)
-    }
-
-    if (sayOnlineMsg) {
-        const numbers = [
-            `zero`,
-            `one`,
-            `two`,
-            `three`,
-            `four`,
-            `five`,
-            `six`,
-            `seven`,
-            `eight`,
-            `nine`,
-            `ten`,
-            `eleven`,
-            `twelve`,
-            `thirteen`,
-            `fourteen`,
-            `fifteen`,
-            `sixteen`,
-            `seventeen`,
-            `eighteen`,
-            `nineteen`,
-            `twenty`,
-            `twenty-one`,
-            `twenty-two`,
-            `twenty-three`,
-            `twenty-four`,
-            `twenty-five`,
-            `twenty-six`,
-            `twenty-seven`,
-            `twenty-eight`,
-            `twenty-nine`,
-            `thirty`,
-            `thirty-one`,
-            `thirty-two`,
-            `thirty-three`,
-            `thirty-four`,
-            `thirty-five`,
-            `thirty-six`,
-            `thirty-seven`,
-            `thirty-eight`,
-            `thirty-nine`,
-            `forty`,
-            `forty-one`,
-            `forty-two`,
-            `forty-three`,
-            `forty-four`,
-            `forty-five`,
-            `forty-six`,
-            `forty-seven`,
-            `forty-eight`,
-            `forty-nine`,
-        ]
-        const onlineMsg = [
-            `Let's see how long before I crash`,
-            `🍋️`,
-            `don't mind me`,
-            `(just rebooting again)`,
-            `(Windows 95 startup sound plays)`,
-            `I'm onl`,
-            `reconnecting...`,
-            `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`,
-            `(there ${Object.keys(tempCmds).length === 1 ? `is` : `are`} ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`,
-            `Debug mode is currently ${DEBUG_MODE ? `ON` : `OFF`}! :)`,
-            `thanksLikePattern has been updated to /^t(h*[aeou]*[bmn])*(ks+|x+)\b/i`
-        ]
-        const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
-        sayOnlineMsg = false
-        return talk(chatroom, response)
     }
 
     if (colorChanged) { return handleColorChange(chatroom, users[username], color) }
@@ -233,6 +557,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     // JSON stats of user or toUser
     if (command === `!mystats`) {
         const user = target || username
+        console.log(`${user}:`, users[user])
         let data = `${user}: { displayName: '${users[user].displayName}', color: ${users[user].color}`
         for (const key of Object.keys(users[user])) {
             if (typeof users[user][key] === `object`) {
@@ -470,7 +795,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     ].includes(command)) {
         users[username][channel].away = true
         if (args.length) { users[username][channel].awayMessage = args.join(` `) }
-        return args.length ? talk(chatroom, `See you later, ${displayName}! I'll pass along your away message if they mention you! :)`) : talk(chatroom, `See you later, ${displayName}! I'll let people know you're away if they mention you! :)`)
+        if (command === `!lurk`) { return args.length ? talk(chatroom, `See you later, ${displayName}! I'll pass along your away message if they mention you! :)`) : talk(chatroom, `See you later, ${displayName}! I'll let people know you're away if they mention you! :)`) }
     }
 
     // If bot mentioned in message
@@ -760,27 +1085,6 @@ function onMessageHandler(chatroom, tags, message, self) {
 
         // Look for emote streak (if bot is subbed)
         if (users[BOT_USERNAME]?.[`sclarf`]?.sub) {
-            const sclarfEmotes = [
-                `sclarfRave`,
-                `sclarfWobble`,
-                `sclarfBark`,
-                `sclarfSpin`,
-                `sclarfPls`,
-                `sclarfMad`,
-                `sclarfPog`,
-                `sclarfHuh`,
-                `sclarfHowdy`,
-                `sclarfDog`,
-                `sclarfBlind`,
-                `sclarfPalm`,
-                `sclarfDead`,
-                `sclarfSophisticated`,
-                `sclarfLUL`,
-                `sclarfHiss`,
-                `sclarfHearts`,
-                `sclarfDEEP`,
-                `sclarfGong`
-            ]
             for (const str of sclarfEmotes) {
                 if (msg.includes(str)) {
                     checkEmoteStreak(chatroom, sclarfEmotes, channel)
@@ -789,15 +1093,6 @@ function onMessageHandler(chatroom, tags, message, self) {
             }
         }
         if (users[BOT_USERNAME]?.[`domonintendo1`]?.sub) {
-            const domoEmotes = [
-                `domoni6Really`,
-                `domoni6Bingo`,
-                `domoni6ChefHey`,
-                `domoni6MeincSus`,
-                `domoni6Sneeze`,
-                `domoni6Dum`,
-                `domoni6Love`
-            ]
             for (const str of domoEmotes) {
                 if (msg.includes(str)) {
                     checkEmoteStreak(chatroom, domoEmotes, channel)
@@ -806,27 +1101,6 @@ function onMessageHandler(chatroom, tags, message, self) {
             }
         }
         if (users[BOT_USERNAME]?.[`e1ectroma`]?.sub) {
-            const tromEmotes = [
-                `e1ectr4Lfg`,
-                `e1ectr4Pikadance`,
-                `e1ectr4Tromadance`,
-                `e1ectr4Coop`,
-                `e1ectr4Ocha`,
-                `e1ectr4Hello`,
-                `e1ectr4Hi`,
-                `e1ectr4Bye`,
-                `e1ectr4Laugh`,
-                `e1ectr4Wazzah`,
-                `e1ectr4Smile`,
-                `e1ectr4Devil`,
-                `e1ectr4Ram`,
-                `e1ectr4Salute`,
-                `e1ectr4Lemfresh`,
-                `e1ectr4Moses`,
-                `e1ectr4Josie`,
-                `e1ectr4Malort`,
-                `e1ectr4Kim`
-            ]
             for (const str of tromEmotes) {
                 if (msg.includes(str)) {
                     checkEmoteStreak(chatroom, tromEmotes, channel)
@@ -835,27 +1109,6 @@ function onMessageHandler(chatroom, tags, message, self) {
             }
         }
         if (users[BOT_USERNAME]?.[`jpegstripes`]?.sub) {
-            const jpegEmotes = [
-                `jpegstCoin`,
-                `jpegstTimber`,
-                `jpegstBamJAM`,
-                `jpegstKylePls`,
-                `jpegstJulian`,
-                `jpegstHeyGuys`,
-                `jpegstKylePog`,
-                `jpegstSpamton`,
-                `jpegstJPEG`,
-                `jpegstRAID`,
-                `jpegstYes`,
-                `jpegstNo`,
-                `jpegstOkay`,
-                `jpegstSlay`,
-                `jpegstBonk`,
-                `jpegstMegamind`,
-                `jpegstTapeEnd`,
-                `jpegstDog`,
-                `jpegstBlank`
-            ]
             for (const str of jpegEmotes) {
                 if (msg.includes(str)) {
                     checkEmoteStreak(chatroom, jpegEmotes, channel)
@@ -884,321 +1137,90 @@ function onMessageHandler(chatroom, tags, message, self) {
     }
 
     // *** FUN NUMBER! ***
-    const funNumberCount = 25
-    const funNumberTotal = 50
-    if (users[username][channel].msgCount % funNumberCount === 0) {
-        const funNumber = Math.floor(Math.random() * funNumberTotal)
-        console.log(`${boldTxt}*** Fun number triggered by`, users[username].displayName, `:`, funNumber, resetTxt)
-
-        let randomUser = getRandomUser()
-        const currencies = [
-            {
-                name: `dollars`,
-                abbreviation: `usd`,
-                symbol: `$`,
-                zeroes: ``
-            },
-            {
-                name: `dollars`,
-                abbreviation: `usd`,
-                symbol: `$`,
-                zeroes: ``
-            },
-            {
-                name: `dollars`,
-                abbreviation: `usd`,
-                symbol: `$`,
-                zeroes: ``
-            },
-            {
-                name: `dollars`,
-                abbreviation: `usd`,
-                symbol: `$`,
-                zeroes: ``
-            },
-            {
-                name: `dollars`,
-                abbreviation: `usd`,
-                symbol: `$`,
-                zeroes: ``
-            },
-            {
-                name: `japanese yen`,
-                abbreviation: `jpy`,
-                symbol: `¥`,
-                zeroes: `00`
-            },
-            {
-                name: `japanese yen`,
-                abbreviation: `jpy`,
-                symbol: `¥`,
-                zeroes: `00`
-            },
-            {
-                name: `korean won`,
-                abbreviation: `krw`,
-                symbol: `₩`,
-                zeroes: `000`
-            },
-            {
-                name: `korean won`,
-                abbreviation: `krw`,
-                symbol: `₩`,
-                zeroes: `000`
-            },
-            {
-                name: `turkish lira`,
-                abbreviation: ``,
-                symbol: `₺`,
-                zeroes: `00`
-            },
-            {
-                name: `turkish lira`,
-                abbreviation: ``,
-                symbol: `₺`,
-                zeroes: `00`
-            },
-            {
-                name: `british pound sterling`,
-                abbreviation: `gbp`,
-                symbol: `£`,
-                zeroes: ``
-            },
-            {
-                name: `british pound sterling`,
-                abbreviation: `gbp`,
-                symbol: `£`,
-                zeroes: ``
-            },
-            {
-                name: `mexican pesos`,
-                abbreviation: `mxn`,
-                symbol: `$`,
-                zeroes: `0`
-            },
-            {
-                name: `mexican pesos`,
-                abbreviation: `mxn`,
-                symbol: `$`,
-                zeroes: `0`
-            },
-            {
-                name: `canadian dollars`,
-                abbreviation: `cad`,
-                symbol: `$`,
-                zeroes: `0`
-            },
-            {
-                name: `canadian dollars`,
-                abbreviation: `cad`,
-                symbol: `$`,
-                zeroes: `0`
-            },
-            {
-                name: `euro`,
-                abbreviation: `eur`,
-                symbol: `€`,
-                zeroes: ``
-            },
-            {
-                name: `euro`,
-                abbreviation: `eur`,
-                symbol: `€`,
-                zeroes: ``
-            },
-            {
-                name: `australian dollars`,
-                abbreviation: `aud`,
-                symbol: `$`,
-                zeroes: `0`
-            },
-            {
-                name: `australian dollars`,
-                abbreviation: `aud`,
-                symbol: `$`,
-                zeroes: `0`
-            },
-            {
-                name: `malaysian ringgit`,
-                abbreviation: `myr`,
-                symbol: `RM`,
-                zeroes: `0`
-            },
-            {
-                name: `malaysian ringgit`,
-                abbreviation: `myr`,
-                symbol: `RM`,
-                zeroes: `0`
-            },
-            {
-                name: `indian rupees`,
-                abbreviation: `inr`,
-                symbol: `₹`,
-                zeroes: `00`
-            },
-            {
-                name: `indian rupees`,
-                abbreviation: `inr`,
-                symbol: `₹`,
-                zeroes: `00`
-            },
-            {
-                name: `zimbabwean dollars`,
-                abbreviation: `zwd`,
-                symbol: `$`,
-                zeroes: `0000000000000000`
-            }
-        ]
-        const randCurrency = Math.floor(Math.random() * currencies.length)
-        const currency = currencies[randCurrency]
-
-        // Make 4-wide message pyramid of first word in message
-        if (funNumber === 0) {
-            const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
-            talk(chatroom, `${command}`)
-            setTimeout(() => talk(chatroom, `${command} ${command}`), delay)
-            setTimeout(() => talk(chatroom, `${command} ${command} ${command}`), delay * 2)
-            setTimeout(() => talk(chatroom, `${command} ${command}`), delay * 3)
-            setTimeout(() => talk(chatroom, `${command}`), delay * 4)
-        }
-        // Turn message count into money
-        else if (funNumber === 1) { return talk(chatroom, `Give me ${currency.symbol}${users[username][channel].msgCount}${currency.zeroes} ${currency.abbreviation.toUpperCase()}`) }
-        // Turn message count into money to my account
-        else if (funNumber === 2) {
-            const paymentMethods = [
-                `give me`,
-                `give me`,
-                `venmo me`,
-                `venmo me`,
-                `paypal me`,
-                `paypal me`,
-                `cashapp me`,
-                `cashapp me`,
-                `wire transfer me`,
-                `wire transfer me`,
-                `messenger pigeon me`,
-                `messenger pigeon me`,
-                `pls email me`,
-                `write me a travelers check for`
-            ]
-            const paymentMethod = Math.floor(Math.random() * paymentMethods.length)
-            return talk(chatroom, `${paymentMethods[paymentMethod]} ${users[username][channel].msgCount}${currency.zeroes} ${currency.name}`)
-        }
-        // Activate random redeem
-        else if (funNumber === 3) {
-            let redeems = []
-            if (chatroom === e1ectroma) {
-                redeems = [
-                    `!winner`,
-                    `!soda`,
-                    `!pipe`,
-                    `!nope`,
-                    `!nice`,
-                    `!n64`,
-                    `!bork`,
-                    `!maxwell`
-                ]
-            } else if (chatroom === jpegstripes) {
-                redeems = [
-                    `!bigshot`,
-                    `!keygen`,
-                    `!spotion`,
-                    `!thebigone`,
-                    `!bowtie`,
-                    `!neo`,
-                    `!workout`,
-                    `!suscr1ber`,
-                    `!mario`,
-                    `!piano`,
-                    `!slip`,
-                    `!hamster`,
-                    `!alarm`,
-                    `!waste`,
-                    `!25k`,
-                    `!crabrave`,
-                    `!confusion`,
-                    `!soulja`,
-                    `!breakdance`,
-                    `!gigachad`,
-                    `!4d3d3d3`,
-                    `!feedcat`,
-                    `!polarbear`,
-                    `!graph`,
-                    `!checkmate`,
-                    `!shutup`,
-                    `!doggo`,
-                    `!marshmallows`,
-                    `!chocotaco`,
-                    `!rat`,
-                    `!hamburger`,
-                    `!chickendance`,
-                    `!come`,
-                    `!gauntlet`,
-                    `!princess`,
-                    `!rubbermaid`,
-                    `!peachsyrup`,
-                    `!skype`,
-                    `!ohhimark`,
-                    `!dripgoku`,
-                    `!gelatin`,
-                    `!cheesecake`,
-                    `!fancam`,
-                    `!nicecock`,
-                    `!lieblingsfach`,
-                    `!lavish`,
-                    `!shootme`,
-                    `!disk`,
-                    `!flagranterror`,
-                    `!technology`,
-                    `!bingchilling`,
-                    `!flagranterror`,
-                    `!litlizards`,
-                    `!raccoon`,
-                    `!gay`,
-                    `!turbomaxwaste`
-                ]
-            } else if (chatroom === sclarf) {
-                redeems = [
-                    `!balls`,
-                    `!hat`,
-                    `!no`,
-                    `!omg`,
-                    `!why`,
-                    `!yes`
-                ]
-            } else if (chatroom === domonintendo1) {
-                while (randomUser === BOT_USERNAME) { randomUser = getRandomUser() }
-                redeems = [
-                    `!slap ${randomUser}`
-                ]
-            }
-            const redeem = Math.floor(Math.random() * redeems.length)
-            return talk(chatroom, redeems[redeem])
-        }
-        // Give hundreds of points (requires StreamElements)
-        else if (funNumber === 4 && chatroom !== domonintendo1) { return talk(chatroom, `!give ${username} ${users[username][channel].msgCount}00`) }
-        // Lemonify a random user's random chat message
-        else if (funNumber === 5) {
-            while (randomUser === BOT_USERNAME) { randomUser = getRandomUser() }
-            const randomMsg = getRandomChannelMessage(users[randomUser])
-            const lemonMsg = lemonify(randomMsg)
-            return talk(chatroom, lemonMsg)
-        }
-        // Check for UndertaleBot and interact with a random user
-        else if (funNumber === 6 && `undertalebot` in users && Object.keys(users.undertalebot).includes(channel)) {
-            while ([BOT_USERNAME, `undertalebot`].includes(randomUser)) { randomUser = getRandomUser() }
-            const actions = [
-                `!fight ${users[randomUser].displayName}`,
-                `!act ${users[randomUser].displayName}`,
-                `!mercy ${users[randomUser].displayName}`
-            ]
-            return talk(chatroom, actions[Math.floor(Math.random() * actions.length)])
-        }
-        else if (funNumber === 7) { return talk(chatroom, `This message has a 1 / ${(funNumberCount * funNumberTotal).toLocaleString()} chance of appearing`) }
-    }
+    if (users[username][channel].msgCount % funNumberCount === 0) { return rollFunNumber(chatroom, channel, tags, username, msg.split(` `), Math.floor(Math.random() * funNumberTotal)) }
 }
 
 // Helper functions
+function rollFunNumber(chatroom, channel, tags, username, msgArr, funNumber) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> rollFunNumber(channel: ${chatroom.substring(1)}, tags: ${typeof tags}, username: ${username}, msgArr.length: ${msgArr.length}, funNumber: ${funNumber}${resetTxt}`) }
+
+    let randomUser = getRandomUser()
+    const randCurrency = Math.floor(Math.random() * currencies.length)
+    const currency = currencies[randCurrency]
+
+    // Make 4-wide message pyramid of first word in message
+    if (funNumber === 0) {
+        const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
+        talk(chatroom, `${msgArr[0]}`)
+        setTimeout(() => talk(chatroom, `${msgArr[0]} ${msgArr[0]}`), delay)
+        setTimeout(() => talk(chatroom, `${msgArr[0]} ${msgArr[0]} ${msgArr[0]}`), delay * 2)
+        setTimeout(() => talk(chatroom, `${msgArr[0]} ${msgArr[0]}`), delay * 3)
+        setTimeout(() => talk(chatroom, `${msgArr[0]}`), delay * 4)
+    }
+    // Turn message count into money
+    else if (funNumber === 1) { talk(chatroom, `Give me ${currency.symbol}${users[username][channel].msgCount}${currency.zeroes} ${currency.abbreviation.toUpperCase()}`) }
+    // Turn message count into money to my account
+    else if (funNumber === 2) {
+        const paymentMethods = [
+            `give me`,
+            `give me`,
+            `venmo me`,
+            `venmo me`,
+            `paypal me`,
+            `paypal me`,
+            `cashapp me`,
+            `cashapp me`,
+            `wire transfer me`,
+            `wire transfer me`,
+            `messenger pigeon me`,
+            `messenger pigeon me`,
+            `pls email me`,
+            `write me a travelers check for`
+        ]
+        const paymentMethod = Math.floor(Math.random() * paymentMethods.length)
+        talk(chatroom, `${paymentMethods[paymentMethod]} ${users[username][channel].msgCount}${currency.zeroes} ${currency.name}`)
+    }
+    // Activate random redeem
+    else if (funNumber === 3) {
+        const redeems = []
+        if (chatroom === e1ectroma) { redeems.push(...tromaRedeems) }
+        else if (chatroom === jpegstripes) { redeems.push(...jpegRedeems) }
+        else if (chatroom === sclarf) { redeems.push(...sclarfRedeems) }
+        else if (chatroom === domonintendo1) {
+            while (randomUser === BOT_USERNAME) { randomUser = getRandomUser() }
+            redeems.push(`!slap ${randomUser}`)
+        }
+        console.log(redeems)
+        const redeem = Math.floor(Math.random() * redeems.length)
+        talk(chatroom, redeems[redeem])
+    }
+    // Give hundreds of points (requires StreamElements)
+    else if (funNumber === 4 && chatroom !== domonintendo1) {
+        const pointsToGive = `points` in users[BOT_USERNAME][channel] ? users[username][channel].msgCount * 100 >= users[username][channel].points ? `all` : `${users[username][channel].msgCount * 100}` : `${users[username][channel].msgCount * 100}`
+        talk(chatroom, `!give ${username} ${pointsToGive}`)
+    }
+    // Lemonify a random user's random chat message
+    else if (funNumber === 5) {
+        while (randomUser === BOT_USERNAME) { randomUser = getRandomUser() }
+        const randomMsg = getRandomChannelMessage(users[randomUser])
+        const lemonMsg = lemonify(randomMsg)
+        talk(chatroom, lemonMsg)
+    }
+    // Check for UndertaleBot and interact with a random user
+    else if (funNumber === 6 && `undertalebot` in users && Object.keys(users.undertalebot).includes(channel)) {
+        while ([BOT_USERNAME, `undertalebot`].includes(randomUser)) { randomUser = getRandomUser() }
+        const actions = [
+            `!fight ${users[randomUser].displayName}`,
+            `!act ${users[randomUser].displayName}`,
+            `!mercy ${users[randomUser].displayName}`
+        ]
+        talk(chatroom, actions[Math.floor(Math.random() * actions.length)])
+    }
+    else if (funNumber === 7) { talk(chatroom, `This message has a 1 / ${(funNumberCount * funNumberTotal).toLocaleString()} chance of appearing`) }
+    else if (funNumber === 8) { talk(chatroom, `${tags.id}`) }
+    else if (funNumber === 9) { talk(chatroom, `${tags[`tmi-sent-ts`]}`) }
+}
+
 function handleNewChatter(chatroom, user) {
     if (DEBUG_MODE) { console.log(`${boldTxt}> handleNewChatter(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
     const greetings = [
@@ -1238,7 +1260,7 @@ function getMessageCount(chatroom, user) {
 }
 
 function yell(user, msg) {
-    for (chatroom of lemonyFresh) {
+    for (const chatroom of lemonyFresh) {
         talk(chatroom, `${user.displayName} says: ${msg.substring(6)}`)
     }
 }
@@ -1831,12 +1853,13 @@ function emoteReply(chatroom, channel, emoteArr) {
 }
 
 function delayListening() {
-    console.log(`${boldTxt}> delayListening() 30 seconds...${resetTxt}`)
+    const delayTime = 30
+    console.log(`${boldTxt}> delayListening() ${delayTime} seconds...${resetTxt}`)
     listening = false
     setTimeout(() => {
         listening = true
         console.log(`${boldTxt}> Listening for streaks again!${resetTxt}`)
-    }, 30000)
+    }, delayTime * 1000)
 }
 
 function ping(arr) {
@@ -1856,8 +1879,9 @@ function cleanupSpaces(str) {
 }
 
 function talk(chatroom, msg) {
+    const time = new Date().toLocaleTimeString()
     client.say(chatroom, msg)
-    console.log(`${yellowBg}<${chatroom.slice(1)}> ${BOT_USERNAME}: ${msg}${resetTxt}`)
+    console.log(`${yellowBg}[${time}] <${chatroom.slice(1)}> ${BOT_USERNAME}: ${msg}${resetTxt}`)
 }
 
 function getToUser(str) { return str.startsWith(`@`) ? str.substring(1) : str }
@@ -1898,8 +1922,18 @@ function printLemon() {
     console.log(noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + bkSq + bkSq + bkSq + bkSq + bkSq)
 }
 
+// async function apiTest() {
+//     const response = await fetch("https://api.twitch.tv/helix/analytics/games", {
+//         headers: {
+//             "Authorization": `Bearer ${OAUTH_TOKEN}`,
+//         }
+//     })
+//     console.log(response)
+// }
+
 function onConnectedHandler(addr, port) {
     printLemon()
-    console.log(`* Connected to ${addr}:${port}`)
+    const time = new Date().toLocaleTimeString()
+    console.log(`[${time}] 🍋 Connected to ${addr}:${port}`)
     sayOnlineMsg = true
 }
