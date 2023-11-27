@@ -557,6 +557,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     // JSON stats of user or toUser
     if (command === `!mystats`) {
         const user = target || username
+        console.log(`${user}:`, users[user])
         let data = `${user}: { displayName: '${users[user].displayName}', color: ${users[user].color}`
         for (const key of Object.keys(users[user])) {
             if (typeof users[user][key] === `object`) {
@@ -794,7 +795,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     ].includes(command)) {
         users[username][channel].away = true
         if (args.length) { users[username][channel].awayMessage = args.join(` `) }
-        return args.length ? talk(chatroom, `See you later, ${displayName}! I'll pass along your away message if they mention you! :)`) : talk(chatroom, `See you later, ${displayName}! I'll let people know you're away if they mention you! :)`)
+        if (command === `!lurk`) { return args.length ? talk(chatroom, `See you later, ${displayName}! I'll pass along your away message if they mention you! :)`) : talk(chatroom, `See you later, ${displayName}! I'll let people know you're away if they mention you! :)`) }
     }
 
     // If bot mentioned in message
@@ -1259,7 +1260,7 @@ function getMessageCount(chatroom, user) {
 }
 
 function yell(user, msg) {
-    for (chatroom of lemonyFresh) {
+    for (const chatroom of lemonyFresh) {
         talk(chatroom, `${user.displayName} says: ${msg.substring(6)}`)
     }
 }
@@ -1852,12 +1853,13 @@ function emoteReply(chatroom, channel, emoteArr) {
 }
 
 function delayListening() {
-    console.log(`${boldTxt}> delayListening() 30 seconds...${resetTxt}`)
+    const delayTime = 30
+    console.log(`${boldTxt}> delayListening() ${delayTime} seconds...${resetTxt}`)
     listening = false
     setTimeout(() => {
         listening = true
         console.log(`${boldTxt}> Listening for streaks again!${resetTxt}`)
-    }, 30000)
+    }, delayTime * 1000)
 }
 
 function ping(arr) {
