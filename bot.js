@@ -576,7 +576,9 @@ function onMessageHandler(chatroom, tags, message, self) {
     // Start a game of Hangman (if one isn't already in progress)
     if (command === `!hangman`) {
         if (hangmanListening) {
-            return talk(chatroom, `A game of Hangman is already in progress!`)
+            return hangmanSignup
+                ? talk(chatroom, `A game of Hangman is starting, type !play to join!`)
+                : talk(chatroom, `A game of Hangman is already in progress! It's currently ${users[players[currentPlayer]].displayName}'s turn.`)
         } else {
             hangmanInit()
             return hangmanAnnounce(chatroom, channel)
