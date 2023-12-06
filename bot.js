@@ -564,6 +564,16 @@ function onMessageHandler(chatroom, tags, message, self) {
     // User's first message in a given channel
     if (firstMsg) { return handleNewChatter(chatroom, users[username]) }
 
+    /******\
+    COMMANDS
+    \******/
+
+    // All commands
+    if (command === `!commands`) {
+        talk(chatroom, `Commands: !greet => Say hi to one or more people, !bye => Say goodnight to someone, !hangman => Start a game of Hangman, !yell => Chat across Lemony Fresh ${users[BOT_USERNAME].e1ectroma?.sub ? `e1ectr4Lemfresh ` : `🍋️`}, !away => (Optionally add an away message), !tempcmd => Make your own command! :)`)
+    }
+
+    // Start a game of Hangman (if one isn't already in progress)
     if (command === `!hangman`) {
         if (hangmanListening) {
             return talk(chatroom, `A game of Hangman is already in progress!`)
@@ -573,10 +583,7 @@ function onMessageHandler(chatroom, tags, message, self) {
         }
     }
 
-    if (command === `!word`) {
-        return talk(chatroom, `The answer is: ${answer}`)
-    }
-
+    // Join a game of Hangman (during the 10-second signup window)
     if (command === `!play`
         && !players.includes(username)) {
         if (hangmanSignup) {
@@ -585,6 +592,9 @@ function onMessageHandler(chatroom, tags, message, self) {
             return talk(chatroom, `Sorry ${displayName}, the game has already started, but we'll get you in the next round! :)`)
         }
     }
+
+    // Play rock, paper, scissors with the bot
+    if (command === `!rps`) { return rockPaperScissors(chatroom, username, args[0]?.toLowerCase()) }
 
     // JSON stats of user or toUser
     if (command === `!mystats`) {
@@ -600,11 +610,7 @@ function onMessageHandler(chatroom, tags, message, self) {
         return talk(chatroom, data)
     }
 
-    // All commands
-    if (command === `!commands`) {
-        talk(chatroom, `Commands: !greet => Say hi to one or more people, !bye => Say goodnight to someone, !yell => Chat across Lemony Fresh ${users[BOT_USERNAME].e1ectroma?.sub ? `e1ectr4Lemfresh ` : `🍋️`}, !away => (Optionally add an away message), !tempcmd => Make your own command! :)`)
-    }
-
+    // Check which channels the bot is subbed to
     if (command === `!subs`) {
         const subbedUsers = []
         const allUsers = []
@@ -1233,6 +1239,7 @@ async function getRandomWord() {
     if (DEBUG_MODE) { console.log(`${boldTxt}> getRandomWord()${resetTxt}`) }
     const response = await fetch(`https://random-word-api.vercel.app/api?words=1`)
     const data = await response.json()
+    if (DEBUG_MODE) { console.log(data) }
     return data[0]
 }
 
@@ -1253,6 +1260,7 @@ function hangmanAnnounce(chatroom, channel) {
     hangmanSignup = true
     talk(chatroom, `I'm thinking of a word... Type !play in the next 10 seconds to join in a game of Hangman! :)`)
     setTimeout(() => {
+        if (DEBUG_MODE) { console.log(`${boldTxt}> 10 seconds has elapsed, signup window closed${resetTxt}`) }
         hangmanSignup = false
         if (players.length === 0) {
             hangmanListening = false
@@ -1305,6 +1313,23 @@ function checkLetter(chatroom, channel, username, guess) {
 function solvePuzzle(chatroom, username) {
     hangmanListening = false
     return talk(chatroom, `Congratulations ${users[username].displayName}, you solved the puzzle! The answer was: "${answer}" :D`)
+}
+
+function rockPaperScissors(chatroom, username, arg) {
+    const rps = [`rock`, `paper`, `scissors`]
+    if (DEBUG_MODE) { console.log(`${boldTxt}> checkLetter(rockPaperScissors: ${chatroom}, username: ${username}, arg: ${arg}) ${rps.includes(arg)}${resetTxt}`) }
+    const botChoice = rps[Math.floor(Math.random() * rps.length)]
+    const playerChoice = rps.includes(arg) ? arg : rps[Math.floor(Math.random() * rps.length)]
+    const name = users[username].displayName
+    let response = `${name} throws ${playerChoice}! I throw ${botChoice}`
+    if ((playerChoice === `rock` && botChoice === `paper`)
+        || (playerChoice === `paper` && botChoice === `scissors`)
+        || (playerChoice === `scissors` && botChoice === `rock`)) { response += `. Sorry, I win! :)` }
+    else if ((playerChoice === `rock` && botChoice === `scissors`)
+        || (playerChoice === `paper` && botChoice === `rock`)
+        || (playerChoice === `scissors` && botChoice === `paper`)) { response += `. You win! :D` }
+    else { response += `, too. It's a tie! :O` }
+    talk(chatroom, response)
 }
 
 function handleNewChatter(chatroom, user) {
