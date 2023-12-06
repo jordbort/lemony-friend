@@ -153,7 +153,7 @@ const onlineMsg = [
     `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`,
     `(there ${Object.keys(tempCmds).length === 1 ? `is` : `are`} ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`,
     `Debug mode is currently ${DEBUG_MODE ? `ON` : `OFF`}! :)`,
-    `thanksLikePattern has been updated to /^t(h*[aeou]*[bmn])*(ks+|x+)\b/i`
+    `Let's play Hangman! :)`
 ]
 const currencies = [
     {
@@ -467,6 +467,16 @@ const tromaRedeems = [
     `!maxwell`
 ]
 
+// Hangman variables
+let hangmanListening = false
+let hangmanSignup = false
+let answer = ``
+const spaces = []
+const players = []
+const guessedLetters = []
+let chances = 6
+let currentPlayer = 0
+
 function onMessageHandler(chatroom, tags, message, self) {
     const msg = cleanupSpaces(message)
     const username = tags.username
@@ -553,6 +563,28 @@ function onMessageHandler(chatroom, tags, message, self) {
 
     // User's first message in a given channel
     if (firstMsg) { return handleNewChatter(chatroom, users[username]) }
+
+    if (command === `!hangman`) {
+        if (hangmanListening) {
+            return talk(chatroom, `A game of Hangman is already in progress!`)
+        } else {
+            hangmanInit()
+            return hangmanAnnounce(chatroom, channel)
+        }
+    }
+
+    if (command === `!word`) {
+        return talk(chatroom, `The answer is: ${answer}`)
+    }
+
+    if (command === `!play`
+        && !players.includes(username)) {
+        if (hangmanSignup) {
+            players.push(username)
+        } else if (!players.includes(username)) {
+            return talk(chatroom, `Sorry ${displayName}, the game has already started, but we'll get you in the next round! :)`)
+        }
+    }
 
     // JSON stats of user or toUser
     if (command === `!mystats`) {
@@ -1020,6 +1052,34 @@ function onMessageHandler(chatroom, tags, message, self) {
         }
     }
 
+    if (hangmanListening) {
+        if (DEBUG_MODE) { console.log(`> Listening for hangman answers...`) }
+        if (hangmanSignup) {
+            if (DEBUG_MODE) { console.log(`> Hangman signup is in progress...`) }
+        } else if (msg.match(/^[a-z]$/i) && username === players[currentPlayer]) {
+            if (DEBUG_MODE) { console.log(`> Message was one letter: ${msg.toUpperCase()}`) }
+            return checkLetter(chatroom, channel, username, msg.toUpperCase())
+        } else if (msg.split(` `).length === 1 && username === players[currentPlayer] && msg.match(/^[a-z]+$/i)) {
+            if (DEBUG_MODE) { console.log(`> Word guess attempt was made!`) }
+            if (msg.toLowerCase() === answer) {
+                return solvePuzzle(chatroom, username)
+            } else {
+                chances--
+                if (chances === 0) {
+                    hangmanListening = false
+                    return talk(chatroom, `Sorry ${displayName}, "${msg.toLowerCase()}" wasn't the answer! The answer was "${answer}". Game over! :(`)
+                }
+                currentPlayer++
+                if (currentPlayer === players.length) { currentPlayer = 0 }
+                const newPlayer = users[players[currentPlayer]].displayName
+                talk(chatroom, `Sorry ${displayName}, "${msg.toLowerCase()}" wasn't the answer! Minus one chance... :( Now it's your turn, ${newPlayer}!`)
+                const statusMsg = `${spaces.join(` `)} (chances: ${chances})`
+                const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
+                setTimeout(() => talk(chatroom, statusMsg), delay)
+            }
+        }
+    }
+
     if (listening || channel === BOT_USERNAME) {
         // Parsing each message word
         const lowercaseArgs = args.map(str => str.toLowerCase())
@@ -1167,6 +1227,84 @@ function rollFunNumber(chatroom, channel, tags, username, msgArr, funNumber) {
     else if (funNumber === 7) { talk(chatroom, `This message has a 1 / ${(funNumberCount * funNumberTotal).toLocaleString()} chance of appearing`) }
     else if (funNumber === 8) { talk(chatroom, `${tags.id}`) }
     else if (funNumber === 9) { talk(chatroom, `${tags[`tmi-sent-ts`]}`) }
+}
+
+async function getRandomWord() {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> getRandomWord()${resetTxt}`) }
+    const response = await fetch(`https://random-word-api.vercel.app/api?words=1`)
+    const data = await response.json()
+    return data[0]
+}
+
+async function hangmanInit() {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> hangmanInit()${resetTxt}`) }
+    hangmanListening = true
+    answer = await getRandomWord()
+    spaces.length = answer.length
+    spaces.fill(`_`)
+    players.length = 0
+    guessedLetters.length = 0
+    chances = 6
+    currentPlayer = 0
+}
+
+function hangmanAnnounce(chatroom, channel) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> hangmanAnnounce(chatroom: ${chatroom}, channel: ${channel})${resetTxt}`) }
+    hangmanSignup = true
+    talk(chatroom, `I'm thinking of a word... Type !play in the next 10 seconds to join in a game of Hangman! :)`)
+    setTimeout(() => {
+        hangmanSignup = false
+        if (players.length === 0) {
+            hangmanListening = false
+            talk(chatroom, `No players signed up for Hangman! :(`)
+        } else {
+            talk(chatroom, `${players.length} player${players.length === 1 ? `` : `s`} signed up for Hangman! You go first, ${users[players[0]].displayName}! :)`)
+            const statusMsg = `${spaces.join(` `)} (chances: ${chances})`
+            const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
+            setTimeout(() => talk(chatroom, statusMsg), delay)
+        }
+    }, 10000)
+}
+
+function checkLetter(chatroom, channel, username, guess) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> checkLetter(chatroom: ${chatroom}, channel: ${channel}, username: ${username}, guess: ${guess})${resetTxt}`) }
+    const player = users[username].displayName
+    if (guessedLetters.includes(guess)) {
+        const listOfLetters = guessedLetters.length === 1
+            ? guessedLetters[0]
+            : guessedLetters.length === 2
+                ? guessedLetters.join(` and `)
+                : guessedLetters.slice(0, guessedLetters.length - 1).join(`, `) + `, and ` + guessedLetters[guessedLetters.length - 1]
+        return talk(chatroom, `${player}, the letter${guessedLetters.length === 1 ? `` : `s`} ${listOfLetters} ${guessedLetters.length === 1 ? `has` : `have`} already been guessed - try again!`)
+    }
+    guessedLetters.push(guess)
+    currentPlayer++
+    if (currentPlayer === players.length) { currentPlayer = 0 }
+    const newPlayer = users[players[currentPlayer]].displayName
+    if (answer.includes(guess.toLowerCase())) {
+        for (const [i, letter] of answer.split(``).entries()) {
+            if (letter === guess.toLowerCase()) { spaces[i] = guess }
+        }
+        if (!spaces.includes(`_`)) {
+            return solvePuzzle(chatroom, username)
+        }
+        talk(chatroom, `Good job ${player}, ${guess} was in the word! :) Now it's your turn, ${newPlayer}!`)
+    } else {
+        chances--
+        if (chances === 0) {
+            hangmanListening = false
+            return talk(chatroom, `Sorry ${player}, ${guess} wasn't in the word! The answer was "${answer}". Game over! :(`)
+        }
+        talk(chatroom, `Sorry ${player}, ${guess} wasn't in the word! Minus one chance... :( Now it's your turn, ${newPlayer}!`)
+    }
+    const statusMsg = `${spaces.join(` `)} (chances: ${chances})`
+    const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
+    setTimeout(() => talk(chatroom, statusMsg), delay)
+}
+
+function solvePuzzle(chatroom, username) {
+    hangmanListening = false
+    return talk(chatroom, `Congratulations ${users[username].displayName}, you solved the puzzle! The answer was: "${answer}" :D`)
 }
 
 function handleNewChatter(chatroom, user) {
