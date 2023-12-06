@@ -622,58 +622,6 @@ function onMessageHandler(chatroom, tags, message, self) {
         `!friend`,
         `!friends`
     ].includes(command)) {
-        const numbers = [
-            `zero`,
-            `one`,
-            `two`,
-            `three`,
-            `four`,
-            `five`,
-            `six`,
-            `seven`,
-            `eight`,
-            `nine`,
-            `ten`,
-            `eleven`,
-            `twelve`,
-            `thirteen`,
-            `fourteen`,
-            `fifteen`,
-            `sixteen`,
-            `seventeen`,
-            `eighteen`,
-            `nineteen`,
-            `twenty`,
-            `twenty-one`,
-            `twenty-two`,
-            `twenty-three`,
-            `twenty-four`,
-            `twenty-five`,
-            `twenty-six`,
-            `twenty-seven`,
-            `twenty-eight`,
-            `twenty-nine`,
-            `thirty`,
-            `thirty-one`,
-            `thirty-two`,
-            `thirty-three`,
-            `thirty-four`,
-            `thirty-five`,
-            `thirty-six`,
-            `thirty-seven`,
-            `thirty-eight`,
-            `thirty-nine`,
-            `forty`,
-            `forty-one`,
-            `forty-two`,
-            `forty-three`,
-            `forty-four`,
-            `forty-five`,
-            `forty-six`,
-            `forty-seven`,
-            `forty-eight`,
-            `forty-nine`,
-        ]
         return talk(chatroom, `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`)
     }
 
@@ -1142,7 +1090,7 @@ function onMessageHandler(chatroom, tags, message, self) {
 
 // Helper functions
 function rollFunNumber(chatroom, channel, tags, username, msgArr, funNumber) {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> rollFunNumber(channel: ${chatroom.substring(1)}, tags: ${typeof tags}, username: ${username}, msgArr.length: ${msgArr.length}, funNumber: ${funNumber}${resetTxt}`) }
+    if (DEBUG_MODE) { console.log(`${boldTxt}> rollFunNumber(channel: ${chatroom.substring(1)}, tags: ${typeof tags}, username: ${username}, msgArr.length: ${msgArr.length}, funNumber: ${funNumber})${resetTxt}`) }
 
     let randomUser = getRandomUser()
     const randCurrency = Math.floor(Math.random() * currencies.length)
@@ -1190,7 +1138,7 @@ function rollFunNumber(chatroom, channel, tags, username, msgArr, funNumber) {
             while (randomUser === BOT_USERNAME) { randomUser = getRandomUser() }
             redeems.push(`!slap ${randomUser}`)
         }
-        console.log(redeems)
+        if (DEBUG_MODE) { console.log(redeems) }
         const redeem = Math.floor(Math.random() * redeems.length)
         talk(chatroom, redeems[redeem])
     }
