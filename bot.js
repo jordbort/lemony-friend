@@ -585,12 +585,12 @@ function onMessageHandler(chatroom, tags, message, self) {
         }
     }
 
-    // Join a game of Hangman (during the 10-second signup window)
+    // Join a game of Hangman (during the 30-second signup window)
     if (command === `!play`
         && !players.includes(username)) {
         if (hangmanSignup) {
             players.push(username)
-        } else if (!players.includes(username)) {
+        } else if (hangmanListening && !players.includes(username)) {
             return talk(chatroom, `Sorry ${displayName}, the game has already started, but we'll get you in the next round! :)`)
         }
     }
@@ -1061,13 +1061,10 @@ function onMessageHandler(chatroom, tags, message, self) {
     }
 
     if (hangmanListening) {
-        if (DEBUG_MODE) { console.log(`> Listening for hangman answers...`) }
         if (hangmanSignup) {
-            if (DEBUG_MODE) { console.log(`> Hangman signup is in progress...`) }
         } else if (msg.match(/^[a-z]$/i) && username === players[currentPlayer]) {
-            if (DEBUG_MODE) { console.log(`> Message was one letter: ${msg.toUpperCase()}`) }
             return checkLetter(chatroom, channel, username, msg.toUpperCase())
-        } else if (msg.split(` `).length === 1 && username === players[currentPlayer] && msg.match(/^[a-z]+$/i)) {
+        } else if (msg.split(` `).length === 1 && msg.split(` `)[0].length === answer.length && username === players[currentPlayer] && msg.match(/^[a-z]+$/i)) {
             if (DEBUG_MODE) { console.log(`> Word guess attempt was made!`) }
             if (msg.toLowerCase() === answer) {
                 return solvePuzzle(chatroom, username)
@@ -1138,7 +1135,9 @@ function onMessageHandler(chatroom, tags, message, self) {
         const streakUsers = []
 
         for (const user in users) {
-            if (user !== BOT_USERNAME && users[user][channel]?.lastMessage === msg) {
+            if (user !== BOT_USERNAME && users[user][channel]?.lastMessage === msg
+                && msg !== `!play`
+            ) {
                 streakCount++
                 streakUsers.push(users[user].displayName)
                 if (streakCount >= 2) { console.log(`${boldTxt}Listening for message streak... ${streakCount}/3 "${msg}" - ${streakUsers.join(`, `)}${resetTxt}`) }
@@ -1260,9 +1259,9 @@ async function hangmanInit() {
 function hangmanAnnounce(chatroom, channel) {
     if (DEBUG_MODE) { console.log(`${boldTxt}> hangmanAnnounce(chatroom: ${chatroom}, channel: ${channel})${resetTxt}`) }
     hangmanSignup = true
-    talk(chatroom, `I'm thinking of a word... Type !play in the next 10 seconds to join in a game of Hangman! :)`)
+    talk(chatroom, `I'm thinking of a word... Type !play in the next 30 seconds to join in a game of Hangman! :)`)
     setTimeout(() => {
-        if (DEBUG_MODE) { console.log(`${boldTxt}> 10 seconds has elapsed, signup window closed${resetTxt}`) }
+        if (DEBUG_MODE) { console.log(`${boldTxt}> 30 seconds has elapsed, signup window closed${resetTxt}`) }
         hangmanSignup = false
         if (players.length === 0) {
             hangmanListening = false
@@ -1273,7 +1272,7 @@ function hangmanAnnounce(chatroom, channel) {
             const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
             setTimeout(() => talk(chatroom, statusMsg), delay)
         }
-    }, 10000)
+    }, 30000)
 }
 
 function checkLetter(chatroom, channel, username, guess) {
