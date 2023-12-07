@@ -814,19 +814,19 @@ function onMessageHandler(chatroom, tags, message, self) {
         if (command === `well` && args[0]?.match(/^done+/i)) { return sayThanks(chatroom, users[username]) }
 
         // If the first word is `thanks`-like
-        const thanksLikePattern = /^t(h*[aeou]*[bmn])*(ks+|x+)\b/i
+        const thanksLikePattern = /^t(h*[aeou]*[bmn])*(ks+|x+)$/i
         if (command.match(thanksLikePattern)) { return sayYoureWelcome(chatroom, users[username]) }
 
         // If the first word is `thank`-like and followed by "you"-like word
-        const thankLikePattern = /^th*[aeou]*[bmn]*[kx]+\b/i
-        const youLikePattern = /^yo?u\b|^yew\b|^u\b/i
+        const thankLikePattern = /^th*[aeou]*[bmn]*[kx]+$/i
+        const youLikePattern = /^yo?u+$|^yew+$|^u+$/i
         if (command.match(thankLikePattern) && args[0]?.match(youLikePattern)) { return sayYoureWelcome(chatroom, users[username]) }
 
         // All words after the first, in lower case
         const lowercaseArgs = args.map(str => str.toLowerCase())
 
         // Checking for "what's up"
-        const whatsUpPrefixPattern = /^wh?[au]t?['"]*s*\b/i
+        const whatsUpPrefixPattern = /^wh?[au]t?['"]*s*$/i
         // In case saying "what's up" first, and/or `up` doesn't come immediately
         if (command.match(whatsUpPrefixPattern)) {
             for (const str of lowercaseArgs) {
