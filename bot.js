@@ -87,6 +87,7 @@ const funNumberCount = 25
 const funNumberTotal = 50
 let listening = true
 let sayOnlineMsg = true
+let FIRST_CONNECTION = true
 let DEBUG_MODE = true
 
 // Global variables
@@ -2229,8 +2230,10 @@ function printLemon() {
 // }
 
 function onConnectedHandler(addr, port) {
-    printLemon()
+    FIRST_CONNECTION && printLemon()
     const time = new Date().toLocaleTimeString()
-    console.log(`[${time}] 🍋 Connected to ${addr}:${port}`)
+    FIRST_CONNECTION
+        ? console.log(`[${time}] 🍋 Connected to ${addr}:${port}`)
+        : console.log(`[${time}] 🍋 Re-connected to ${addr}:${port}`)
     sayOnlineMsg = true
 }
