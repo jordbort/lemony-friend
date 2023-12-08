@@ -1181,14 +1181,14 @@ function onMessageHandler(chatroom, tags, message, self) {
     }
 
     if (username === `streamelements` && (msg.includes(`lemony_friend`))) {
-        console.log(`Current points:`, `points` in users[BOT_USERNAME][channel] ? users[BOT_USERNAME][channel].points : `(not known)`)
-        if (args[0] === `gave` && `points` in users[BOT_USERNAME][channel]) {
+        console.log(`Current points:`, `points` in Object(users[BOT_USERNAME][channel]) ? users[BOT_USERNAME][channel].points : `(not known)`)
+        if (args[0] === `gave` && !command.includes(BOT_USERNAME)) {
             users[BOT_USERNAME][channel].points += Number(args[1])
             console.log(`> Received`, Number(args[1]), `points, thanks to`, command, `- now has:`, users[BOT_USERNAME][channel].points)
         }
-        else if (args[1] === `has`) {
-            users[BOT_USERNAME][channel].points = Number(args[2])
-            console.log(`> Checked points, and has`, Number(args[2]))
+        else if (args[0] === `has`) {
+            users[BOT_USERNAME][channel].points = Number(args[1])
+            console.log(`> Checked points, and has`, Number(args[1]))
         }
         else if (msg.includes(`jpegstSpamton`)) {
             console.log(`*** JPEG MODE ***`)
@@ -1224,8 +1224,8 @@ function onMessageHandler(chatroom, tags, message, self) {
                 console.log(`> WON SOME, new amount:`, Number(args[args.length - 3]))
             }
         }
-        console.log(`New points:`, `points` in users[BOT_USERNAME][channel] ? users[BOT_USERNAME][channel].points : `(not known)`)
-        if (!(`points` in users[BOT_USERNAME][channel])) {
+        console.log(`New points:`, `points` in Object(users[BOT_USERNAME][channel]) ? users[BOT_USERNAME][channel].points : `(not known)`)
+        if (!(`points` in Object(users[BOT_USERNAME][channel]))) {
             talk(chatroom, `!points`)
         }
     }
@@ -1431,7 +1431,7 @@ function rollFunNumber(chatroom, channel, tags, username, msgArr, funNumber) {
     }
     // Give hundreds of points (requires StreamElements)
     else if (funNumber === 4 && chatroom !== domonintendo1) {
-        const pointsToGive = `points` in users[BOT_USERNAME][channel]
+        const pointsToGive = `points` in Object(users[BOT_USERNAME][channel])
             ? users[username][channel].msgCount * 100 >= users[username][channel].points
                 ? `all`
                 : `${users[username][channel].msgCount * 100}`
