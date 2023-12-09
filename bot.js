@@ -317,11 +317,6 @@ const currencies = [
 
 // Updated list of emotes potentially available to the bot
 const jpegEmotes = [
-    `jpegstHeyGuys`,
-    `jpegstKylePog`,
-    `jpegstSpamton`,
-    `jpegstJPEG`,
-    `jpegstRAID`,
     `jpegstCoin`,
     `jpegstTimber`,
     `jpegstGeno`,
@@ -332,6 +327,11 @@ const jpegEmotes = [
     `jpegstJulian`,
     `jpegstWhitney`,
     `jpegstApollo`,
+    `jpegstHeyGuys`,
+    `jpegstKylePog`,
+    `jpegstSpamton`,
+    `jpegstJPEG`,
+    `jpegstRAID`,
     `jpegstYes`,
     `jpegstNo`,
     `jpegstOkay`,
@@ -344,16 +344,16 @@ const jpegEmotes = [
     `jpegstBroken`
 ]
 const sclarfEmotes = [
-    `sclarfMad`,
-    `sclarfPog`,
-    `sclarfHuh`,
-    `sclarfHowdy`,
-    `sclarfDog`,
     `sclarfRave`,
     `sclarfWobble`,
     `sclarfBark`,
     `sclarfSpin`,
     `sclarfPls`,
+    `sclarfMad`,
+    `sclarfHuh`,
+    `sclarfHowdy`,
+    `sclarfDog`,
+    `sclarfAmazed`,
     `sclarfBlind`,
     `sclarfPalm`,
     `sclarfDead`,
@@ -362,19 +362,20 @@ const sclarfEmotes = [
     `sclarfHiss`,
     `sclarfHearts`,
     `sclarfDEEP`,
-    `sclarfWave`
+    `sclarfWave`,
+    `sclarfSleep`
 ]
 const tromEmotes = [
-    `e1ectr4Hello`,
-    `e1ectr4Hi`,
-    `e1ectr4Bye`,
-    `e1ectr4Laugh`,
-    `e1ectr4Wazzah`,
     `e1ectr4Lfg`,
     `e1ectr4Pikadance`,
     `e1ectr4Tromadance`,
     `e1ectr4Coop`,
     `e1ectr4Ocha`,
+    `e1ectr4Hello`,
+    `e1ectr4Hi`,
+    `e1ectr4Bye`,
+    `e1ectr4Laugh`,
+    `e1ectr4Wazzah`,
     `e1ectr4Smile`,
     `e1ectr4Devil`,
     `e1ectr4Ram`,
