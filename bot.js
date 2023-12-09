@@ -325,17 +325,23 @@ const jpegEmotes = [
     `jpegstCoin`,
     `jpegstTimber`,
     `jpegstGeno`,
+    `jpegstKylePls`,
+    `jpegstBamJAM`,
     `jpegstLucky`,
     `jpegstKetchup`,
+    `jpegstJulian`,
+    `jpegstWhitney`,
+    `jpegstApollo`,
     `jpegstYes`,
     `jpegstNo`,
     `jpegstOkay`,
     `jpegstSlay`,
-    `jpegstBonk`,
-    `jpegstMegamind`,
+    `jpegstChrome`,
     `jpegstTapeEnd`,
+    `jpegstBlank`,
     `jpegstDog`,
-    `jpegstBlank`
+    `jpegstBonk`,
+    `jpegstBroken`
 ]
 const sclarfEmotes = [
     `sclarfMad`,
