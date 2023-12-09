@@ -1188,7 +1188,7 @@ function onMessageHandler(chatroom, tags, message, self) {
 
     if (username === `streamelements` && (msg.includes(`lemony_friend`))) {
         console.log(`Current points:`, `points` in Object(users[BOT_USERNAME][channel]) ? users[BOT_USERNAME][channel].points : `(not known)`)
-        if (args[0] === `gave` && !command.includes(BOT_USERNAME)) {
+        if (`points` in Object(users[BOT_USERNAME][channel]) && args[0] === `gave` && !command.includes(BOT_USERNAME)) {
             users[BOT_USERNAME][channel].points += Number(args[1])
             console.log(`> Received`, Number(args[1]), `points, thanks to`, command, `- now has:`, users[BOT_USERNAME][channel].points)
         }
@@ -1231,8 +1231,9 @@ function onMessageHandler(chatroom, tags, message, self) {
             }
         }
         console.log(`New points:`, `points` in Object(users[BOT_USERNAME][channel]) ? users[BOT_USERNAME][channel].points : `(not known)`)
+        if (`points` in Object(users[BOT_USERNAME][channel]) && isNaN(users[BOT_USERNAME][channel].points)) { console.log(`${redBg}${boldTxt}WARNING: ${channel} points is not a number!${resetTxt}`) }
         if (!(`points` in Object(users[BOT_USERNAME][channel]))) {
-            talk(chatroom, `!points`)
+            return talk(chatroom, `!points`)
         }
     }
 
