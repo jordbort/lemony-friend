@@ -154,7 +154,8 @@ const onlineMsg = [
     `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`,
     `(there ${Object.keys(tempCmds).length === 1 ? `is` : `are`} ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`,
     `Debug mode is currently ${DEBUG_MODE ? `ON` : `OFF`}! :)`,
-    `Let's play Hangman! :)`
+    `Let's play Hangman! :)`,
+    `whatsUpPrefixPattern has been updated to /^wh?[au]t?['"]*s*[^\w\s]*$/i`
 ]
 const currencies = [
     {
@@ -806,11 +807,11 @@ function onMessageHandler(chatroom, tags, message, self) {
         || msg.toLowerCase().includes(`melon`)
         || msg.toLowerCase().includes(`lemfriend`)) {
         // If the first word is a greeting
-        const greetingPattern = /^hey+$|^hi+$|^he.*lo+$|^howd[a-z]$|sup+$|^wh?[au].*up$/i
+        const greetingPattern = /^hey+[^\w\s]*$|^hi+[^\w\s]*$|^he.*lo+[^\w\s]*$|^howd[a-z][^\w\s]*$|sup+[^\w\s]*$|^wh?[au].*up[^\w\s]*$/i
         if (command.match(greetingPattern)) { return handleGreet(chatroom, users[username]) }
 
         // If the first word is `gn` or `bye`
-        const goodNightPattern = /^ni(ght|te)$|^gn$|^(bye+)+$/i
+        const goodNightPattern = /^ni(ght|te)[^\w\s]*$|^gn[^\w\s]*$|^(bye+)+[^\w\s]*$/i
         if (command.match(goodNightPattern)) { return sayGoodnight(chatroom, users[username]) }
 
         // If the first word is `good` followed by "night"-like word
@@ -820,32 +821,35 @@ function onMessageHandler(chatroom, tags, message, self) {
         if ([`gj`, `nj`].includes(command)) { return sayThanks(chatroom, users[username]) }
 
         // If the first word is `good`/`nice` followed by `job` or `work`
+        const jobPattern = /^job+[^\w\s]/i
+        const workPattern = /^work+[^\w\s]/i
         if ([`good`, `nice`].includes(command)
-            && (args[0]?.match(/^job+/i) || args[0]?.match(/^work+/i))) {
+            && (args[0]?.match(jobPattern) || args[0]?.match(workPattern))) {
             return sayThanks(chatroom, users[username])
         }
 
         // If the first word is `well` followed by `done`
-        if (command === `well` && args[0]?.match(/^done+/i)) { return sayThanks(chatroom, users[username]) }
+        if (command === `well` && args[0]?.match(/^done+[^\w\s]/i)) { return sayThanks(chatroom, users[username]) }
 
         // If the first word is `thanks`-like
-        const thanksLikePattern = /^t(h*[aeou]*[bmn])*(ks+|x+)$/i
+        const thanksLikePattern = /^t(h*[aeou]*[bmn])*(ks+|x+)[^\w\s]*$/i
         if (command.match(thanksLikePattern)) { return sayYoureWelcome(chatroom, users[username]) }
 
         // If the first word is `thank`-like and followed by "you"-like word
-        const thankLikePattern = /^th*[aeou]*[bmn]*[kx]+$/i
-        const youLikePattern = /^yo?u+$|^yew+$|^u+$/i
+        const thankLikePattern = /^th*[aeou]*[bmn]*[kx]+[^\w\s]*$/i
+        const youLikePattern = /^yo?u+[^\w\s]*$|^yew+[^\w\s]*$|^u+[^\w\s]*$/i
         if (command.match(thankLikePattern) && args[0]?.match(youLikePattern)) { return sayYoureWelcome(chatroom, users[username]) }
 
         // All words after the first, in lower case
         const lowercaseArgs = args.map(str => str.toLowerCase())
 
         // Checking for "what's up"
-        const whatsUpPrefixPattern = /^wh?[au]t?['"]*s*$/i
+        const whatsUpPrefixPattern = /^wh?[au]t?['"]*s*[^\w\s]*$/i
+        const upPattern = /^up+[^\w\s]/i
         // In case saying "what's up" first, and/or `up` doesn't come immediately
         if (command.match(whatsUpPrefixPattern)) {
             for (const str of lowercaseArgs) {
-                if (str.match(/^up/i)) {
+                if (str.match(upPattern)) {
                     return handleGreet(chatroom, users[username])
                 }
             }
@@ -864,13 +868,13 @@ function onMessageHandler(chatroom, tags, message, self) {
                 if (val.match(thankLikePattern)) { console.log(`${boldTxt}> "${val}" matched thankLikePattern${resetTxt}`) }
                 if (val.match(youLikePattern)) { console.log(`${boldTxt}> "${val}" matched youLikePattern${resetTxt}`) }
                 if (val.match(whatsUpPrefixPattern)) { console.log(`${boldTxt}> "${val}" matched whatsUpPrefixPattern${resetTxt}`) }
-                if (val.match(/^up+/) && lowercaseArgs[i - 1]?.match(whatsUpPrefixPattern)) { console.log(`${boldTxt}> "${val}" preceded by "${lowercaseArgs[i - 1]}" matched whatsUpPrefixPattern${resetTxt}`) }
+                if (val.match(upPattern) && lowercaseArgs[i - 1]?.match(whatsUpPrefixPattern)) { console.log(`${boldTxt}> "${val}" preceded by "${lowercaseArgs[i - 1]}" matched whatsUpPrefixPattern${resetTxt}`) }
             }
             // Checking if greeting came later in message
             if (val.match(greetingPattern)) { return handleGreet(chatroom, users[username]) }
 
             // Checking if `up` (and preceeding "what's"-like word) came later in message
-            if (val.match(/^up+/) && lowercaseArgs[i - 1]?.match(whatsUpPrefixPattern)) { return handleGreet(chatroom, users[username]) }
+            if (val.match(upPattern) && lowercaseArgs[i - 1]?.match(whatsUpPrefixPattern)) { return handleGreet(chatroom, users[username]) }
 
             // If `gn` came later in the message
             if (val.match(goodNightPattern)) { return sayGoodnight(chatroom, users[username]) }
@@ -889,12 +893,12 @@ function onMessageHandler(chatroom, tags, message, self) {
 
             // If `good`/`nice` followed by `job`/`work` came later in the message
             if ([`good`, `nice`].includes(val)
-                && (lowercaseArgs[i + 1]?.match(/^job+/) || lowercaseArgs[i + 1]?.match(/^work+/))) {
+                && (lowercaseArgs[i + 1]?.match(jobPattern) || lowercaseArgs[i + 1]?.match(workPattern))) {
                 return sayThanks(chatroom, users[username])
             }
 
             // If `well` followed by `done` came later in the message
-            if (val === `well` && lowercaseArgs[i + 1].match(/^done+/)) { return sayThanks(chatroom, users[username]) }
+            if (val === `well` && lowercaseArgs[i + 1].match(/^done+[^\w\s]/)) { return sayThanks(chatroom, users[username]) }
         }
         if (DEBUG_MODE) { console.log(`${boldTxt}> Bot mentioned, but didn't trigger response${resetTxt}`) }
     }
