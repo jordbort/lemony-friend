@@ -9,14 +9,227 @@ const e1ectroma = process.env.CHANNEL_3
 const domonintendo1 = process.env.CHANNEL_4
 const ppuyya = process.env.CHANNEL_5
 
-const lemonyFresh = [
-    // `#${BOT_USERNAME}`,
+const lemonyFresh = {
+    channels: [
     jpegstripes,
     sclarf,
     e1ectroma,
     domonintendo1,
     ppuyya
-]
+    ],
+    jpegstripes: {
+        emotes: [
+            `jpegstCoin`,
+            `jpegstTimber`,
+            `jpegstGeno`,
+            `jpegstKylePls`,
+            `jpegstBamJAM`,
+            `jpegstLucky`,
+            `jpegstKetchup`,
+            `jpegstJulian`,
+            `jpegstWhitney`,
+            `jpegstApollo`,
+            `jpegstHeyGuys`,
+            `jpegstKylePog`,
+            `jpegstSpamton`,
+            `jpegstJPEG`,
+            `jpegstRAID`,
+            `jpegstYes`,
+            `jpegstNo`,
+            `jpegstOkay`,
+            `jpegstSlay`,
+            `jpegstChrome`,
+            `jpegstTapeEnd`,
+            `jpegstBlank`,
+            `jpegstDog`,
+            `jpegstBonk`,
+            `jpegstBroken`
+        ],
+        redeems: [
+            `!bigshot`,
+            `!keygen`,
+            `!spotion`,
+            `!thebigone`,
+            `!bowtie`,
+            `!neo`,
+            `!workout`,
+            `!suscr1ber`,
+            `!mario`,
+            `!piano`,
+            `!slip`,
+            `!hamster`,
+            `!alarm`,
+            `!waste`,
+            `!25k`,
+            `!crabrave`,
+            `!confusion`,
+            `!soulja`,
+            `!breakdance`,
+            `!gigachad`,
+            `!4d3d3d3`,
+            `!feedcat`,
+            `!polarbear`,
+            `!graph`,
+            `!checkmate`,
+            `!shutup`,
+            `!doggo`,
+            `!marshmallows`,
+            `!chocotaco`,
+            `!rat`,
+            `!hamburger`,
+            `!chickendance`,
+            `!come`,
+            `!gauntlet`,
+            `!princess`,
+            `!rubbermaid`,
+            `!peachsyrup`,
+            `!skype`,
+            `!ohhimark`,
+            `!dripgoku`,
+            `!gelatin`,
+            `!cheesecake`,
+            `!fancam`,
+            `!nicecock`,
+            `!lieblingsfach`,
+            `!lavish`,
+            `!shootme`,
+            `!disk`,
+            `!flagranterror`,
+            `!technology`,
+            `!bingchilling`,
+            `!flagranterror`,
+            `!litlizards`,
+            `!raccoon`,
+            `!gay`,
+            `!turbomaxwaste`
+        ],
+        hangman: {
+            listening: false,
+            signup: false,
+            answer: ``,
+            spaces: [],
+            players: [],
+            guessedLetters: [],
+            chances: 6,
+            currentPlayer: 0
+        }
+    },
+    sclarf: {
+        emotes: [
+            `sclarfRave`,
+            `sclarfWobble`,
+            `sclarfBark`,
+            `sclarfSpin`,
+            `sclarfPls`,
+            `sclarfMad`,
+            `sclarfHuh`,
+            `sclarfHowdy`,
+            `sclarfDog`,
+            `sclarfAmazed`,
+            `sclarfBlind`,
+            `sclarfPalm`,
+            `sclarfDead`,
+            `sclarfSophisticated`,
+            `sclarfLUL`,
+            `sclarfHiss`,
+            `sclarfHearts`,
+            `sclarfDEEP`,
+            `sclarfWave`,
+            `sclarfSleep`
+        ],
+        redeems: [],
+        hangman: {
+            listening: false,
+            signup: false,
+            answer: ``,
+            spaces: [],
+            players: [],
+            guessedLetters: [],
+            chances: 6,
+            currentPlayer: 0
+        }
+    },
+    e1ectroma: {
+        emotes: [
+            `e1ectr4Lfg`,
+            `e1ectr4Pikadance`,
+            `e1ectr4Tromadance`,
+            `e1ectr4Coop`,
+            `e1ectr4Ocha`,
+            `e1ectr4Hello`,
+            `e1ectr4Hi`,
+            `e1ectr4Bye`,
+            `e1ectr4Laugh`,
+            `e1ectr4Wazzah`,
+            `e1ectr4Smile`,
+            `e1ectr4Devil`,
+            `e1ectr4Ram`,
+            `e1ectr4Salute`,
+            `e1ectr4Lemfresh`,
+            `e1ectr4Moses`,
+            `e1ectr4Josie`,
+            `e1ectr4Malort`,
+            `e1ectr4Kim`
+        ],
+        redeems: [
+            `!winner`,
+            `!soda`,
+            `!pipe`,
+            `!nope`,
+            `!nice`,
+            `!n64`,
+            `!bork`,
+            `!maxwell`
+        ],
+        hangman: {
+            listening: false,
+            signup: false,
+            answer: ``,
+            spaces: [],
+            players: [],
+            guessedLetters: [],
+            chances: 6,
+            currentPlayer: 0
+        }
+    },
+    domonintendo1: {
+        emotes: [
+            `domoni6Really`,
+            `domoni6Bingo`,
+            `domoni6ChefHey`,
+            `domoni6MeincSus`,
+            `domoni6Sneeze`,
+            `domoni6Dum`,
+            `domoni6Love`,
+            `domoni6Boom`
+        ],
+        redeems: [],
+        hangman: {
+            listening: false,
+            signup: false,
+            answer: ``,
+            spaces: [],
+            players: [],
+            guessedLetters: [],
+            chances: 6,
+            currentPlayer: 0
+        }
+    },
+    ppuyya: {
+        emotes: [],
+        redeems: [],
+        hangman: {
+            listening: false,
+            signup: false,
+            answer: ``,
+            spaces: [],
+            players: [],
+            guessedLetters: [],
+            chances: 6,
+            currentPlayer: 0
+        }
+    }
+}
 
 // Terminal colors
 const resetTxt = `\x1b[0m`
@@ -71,7 +284,7 @@ const opts = {
         username: BOT_USERNAME,
         password: OAUTH_TOKEN
     },
-    channels: lemonyFresh
+    channels: lemonyFresh.channels
 }
 const client = new tmi.client(opts)
 client.on('message', onMessageHandler)
@@ -316,176 +529,6 @@ const currencies = [
     }
 ]
 
-// Updated list of emotes potentially available to the bot
-const jpegEmotes = [
-    `jpegstCoin`,
-    `jpegstTimber`,
-    `jpegstGeno`,
-    `jpegstKylePls`,
-    `jpegstBamJAM`,
-    `jpegstLucky`,
-    `jpegstKetchup`,
-    `jpegstJulian`,
-    `jpegstWhitney`,
-    `jpegstApollo`,
-    `jpegstHeyGuys`,
-    `jpegstKylePog`,
-    `jpegstSpamton`,
-    `jpegstJPEG`,
-    `jpegstRAID`,
-    `jpegstYes`,
-    `jpegstNo`,
-    `jpegstOkay`,
-    `jpegstSlay`,
-    `jpegstChrome`,
-    `jpegstTapeEnd`,
-    `jpegstBlank`,
-    `jpegstDog`,
-    `jpegstBonk`,
-    `jpegstBroken`
-]
-const sclarfEmotes = [
-    `sclarfRave`,
-    `sclarfWobble`,
-    `sclarfBark`,
-    `sclarfSpin`,
-    `sclarfPls`,
-    `sclarfMad`,
-    `sclarfHuh`,
-    `sclarfHowdy`,
-    `sclarfDog`,
-    `sclarfAmazed`,
-    `sclarfBlind`,
-    `sclarfPalm`,
-    `sclarfDead`,
-    `sclarfSophisticated`,
-    `sclarfLUL`,
-    `sclarfHiss`,
-    `sclarfHearts`,
-    `sclarfDEEP`,
-    `sclarfWave`,
-    `sclarfSleep`
-]
-const tromEmotes = [
-    `e1ectr4Lfg`,
-    `e1ectr4Pikadance`,
-    `e1ectr4Tromadance`,
-    `e1ectr4Coop`,
-    `e1ectr4Ocha`,
-    `e1ectr4Hello`,
-    `e1ectr4Hi`,
-    `e1ectr4Bye`,
-    `e1ectr4Laugh`,
-    `e1ectr4Wazzah`,
-    `e1ectr4Smile`,
-    `e1ectr4Devil`,
-    `e1ectr4Ram`,
-    `e1ectr4Salute`,
-    `e1ectr4Lemfresh`,
-    `e1ectr4Moses`,
-    `e1ectr4Josie`,
-    `e1ectr4Malort`,
-    `e1ectr4Kim`
-]
-const domoEmotes = [
-    `domoni6Really`,
-    `domoni6Bingo`,
-    `domoni6ChefHey`,
-    `domoni6MeincSus`,
-    `domoni6Sneeze`,
-    `domoni6Dum`,
-    `domoni6Love`,
-    `domoni6Boom`
-]
-
-// Updated list of StreamElements channel redemptions
-const jpegRedeems = [
-    `!bigshot`,
-    `!keygen`,
-    `!spotion`,
-    `!thebigone`,
-    `!bowtie`,
-    `!neo`,
-    `!workout`,
-    `!suscr1ber`,
-    `!mario`,
-    `!piano`,
-    `!slip`,
-    `!hamster`,
-    `!alarm`,
-    `!waste`,
-    `!25k`,
-    `!crabrave`,
-    `!confusion`,
-    `!soulja`,
-    `!breakdance`,
-    `!gigachad`,
-    `!4d3d3d3`,
-    `!feedcat`,
-    `!polarbear`,
-    `!graph`,
-    `!checkmate`,
-    `!shutup`,
-    `!doggo`,
-    `!marshmallows`,
-    `!chocotaco`,
-    `!rat`,
-    `!hamburger`,
-    `!chickendance`,
-    `!come`,
-    `!gauntlet`,
-    `!princess`,
-    `!rubbermaid`,
-    `!peachsyrup`,
-    `!skype`,
-    `!ohhimark`,
-    `!dripgoku`,
-    `!gelatin`,
-    `!cheesecake`,
-    `!fancam`,
-    `!nicecock`,
-    `!lieblingsfach`,
-    `!lavish`,
-    `!shootme`,
-    `!disk`,
-    `!flagranterror`,
-    `!technology`,
-    `!bingchilling`,
-    `!flagranterror`,
-    `!litlizards`,
-    `!raccoon`,
-    `!gay`,
-    `!turbomaxwaste`
-]
-const sclarfRedeems = [
-    `!balls`,
-    `!hat`,
-    `!no`,
-    `!omg`,
-    `!why`,
-    `!yes`
-]
-const tromaRedeems = [
-    `!winner`,
-    `!soda`,
-    `!pipe`,
-    `!nope`,
-    `!nice`,
-    `!n64`,
-    `!bork`,
-    `!maxwell`
-]
-
-// Hangman variables
-let hangmanListening = false
-let hangmanSignup = false
-let answer = ``
-const spaces = []
-const players = []
-const guessedLetters = []
-let chances = 6
-let currentPlayer = 0
-
 function onMessageHandler(chatroom, tags, message, self) {
     const msg = cleanupSpaces(message)
     const username = tags.username
@@ -493,6 +536,8 @@ function onMessageHandler(chatroom, tags, message, self) {
     const channel = chatroom.slice(1)
     const color = tags.color
     const firstMsg = tags['first-msg']
+    const hangman = lemonyFresh[channel].hangman
+
 
     // Command and arguments parser
     const args = msg.split(` `)
@@ -553,9 +598,9 @@ function onMessageHandler(chatroom, tags, message, self) {
     }
 
     // For testing/debugging
-    if (msg === `show`) { console.log(users, `tempCmds:`, tempCmds) }
+    if (msg === `show`) { console.log(`lemonyFresh:`, lemonyFresh, `users:`, users, `tempCmds:`, tempCmds) }
     if (msg === `tags`) { console.log(tags) }
-    if (command === `!ping`) { ping(args.length ? args : lemonyFresh) }
+    if (command === `!ping`) { ping(args.length ? args : lemonyFresh.channels) }
 
     if (command === `test` && !isNaN(args[0])) { return rollFunNumber(chatroom, channel, tags, username, msg.split(` `), Number(args[0])) }
     // if (command === `!test`) { return apiTest() }
@@ -584,22 +629,22 @@ function onMessageHandler(chatroom, tags, message, self) {
 
     // Start a game of Hangman (if one isn't already in progress)
     if (command === `!hangman`) {
-        if (hangmanListening) {
-            return hangmanSignup
+        if (hangman.listening) {
+            return hangman.signup
                 ? talk(chatroom, `A game of Hangman is starting, type !play to join!`)
                 : talk(chatroom, `A game of Hangman is already in progress! It's currently ${users[players[currentPlayer]].displayName}'s turn.`)
         } else {
-            hangmanInit()
-            return hangmanAnnounce(chatroom, channel)
+            hangmanInit(hangman)
+            return hangmanAnnounce(chatroom)
         }
     }
 
     // Join a game of Hangman (during the 30-second signup window)
     if (command === `!play`
-        && !players.includes(username)) {
-        if (hangmanSignup) {
-            players.push(username)
-        } else if (hangmanListening && !players.includes(username)) {
+        && !hangman.players.includes(username)) {
+        if (hangman.signup) {
+            hangman.players.push(username)
+        } else if (hangman.listening && !hangman.players.includes(username)) {
             return talk(chatroom, `Sorry ${displayName}, the game has already started, but we'll get you in the next round! :)`)
         }
     }
@@ -666,7 +711,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     // !msgcount (Show a user's last message)
     if (command === `!msgcount`) { return getMessageCount(chatroom, users[target] || users[username]) }
 
-    // !yell across all lemonyFresh chatrooms
+    // !yell across all lemonyFresh.channels
     if (command === `!yell`) { return yell(users[username], msg) }
 
     // !friend(s) count
@@ -1242,25 +1287,24 @@ function onMessageHandler(chatroom, tags, message, self) {
         }
     }
 
-    if (hangmanListening) {
-        if (hangmanSignup) {
-        } else if (msg.match(/^[a-z]$/i) && username === players[currentPlayer]) {
-            return checkLetter(chatroom, channel, username, msg.toUpperCase())
-        } else if (msg.split(` `).length === 1 && msg.split(` `)[0].length === answer.length && username === players[currentPlayer] && msg.match(/^[a-z]+$/i)) {
+    if (hangman.listening && !hangman.signup) {
+        if (msg.match(/^[a-z]$/i) && username === hangman.players[hangman.currentPlayer]) {
+            return checkLetter(chatroom, username, msg.toUpperCase())
+        } else if (msg.split(` `).length === 1 && msg.split(` `)[0].length === hangman.answer.length && username === hangman.players[hangman.currentPlayer] && msg.match(/^[a-z]+$/i)) {
             if (DEBUG_MODE) { console.log(`> Word guess attempt was made!`) }
-            if (msg.toLowerCase() === answer) {
+            if (msg.toLowerCase() === hangman.answer) {
                 return solvePuzzle(chatroom, username)
             } else {
-                chances--
-                if (chances === 0) {
-                    hangmanListening = false
-                    return talk(chatroom, `Sorry ${displayName}, "${msg.toLowerCase()}" wasn't the answer! The answer was "${answer}". Game over! :(`)
+                hangman.chances--
+                if (hangman.chances === 0) {
+                    hangman.listening = false
+                    return talk(chatroom, `Sorry ${displayName}, "${msg.toLowerCase()}" wasn't the answer! The answer was "${hangman.answer}". Game over! :(`)
                 }
-                currentPlayer++
-                if (currentPlayer === players.length) { currentPlayer = 0 }
-                const newPlayer = users[players[currentPlayer]].displayName
-                talk(chatroom, `Sorry ${displayName}, "${msg.toLowerCase()}" wasn't the answer! Minus one chance... :( Now it's your turn, ${newPlayer}!`)
-                const statusMsg = `${spaces.join(` `)} (chances: ${chances})`
+                hangman.currentPlayer++
+                if (hangman.currentPlayer === hangman.players.length) { hangman.currentPlayer = 0 }
+                const nextPlayer = users[hangman.players[hangman.currentPlayer]].displayName
+                talk(chatroom, `Sorry ${displayName}, "${msg.toLowerCase()}" wasn't the answer! Minus one chance... :( Now it's your turn, ${nextPlayer}!`)
+                const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
                 const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
                 setTimeout(() => talk(chatroom, statusMsg), delay)
             }
@@ -1380,12 +1424,11 @@ function rollFunNumber(chatroom, channel, tags, username, msgArr, funNumber) {
     // Activate random redeem
     else if (funNumber === 3) {
         const redeems = []
-        if (chatroom === e1ectroma) { redeems.push(...tromaRedeems) }
-        else if (chatroom === jpegstripes) { redeems.push(...jpegRedeems) }
-        else if (chatroom === sclarf) { redeems.push(...sclarfRedeems) }
-        else if (chatroom === domonintendo1) {
+        if (lemonyFresh[channel].redeems.length === 0) {
             while (randomUser === BOT_USERNAME) { randomUser = getRandomUser() }
             redeems.push(`!slap ${randomUser}`)
+        } else {
+            redeems.push(...lemonyFresh[channel].redeems)
         }
         if (DEBUG_MODE) { console.log(redeems) }
         const redeem = Math.floor(Math.random() * redeems.length)
@@ -1430,81 +1473,91 @@ async function getRandomWord() {
     return data[0]
 }
 
-async function hangmanInit() {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> hangmanInit()${resetTxt}`) }
-    hangmanListening = true
-    answer = await getRandomWord()
-    spaces.length = answer.length
-    spaces.fill(`_`)
-    players.length = 0
-    guessedLetters.length = 0
-    chances = 6
-    currentPlayer = 0
+async function hangmanInit(hangman) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> hangmanInit(hangman: ${typeof hangman})${resetTxt}`) }
+
+    hangman.listening = true
+    hangman.answer = await getRandomWord()
+    hangman.spaces.length = hangman.answer.length
+    hangman.spaces.fill(`_`)
+    hangman.players.length = 0
+    hangman.guessedLetters.length = 0
+    hangman.chances = 6
+    hangman.currentPlayer = 0
 }
 
-function hangmanAnnounce(chatroom, channel) {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> hangmanAnnounce(chatroom: ${chatroom}, channel: ${channel})${resetTxt}`) }
-    hangmanSignup = true
+function hangmanAnnounce(chatroom) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> hangmanAnnounce(chatroom: ${chatroom})${resetTxt}`) }
+    const channel = chatroom.slice(1)
+    const hangman = lemonyFresh[channel].hangman
+
+    hangman.signup = true
     talk(chatroom, `I'm thinking of a word... Type !play in the next 30 seconds to join in a game of Hangman! :)`)
     setTimeout(() => {
         if (DEBUG_MODE) { console.log(`${boldTxt}> 30 seconds has elapsed, signup window closed${resetTxt}`) }
-        hangmanSignup = false
-        if (players.length === 0) {
-            hangmanListening = false
+        hangman.signup = false
+        if (hangman.players.length === 0) {
+            hangman.listening = false
             talk(chatroom, `No players signed up for Hangman! :(`)
         } else {
-            talk(chatroom, `${players.length} player${players.length === 1 ? `` : `s`} signed up for Hangman! You go first, ${users[players[0]].displayName}! :)`)
-            const statusMsg = `${spaces.join(` `)} (chances: ${chances})`
+            talk(chatroom, `${hangman.players.length} player${hangman.players.length === 1 ? `` : `s`} signed up for Hangman! You go first, ${users[hangman.players[0]].displayName}! :)`)
+            const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
             const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
             setTimeout(() => talk(chatroom, statusMsg), delay)
         }
     }, 30000)
 }
 
-function checkLetter(chatroom, channel, username, guess) {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> checkLetter(chatroom: ${chatroom}, channel: ${channel}, username: ${username}, guess: ${guess})${resetTxt}`) }
+function checkLetter(chatroom, username, guess) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> checkLetter(chatroom: ${chatroom}, username: ${username}, guess: ${guess})${resetTxt}`) }
+    const channel = chatroom.slice(1)
+    const hangman = lemonyFresh[channel].hangman
     const player = users[username].displayName
-    if (guessedLetters.includes(guess)) {
-        const listOfLetters = guessedLetters.length === 1
-            ? guessedLetters[0]
-            : guessedLetters.length === 2
-                ? guessedLetters.join(` and `)
-                : guessedLetters.slice(0, guessedLetters.length - 1).join(`, `) + `, and ` + guessedLetters[guessedLetters.length - 1]
-        return talk(chatroom, `${player}, the letter${guessedLetters.length === 1 ? `` : `s`} ${listOfLetters} ${guessedLetters.length === 1 ? `has` : `have`} already been guessed - try again!`)
+
+    if (hangman.guessedLetters.includes(guess)) {
+        const listOfLetters = hangman.guessedLetters.length === 1
+            ? hangman.guessedLetters[0]
+            : hangman.guessedLetters.length === 2
+                ? hangman.guessedLetters.join(` and `)
+                : hangman.guessedLetters.slice(0, hangman.guessedLetters.length - 1).join(`, `) + `, and ` + hangman.guessedLetters[hangman.guessedLetters.length - 1]
+        return talk(chatroom, `${player}, the letter${hangman.guessedLetters.length === 1 ? `` : `s`} ${listOfLetters} ${hangman.guessedLetters.length === 1 ? `has` : `have`} already been guessed - try again!`)
     }
-    guessedLetters.push(guess)
-    currentPlayer++
-    if (currentPlayer === players.length) { currentPlayer = 0 }
-    const newPlayer = users[players[currentPlayer]].displayName
-    if (answer.includes(guess.toLowerCase())) {
-        for (const [i, letter] of answer.split(``).entries()) {
-            if (letter === guess.toLowerCase()) { spaces[i] = guess }
+    hangman.guessedLetters.push(guess)
+    hangman.currentPlayer++
+    if (hangman.currentPlayer === hangman.players.length) { hangman.currentPlayer = 0 }
+    const nextPlayer = users[hangman.players[hangman.currentPlayer]].displayName
+    if (hangman.answer.includes(guess.toLowerCase())) {
+        for (const [i, letter] of hangman.answer.split(``).entries()) {
+            if (letter === guess.toLowerCase()) { hangman.spaces[i] = guess }
         }
-        if (!spaces.includes(`_`)) {
+        if (!hangman.spaces.includes(`_`)) {
             return solvePuzzle(chatroom, username)
         }
-        talk(chatroom, `Good job ${player}, ${guess} was in the word! :) Now it's your turn, ${newPlayer}!`)
+        talk(chatroom, `Good job ${player}, ${guess} was in the word! :) Now it's your turn, ${nextPlayer}!`)
     } else {
-        chances--
-        if (chances === 0) {
-            hangmanListening = false
-            return talk(chatroom, `Sorry ${player}, ${guess} wasn't in the word! The answer was "${answer}". Game over! :(`)
+        hangman.chances--
+        if (hangman.chances === 0) {
+            hangman.listening = false
+            return talk(chatroom, `Sorry ${player}, ${guess} wasn't in the word! The answer was "${hangman.answer}". Game over! :(`)
         }
-        talk(chatroom, `Sorry ${player}, ${guess} wasn't in the word! Minus one chance... :( Now it's your turn, ${newPlayer}!`)
+        talk(chatroom, `Sorry ${player}, ${guess} wasn't in the word! Minus one chance... :( Now it's your turn, ${nextPlayer}!`)
     }
-    const statusMsg = `${spaces.join(` `)} (chances: ${chances})`
+    const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
     const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
     setTimeout(() => talk(chatroom, statusMsg), delay)
 }
 
 function solvePuzzle(chatroom, username) {
-    hangmanListening = false
-    return talk(chatroom, `Congratulations ${users[username].displayName}, you solved the puzzle! The answer was: "${answer}" :D`)
+    if (DEBUG_MODE) { console.log(`${boldTxt}> solvePuzzle(chatroom: ${chatroom}, username: ${username})${resetTxt}`) }
+    const hangman = lemonyFresh[chatroom.slice(1)].hangman
+
+    hangman.listening = false
+    return talk(chatroom, `Congratulations ${users[username].displayName}, you solved the puzzle! The answer was: "${hangman.answer}" :D`)
 }
 
 function rockPaperScissors(chatroom, username, arg) {
     const rps = [`rock`, `paper`, `scissors`]
-    if (DEBUG_MODE) { console.log(`${boldTxt}> checkLetter(rockPaperScissors: ${chatroom}, username: ${username}, arg: ${arg}) ${rps.includes(arg)}${resetTxt}`) }
+    if (DEBUG_MODE) { console.log(`${boldTxt}> rockPaperScissors(rockPaperScissors: ${chatroom}, username: ${username}, arg: ${arg}) ${rps.includes(arg)}${resetTxt}`) }
     const botChoice = rps[Math.floor(Math.random() * rps.length)]
     const playerChoice = rps.includes(arg) ? arg : rps[Math.floor(Math.random() * rps.length)]
     const name = users[username].displayName
@@ -1560,7 +1613,7 @@ function getMessageCount(chatroom, user) {
 }
 
 function yell(user, msg) {
-    for (const chatroom of lemonyFresh) {
+    for (const chatroom of lemonyFresh.channels) {
         talk(chatroom, `${user.displayName} says: ${msg.substring(6)}`)
     }
 }
