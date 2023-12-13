@@ -1322,39 +1322,52 @@ function onMessageHandler(chatroom, tags, message, self) {
             }
         }
 
+        // Look for emote streak (if bot is subbed) - TESTING
+        for (const member of lemonyFresh.channels) {
+            const chan = member.substring(1)
+            if (users[BOT_USERNAME]?.[chan]?.sub) {
+                for (const str of lemonyFresh[chan].emotes) {
+                if (msg.includes(str)) {
+                        checkEmoteStreak(chatroom, lemonyFresh[chan], channel)
+                        // break // ?
+                    }
+                }
+            }
+        }
+
         // Look for emote streak (if bot is subbed)
-        if (users[BOT_USERNAME]?.[`sclarf`]?.sub) {
-            for (const str of sclarfEmotes) {
-                if (msg.includes(str)) {
-                    checkEmoteStreak(chatroom, sclarfEmotes, channel)
-                    break
-                }
-            }
-        }
-        if (users[BOT_USERNAME]?.[`domonintendo1`]?.sub) {
-            for (const str of domoEmotes) {
-                if (msg.includes(str)) {
-                    checkEmoteStreak(chatroom, domoEmotes, channel)
-                    break
-                }
-            }
-        }
-        if (users[BOT_USERNAME]?.[`e1ectroma`]?.sub) {
-            for (const str of tromEmotes) {
-                if (msg.includes(str)) {
-                    checkEmoteStreak(chatroom, tromEmotes, channel)
-                    break
-                }
-            }
-        }
-        if (users[BOT_USERNAME]?.[`jpegstripes`]?.sub) {
-            for (const str of jpegEmotes) {
-                if (msg.includes(str)) {
-                    checkEmoteStreak(chatroom, jpegEmotes, channel)
-                    break
-                }
-            }
-        }
+        // if (users[BOT_USERNAME]?.[`sclarf`]?.sub) {
+        //     for (const str of lemonyFresh.sclarf.emotes) {
+        //         if (msg.includes(str)) {
+        //             checkEmoteStreak(chatroom, sclarfEmotes, channel)
+        //             break
+        //         }
+        //     }
+        // }
+        // if (users[BOT_USERNAME]?.[`domonintendo1`]?.sub) {
+        //     for (const str of lemonyFresh.domonintendo1.emotes) {
+        //         if (msg.includes(str)) {
+        //             checkEmoteStreak(chatroom, domoEmotes, channel)
+        //             break
+        //         }
+        //     }
+        // }
+        // if (users[BOT_USERNAME]?.[`e1ectroma`]?.sub) {
+        //     for (const str of lemonyFresh.e1ectroma.emotes) {
+        //         if (msg.includes(str)) {
+        //             checkEmoteStreak(chatroom, tromEmotes, channel)
+        //             break
+        //         }
+        //     }
+        // }
+        // if (users[BOT_USERNAME]?.[`jpegstripes`]?.sub) {
+        //     for (const str of lemonyFresh.jpegstripes.emotes) {
+        //         if (msg.includes(str)) {
+        //             checkEmoteStreak(chatroom, jpegEmotes, channel)
+        //             break
+        //         }
+        //     }
+        // }
 
         // Looking for a message to be repeated by at least two other users
         let streakCount = 0
