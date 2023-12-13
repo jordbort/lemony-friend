@@ -2322,5 +2322,6 @@ function onConnectedHandler(addr, port) {
     FIRST_CONNECTION
         ? console.log(`[${time}] 🍋 Connected to ${addr}:${port}`)
         : console.log(`[${time}] 🍋 Re-connected to ${addr}:${port}`)
+    FIRST_CONNECTION = false
     sayOnlineMsg = true
 }
