@@ -11,11 +11,11 @@ const ppuyya = process.env.CHANNEL_5
 
 const lemonyFresh = {
     channels: [
-    jpegstripes,
-    sclarf,
-    e1ectroma,
-    domonintendo1,
-    ppuyya
+        jpegstripes,
+        sclarf,
+        e1ectroma,
+        domonintendo1,
+        ppuyya
     ],
     jpegstripes: {
         emotes: [
@@ -538,6 +538,11 @@ function onMessageHandler(chatroom, tags, message, self) {
     const firstMsg = tags['first-msg']
     const hangman = lemonyFresh[channel].hangman
 
+    process.on('uncaughtException', (err) => {
+        talk(chatroom, `Oops, I just crashed! ${users[BOT_USERNAME].sclarf?.sub ? `sclarfDead` : `>(`} ${err.toString()}`)
+        console.log(err)
+        process.exit(1)
+    })
 
     // Command and arguments parser
     const args = msg.split(` `)
@@ -1327,7 +1332,7 @@ function onMessageHandler(chatroom, tags, message, self) {
             const chan = member.substring(1)
             if (users[BOT_USERNAME]?.[chan]?.sub) {
                 for (const str of lemonyFresh[chan].emotes) {
-                if (msg.includes(str)) {
+                    if (msg.includes(str)) {
                         checkEmoteStreak(chatroom, lemonyFresh[chan], channel)
                         // break // ?
                     }
