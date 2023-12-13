@@ -602,7 +602,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     if (msg === `tags`) { console.log(tags) }
     if (command === `!ping`) { ping(args.length ? args : lemonyFresh.channels) }
 
-    if (command === `test` && !isNaN(args[0])) { return rollFunNumber(chatroom, channel, tags, username, msg.split(` `), Number(args[0])) }
+    if (command === `test` && !isNaN(args[0])) { return rollFunNumber(chatroom, tags, username, msg.split(` `), Number(args[0])) }
     // if (command === `!test`) { return apiTest() }
 
     // If first message since being away
@@ -1391,12 +1391,13 @@ function onMessageHandler(chatroom, tags, message, self) {
     }
 
     // *** FUN NUMBER! ***
-    if (users[username][channel].msgCount % funNumberCount === 0) { return rollFunNumber(chatroom, channel, tags, username, msg.split(` `), Math.floor(Math.random() * funNumberTotal)) }
+    if (users[username][channel].msgCount % funNumberCount === 0) { return rollFunNumber(chatroom, tags, username, msg.split(` `), Math.floor(Math.random() * funNumberTotal)) }
 }
 
 // Helper functions
-function rollFunNumber(chatroom, channel, tags, username, msgArr, funNumber) {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> rollFunNumber(channel: ${chatroom.substring(1)}, tags: ${typeof tags}, username: ${username}, msgArr.length: ${msgArr.length}, funNumber: ${funNumber})${resetTxt}`) }
+function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> rollFunNumber(chatroom: ${chatroom}, tags: ${typeof tags}, username: ${username}, msgArr.length: ${msgArr.length}, funNumber: ${funNumber})${resetTxt}`) }
+    const channel = chatroom.substring(1)
 
     let randomUser = getRandomUser()
     const randCurrency = Math.floor(Math.random() * currencies.length)
@@ -2199,14 +2200,15 @@ function checkEmoteStreak(chatroom, emoteArr, channel) {
         }
         if (emoteStreakCount >= 4) {
             delayListening()
-            return emoteReply(chatroom, channel, emoteArr)
+            return emoteReply(chatroom, emoteArr)
         }
     }
     // if (DEBUG_MODE) { talk(chatroom, `Looking for ${emoteArr[0].substring(0, 4)} emotes... ${emoteStreakCount}/4 messages - ${emoteStreakUsers.join(`, `)}`) }
 }
 
-function emoteReply(chatroom, channel, emoteArr) {
-    if (DEBUG_MODE) { console.log(`${boldTxt}> emoteReply(chatroom: ${chatroom}, channel: ${channel}, emoteArr: ${emoteArr})${resetTxt}`) }
+function emoteReply(chatroom, emoteArr) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> emoteReply(chatroom: ${chatroom}, emoteArr: ${emoteArr})${resetTxt}`) }
+    const channel = chatroom.substring(1)
     const popularEmotes = Array(emoteArr.length).fill(0)
     for (const [i, val] of emoteArr.entries()) {
         for (const user in users) {
