@@ -539,7 +539,9 @@ function onMessageHandler(chatroom, tags, message, self) {
     const hangman = lemonyFresh[channel].hangman
 
     process.on('uncaughtException', (err) => {
-        talk(chatroom, `Oops, I just crashed! ${users[BOT_USERNAME].sclarf?.sub ? `sclarfDead` : `>(`} ${err.toString()}`)
+        let errorPosition = err.stack.split(`\n`)[1].split(`/`)[0].substring(4) + err.stack.split(`\n`)[1].split(`/`)[err.stack.split(`\n`)[1].split(`/`).length - 1].split(`:`).slice(1).join(`:`)
+        if (errorPosition.startsWith(`at client.`)) { errorPosition = `at ` + errorPosition.substring(10) }
+        talk(chatroom, `Oops, I just crashed! ${users[BOT_USERNAME].sclarf?.sub ? `sclarfDead` : `>(`} ${err.message} ${errorPosition}`)
         console.log(err)
         process.exit(1)
     })
