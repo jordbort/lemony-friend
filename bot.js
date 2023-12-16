@@ -2,12 +2,15 @@ require(`dotenv`).config()
 const tmi = require('tmi.js')
 const BOT_USERNAME = process.env.BOT_USERNAME
 const OAUTH_TOKEN = process.env.OAUTH_TOKEN
+const CLIENT_ID = process.env.CLIENT_ID
+const CLIENT_SECRET = process.env.CLIENT_SECRET
+let ACCESS_TOKEN = process.env.ACCESS_TOKEN
 
-const jpegstripes = process.env.CHANNEL_1
-const sclarf = process.env.CHANNEL_2
-const e1ectroma = process.env.CHANNEL_3
-const domonintendo1 = process.env.CHANNEL_4
-const ppuyya = process.env.CHANNEL_5
+const jpegstripes = `#jpegstripes`
+const sclarf = `#sclarf`
+const e1ectroma = `#e1ectroma`
+const domonintendo1 = `#domonintendo1`
+const ppuyya = `#ppuyya`
 
 const lemonyFresh = {
     channels: [
@@ -2392,14 +2395,51 @@ function printLemon() {
     console.log(noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + bkSq + bkSq + bkSq + bkSq + bkSq)
 }
 
-// async function apiTest() {
-//     const response = await fetch("https://api.twitch.tv/helix/analytics/games", {
-//         headers: {
-//             "Authorization": `Bearer ${OAUTH_TOKEN}`,
-//         }
-//     })
-//     console.log(response)
-// }
+async function getTwitchUser(chatroom, username) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> getTwitchUser(chatroom: ${chatroom}, username: ${username})${resetTxt}`) }
+
+    const endpoint = `https://api.twitch.tv/helix/users?login=${username}`
+    const authorization = `Bearer ${ACCESS_TOKEN}`
+    const headers = {
+        authorization,
+        "Client-Id": CLIENT_ID
+    }
+
+    const response = await fetch(endpoint, { headers })
+    const userInfo = await response.json()
+
+    return `message` in userInfo
+        ? talk(chatroom, userInfo.message)
+        : userInfo.data.length === 0
+            ? talk(chatroom, `No user ${username} was found! :(`)
+            : userInfo.data[0]
+}
+
+async function getTwitchChannel(chatroom, broadcaster_id) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> getTwitchChannel(broadcaster_id: ${broadcaster_id})${resetTxt}`) }
+
+    const endpoint = `https://api.twitch.tv/helix/channels?broadcaster_id=${broadcaster_id}`
+    const authorization = `Bearer ${ACCESS_TOKEN}`
+    const headers = {
+        authorization,
+        "Client-Id": CLIENT_ID
+    }
+
+    const response = await fetch(endpoint, { headers })
+    const channelnfo = await response.json()
+
+    return channelnfo?.data[0] || talk(chatroom, `There was a problem getting the channel info! :(`)
+}
+
+async function getTwitchAuthorization() {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> getTwitchAuthorization()${resetTxt}`) }
+    const url = `https://id.twitch.tv/oauth2/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&grant_type=client_credentials`;
+    const response = await fetch(url, { method: "POST" })
+    const token = await response.json()
+    console.log(`${grayTxt}${token}${resetTxt}`)
+    ACCESS_TOKEN = token.access_token
+}
+
 
 function onConnectedHandler(addr, port) {
     FIRST_CONNECTION && printLemon()
