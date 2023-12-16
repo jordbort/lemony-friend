@@ -751,6 +751,8 @@ ${redBg}lemony_friend has died.${resetTxt}`)
 
     // !greet a user or whoever
     if (command === `!greet`) {
+        // If !greet all
+        if (args[0] === `all`) { return handleGreetAll(chatroom) }
         // If one (known) username is used, greet normally
         if (target && !args[1]) { return handleGreet(chatroom, users[target]) }
         // If multiple args are used
@@ -2103,6 +2105,38 @@ function handleMassGreet(chatroom, arr) {
         str.toLowerCase() in users
             ? response.push(`${randomGreeting} ${users[str.toLowerCase()].displayName} ${randomEmote}`)
             : response.push(`${randomGreeting} ${str} ${randomEmote}`)
+    }
+    talk(chatroom, response.join(` `))
+}
+
+function handleGreetAll(chatroom) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> handleGreetAll(chatroom: ${chatroom})${resetTxt}`) }
+    const channel = chatroom.substring(1)
+    const usersToGreet = []
+    const response = []
+    const greetings = [
+        `hello`,
+        `howdy`,
+        `hey`,
+        `hi`
+    ]
+    const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)]
+    const emotes = [
+        `HeyGuys`,
+        `:)`
+    ]
+    if (users[BOT_USERNAME]?.[`sclarf`]?.sub) { emotes.push(`sclarfWobble`, `sclarfPls`, `sclarfPog`, `sclarfHowdy`, `sclarfDog`, `sclarfHearts`) }
+    if (users[BOT_USERNAME]?.[`domonintendo1`]?.sub) { emotes.push(`domoni6ChefHey`, `domoni6Sneeze`, `domoni6Love`) }
+    if (users[BOT_USERNAME]?.[`e1ectroma`]?.sub) { emotes.push(`e1ectr4Pikadance`, `e1ectr4Tromadance`, `e1ectr4Hello`, `e1ectr4Hi`, `e1ectr4Smile`, `e1ectr4Ram`, `e1ectr4Salute`, `e1ectr4Lemfresh`) }
+    if (users[BOT_USERNAME]?.[`jpegstripes`]?.sub) { emotes.push(`jpegstBamJAM`, `jpegstKylePls`, `jpegstJulian`, `jpegstHeyGuys`, `jpegstSlay`) }
+    const randomEmote = emotes[Math.floor(Math.random() * emotes.length)]
+    for (const user in users) {
+        if (user !== BOT_USERNAME && channel in users[user]) {
+            usersToGreet.push(users[user].displayName)
+        }
+    }
+    for (const user of usersToGreet) {
+        response.push(`${randomGreeting} ${user} ${randomEmote}`)
     }
     talk(chatroom, response.join(` `))
 }
