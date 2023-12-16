@@ -649,6 +649,10 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         talk(chatroom, `Commands: !greet => Say hi to one or more people, !bye => Say goodnight to someone, !hangman => Start a game of Hangman, !yell => Chat across Lemony Fresh ${users[BOT_USERNAME].e1ectroma?.sub ? `e1ectr4Lemfresh ` : `🍋️`}, !away => (Optionally add an away message), !tempcmd => Make your own command! :)`)
     }
 
+    if (command === `!so` && toUser) {
+        return handleShoutOut(chatroom, toUser.toLowerCase())
+    }
+
     // Start a game of Hangman (if one isn't already in progress)
     if (command === `!hangman`) {
         if (hangman.listening) {
@@ -2294,7 +2298,6 @@ function checkEmoteStreak(chatroom, emoteArr, channel) {
             return emoteReply(chatroom, emoteArr)
         }
     }
-    // if (DEBUG_MODE) { talk(chatroom, `Looking for ${emoteArr[0].substring(0, 4)} emotes... ${emoteStreakCount}/4 messages - ${emoteStreakUsers.join(`, `)}`) }
 }
 
 function emoteReply(chatroom, emoteArr) {
@@ -2440,6 +2443,12 @@ async function getTwitchAuthorization() {
     ACCESS_TOKEN = token.access_token
 }
 
+async function handleShoutOut(chatroom, user) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> handleShoutOut(chatroom: ${chatroom}, user: ${user})${resetTxt}`) }
+    const twitchUser = await getTwitchUser(chatroom, user)
+    const stream = await getTwitchChannel(chatroom, twitchUser.id)
+    talk(chatroom, `Let's give a shoutout to ${stream.broadcaster_name}! They were last playing ${stream.game_name}${twitchUser.broadcaster_type ? ` and are a Twitch ${twitchUser.broadcaster_type}!`: `.`} Follow them here: https://www.twitch.tv/${stream.broadcaster_login} :)`)
+}
 
 function onConnectedHandler(addr, port) {
     FIRST_CONNECTION && printLemon()
