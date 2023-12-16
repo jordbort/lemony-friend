@@ -356,20 +356,6 @@ const numbers = [
     `forty-eight`,
     `forty-nine`,
 ]
-const onlineMsg = [
-    `Let's see how long before I crash`,
-    `🍋️`,
-    `don't mind me`,
-    `(just rebooting again)`,
-    `(Windows 95 startup sound plays)`,
-    `I'm onl`,
-    `reconnecting...`,
-    `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`,
-    `(there ${Object.keys(tempCmds).length === 1 ? `is` : `are`} ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`,
-    `Debug mode is currently ${DEBUG_MODE ? `ON` : `OFF`}! :)`,
-    `Let's play Hangman! :)`,
-    `whatsUpPrefixPattern has been updated to /^wh?[au]t?['"]*s*[^\w\s]*$/i`
-]
 const currencies = [
     {
         name: `dollars`,
@@ -599,7 +585,22 @@ function onMessageHandler(chatroom, tags, message, self) {
     \*********/
 
     if (sayOnlineMsg) {
-        const response = onlineMsg[Math.floor(Math.random() * onlineMsg.length)]
+        const onlineMsgs = [
+            `Let's see how long before I crash`,
+            `🍋️`,
+            `don't mind me`,
+            `(just rebooting again)`,
+            `(Windows 95 startup sound plays)`,
+            `I'm onl`,
+            `reconnecting...`,
+            `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`,
+            `(there ${Object.keys(tempCmds).length === 1 ? `is` : `are`} ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`,
+            `Debug mode is currently ${DEBUG_MODE ? `ON` : `OFF`}! :)`,
+            `Let's play Hangman! :)`,
+            `nowHasPattern has been updated to /now ha(?:s|ve) \[*(\d*)/i which makes use of capturing and non-capturing groups :)`,
+            `${channel} has ${lemonyFresh[channel].emotes.length} emote${lemonyFresh[channel].emotes.length === 1 ? `` : `s`}!`
+        ]
+        const response = onlineMsgs[Math.floor(Math.random() * onlineMsgs.length)]
         sayOnlineMsg = false
         return talk(chatroom, response)
     }
