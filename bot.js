@@ -1863,6 +1863,7 @@ function getRandomChannelMessage(user) {
 }
 
 function lemonify(str) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> lemonify(str: ${str})${resetTxt}`) }
     const words = str.split(` `)
     const reservedKeywords = [
         `a`,
@@ -1933,7 +1934,9 @@ function lemonify(str) {
     for (let i = words.length - 1; i >= 0; i--) {
         const number = Number(words[i])
         const append = []
-        while (words[i + 1] && words[i + 1].match(/[^a-zA-Z]$/)) {
+
+        // Shaving non-alphanumeric characters from the end of the next word (the word it might decide to replace with "lemon")
+        while (words[i + 1] && words[i + 1].match(/[^a-z0-9]$/i)) {
             append.push(words[i + 1][words[i + 1].length - 1])
             words[i + 1] = words[i + 1].substring(0, words[i + 1].length - 1)
         }
@@ -1959,6 +1962,7 @@ function lemonify(str) {
         // Definitely plural
         else if ((
             ((number || number === 0) && number !== 1)
+            // If a number spelled out, or "these/those/many/some"
             || [
                 `these`,
                 `those`,
