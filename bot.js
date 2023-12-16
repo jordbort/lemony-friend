@@ -531,6 +531,17 @@ function onMessageHandler(chatroom, tags, message, self) {
         console.log(err)
         process.exit(1)
     })
+    if (msg === `lemony_friend -kill`) {
+        talk(chatroom, `I have gone offline! ResidentSleeper`)
+        process.exit(0)
+    }
+    if (username === `undertalebot` && msg.match(/Lemony_friend! Stay determined.../)) {
+        console.log(`ReferenceError: lemony_friend is not defined
+    at deathCheck ${grayTxt}(/home/jordan/Documents/Twitch-UndertaleBot/${resetTxt}bot.js:1588:26)
+    at Object.<anonymous> ${grayTxt}(/home/jordan/Documents/Twitch-UndertaleBot/${resetTxt}bot.js:1591:24)
+${redBg}lemony_friend has died.${resetTxt}`)
+        process.exit(0)
+    }
 
     // Command and arguments parser
     const args = msg.split(` `)
