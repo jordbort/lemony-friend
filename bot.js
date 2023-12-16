@@ -2105,7 +2105,7 @@ function handleMassGreet(chatroom, arr) {
     if (users[BOT_USERNAME]?.[`jpegstripes`]?.sub) { emotes.push(`jpegstBamJAM`, `jpegstKylePls`, `jpegstJulian`, `jpegstHeyGuys`, `jpegstSlay`) }
     const randomEmote = emotes[Math.floor(Math.random() * emotes.length)]
     for (let str of arr) {
-        if (str.startsWith(`@`)) { str = str.substring(1) }
+        while (str.startsWith(`@`)) { str = str.substring(1) }
         str.toLowerCase() in users
             ? response.push(`${randomGreeting} ${users[str.toLowerCase()].displayName} ${randomEmote}`)
             : response.push(`${randomGreeting} ${str} ${randomEmote}`)
@@ -2350,7 +2350,11 @@ function talk(chatroom, msg) {
     console.log(`${yellowBg}[${time}] <${chatroom.slice(1)}> ${BOT_USERNAME}: ${msg}${resetTxt}`)
 }
 
-function getToUser(str) { return str.startsWith(`@`) ? str.substring(1) : str }
+function getToUser(str) {
+    let toUser = str
+    while (toUser.startsWith(`@`)) { toUser = toUser.substring(1) }
+    return toUser
+}
 
 function printLemon() {
     const noSq = `  `
