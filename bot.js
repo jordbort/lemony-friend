@@ -860,14 +860,23 @@ function onMessageHandler(chatroom, tags, message, self) {
         || msg.toLowerCase().includes(`lemfriend`)) {
         // If the first word is a greeting
         const greetingPattern = /^hey+[^\w\s]*$|^hi+[^\w\s]*$|^he.*lo+[^\w\s]*$|^howd[a-z][^\w\s]*$|sup+[^\w\s]*$|^wh?[au].*up[^\w\s]*$/i
-        if (command.match(greetingPattern)) { return handleGreet(chatroom, users[username]) }
+        if (command.match(greetingPattern)) {
+            console.log(`${boldTxt}> "${command}" matched greetingPattern${resetTxt}`)
+            return handleGreet(chatroom, users[username])
+        }
 
         // If the first word is `gn` or `bye`
         const goodNightPattern = /^ni(ght|te)[^\w\s]*$|^gn[^\w\s]*$|^(bye+)+[^\w\s]*$/i
-        if (command.match(goodNightPattern)) { return sayGoodnight(chatroom, users[username]) }
+        if (command.match(goodNightPattern)) {
+            console.log(`${boldTxt}> "${command}" matched goodNightPattern${resetTxt}`)
+            return sayGoodnight(chatroom, users[username])
+        }
 
         // If the first word is `good` followed by "night"-like word
-        if (command === `good` && args[0]?.match(goodNightPattern)) { return sayGoodnight(chatroom, users[username]) }
+        if (command === `good` && args[0]?.match(goodNightPattern)) {
+            console.log(`${boldTxt}> "good ${args[0]}" matched goodNightPattern${resetTxt}`)
+            return sayGoodnight(chatroom, users[username])
+        }
 
         // If the first word is `gj` or `nj`
         if ([`gj`, `nj`].includes(command)) { return sayThanks(chatroom, users[username]) }
@@ -884,24 +893,32 @@ function onMessageHandler(chatroom, tags, message, self) {
         if (command === `well` && args[0]?.match(/^done+[^\w\s]/i)) { return sayThanks(chatroom, users[username]) }
 
         // If the first word is `thanks`-like
-        const thanksLikePattern = /^t(h*[aeou]*[bmn])*(ks+|x+)[^\w\s]*$/i
-        if (command.match(thanksLikePattern)) { return sayYoureWelcome(chatroom, users[username]) }
+        const thanksLikePattern = /^t(y*(sm*)*|(h*[aeou]*[bmn]*)*(ks+|x+))[^\w\s]*$/i
+        if (command.match(thanksLikePattern)) {
+            console.log(`${boldTxt}> "${command}" matched thanksLikePattern${resetTxt}`)
+            return sayYoureWelcome(chatroom, users[username])
+        }
 
         // If the first word is `thank`-like and followed by "you"-like word
         const thankLikePattern = /^th*[aeou]*[bmn]*[kx]+[^\w\s]*$/i
         const youLikePattern = /^yo?u+[^\w\s]*$|^yew+[^\w\s]*$|^u+[^\w\s]*$/i
-        if (command.match(thankLikePattern) && args[0]?.match(youLikePattern)) { return sayYoureWelcome(chatroom, users[username]) }
+        if (command.match(thankLikePattern) && args[0]?.match(youLikePattern)) {
+            console.log(`${boldTxt}> "${command}"/"${args[0]}" matched thankLikePattern & youLikePattern${resetTxt}`)
+            return sayYoureWelcome(chatroom, users[username])
+        }
 
         // All words after the first, in lower case
         const lowercaseArgs = args.map(str => str.toLowerCase())
 
         // Checking for "what's up"
         const whatsUpPrefixPattern = /^wh?[au]t?['"]*s*[^\w\s]*$/i
-        const upPattern = /^up+[^\w\s]/i
+        const upPattern = /^up+[^\w\s]*$/i
         // In case saying "what's up" first, and/or `up` doesn't come immediately
         if (command.match(whatsUpPrefixPattern)) {
+            console.log(`${boldTxt}> "${command}" matched whatsUpPrefixPattern${resetTxt}`)
             for (const str of lowercaseArgs) {
                 if (str.match(upPattern)) {
+                    console.log(`${boldTxt}> "${str}" matched upPattern${resetTxt}`)
                     return handleGreet(chatroom, users[username])
                 }
             }
@@ -1243,52 +1260,33 @@ function onMessageHandler(chatroom, tags, message, self) {
         }
     }
 
-    if (username === `streamelements` && (msg.includes(`lemony_friend`))) {
-        console.log(`Current points:`, `points` in Object(users[BOT_USERNAME][channel]) ? users[BOT_USERNAME][channel].points : `(not known)`)
-        if (`points` in Object(users[BOT_USERNAME][channel]) && args[0] === `gave` && !command.includes(BOT_USERNAME)) {
-            users[BOT_USERNAME][channel].points += Number(args[1])
-            console.log(`> Received`, Number(args[1]), `points, thanks to`, command, `- now has:`, users[BOT_USERNAME][channel].points)
+    // Mentioned by StreamElements
+    if (username === `streamelements` && (msg.includes(BOT_USERNAME))) {
+        console.log(`${boldTxt}> Current points:${resetTxt}`, `points` in Object(users[BOT_USERNAME][channel]) ? users[BOT_USERNAME][channel].points : `(not known)`)
+        // If bot used !gamble all and lost
+        if (msg.match(/lost (every|it)/i)) {
+            return handleLoseAllPoints(chatroom)
         }
-        else if (args[0] === `has`) {
-            users[BOT_USERNAME][channel].points = Number(args[1])
-            console.log(`> Checked points, and has`, Number(args[1]))
+        const nowHasPattern = /now ha(?:s|ve) \[*(\d*)/i // Set points based on "now has/have..." result
+        if (msg.match(nowHasPattern)) {
+            // console.log(msg.match(nowHasPattern, msg))
+            // console.log(msg.match(nowHasPattern).split(msg.match(nowHasPattern)))
+            return handleSetPoints(chatroom, Number(msg.split(nowHasPattern)[1]))
         }
-        else if (msg.includes(`jpegstSpamton`)) {
-            console.log(`*** JPEG MODE ***`)
-            if (msg.toLowerCase().includes(`all`)) {
-                if (msg.toLowerCase().includes(`lost`)) {
-                    users[BOT_USERNAME][channel].points = 0
-                    console.log(`> Gambled ALL, LOST ALL, new amount:`, 0)
-                } else {
-                    users[BOT_USERNAME][channel].points = Number(args[args.length - 3].substring(2, 7))
-                    console.log(`> Gambled ALL, 2x POINTS:`, Number(args[args.length - 3].substring(2, 7)))
-                }
-            } else if (msg.toLowerCase().includes(`lost`)) {
-                users[BOT_USERNAME][channel].points = Number(args[args.length - 3])
-                console.log(`> LOST SOME, new amount:`, Number(args[args.length - 3]))
-            } else if (msg.toLowerCase().includes(`won`)) {
-                users[BOT_USERNAME][channel].points = Number(args[args.length - 3].substring(2, 7))
-                console.log(`> WON SOME, new amount:`, Number(args[args.length - 3].substring(2, 7)))
-            }
-        } else {
-            if (msg.toLowerCase().includes(`all`)) {
-                if (msg.toLowerCase().includes(`lost`)) {
-                    users[BOT_USERNAME][channel].points = 0
-                    console.log(`> Gambled ALL, LOST ALL, new amount:`, 0)
-                } else {
-                    users[BOT_USERNAME][channel].points = Number(args[args.length - 3])
-                    console.log(`> Gambled ALL, 2x POINTS:`, Number(args[args.length - 3]))
-                }
-            } else if (msg.toLowerCase().includes(`lost`)) {
-                users[BOT_USERNAME][channel].points = Number(args[args.length - 3])
-                console.log(`> LOST SOME, new amount:`, Number(args[args.length - 3]))
-            } else if (msg.toLowerCase().includes(`won`)) {
-                users[BOT_USERNAME][channel].points = Number(args[args.length - 3])
-                console.log(`> WON SOME, new amount:`, Number(args[args.length - 3]))
-            }
+        const botHasNumPattern = / lemony_friend has [^a-z](\d*)/i // Set points based StreamElements replying to '!points lemony_friend'
+        if (msg.match(botHasNumPattern)) {
+            return handleSetPoints(chatroom, Number(msg.split(botHasNumPattern)[1]))
         }
-        console.log(`New points:`, `points` in Object(users[BOT_USERNAME][channel]) ? users[BOT_USERNAME][channel].points : `(not known)`)
-        if (`points` in Object(users[BOT_USERNAME][channel]) && isNaN(users[BOT_USERNAME][channel].points)) { console.log(`${redBg}${boldTxt}WARNING: ${channel} points is not a number!${resetTxt}`) }
+        const pointsSetToPattern = /set lemony_friend /i // Triggered by a manual set/bonus of points
+        if (msg.match(pointsSetToPattern)) {
+            return handleSetPoints(chatroom, Number(msg.split(pointsSetToPattern)[1].split(` `)[2]))
+        }
+        // Receiving points from a gifter
+        const receivingPattern = / gave (\d*)/i
+        if (msg.match(receivingPattern)) {
+            return handleGivenPoints(chatroom, msg.split(receivingPattern)[0], Number(msg.split(receivingPattern)[1]))
+        }
+        // Checking bot's points if unknown
         if (!(`points` in Object(users[BOT_USERNAME][channel]))) {
             return talk(chatroom, `!points`)
         }
@@ -1484,6 +1482,39 @@ function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
     else if (funNumber === 7) { talk(chatroom, `This message has a 1 / ${(funNumberCount * funNumberTotal).toLocaleString()} chance of appearing`) }
     else if (funNumber === 8) { talk(chatroom, `${tags.id}`) }
     else if (funNumber === 9) { talk(chatroom, `${tags[`tmi-sent-ts`]}`) }
+}
+
+function handleGivenPoints(chatroom, givingUser, pointsNum) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> handleGivenPoints(chatroom: ${chatroom}, givingUser: ${givingUser}, pointsNum: ${pointsNum})${resetTxt}`) }
+    if (isNaN(pointsNum)) { console.log(`${redBg}${boldTxt}WARNING: pointsNum isn't a number!${resetTxt}`) }
+    const channel = chatroom.substring(1)
+    talk(chatroom, `Thank you for the points, ${givingUser}! :)`)
+    if (`points` in Object(users[BOT_USERNAME][channel])) {
+        users[BOT_USERNAME][channel].points += Number(pointsNum)
+    }
+    else {
+        const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
+        setTimeout(() => talk(chatroom, `!points`), delay)
+    }
+    if (DEBUG_MODE) { console.log(`${boldTxt}> New points:${resetTxt}`, `points` in Object(users[BOT_USERNAME][channel]) ? users[BOT_USERNAME][channel].points : `(waiting for reply...)`) }
+}
+
+function handleSetPoints(chatroom, pointsNum) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> handleSetPoints(chatroom: ${chatroom}, pointsNum: ${pointsNum})${resetTxt}`) }
+    if (isNaN(pointsNum)) { console.log(`${redBg}${boldTxt}WARNING: pointsNum isn't a number!${resetTxt}`) }
+    const channel = chatroom.substring(1)
+    if (`points` in users[BOT_USERNAME][channel] && pointsNum > users[BOT_USERNAME][channel].points) { talk(chatroom, `:D`) }
+    users[BOT_USERNAME][channel].points = pointsNum
+    if (DEBUG_MODE) { console.log(`${boldTxt}> New points:${resetTxt}`, users[BOT_USERNAME][channel].points) }
+}
+
+function handleLoseAllPoints(chatroom) {
+    if (DEBUG_MODE) { console.log(`${boldTxt}> handleLoseAllPoints(chatroom: ${chatroom})${resetTxt}`) }
+    const channel = chatroom.substring(1)
+    users[BOT_USERNAME][channel].points = 0
+    console.log(`> Gambled ALL, LOST ALL, new amount:`, 0)
+    talk(chatroom, `:(`)
+    if (DEBUG_MODE) { console.log(`${boldTxt}> New points:${resetTxt}`, users[BOT_USERNAME][channel].points) }
 }
 
 async function getRandomWord() {
