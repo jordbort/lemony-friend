@@ -42,7 +42,7 @@ const {
 } = require(`./colors`)
 
 // Import global settings
-const { funNumberCount, funNumberTotal, options } = require(`./config`)
+const { funNumberCount, funNumberTotal, settings } = require(`./config`)
 
 // Create bot client
 const tmi = require('tmi.js')
@@ -268,7 +268,7 @@ const numbers = [
 
 // Helper functions
 function sayRebootMsg(chatroom) {
-    if (options.debug) { console.log(`${boldTxt}> sayRebootMsg(chatroom: ${chatroom})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> sayRebootMsg(chatroom: ${chatroom})${resetTxt}`) }
     const channel = chatroom.substring(1)
     const onlineMsgs = [
         `Let's see how long before I crash`,
@@ -280,38 +280,38 @@ function sayRebootMsg(chatroom) {
         `reconnecting...`,
         `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`,
         `(there ${Object.keys(tempCmds).length === 1 ? `is` : `are`} ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`,
-        `Debug mode is currently ${options.debug ? `ON` : `OFF`}! :)`,
+        `Debug mode is currently ${settings.debug ? `ON` : `OFF`}! :)`,
         `Let's play Hangman! :)`,
         `nowHasPattern has been updated to /now ha(?:s|ve) \[*(\d*)/i which makes use of capturing and non-capturing groups :)`,
         `${channel} has ${lemonyFresh[channel].emotes.length} emote${lemonyFresh[channel].emotes.length === 1 ? `` : `s`}!`
     ]
     const response = onlineMsgs[Math.floor(Math.random() * onlineMsgs.length)]
-    options.sayOnlineMsg = false
+    settings.sayOnlineMsg = false
     talk(chatroom, response)
 }
 
 function sayFriends(chatroom) {
-    if (options.debug) { console.log(`${boldTxt}> sayFriends(chatroom: ${chatroom})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> sayFriends(chatroom: ${chatroom})${resetTxt}`) }
     talk(chatroom, `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`)
 }
 
 function sayCommands(chatroom) {
-    if (options.debug) { console.log(`${boldTxt}> sayCommands(chatroom: ${chatroom})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> sayCommands(chatroom: ${chatroom})${resetTxt}`) }
     talk(chatroom, `Commands: !greet => Say hi to one or more people, !bye => Say goodnight to someone, !hangman => Start a game of Hangman, !yell => Chat across Lemony Fresh ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh ` : `🍋️`}, !away => (Optionally add an away message), !tempcmd => Make your own command! :)`)
 }
 
 function toggleDebugMode(chatroom, args) {
-    const initialDebugState = options.debug
-    if (args[0]?.toLowerCase() === `on`) { options.debug = true }
-    else if (args[0]?.toLowerCase() === `off`) { options.debug = false }
-    else { options.debug = !options.debug }
-    options.debug === initialDebugState
-        ? talk(chatroom, `Debug mode is currently ${options.debug ? `ON` : `OFF`}! :)`)
-        : talk(chatroom, `Debug mode is now ${options.debug ? `ON` : `OFF`}! :)`)
+    const initialDebugState = settings.debug
+    if (args[0]?.toLowerCase() === `on`) { settings.debug = true }
+    else if (args[0]?.toLowerCase() === `off`) { settings.debug = false }
+    else { settings.debug = !settings.debug }
+    settings.debug === initialDebugState
+        ? talk(chatroom, `Debug mode is currently ${settings.debug ? `ON` : `OFF`}! :)`)
+        : talk(chatroom, `Debug mode is now ${settings.debug ? `ON` : `OFF`}! :)`)
 }
 
 function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
-    if (options.debug) { console.log(`${boldTxt}> rollFunNumber(chatroom: ${chatroom}, tags: ${typeof tags}, username: ${username}, msgArr.length: ${msgArr.length}, funNumber: ${funNumber})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> rollFunNumber(chatroom: ${chatroom}, tags: ${typeof tags}, username: ${username}, msgArr.length: ${msgArr.length}, funNumber: ${funNumber})${resetTxt}`) }
     const channel = chatroom.substring(1)
 
     const randCurrency = Math.floor(Math.random() * currencies.length)
@@ -359,7 +359,7 @@ function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
         } else {
             redeems.push(...lemonyFresh[channel].redeems)
         }
-        if (options.debug) { console.log(redeems) }
+        if (settings.debug) { console.log(redeems) }
         const redeem = Math.floor(Math.random() * redeems.length)
         talk(chatroom, redeems[redeem])
     }
@@ -395,7 +395,7 @@ function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
 }
 
 function handleGivenPoints(chatroom, givingUser, pointsNum) {
-    if (options.debug) { console.log(`${boldTxt}> handleGivenPoints(chatroom: ${chatroom}, givingUser: ${givingUser}, pointsNum: ${pointsNum})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> handleGivenPoints(chatroom: ${chatroom}, givingUser: ${givingUser}, pointsNum: ${pointsNum})${resetTxt}`) }
     if (isNaN(pointsNum)) { console.log(`${redBg}${boldTxt}WARNING: pointsNum isn't a number!${resetTxt}`) }
     const channel = chatroom.substring(1)
     talk(chatroom, `Thank you for the points, ${givingUser}! :)`)
@@ -406,37 +406,37 @@ function handleGivenPoints(chatroom, givingUser, pointsNum) {
         const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
         setTimeout(() => talk(chatroom, `!points`), delay)
     }
-    if (options.debug) { console.log(`${boldTxt}> New points:${resetTxt}`, `points` in Object(users[BOT_USERNAME][channel]) ? users[BOT_USERNAME][channel].points : `(waiting for reply...)`) }
+    if (settings.debug) { console.log(`${boldTxt}> New points:${resetTxt}`, `points` in Object(users[BOT_USERNAME][channel]) ? users[BOT_USERNAME][channel].points : `(waiting for reply...)`) }
 }
 
 function handleSetPoints(chatroom, pointsNum) {
-    if (options.debug) { console.log(`${boldTxt}> handleSetPoints(chatroom: ${chatroom}, pointsNum: ${pointsNum})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> handleSetPoints(chatroom: ${chatroom}, pointsNum: ${pointsNum})${resetTxt}`) }
     if (isNaN(pointsNum)) { console.log(`${redBg}${boldTxt}WARNING: pointsNum isn't a number!${resetTxt}`) }
     const channel = chatroom.substring(1)
     if (`points` in users[BOT_USERNAME][channel] && pointsNum > users[BOT_USERNAME][channel].points) { talk(chatroom, `:D`) }
     users[BOT_USERNAME][channel].points = pointsNum
-    if (options.debug) { console.log(`${boldTxt}> New points:${resetTxt}`, users[BOT_USERNAME][channel].points) }
+    if (settings.debug) { console.log(`${boldTxt}> New points:${resetTxt}`, users[BOT_USERNAME][channel].points) }
 }
 
 function handleLoseAllPoints(chatroom) {
-    if (options.debug) { console.log(`${boldTxt}> handleLoseAllPoints(chatroom: ${chatroom})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> handleLoseAllPoints(chatroom: ${chatroom})${resetTxt}`) }
     const channel = chatroom.substring(1)
     users[BOT_USERNAME][channel].points = 0
     console.log(`> Gambled ALL, LOST ALL, new amount:`, 0)
     talk(chatroom, `:(`)
-    if (options.debug) { console.log(`${boldTxt}> New points:${resetTxt}`, users[BOT_USERNAME][channel].points) }
+    if (settings.debug) { console.log(`${boldTxt}> New points:${resetTxt}`, users[BOT_USERNAME][channel].points) }
 }
 
 async function getRandomWord() {
-    if (options.debug) { console.log(`${boldTxt}> getRandomWord()${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> getRandomWord()${resetTxt}`) }
     const response = await fetch(`https://random-word-api.vercel.app/api?words=1`)
     const data = await response.json()
-    if (options.debug) { console.log(data) }
+    if (settings.debug) { console.log(data) }
     return data[0]
 }
 
 async function hangmanInit(hangman) {
-    if (options.debug) { console.log(`${boldTxt}> hangmanInit(hangman: ${typeof hangman})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> hangmanInit(hangman: ${typeof hangman})${resetTxt}`) }
 
     hangman.listening = true
     hangman.answer = await getRandomWord()
@@ -449,14 +449,14 @@ async function hangmanInit(hangman) {
 }
 
 function hangmanAnnounce(chatroom) {
-    if (options.debug) { console.log(`${boldTxt}> hangmanAnnounce(chatroom: ${chatroom})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> hangmanAnnounce(chatroom: ${chatroom})${resetTxt}`) }
     const channel = chatroom.slice(1)
     const hangman = lemonyFresh[channel].hangman
 
     hangman.signup = true
     talk(chatroom, `I'm thinking of a word... Type !play in the next 30 seconds to join in a game of Hangman! :)`)
     setTimeout(() => {
-        if (options.debug) { console.log(`${boldTxt}> 30 seconds has elapsed, signup window closed${resetTxt}`) }
+        if (settings.debug) { console.log(`${boldTxt}> 30 seconds has elapsed, signup window closed${resetTxt}`) }
         hangman.signup = false
         if (hangman.players.length === 0) {
             hangman.listening = false
@@ -471,7 +471,7 @@ function hangmanAnnounce(chatroom) {
 }
 
 function checkLetter(chatroom, username, guess) {
-    if (options.debug) { console.log(`${boldTxt}> checkLetter(chatroom: ${chatroom}, username: ${username}, guess: ${guess})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> checkLetter(chatroom: ${chatroom}, username: ${username}, guess: ${guess})${resetTxt}`) }
     const channel = chatroom.slice(1)
     const hangman = lemonyFresh[channel].hangman
     const player = users[username].displayName
@@ -510,7 +510,7 @@ function checkLetter(chatroom, username, guess) {
 }
 
 function solvePuzzle(chatroom, username) {
-    if (options.debug) { console.log(`${boldTxt}> solvePuzzle(chatroom: ${chatroom}, username: ${username})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> solvePuzzle(chatroom: ${chatroom}, username: ${username})${resetTxt}`) }
     const hangman = lemonyFresh[chatroom.slice(1)].hangman
 
     hangman.listening = false
@@ -519,7 +519,7 @@ function solvePuzzle(chatroom, username) {
 
 function rockPaperScissors(chatroom, username, arg) {
     const rps = [`rock`, `paper`, `scissors`]
-    if (options.debug) { console.log(`${boldTxt}> rockPaperScissors(rockPaperScissors: ${chatroom}, username: ${username}, arg: ${arg}) ${rps.includes(arg)}${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> rockPaperScissors(rockPaperScissors: ${chatroom}, username: ${username}, arg: ${arg}) ${rps.includes(arg)}${resetTxt}`) }
     const botChoice = rps[Math.floor(Math.random() * rps.length)]
     const playerChoice = rps.includes(arg) ? arg : rps[Math.floor(Math.random() * rps.length)]
     const name = users[username].displayName
@@ -535,7 +535,7 @@ function rockPaperScissors(chatroom, username, arg) {
 }
 
 function handleNewChatter(chatroom, user) {
-    if (options.debug) { console.log(`${boldTxt}> handleNewChatter(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> handleNewChatter(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
     const greetings = [
         `Hi ${user.displayName}, welcome to the stream!`,
         `Hey ${user.displayName}, welcome to the stream!`,
@@ -550,7 +550,7 @@ function handleNewChatter(chatroom, user) {
 }
 
 function getLastMessage(chatroom, user, room) {
-    if (options.debug) { console.log(`${boldTxt}> getLastMessage(chatroom: ${chatroom}, user: ${user.displayName}, room: ${room})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> getLastMessage(chatroom: ${chatroom}, user: ${user.displayName}, room: ${room})${resetTxt}`) }
     if (!(chatroom.slice(1) in user)) { return }
     room in user
         ? talk(chatroom, `${user.displayName} last said: "${user[room].lastMessage}" in ${room}'s chat!`)
@@ -558,7 +558,7 @@ function getLastMessage(chatroom, user, room) {
 }
 
 function getMessageCount(chatroom, user) {
-    if (options.debug) { console.log(`${boldTxt}> getMessageCount(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> getMessageCount(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
     let response = `${user.displayName} has sent `
     const rooms = []
     for (const room in user) {
@@ -587,14 +587,14 @@ async function getDadJoke(chatroom) {
         }
     })
     const data = await response.json()
-    if (options.debug) { console.log(data) }
+    if (settings.debug) { console.log(data) }
     data.status === 200
         ? talk(chatroom, data.joke)
         : talk(chatroom, `Error fetching dad joke! :(`)
 }
 
 async function getPokemon(chatroom, pokemon) {
-    if (options.debug) { console.log(`${boldTxt}> getPokemon(chatroom: ${chatroom}, pokemon: ${pokemon})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> getPokemon(chatroom: ${chatroom}, pokemon: ${pokemon})${resetTxt}`) }
     if (!pokemon) { return }
 
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`)
@@ -696,7 +696,7 @@ async function getPokemon(chatroom, pokemon) {
         }
     }
 
-    if (options.debug) {
+    if (settings.debug) {
         console.log(`nullify:`, nullify)
         console.log(`doubleDamageTo:`, doubleDamageTo)
         console.log(`doubleDamageFrom:`, doubleDamageFrom)
@@ -716,7 +716,7 @@ async function getPokemon(chatroom, pokemon) {
 }
 
 function getColor(chatroom, user) {
-    if (options.debug) { console.log(`${boldTxt}> getColor(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> getColor(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
     user.color in chatColors
         ? talk(chatroom, `${user.displayName}'s chat color is ${chatColors[user.color].name}!`)
         : talk(chatroom, `${user.displayName}'s chat color is hex code ${user.color}`)
@@ -725,12 +725,12 @@ function getColor(chatroom, user) {
 function getRandomUser() {
     const arr = Object.keys(users)
     const randomUser = arr[Math.floor(Math.random() * arr.length)]
-    if (options.debug) { console.log(`${boldTxt}> getRandomUser() picked: ${randomUser}${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> getRandomUser() picked: ${randomUser}${resetTxt}`) }
     return randomUser
 }
 
 function getRandomChannelMessage(user) {
-    if (options.debug) { console.log(`${boldTxt}> getRandomChannelMessage(user: ${user.displayName})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> getRandomChannelMessage(user: ${user.displayName})${resetTxt}`) }
     const allKeys = Object.keys(user)
     let channelKey = Math.floor(Math.random() * allKeys.length)
     while (![
@@ -741,13 +741,13 @@ function getRandomChannelMessage(user) {
         `domonintendo1`,
         `ppuyya`
     ].includes(allKeys[channelKey])) { channelKey = Math.floor(Math.random() * allKeys.length) }
-    if (options.debug) { console.log(`${boldTxt}...from ${allKeys[channelKey]}'s channel${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}...from ${allKeys[channelKey]}'s channel${resetTxt}`) }
     const randomMessage = user[allKeys[channelKey]].lastMessage
     return randomMessage
 }
 
 function lemonify(str) {
-    if (options.debug) { console.log(`${boldTxt}> lemonify(str: ${str})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> lemonify(str: ${str})${resetTxt}`) }
     const words = str.split(` `)
     const reservedKeywords = [
         `a`,
@@ -925,7 +925,7 @@ function lemonify(str) {
 }
 
 function handleTempCmd(chatroom, username, args) {
-    if (options.debug) { console.log(`${boldTxt}> handleTempCmd(chatroom: ${chatroom}, args: ${args})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> handleTempCmd(chatroom: ${chatroom}, args: ${args})${resetTxt}`) }
     if (!args[1]) { return talk(chatroom, `Hey ${users[username].displayName}, use this command like: !tempcmd [commandname] [response...]! :)`) }
     if (args[0].toLowerCase() === `delete`) {
         if (args[1].toLowerCase() in tempCmds) {
@@ -945,7 +945,7 @@ function handleTempCmd(chatroom, username, args) {
 }
 
 function handleGreet(chatroom, user) {
-    if (options.debug) { console.log(`${boldTxt}> handleGreet(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> handleGreet(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
     const greetings = [
         `Howdy,`,
         `Hello,`,
@@ -990,7 +990,7 @@ function handleGreet(chatroom, user) {
 }
 
 function handleMassGreet(chatroom, arr) {
-    if (options.debug) { console.log(`${boldTxt}> handleGreet(chatroom: ${chatroom}, arr: ${arr})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> handleGreet(chatroom: ${chatroom}, arr: ${arr})${resetTxt}`) }
     const response = []
     const greetings = [
         `hello`,
@@ -1018,7 +1018,7 @@ function handleMassGreet(chatroom, arr) {
 }
 
 function handleGreetAll(chatroom) {
-    if (options.debug) { console.log(`${boldTxt}> handleGreetAll(chatroom: ${chatroom})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> handleGreetAll(chatroom: ${chatroom})${resetTxt}`) }
     const channel = chatroom.substring(1)
     const usersToGreet = []
     const response = []
@@ -1050,7 +1050,7 @@ function handleGreetAll(chatroom) {
 }
 
 function sayGoodnight(chatroom, user) {
-    if (options.debug) { console.log(`${boldTxt}> handleGreet(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> handleGreet(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
     const greetings = [
         `Bye`,
         `Good night,`,
@@ -1073,7 +1073,7 @@ function sayGoodnight(chatroom, user) {
 }
 
 function sayYoureWelcome(chatroom, user) {
-    if (options.debug) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
     const welcomes = [
         `${user.displayName}`,
         `You're welcome, ${user.displayName}`,
@@ -1095,7 +1095,7 @@ function sayYoureWelcome(chatroom, user) {
 }
 
 function sayThanks(chatroom, user) {
-    if (options.debug) { console.log(`${boldTxt}> sayThanks(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> sayThanks(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
     const thanks = [
         `${user.displayName}`,
         `Thanks, ${user.displayName}`,
@@ -1123,19 +1123,19 @@ function sayThanks(chatroom, user) {
 }
 
 function handleColorChange(chatroom, user, newColor) {
-    if (options.debug) { console.log(`${boldTxt}> handleColorChange(chatroom: ${chatroom}, user: ${user.displayName}, newColor: ${newColor})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> handleColorChange(chatroom: ${chatroom}, user: ${user.displayName}, newColor: ${newColor})${resetTxt}`) }
     user.color = newColor
     talk(chatroom, `Acknowledging ${user.displayName}'s color change :)`)
 }
 
 function handleTurboChange(chatroom, user, turboStatus) {
-    if (options.debug) { console.log(`${boldTxt}> handleTurboChange(chatroom: ${chatroom}, user: ${user.displayName}, turboStatus: ${turboStatus})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> handleTurboChange(chatroom: ${chatroom}, user: ${user.displayName}, turboStatus: ${turboStatus})${resetTxt}`) }
     user.turbo = turboStatus
     turboStatus ? talk(chatroom, `Wow, ${user.displayName} got Turbo? :D`) : talk(chatroom, `Did ${user.displayName} stop having Turbo? :O`)
 }
 
 function handleSubChange(chatroom, user, subStatus) {
-    if (options.debug) { console.log(`${boldTxt}> handleSubChange(chatroom: ${chatroom}, user: ${user.displayName}, subStatus: ${subStatus})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> handleSubChange(chatroom: ${chatroom}, user: ${user.displayName}, subStatus: ${subStatus})${resetTxt}`) }
     user[chatroom.slice(1)].sub = subStatus
     if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => subStatus
@@ -1149,7 +1149,7 @@ function handleSubChange(chatroom, user, subStatus) {
 }
 
 function handleModChange(chatroom, user, modStatus) {
-    if (options.debug) { console.log(`${boldTxt}> handleModChange(chatroom: ${chatroom}, user: ${user.displayName}, modStatus: ${modStatus})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> handleModChange(chatroom: ${chatroom}, user: ${user.displayName}, modStatus: ${modStatus})${resetTxt}`) }
     user[chatroom.slice(1)].mod = modStatus
     if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => modStatus
@@ -1163,7 +1163,7 @@ function handleModChange(chatroom, user, modStatus) {
 }
 
 function handleVIPChange(chatroom, user, vipStatus) {
-    if (options.debug) { console.log(`${boldTxt}> handleVIPChange(chatroom: ${chatroom}, user: ${user.displayName}, vipStatus: ${vipStatus})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> handleVIPChange(chatroom: ${chatroom}, user: ${user.displayName}, vipStatus: ${vipStatus})${resetTxt}`) }
     user[chatroom.slice(1)].vip = vipStatus
     if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => vipStatus
@@ -1177,7 +1177,7 @@ function handleVIPChange(chatroom, user, vipStatus) {
 }
 
 function checkEmoteStreak(chatroom, emoteArr, channel) {
-    if (options.debug) { console.log(`${boldTxt}> checkEmoteStreak(chatroom: ${chatroom}, emoteArr.length: ${emoteArr.length}, channel: ${channel})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> checkEmoteStreak(chatroom: ${chatroom}, emoteArr.length: ${emoteArr.length}, channel: ${channel})${resetTxt}`) }
     let emoteStreakCount = 0
     const emoteStreakUsers = []
     // Checking if message includes any of the provided emotes
@@ -1198,7 +1198,7 @@ function checkEmoteStreak(chatroom, emoteArr, channel) {
 }
 
 function emoteReply(chatroom, emoteArr) {
-    if (options.debug) { console.log(`${boldTxt}> emoteReply(chatroom: ${chatroom}, emoteArr: ${emoteArr})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> emoteReply(chatroom: ${chatroom}, emoteArr: ${emoteArr})${resetTxt}`) }
     const channel = chatroom.substring(1)
     const popularEmotes = Array(emoteArr.length).fill(0)
     for (const [i, val] of emoteArr.entries()) {
@@ -1224,9 +1224,9 @@ function emoteReply(chatroom, emoteArr) {
 function delayListening() {
     const delayTime = 30
     console.log(`${boldTxt}> delayListening() ${delayTime} seconds...${resetTxt}`)
-    options.listening = false
+    settings.listening = false
     setTimeout(() => {
-        options.listening = true
+        settings.listening = true
         console.log(`${boldTxt}> Listening for streaks again!${resetTxt}`)
     }, delayTime * 1000)
 }
@@ -1242,7 +1242,7 @@ function cleanupSpaces(str) {
     for (let i = 0; i < str.length; i++) {
         if (!(str[i] === ` ` && str[i + 1] === ` `)) {
             newStr += str[i]
-        } else if (options.debug) { console.log(`${boldTxt}> cleanupSpaces() removed a double space!${resetTxt}`) }
+        } else if (settings.debug) { console.log(`${boldTxt}> cleanupSpaces() removed a double space!${resetTxt}`) }
     }
     return newStr
 }
@@ -1290,7 +1290,7 @@ function printLemon() {
 }
 
 async function getTwitchUser(chatroom, username) {
-    if (options.debug) { console.log(`${boldTxt}> getTwitchUser(chatroom: ${chatroom}, username: ${username})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> getTwitchUser(chatroom: ${chatroom}, username: ${username})${resetTxt}`) }
 
     const endpoint = `https://api.twitch.tv/helix/users?login=${username}`
     const headers = {
@@ -1310,7 +1310,7 @@ async function getTwitchUser(chatroom, username) {
 }
 
 async function banTwitchUser(chatroom, username) {
-    if (options.debug) { console.log(`${boldTxt}> banTwitchUser(chatroom: ${chatroom}, username: ${username})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> banTwitchUser(chatroom: ${chatroom}, username: ${username})${resetTxt}`) }
     const channel = chatroom.substring(1)
 
     const bannedUser = await getTwitchUser(chatroom, username)
@@ -1349,22 +1349,24 @@ async function banTwitchUser(chatroom, username) {
 }
 
 async function getTwitchChannel(chatroom, broadcaster_id) {
-    if (options.debug) { console.log(`${boldTxt}> getTwitchChannel(broadcaster_id: ${broadcaster_id})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> getTwitchChannel(broadcaster_id: ${broadcaster_id})${resetTxt}`) }
 
     const endpoint = `https://api.twitch.tv/helix/channels?broadcaster_id=${broadcaster_id}`
-    const headers = {
+    const options = {
+        headers: {
         authorization: `Bearer ${ACCESS_TOKEN}`,
         "Client-Id": CLIENT_ID
+        }
     }
 
-    const response = await fetch(endpoint, { headers })
+    const response = await fetch(endpoint, options)
     const channelnfo = await response.json()
 
     return channelnfo?.data[0] || talk(chatroom, `There was a problem getting the channel info! :(`)
 }
 
 async function getTwitchAuthorization() {
-    if (options.debug) { console.log(`${boldTxt}> getTwitchAuthorization()${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> getTwitchAuthorization()${resetTxt}`) }
     const url = `https://id.twitch.tv/oauth2/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&grant_type=client_credentials`;
     const response = await fetch(url, { method: "POST" })
     const token = await response.json()
@@ -1373,7 +1375,7 @@ async function getTwitchAuthorization() {
 }
 
 async function handleShoutOut(chatroom, user) {
-    if (options.debug) { console.log(`${boldTxt}> handleShoutOut(chatroom: ${chatroom}, user: ${user})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> handleShoutOut(chatroom: ${chatroom}, user: ${user})${resetTxt}`) }
     const twitchUser = await getTwitchUser(chatroom, user)
     const stream = await getTwitchChannel(chatroom, twitchUser.id)
     talk(chatroom, `Let's give a shoutout to ${stream.broadcaster_name}! They were last playing ${stream.game_name}${twitchUser.broadcaster_type ? ` and are a Twitch ${twitchUser.broadcaster_type}!` : `.`} Follow them here: https://www.twitch.tv/${stream.broadcaster_login} :)`)

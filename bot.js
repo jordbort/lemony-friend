@@ -9,8 +9,7 @@ const {
 } = require(`./data`)
 
 // Import global settings
-const { funNumberCount, funNumberTotal } = require(`./config`)
-let { options } = require(`./config`)
+const { funNumberCount, funNumberTotal, settings } = require(`./config`)
 
 // Import terminal colors
 const {
@@ -96,13 +95,13 @@ const {
 } = require(`./utils`)
 
 function onConnectedHandler(addr, port) {
-    options.FIRST_CONNECTION && printLemon()
+    settings.firstConnection && printLemon()
     const time = new Date().toLocaleTimeString()
-    options.FIRST_CONNECTION
+    settings.firstConnection
         ? console.log(`[${time}] 🍋 Connected to ${addr}:${port}`)
         : console.log(`[${time}] 🍋 Re-connected to ${addr}:${port}`)
-    options.FIRST_CONNECTION = false
-    options.sayOnlineMsg = true
+    settings.firstConnection = false
+    settings.sayOnlineMsg = true
 }
 
 function onMessageHandler(chatroom, tags, message, self) {
@@ -184,7 +183,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     REPLY CASES
     \*********/
 
-    if (options.sayOnlineMsg) { return sayRebootMsg(chatroom) }
+    if (settings.sayOnlineMsg) { return sayRebootMsg(chatroom) }
 
     // For testing/debugging
     if (msg === `data` && username === `jpegstripes`) { console.log(`lemonyFresh:`, lemonyFresh, `users:`, users, `tempCmds:`, tempCmds) }
@@ -900,7 +899,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         }
     }
 
-    if (options.listening || channel === BOT_USERNAME) {
+    if (settings.listening || channel === BOT_USERNAME) {
         // Parsing each message word
         const lowercaseArgs = args.map(str => str.toLowerCase())
         for (const str of lowercaseArgs) {
