@@ -829,11 +829,9 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         }
         const nowHasPattern = /now ha(?:s|ve) \[*(\d*)/i // Set points based on "now has/have..." result
         if (msg.match(nowHasPattern)) {
-            // console.log(msg.match(nowHasPattern, msg))
-            // console.log(msg.match(nowHasPattern).split(msg.match(nowHasPattern)))
             return handleSetPoints(chatroom, Number(msg.split(nowHasPattern)[1]))
         }
-        const botHasNumPattern = / lemony_friend has [^a-z](\d*)/i // Set points based StreamElements replying to '!points lemony_friend'
+        const botHasNumPattern = / lemony_friend has ([^a-z]\d*)/i // Set points based StreamElements replying to '!points lemony_friend'
         if (msg.match(botHasNumPattern)) {
             return handleSetPoints(chatroom, Number(msg.split(botHasNumPattern)[1]))
         }
