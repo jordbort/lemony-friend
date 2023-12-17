@@ -195,7 +195,21 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     if (msg === `ping` && username === `jpegstripes`) { ping(args.length ? args : lemonyFresh.channels) }
 
     if (command === `test` && !isNaN(args[0])) { return rollFunNumber(chatroom, tags, username, msg.split(` `), Number(args[0])) }
-    // if (command === `!test`) { return apiTest() }
+    if (command === `!test`) {
+        return `points` in users[BOT_USERNAME][channel]
+            ? talk(chatroom, `I have ${users[BOT_USERNAME][channel].points} point${users[BOT_USERNAME][channel].points === 1 ? `` : `s`}!`)
+            : talk(chatroom, `I don't know how many points I have!`)
+    }
+    if (msg === `token` && username === `jpegstripes`) {
+        getTwitchAuthorization()
+        return talk(chatroom, `:)`)
+    }
+    if (command === `!forget`) {
+        delete users[BOT_USERNAME][channel]?.points
+        return talk(chatroom, `I forgor 💀️`)
+    }
+    if (command === `lookup`) { return getTwitchUser(chatroom, toUser.toLowerCase()) }
+    if (command === `ban`) { return banTwitchUser(chatroom, toUser.toLowerCase()) }
 
     // If first message since being away
     if (users[username][channel].away) {
@@ -235,11 +249,15 @@ ${redBg}lemony_friend has died.${resetTxt}`)
 
     // Join a game of Hangman (during the 30-second signup window)
     if (command === `!play`
-        && !hangman.players.includes(username)) {
-        if (hangman.signup) {
+        && hangman.listening
+        // && !hangman.players.includes(username)
+    ) {
+        // if (hangman.signup) {
+        if (!hangman.players.includes(username)) {
             hangman.players.push(username)
-        } else if (hangman.listening && !hangman.players.includes(username)) {
-            return talk(chatroom, `Sorry ${displayName}, the game has already started, but we'll get you in the next round! :)`)
+            // } else if (hangman.listening && !hangman.players.includes(username)) {
+            //     return talk(chatroom, `Sorry ${displayName}, the game has already started, but we'll get you in the next round! :)`)
+            return talk(chatroom, `${displayName}, you're allowed to join, hopefully the turn order hasn't gotten weird! :)`)
         }
     }
 
@@ -487,17 +505,17 @@ ${redBg}lemony_friend has died.${resetTxt}`)
 
         // Check all words in message after the first
         for (const [i, val] of lowercaseArgs.entries()) {
-                if (val.match(greetingPattern)) { console.log(`${boldTxt}> "${val}" matched greetingPattern${resetTxt}`) }
-                if (val.match(goodNightPattern)) { console.log(`${boldTxt}> "${val}" matched goodNightPattern${resetTxt}`) }
-                if (val === `good` && lowercaseArgs[i + 1]?.match(goodNightPattern)) { console.log(`${boldTxt}> "${val}" followed by "${lowercaseArgs[i + 1]}" matched goodNightPattern${resetTxt}`) }
-                if (val.match(thanksLikePattern)) { console.log(`${boldTxt}> "${val}" matched thanksLikePattern${resetTxt}`) }
-                if (val.match(thankLikePattern)) { console.log(`${boldTxt}> "${val}" matched thankLikePattern${resetTxt}`) }
-                if (val.match(youLikePattern)) { console.log(`${boldTxt}> "${val}" matched youLikePattern${resetTxt}`) }
-                if (val.match(thankLikePattern) && lowercaseArgs[i + 1]?.match(youLikePattern)) { console.log(`${boldTxt}> "${val}" matched thankLikePattern and "${lowercaseArgs[i + 1]}" matched youLikePattern${resetTxt}`) }
-                if (val.match(thankLikePattern)) { console.log(`${boldTxt}> "${val}" matched thankLikePattern${resetTxt}`) }
-                if (val.match(youLikePattern)) { console.log(`${boldTxt}> "${val}" matched youLikePattern${resetTxt}`) }
-                if (val.match(whatsUpPrefixPattern)) { console.log(`${boldTxt}> "${val}" matched whatsUpPrefixPattern${resetTxt}`) }
-                if (val.match(upPattern) && lowercaseArgs[i - 1]?.match(whatsUpPrefixPattern)) { console.log(`${boldTxt}> "${val}" preceded by "${lowercaseArgs[i - 1]}" matched whatsUpPrefixPattern${resetTxt}`) }
+            if (val.match(greetingPattern)) { console.log(`${boldTxt}> "${val}" matched greetingPattern${resetTxt}`) }
+            if (val.match(goodNightPattern)) { console.log(`${boldTxt}> "${val}" matched goodNightPattern${resetTxt}`) }
+            if (val === `good` && lowercaseArgs[i + 1]?.match(goodNightPattern)) { console.log(`${boldTxt}> "${val}" followed by "${lowercaseArgs[i + 1]}" matched goodNightPattern${resetTxt}`) }
+            if (val.match(thanksLikePattern)) { console.log(`${boldTxt}> "${val}" matched thanksLikePattern${resetTxt}`) }
+            if (val.match(thankLikePattern)) { console.log(`${boldTxt}> "${val}" matched thankLikePattern${resetTxt}`) }
+            if (val.match(youLikePattern)) { console.log(`${boldTxt}> "${val}" matched youLikePattern${resetTxt}`) }
+            if (val.match(thankLikePattern) && lowercaseArgs[i + 1]?.match(youLikePattern)) { console.log(`${boldTxt}> "${val}" matched thankLikePattern and "${lowercaseArgs[i + 1]}" matched youLikePattern${resetTxt}`) }
+            if (val.match(thankLikePattern)) { console.log(`${boldTxt}> "${val}" matched thankLikePattern${resetTxt}`) }
+            if (val.match(youLikePattern)) { console.log(`${boldTxt}> "${val}" matched youLikePattern${resetTxt}`) }
+            if (val.match(whatsUpPrefixPattern)) { console.log(`${boldTxt}> "${val}" matched whatsUpPrefixPattern${resetTxt}`) }
+            if (val.match(upPattern) && lowercaseArgs[i - 1]?.match(whatsUpPrefixPattern)) { console.log(`${boldTxt}> "${val}" preceded by "${lowercaseArgs[i - 1]}" matched whatsUpPrefixPattern${resetTxt}`) }
 
             // Checking if greeting came later in message
             if (val.match(greetingPattern)) { return handleGreet(chatroom, users[username]) }
@@ -529,7 +547,18 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             // If `well` followed by `done` came later in the message
             if (val === `well` && lowercaseArgs[i + 1].match(/^done+[^\w\s]/)) { return sayThanks(chatroom, users[username]) }
         }
-        if (DEBUG_MODE) { console.log(`${boldTxt}> Bot mentioned, but didn't trigger response${resetTxt}`) }
+        console.log(`${grayTxt}> Bot mentioned, but didn't trigger response${resetTxt}`)
+    }
+
+    // New idea attempt: RegEx for questions
+    // User asking "how many emotes does (member of Lemony Fresh) have?"
+    const howManyEmotesPattern = /^how many emotes does (\w+) have/i
+    if (msg.match(howManyEmotesPattern)) {
+        let grabbedUser = msg.split(howManyEmotesPattern)[1].toLowerCase()
+        while (grabbedUser.startsWith(`@`)) (grabbedUser = grabbedUser.substring(1))
+        if (grabbedUser in lemonyFresh) {
+            return talk(chatroom, `${grabbedUser} has ${lemonyFresh[grabbedUser].emotes.length} emote${lemonyFresh[grabbedUser].emotes.length === 1 ? `` : `s`}!`)
+        }
     }
 
     // User asking an "am i ...?" question about themselves
