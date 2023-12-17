@@ -1,16 +1,15 @@
 // Global settings
 const funNumberCount = 25
 const funNumberTotal = 50
-let listening = true
-let sayOnlineMsg = true
-let FIRST_CONNECTION = true
-let DEBUG_MODE = true
+const options = {
+    listening: true,
+    sayOnlineMsg: true,
+    FIRST_CONNECTION: true,
+    debug: true
+}
 
 module.exports = {
     funNumberCount,
     funNumberTotal,
-    listening,
-    sayOnlineMsg,
-    FIRST_CONNECTION,
-    DEBUG_MODE
+    options
 }
