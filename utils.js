@@ -1176,8 +1176,9 @@ function handleVIPChange(chatroom, user, vipStatus) {
     }
 }
 
-function checkEmoteStreak(chatroom, emoteArr, channel) {
-    if (settings.debug) { console.log(`${boldTxt}> checkEmoteStreak(chatroom: ${chatroom}, emoteArr.length: ${emoteArr.length}, channel: ${channel})${resetTxt}`) }
+function checkEmoteStreak(chatroom, emoteArr) {
+    if (settings.debug) { console.log(`${boldTxt}> checkEmoteStreak(chatroom: ${chatroom}, emoteArr.length: ${emoteArr.length})${resetTxt}`) }
+    const channel = chatroom.substring(1)
     let emoteStreakCount = 0
     const emoteStreakUsers = []
     // Checking if message includes any of the provided emotes
@@ -1391,7 +1392,7 @@ async function getTwitchToken() {
     console.log(`${grayTxt}${JSON.stringify(token)}${resetTxt}`)
     ACCESS_TOKEN = token.access_token
 }
-5
+
 async function getTwitchAuthentication() {
     if (settings.debug) { console.log(`${boldTxt}> getTwitchToken()${resetTxt}`) }
     const randomString = crypto.randomUUID().split(`-`).join(``)

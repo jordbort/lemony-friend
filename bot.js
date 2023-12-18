@@ -921,7 +921,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             if (users[BOT_USERNAME]?.[chan]?.sub) {
                 for (const str of lemonyFresh[chan].emotes) {
                     if (msg.includes(str)) {
-                        checkEmoteStreak(chatroom, lemonyFresh[chan], channel)
+                        checkEmoteStreak(chatroom, lemonyFresh[chan])
                         // break // ?
                     }
                 }
@@ -932,7 +932,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         // if (users[BOT_USERNAME]?.[`sclarf`]?.sub) {
         //     for (const str of lemonyFresh.sclarf.emotes) {
         //         if (msg.includes(str)) {
-        //             checkEmoteStreak(chatroom, sclarfEmotes, channel)
+        //             checkEmoteStreak(chatroom, sclarfEmotes)
         //             break
         //         }
         //     }
@@ -940,7 +940,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         // if (users[BOT_USERNAME]?.[`domonintendo1`]?.sub) {
         //     for (const str of lemonyFresh.domonintendo1.emotes) {
         //         if (msg.includes(str)) {
-        //             checkEmoteStreak(chatroom, domoEmotes, channel)
+        //             checkEmoteStreak(chatroom, domoEmotes)
         //             break
         //         }
         //     }
@@ -948,7 +948,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         // if (users[BOT_USERNAME]?.[`e1ectroma`]?.sub) {
         //     for (const str of lemonyFresh.e1ectroma.emotes) {
         //         if (msg.includes(str)) {
-        //             checkEmoteStreak(chatroom, tromEmotes, channel)
+        //             checkEmoteStreak(chatroom, tromEmotes)
         //             break
         //         }
         //     }
@@ -956,7 +956,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         // if (users[BOT_USERNAME]?.[`jpegstripes`]?.sub) {
         //     for (const str of lemonyFresh.jpegstripes.emotes) {
         //         if (msg.includes(str)) {
-        //             checkEmoteStreak(chatroom, jpegEmotes, channel)
+        //             checkEmoteStreak(chatroom, jpegEmotes)
         //             break
         //         }
         //     }
