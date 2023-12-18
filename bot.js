@@ -88,8 +88,10 @@ const {
     printLemon,
     getTwitchUser,
     banTwitchUser,
+    getClaims,
     getTwitchChannel,
-    getTwitchAuthorization,
+    getTwitchToken,
+    getTwitchAuthentication,
     handleShoutOut,
     talk
 } = require(`./utils`)
@@ -197,15 +199,20 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             : talk(chatroom, `I don't know how many points I have!`)
     }
     if (msg === `token` && username === `jpegstripes`) {
-        getTwitchAuthorization()
+        getTwitchToken()
         return talk(chatroom, `:)`)
+    }
+    if (msg === `auth` && username === `jpegstripes`) {
+        return getTwitchAuthentication()
+        // return talk(chatroom, `:D`)
     }
     if (command === `!forget`) {
         delete users[BOT_USERNAME][channel]?.points
         return talk(chatroom, `I forgor 💀️`)
     }
-    if (command === `lookup`) { return getTwitchUser(chatroom, toUser.toLowerCase()) }
-    if (command === `ban`) { return banTwitchUser(chatroom, toUser.toLowerCase()) }
+    if (command === `lookup` && username === `jpegstripes`) { return getTwitchUser(chatroom, toUser.toLowerCase()) }
+    if (command === `ban` && username === `jpegstripes`) { return banTwitchUser(chatroom, toUser.toLowerCase()) }
+    if (command === `claims` && username === `jpegstripes`) { return getClaims(chatroom) }
 
     // If first message since being away
     if (users[username][channel].away) {
@@ -245,15 +252,13 @@ ${redBg}lemony_friend has died.${resetTxt}`)
 
     // Join a game of Hangman (during the 30-second signup window)
     if (command === `!play`
-        && hangman.listening
-        // && !hangman.players.includes(username)
-    ) {
-        // if (hangman.signup) {
-        if (!hangman.players.includes(username)) {
+        && hangman.listening) {
+        if (hangman.signup) {
+            if (!hangman.players.includes(username)) { return hangman.players.push(username) }
+        } else if (!hangman.players.includes(username)) {
+            // return talk(chatroom, `Sorry ${displayName}, the game has already started, but we'll get you in the next round! :)`)
             hangman.players.push(username)
-            // } else if (hangman.listening && !hangman.players.includes(username)) {
-            //     return talk(chatroom, `Sorry ${displayName}, the game has already started, but we'll get you in the next round! :)`)
-            return talk(chatroom, `${displayName}, you're allowed to join, hopefully the turn order hasn't gotten weird! :)`)
+            return talk(chatroom, `${displayName}, you can still hop in, you'll go after everyone else! :)`)
         }
     }
 
@@ -865,7 +870,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             return handleSetPoints(chatroom, Number(msg.split(pointsSetToPattern)[1].split(` `)[2]))
         }
         // Receiving points from a gifter
-        const receivingPattern = / gave (\d*)/i
+        const receivingPattern = /^((?!lemony_friend).)* gave (\d*)/i
         if (msg.match(receivingPattern)) {
             return handleGivenPoints(chatroom, msg.split(receivingPattern)[0], Number(msg.split(receivingPattern)[1]))
         }
