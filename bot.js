@@ -258,15 +258,17 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             : talk(chatroom, `I am not subbed to: ${allUsers.join(`, `)} :(`)
     }
 
-    // If user mentions a user who is away
+    // If a user who isn't Nightbot or StreamElements mentions a user who is away
+    if (![`nightbot`, `streamelements`].includes(username)) {
     for (const user of Object.keys(users)) {
         // console.log(`Checking for ${user}...`)
         if (msg.toLowerCase().includes(user) && users[user][channel]?.away) {
-            let reply = `Unfortunately ${users[user].displayName} is away from chat right now!`
+                let reply = `Unfortunately ${users[user].displayName} is away from chat right now! `
             users[user][channel].awayMessage
-                ? reply += ` Their away message: "${users[user][channel].awayMessage}"`
-                : ` :(`
+                    ? reply += `Their away message: "${users[user][channel].awayMessage}"`
+                    : `:(`
             return talk(chatroom, reply)
+            }
         }
     }
 
