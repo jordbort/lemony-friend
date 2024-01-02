@@ -50,7 +50,6 @@ const {
     emoteReply,
     delayListening,
     ping,
-    cleanupSpaces,
     getToUser,
     printLemon,
     getTwitchUser,

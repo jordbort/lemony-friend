@@ -1238,16 +1238,6 @@ function ping(arr) {
     }
 }
 
-function cleanupSpaces(str) {
-    let newStr = ``
-    for (let i = 0; i < str.length; i++) {
-        if (!(str[i] === ` ` && str[i + 1] === ` `)) {
-            newStr += str[i]
-        } else if (settings.debug) { console.log(`${boldTxt}> cleanupSpaces() removed a double space!${resetTxt}`) }
-    }
-    return newStr
-}
-
 function getToUser(str) {
     let toUser = str
     while (toUser.startsWith(`@`)) { toUser = toUser.substring(1) }
@@ -1467,7 +1457,6 @@ module.exports = {
     emoteReply,
     delayListening,
     ping,
-    cleanupSpaces,
     getToUser,
     printLemon,
     getTwitchUser,
