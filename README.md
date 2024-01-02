@@ -3,6 +3,7 @@
 Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their community.
 
 ## Commands
+- `!docs` - Use this command to get a link to this README.
 - `!commands` - This command lists all the commonly-used commands lemony_friend has.
 - `!so` - This command gives a shoutout to another user by looking them up using the [Twitch API](https://dev.twitch.tv/docs/api/).
 - `!hangman` - This command initiates a game of Hangman. Join the game using `!play`.

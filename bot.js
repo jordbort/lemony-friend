@@ -193,6 +193,8 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     \******/
 
     // All commands
+    if (command === `!docs`) { return talk(chatroom, `Check out the docs here: https://github.com/jordbort/lemony-friend/blob/main/README.md`) }
+
     if (command === `!commands`) { return sayCommands(chatroom) }
 
     if (command === `!so` && toUser) {
