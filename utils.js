@@ -310,7 +310,7 @@ function toggleDebugMode(chatroom, args) {
         : talk(chatroom, `Debug mode is now ${settings.debug ? `ON` : `OFF`}! :)`)
 }
 
-function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
+async function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
     if (settings.debug) { console.log(`${boldTxt}> rollFunNumber(chatroom: ${chatroom}, tags: ${typeof tags}, username: ${username}, msgArr.length: ${msgArr.length}, funNumber: ${funNumber})${resetTxt}`) }
     const channel = chatroom.substring(1)
 
@@ -392,6 +392,12 @@ function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
     else if (funNumber === 7) { talk(chatroom, `This message has a 1/${(funNumberCount * funNumberTotal).toLocaleString()} chance of appearing`) }
     else if (funNumber === 8) { talk(chatroom, `${tags.id}`) }
     else if (funNumber === 9) { talk(chatroom, `${tags[`tmi-sent-ts`]}`) }
+    else if (funNumber === 10) {
+        const broadcaster_id = lemonyFresh[channel].id
+        const twitchChannel = await getTwitchChannel(chatroom, broadcaster_id)
+        const game = twitchChannel.game_name
+        talk(chatroom, `How are you enjoying ${game || `the game`}?`)
+    }
 }
 
 function handleGivenPoints(chatroom, givingUser, pointsNum) {
@@ -1383,23 +1389,19 @@ async function getTwitchToken() {
     ACCESS_TOKEN = token.access_token
 }
 
-async function getTwitchAuthentication() {
-    if (settings.debug) { console.log(`${boldTxt}> getTwitchToken()${resetTxt}`) }
-    const randomString = crypto.randomUUID().split(`-`).join(``)
-    // const claims = 
-    const client_id = CLIENT_ID
-    const force_verify = false
-    const nonce = randomString
-    const redirect_uri = `http://localhost:3000`
-    const response_type = `token+id_token`
-    const scope = `openid`
-    const state = randomString
-    // claims=${claims}&
-    const url = `https://id.twitch.tv/oauth2/authorize?client_id=${client_id}&force_verify=${force_verify}&nonce=${nonce}&redirect_uri=${redirect_uri}&response_type=${response_type}&scope=${scope}&state=${state}`;
-    const response = await fetch(url, { method: "POST" })
-    const token = await response.json()
-    console.log(`${grayTxt}${JSON.stringify(token)}${resetTxt}`)
-    // ACCESS_TOKEN = token.access_token
+async function getTwitchGame(chatroom, str) {
+    if (settings.debug) { console.log(`${boldTxt}> getTwitchGame(str: ${str})${resetTxt}`) }
+    const endpoint = `https://api.twitch.tv/helix/games?name=${str}`
+    const options = {
+        headers: {
+            authorization: `Bearer ${ACCESS_TOKEN}`,
+            "Client-Id": CLIENT_ID
+        }
+    }
+    const response = await fetch(endpoint, options)
+    const data = await response.json()
+    console.log(data)
+    talk(chatroom, `Looking for ${str}!`)
 }
 
 async function handleShoutOut(chatroom, user) {
@@ -1464,7 +1466,7 @@ module.exports = {
     getClaims,
     getTwitchChannel,
     getTwitchToken,
-    getTwitchAuthentication,
+    getTwitchGame,
     handleShoutOut,
     talk
 }

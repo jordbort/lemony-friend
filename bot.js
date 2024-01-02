@@ -57,7 +57,7 @@ const {
     getClaims,
     getTwitchChannel,
     getTwitchToken,
-    getTwitchAuthentication,
+    getTwitchGame,
     handleShoutOut,
     talk
 } = require(`./utils`)
