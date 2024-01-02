@@ -2,43 +2,10 @@ require(`dotenv`).config()
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 // Import data
-const {
-    lemonyFresh,
-    users,
-    tempCmds
-} = require(`./data`)
+const { lemonyFresh, users, tempCmds } = require(`./data`)
 
 // Import global settings
-const { funNumberCount, funNumberTotal, settings } = require(`./config`)
-
-// Import terminal colors
-const {
-    resetTxt,
-    boldTxt,
-    underlined,
-    inverted,
-    blackTxt,
-    redTxt,
-    greenTxt,
-    yellowTxt,
-    blueTxt,
-    magentaTxt,
-    cyanTxt,
-    whiteTxt,
-    grayTxt,
-    orangeTxt,
-    blackBg,
-    redBg,
-    greenBg,
-    yellowBg,
-    blueBg,
-    magentaBg,
-    cyanBg,
-    whiteBg,
-    grayBg,
-    orangeBg,
-    chatColors
-} = require(`./colors`)
+const { resetTxt, boldTxt, whiteTxt, grayTxt, redBg, chatColors, funNumberCount, funNumberTotal, settings } = require(`./config`)
 
 // Import helper functions
 const {
