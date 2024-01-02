@@ -1376,6 +1376,7 @@ async function getTwitchChannel(chatroom, broadcaster_id) {
 
     const response = await fetch(endpoint, options)
     const channelnfo = await response.json()
+    console.log(channelnfo)
 
     return channelnfo?.data[0] || talk(chatroom, `There was a problem getting the channel info! :(`)
 }

@@ -168,16 +168,11 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         getTwitchToken()
         return talk(chatroom, `:)`)
     }
-    if (msg === `auth` && username === `jpegstripes`) {
-        return getTwitchAuthentication()
-        // return talk(chatroom, `:D`)
-    }
     if (command === `!forget`) {
         delete users[BOT_USERNAME][channel]?.points
         return talk(chatroom, `I forgor 💀️`)
     }
     if (command === `lookup` && username === `jpegstripes`) { return getTwitchUser(chatroom, toUser.toLowerCase()) }
-    if (command === `ban` && username === `jpegstripes`) { return banTwitchUser(chatroom, toUser.toLowerCase()) }
     if (command === `claims` && username === `jpegstripes`) { return getClaims(chatroom) }
 
     // If first message since being away
@@ -260,14 +255,14 @@ ${redBg}lemony_friend has died.${resetTxt}`)
 
     // If a user who isn't Nightbot or StreamElements mentions a user who is away
     if (![`nightbot`, `streamelements`].includes(username)) {
-    for (const user of Object.keys(users)) {
-        // console.log(`Checking for ${user}...`)
-        if (msg.toLowerCase().includes(user) && users[user][channel]?.away) {
+        for (const user of Object.keys(users)) {
+            // console.log(`Checking for ${user}...`)
+            if (msg.toLowerCase().includes(user) && users[user][channel]?.away) {
                 let reply = `Unfortunately ${users[user].displayName} is away from chat right now! `
-            users[user][channel].awayMessage
+                users[user][channel].awayMessage
                     ? reply += `Their away message: "${users[user][channel].awayMessage}"`
                     : `:(`
-            return talk(chatroom, reply)
+                return talk(chatroom, reply)
             }
         }
     }
