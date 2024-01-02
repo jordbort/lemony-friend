@@ -826,7 +826,7 @@ function lemonify(str) {
         const append = []
 
         // Shaving non-alphanumeric characters from the end of the next word (the word it might decide to replace with "lemon")
-        while (words[i + 1] && words[i + 1].match(/[^a-z0-9]$/i)) {
+        while (words[i + 1] && /[^a-z0-9]$/i.test(words[i + 1])) {
             append.push(words[i + 1][words[i + 1].length - 1])
             words[i + 1] = words[i + 1].substring(0, words[i + 1].length - 1)
         }
@@ -922,7 +922,7 @@ function lemonify(str) {
             ].includes(words[i].toLowerCase()))
             && words[i + 1]
             && !reservedKeywords.includes(words[i + 1])
-        ) { words[i + 1] = words[i + 1].match(/[^s][s]$/i) ? `lemons${append.join(``)}` : `lemon${append.join(``)}` }
+        ) { words[i + 1] = /[^s][s]$/i.test(words[i + 1]) ? `lemons${append.join(``)}` : `lemon${append.join(``)}` }
         else if (words[i + 1]) { words[i + 1] = `${words[i + 1]}${append.join(``)}` }
     }
 
