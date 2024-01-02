@@ -73,7 +73,7 @@ function onConnectedHandler(addr, port) {
 }
 
 function onMessageHandler(chatroom, tags, message, self) {
-    const msg = cleanupSpaces(message)
+    const msg = message.replace(/ +/g, ` `)
     const username = tags.username
     const displayName = tags[`display-name`]
     const channel = chatroom.slice(1)
