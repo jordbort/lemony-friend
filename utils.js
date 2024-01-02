@@ -12,37 +12,37 @@ const {
     tempCmds
 } = require(`./data`)
 
-// Import terminal colors
+// Import global settings
 const {
     resetTxt,
     boldTxt,
-    underlined,
-    inverted,
-    blackTxt,
-    redTxt,
-    greenTxt,
-    yellowTxt,
-    blueTxt,
-    magentaTxt,
-    cyanTxt,
-    whiteTxt,
+    // underlined,
+    // inverted,
+    // blackTxt,
+    // redTxt,
+    // greenTxt,
+    // yellowTxt,
+    // blueTxt,
+    // magentaTxt,
+    // cyanTxt,
+    // whiteTxt,
     grayTxt,
-    orangeTxt,
-    blackBg,
+    // orangeTxt,
+    // blackBg,
     redBg,
-    greenBg,
+    // greenBg,
     yellowBg,
-    blueBg,
-    magentaBg,
-    cyanBg,
-    whiteBg,
-    grayBg,
-    orangeBg,
-    chatColors
-} = require(`./colors`)
-
-// Import global settings
-const { funNumberCount, funNumberTotal, settings } = require(`./config`)
+    // blueBg,
+    // magentaBg,
+    // cyanBg,
+    // whiteBg,
+    // grayBg,
+    // orangeBg,
+    chatColors,
+    funNumberCount,
+    funNumberTotal,
+    settings
+} = require(`./config`)
 
 // Create bot client
 const tmi = require('tmi.js')
