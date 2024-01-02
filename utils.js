@@ -1408,7 +1408,12 @@ async function handleShoutOut(chatroom, user) {
     if (settings.debug) { console.log(`${boldTxt}> handleShoutOut(chatroom: ${chatroom}, user: ${user})${resetTxt}`) }
     const twitchUser = await getTwitchUser(chatroom, user)
     const stream = await getTwitchChannel(chatroom, twitchUser.id)
-    talk(chatroom, `Let's give a shoutout to ${stream.broadcaster_name}! They were last playing ${stream.game_name}${twitchUser.broadcaster_type ? ` and are a Twitch ${twitchUser.broadcaster_type}!` : `.`} Follow them here: https://www.twitch.tv/${stream.broadcaster_login} :)`)
+    let response = `Let's give a shoutout to ${stream.broadcaster_name}! `
+    stream.game_name
+        ? response += `They were last playing ${stream.game_name}${twitchUser.broadcaster_type ? ` and are a Twitch ${twitchUser.broadcaster_type}!` : `.`}`
+        : response += `#NoGameGang`
+    response += ` Follow them here: https://www.twitch.tv/${stream.broadcaster_login} :)`
+    talk(chatroom, response)
 }
 
 function talk(chatroom, msg) {
