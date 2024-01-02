@@ -836,9 +836,9 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             return handleSetPoints(chatroom, Number(msg.split(pointsSetToPattern)[1].split(` `)[2]))
         }
         // Receiving points from a gifter
-        const receivingPattern = /^((?!lemony_friend).)* gave (\d*)/i
+        const receivingPattern = /^(?!lemony_friend).* gave (\d*)/i
         if (msg.match(receivingPattern)) {
-            return handleGivenPoints(chatroom, msg.split(receivingPattern)[0], Number(msg.split(receivingPattern)[1]))
+            return handleGivenPoints(chatroom, msg.split(` `)[0], Number(msg.split(receivingPattern)[1]))
         }
         // Checking bot's points if unknown
         if (!(`points` in Object(users[BOT_USERNAME][channel]))) {
