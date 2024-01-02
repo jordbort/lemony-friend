@@ -158,7 +158,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     if (msg === `tags` && username === `jpegstripes`) { console.log(tags) }
     if (msg === `ping` && username === `jpegstripes`) { ping(args.length ? args : lemonyFresh.channels) }
 
-    if (command === `test` && !isNaN(args[0])) { return rollFunNumber(chatroom, tags, username, msg.split(` `), Number(args[0])) }
+    if (command === `test` && !isNaN(args[0]) && username === `jpegstripes`) { return rollFunNumber(chatroom, tags, username, msg.split(` `), Number(args[0])) }
     if (command === `!test`) {
         return `points` in users[BOT_USERNAME][channel]
             ? talk(chatroom, `I have ${users[BOT_USERNAME][channel].points} point${users[BOT_USERNAME][channel].points === 1 ? `` : `s`}!`)
