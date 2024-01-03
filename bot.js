@@ -206,7 +206,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         if (hangman.listening) {
             return hangman.signup
                 ? talk(chatroom, `A game of Hangman is starting, type !play to join!`)
-                : talk(chatroom, `A game of Hangman is already in progress! It's currently ${users[players[currentPlayer]].displayName}'s turn.`)
+                : talk(chatroom, `A game of Hangman is already in progress! It's currently ${users[hangman.players[hangman.currentPlayer]].displayName}'s turn.`)
         } else {
             hangmanInit(hangman)
             return hangmanAnnounce(chatroom)
