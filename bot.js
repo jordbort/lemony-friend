@@ -886,46 +886,12 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             if (users[BOT_USERNAME]?.[chan]?.sub) {
                 for (const str of lemonyFresh[chan].emotes) {
                     if (msg.includes(str)) {
-                        checkEmoteStreak(chatroom, lemonyFresh[chan])
-                        // break // ?
+                        console.log(`${grayTxt}chan:`, chan, `str:`, str, `emotes...${resetTxt}`, lemonyFresh[chan].emotes.slice(0, 3))
+                        checkEmoteStreak(chatroom, lemonyFresh[chan].emotes)
                     }
                 }
             }
         }
-
-        // Look for emote streak (if bot is subbed)
-        // if (users[BOT_USERNAME]?.[`sclarf`]?.sub) {
-        //     for (const str of lemonyFresh.sclarf.emotes) {
-        //         if (msg.includes(str)) {
-        //             checkEmoteStreak(chatroom, sclarfEmotes)
-        //             break
-        //         }
-        //     }
-        // }
-        // if (users[BOT_USERNAME]?.[`domonintendo1`]?.sub) {
-        //     for (const str of lemonyFresh.domonintendo1.emotes) {
-        //         if (msg.includes(str)) {
-        //             checkEmoteStreak(chatroom, domoEmotes)
-        //             break
-        //         }
-        //     }
-        // }
-        // if (users[BOT_USERNAME]?.[`e1ectroma`]?.sub) {
-        //     for (const str of lemonyFresh.e1ectroma.emotes) {
-        //         if (msg.includes(str)) {
-        //             checkEmoteStreak(chatroom, tromEmotes)
-        //             break
-        //         }
-        //     }
-        // }
-        // if (users[BOT_USERNAME]?.[`jpegstripes`]?.sub) {
-        //     for (const str of lemonyFresh.jpegstripes.emotes) {
-        //         if (msg.includes(str)) {
-        //             checkEmoteStreak(chatroom, jpegEmotes)
-        //             break
-        //         }
-        //     }
-        // }
 
         // Looking for a message to be repeated by at least two other users
         let streakCount = 0

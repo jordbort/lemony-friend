@@ -1193,11 +1193,13 @@ function checkEmoteStreak(chatroom, emoteArr) {
             if (user !== BOT_USERNAME && users[user][channel]?.lastMessage.includes(str)) {
                 emoteStreakCount++
                 emoteStreakUsers.push(users[user].displayName)
+                console.log(`${grayTxt}> found`, str, `from`, user, `emoteStreakCount:${resetTxt}`, emoteStreakCount)
                 if (emoteStreakCount >= 2) { console.log(`${boldTxt}Looking for ${emoteArr[0].substring(0, 4)} emotes... ${emoteStreakCount}/4 messages - ${emoteStreakUsers.join(`, `)}${resetTxt}`) }
                 break
             }
         }
         if (emoteStreakCount >= 4) {
+            console.log(`${grayTxt}> hit${resetTxt}`, emoteStreakCount)
             delayListening()
             return emoteReply(chatroom, emoteArr)
         }
