@@ -272,7 +272,7 @@ function sayRebootMsg(chatroom) {
     const channel = chatroom.substring(1)
     const onlineMsgs = [
         `Let's see how long before I crash`,
-        `🍋️`,
+        `${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`,
         `don't mind me`,
         `(just rebooting again)`,
         `(Windows 95 startup sound plays)`,
@@ -283,7 +283,8 @@ function sayRebootMsg(chatroom) {
         `Debug mode is currently ${settings.debug ? `ON` : `OFF`}! :)`,
         `Let's play Hangman! :)`,
         `nowHasPattern has been updated to /now ha(?:s|ve) \[*(\d*)/i which makes use of capturing and non-capturing groups :)`,
-        `${channel} has ${lemonyFresh[channel].emotes.length} emote${lemonyFresh[channel].emotes.length === 1 ? `` : `s`}!`
+        `${channel} has ${lemonyFresh[channel].emotes.length} emote${lemonyFresh[channel].emotes.length === 1 ? `` : `s`}!`,
+        `It has been ${Date.now()} milliseconds since January 1, 1970, UTC ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh ` : `🍋️`}`
     ]
     const response = onlineMsgs[Math.floor(Math.random() * onlineMsgs.length)]
     settings.sayOnlineMsg = false
@@ -1023,8 +1024,8 @@ function handleMassGreet(chatroom, arr) {
     talk(chatroom, response.join(` `))
 }
 
-function handleGreetAll(chatroom) {
-    if (settings.debug) { console.log(`${boldTxt}> handleGreetAll(chatroom: ${chatroom})${resetTxt}`) }
+function handleGreetAll(chatroom, currentTime) {
+    if (settings.debug) { console.log(`${boldTxt}> handleGreetAll(chatroom: ${chatroom}, currentTime: ${currentTime})${resetTxt}`) }
     const channel = chatroom.substring(1)
     const usersToGreet = []
     const response = []
@@ -1046,7 +1047,12 @@ function handleGreetAll(chatroom) {
     const randomEmote = emotes[Math.floor(Math.random() * emotes.length)]
     for (const user in users) {
         if (user !== BOT_USERNAME && channel in users[user]) {
-            usersToGreet.push(users[user].displayName)
+            const lastChattedAtMins = Number(((currentTime - users[user][channel].sentAt) / 60000).toFixed(2))
+            if (lastChattedAtMins < 60) {
+                usersToGreet.push(users[user].displayName)
+            } else {
+                console.log(user, `has not chatted in the past 60 minutes, ignoring...`, lastChattedAtMins)
+            }
         }
     }
     for (const user of usersToGreet) {

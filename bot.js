@@ -104,6 +104,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     const command = args.shift().toLowerCase()
     const toUser = args[0] ? getToUser(args[0]) : ``
     const target = toUser.toLowerCase() in users ? toUser.toLowerCase() : null
+    const currentTime = Date.now()
 
     // User attribute change detection
     const colorChanged = username in users && color !== users[username]?.color
@@ -128,12 +129,14 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             vip: !!tags.vip || !!tags.badges?.vip,
             msgCount: 0,
             lastMessage: msg,
+            sentAt: Date.now(),
             away: false,
             awayMessage: ``
         }
     }
     // Update last message in a chatroom, and increment counter by 1
     users[username][channel].lastMessage = msg
+    users[username][channel].sentAt = Date.now()
     users[username][channel].msgCount++
 
     // These checks happen earlier in case they happened to the bot
@@ -235,7 +238,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         let data = `${user}: { displayName: '${users[user].displayName}', color: ${users[user].color}`
         for (const key of Object.keys(users[user])) {
             if (typeof users[user][key] === `object`) {
-                data += `, ${key}: { sub: ${users[user][key].sub}, mod: ${users[user][key].mod}, vip: ${users[user][key].vip}, msgCount: ${users[user][key].msgCount}, lastMessage: '${users[user][key].lastMessage}', away: ${users[user][key].away ? `${users[user][key].away}, awayMessage: '${users[user][key].awayMessage}'` : `${users[user][key].away}`} }`
+                data += `, ${key}: { sub: ${users[user][key].sub}, mod: ${users[user][key].mod}, vip: ${users[user][key].vip}, msgCount: ${users[user][key].msgCount}, lastMessage: '${users[user][key].lastMessage}', sentAt: ${users[user][key].sentAt}, away: ${users[user][key].away ? `${users[user][key].away}, awayMessage: '${users[user][key].awayMessage}'` : `${users[user][key].away}`} }`
             }
         }
         data += ` }`
@@ -261,9 +264,10 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             // console.log(`Checking for ${user}...`)
             if (msg.toLowerCase().includes(user) && users[user][channel]?.away) {
                 let reply = `Unfortunately ${users[user].displayName} is away from chat right now! `
+                const elapsedTime = Number(((currentTime - users[user][channel].sentAt) / 60000).toFixed(2))
                 users[user][channel].awayMessage
                     ? reply += `Their away message: "${users[user][channel].awayMessage}"`
-                    : `:(`
+                    : reply += `They have been away for ${elapsedTime} minute${elapsedTime === 1 ? `` : `s`}`
                 return talk(chatroom, reply)
             }
         }
@@ -301,7 +305,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     // !greet a user or whoever
     if (command === `!greet`) {
         // If !greet all
-        if (args[0] === `all`) { return handleGreetAll(chatroom) }
+        if (args[0] === `all`) { return handleGreetAll(chatroom, currentTime) }
         // If one (known) username is used, greet normally
         if (target && !args[1]) { return handleGreet(chatroom, users[target]) }
         // If multiple args are used
@@ -404,7 +408,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         || msg.toLowerCase().includes(`melon`)
         || msg.toLowerCase().includes(`lemfriend`)) {
         // If the first word is a greeting
-        const greetingPattern = /^hey+[^\w\s]*$|^hi+[^\w\s]*$|^he.*lo+[^\w\s]*$|^howd[a-z][^\w\s]*$|sup+[^\w\s]*$|^wh?[au].*up[^\w\s]*$/i
+        const greetingPattern = /h[ae]+y+[^\w\s]*$|^hi+[^\w\s]*$|^he.*lo+[^\w\s]*$|^howd[a-z][^\w\s]*$|sup+[^\w\s]*$|^wh?[au].*up[^\w\s]*$/i
         if (command.match(greetingPattern)) {
             console.log(`${boldTxt}> "${command}" matched greetingPattern${resetTxt}`)
             return handleGreet(chatroom, users[username])
@@ -511,7 +515,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             }
 
             // If `well` followed by `done` came later in the message
-            if (val === `well` && lowercaseArgs[i + 1].match(/^done+[^\w\s]/)) { return sayThanks(chatroom, users[username]) }
+            if (val === `well` && lowercaseArgs[i + 1]?.match(/^done+[^\w\s]/)) { return sayThanks(chatroom, users[username]) }
         }
         console.log(`${grayTxt}> Bot mentioned, but didn't trigger response${resetTxt}`)
     }
@@ -886,7 +890,6 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             if (users[BOT_USERNAME]?.[chan]?.sub) {
                 for (const str of lemonyFresh[chan].emotes) {
                     if (msg.includes(str)) {
-                        console.log(`${grayTxt}chan:`, chan, `str:`, str, `emotes...${resetTxt}`, lemonyFresh[chan].emotes.slice(0, 3))
                         checkEmoteStreak(chatroom, lemonyFresh[chan].emotes)
                     }
                 }
