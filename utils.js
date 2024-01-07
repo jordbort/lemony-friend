@@ -284,7 +284,10 @@ function sayRebootMsg(chatroom) {
         `Let's play Hangman! :)`,
         `nowHasPattern has been updated to /now ha(?:s|ve) \[*(\d*)/i which makes use of capturing and non-capturing groups :)`,
         `${channel} has ${lemonyFresh[channel].emotes.length} emote${lemonyFresh[channel].emotes.length === 1 ? `` : `s`}!`,
-        `It has been ${Date.now()} milliseconds since January 1, 1970, UTC ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh ` : `🍋️`}`
+        `It has been ${Date.now()} milliseconds since January 1, 1970, UTC ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh ` : `🍋️`}`,
+        `${BOT_USERNAME in users
+            ? `I have ${users[BOT_USERNAME].lemons} lemon${users[BOT_USERNAME].lemons === 1 ? `` : `s`}! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`
+            : `${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`}`
     ]
     const response = onlineMsgs[Math.floor(Math.random() * onlineMsgs.length)]
     settings.sayOnlineMsg = false
@@ -398,6 +401,10 @@ async function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
         const twitchChannel = await getTwitchChannel(chatroom, broadcaster_id)
         const game = twitchChannel.game_name
         talk(chatroom, `How are you enjoying ${game || `the game`}?`)
+    }
+    else if (funNumber === 11) {
+        users[username].lemons++
+        talk(chatroom, `${users[username].displayName} earned one (1) lemon! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`)
     }
 }
 
@@ -584,6 +591,22 @@ function getMessageCount(chatroom, user) {
 function yell(user, msg) {
     for (const chatroom of lemonyFresh.channels) {
         talk(chatroom, `${user.displayName} says: ${msg.substring(6)}`)
+    }
+}
+
+function handleGiveLemon(chatroom, username, target) {
+    if (settings.debug) { console.log(`${boldTxt}> handleGiveLemon(chatroom: ${chatroom}, username: ${username}, target: ${target})${resetTxt}`) }
+    if (users[username].lemons > 0) {
+        if (target) {
+            users[username].lemons--
+            users[target].lemons++
+            talk(chatroom, `${users[username].displayName} gave ${users[target].displayName} a lemon!`)
+        } else {
+            users[username].lemons--
+            talk(chatroom, `${users[username].displayName} threw away a lemon!`)
+        }
+    } else {
+        talk(chatroom, `${users[username].displayName} has no lemons!`)
     }
 }
 
@@ -1451,6 +1474,7 @@ module.exports = {
     getLastMessage,
     getMessageCount,
     yell,
+    handleGiveLemon,
     getDadJoke,
     getPokemon,
     getColor,

@@ -28,6 +28,7 @@ const {
     getLastMessage,
     getMessageCount,
     yell,
+    handleGiveLemon,
     getDadJoke,
     getPokemon,
     getColor,
@@ -118,7 +119,8 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         users[username] = {
             displayName: tags[`display-name`],
             // turbo: tags.turbo,
-            color: color
+            color: color,
+            lemons: 0
         }
     }
     // Initialize user in a new chatroom
@@ -293,6 +295,19 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         `!friend`,
         `!friends`
     ].includes(command)) { return sayFriends(chatroom) }
+
+    // !lemon(s) count
+    if ([
+        `!lemon`,
+        `!lemons`
+    ].includes(command)) {
+        return target
+            ? talk(chatroom, `${users[target].displayName} has ${users[target].lemons} lemon${users[target].lemons === 1 ? `` : `s`}! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`)
+            : talk(chatroom, `${displayName} has ${users[username].lemons} lemon${users[username].lemons === 1 ? `` : `s`}! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`)
+    }
+
+    // !givelemon to someone
+    if (command === `!givelemon`) { return handleGiveLemon(chatroom, username, target) }
 
     // lemonify
     if (command === `!lemonify`) {
