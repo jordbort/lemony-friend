@@ -6,6 +6,6 @@
   },
   "scripts": {
     "dev": "nodemon bot.js",
-    "nowarn": "node --no-warnings bot.js"
+    "go": "clear && node --no-warnings bot.js"
   }
 }
