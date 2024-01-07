@@ -17,7 +17,7 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!yell` - Use this command with a message to send that message across all Lemony Fresh channels.
 - `!friend` (or `!friends`) - This command can be used to get a count of all users lemony_friend knows (including itself).
 - `!lemonify` - This command can be used to transform another user's message into lemons.
-- `!greet` - This command can be used to greet one or more users. Use `!greet <user>` to greet one user, `!greet <user1> <user2>...` to greet multiple users, or `!greet all` to greet all known users in the current channel.
+- `!greet` - This command can be used to greet one or more users. Use `!greet <user>` to greet one user, `!greet <user1> <user2>...` to greet multiple users, or `!greet all` to greet all known users in the current channel who have chatted in the past hour.
 - `!tempcmd` - This command is used to create custom commands that will be active until the next time lemony_friend is rebooted. Use `!tempcmd <commandname> <response...>` to create/edit a command name and reply, and `!tempcmd delete <commandname>` to delete a command.
 - `!tempcmds` - This command lists all existing temporary commands.
 - `!bye` (or `!gn` or `!goodnight`) - This command can be used to say good night to a user leaving chat.
