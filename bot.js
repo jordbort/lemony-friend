@@ -1,11 +1,113 @@
 require(`dotenv`).config()
 const BOT_USERNAME = process.env.BOT_USERNAME
 
-// Import data
-const { lemonyFresh, users, tempCmds } = require(`./data`)
-
 // Import global settings
-const { resetTxt, boldTxt, whiteTxt, grayTxt, redBg, chatColors, funNumberCount, funNumberTotal, settings } = require(`./config`)
+const {
+    resetTxt,
+    boldTxt,
+    underlined,
+    inverted,
+    blackTxt,
+    redTxt,
+    greenTxt,
+    yellowTxt,
+    blueTxt,
+    magentaTxt,
+    cyanTxt,
+    whiteTxt,
+    grayTxt,
+    orangeTxt,
+    blackBg,
+    redBg,
+    greenBg,
+    yellowBg,
+    blueBg,
+    magentaBg,
+    cyanBg,
+    whiteBg,
+    grayBg,
+    orangeBg,
+    chatColors,
+    funNumberCount,
+    funNumberTotal,
+    settings
+} = require(`./config`)
+
+// Import data
+const {
+    lemonyFresh,
+    users,
+    tempCmds
+} = require(`./data`)
+
+// Handle change of user's properties in chat
+const {
+    handleColorChange,
+    handleTurboChange,
+    handleSubChange,
+    handleModChange,
+    handleVIPChange
+} = require(`./handleChange`)
+
+// Respond to people in chat
+const {
+    handleNewChatter,
+    handleGreet,
+    handleMassGreet,
+    handleGreetAll,
+    sayGoodnight,
+    sayYoureWelcome,
+    sayThanks
+} = require(`./handleConversation`)
+
+// Import fetches from other APIs
+const {
+    getDadJoke,
+    getPokemon
+} = require(`./handleExternal`)
+
+// Import fun number event
+const { rollFunNumber } = require(`./handleFunNumber`)
+
+// Import Hangman controls
+const {
+    getRandomWord,
+    hangmanInit,
+    hangmanAnnounce,
+    checkLetter,
+    solvePuzzle
+} = require(`./handleHangman`)
+
+// Lemonify chat message
+const { lemonify } = require(`./handleLemonify`)
+
+// Import Rock, Paper, Scissors
+const { rockPaperScissors } = require(`./handleRPS`)
+
+// Listen for message streaks and emote streaks
+const {
+    checkStreak,
+    checkEmoteStreak,
+    emoteReply
+} = require(`./handleStreaks`)
+
+// Import StreamElements bot reactions
+const {
+    handleGivenPoints,
+    handleSetPoints,
+    handleLoseAllPoints
+} = require(`./handleStreamElements`)
+
+// Import Twitch functions
+const {
+    getTwitchUser,
+    banTwitchUser,
+    getClaims,
+    getTwitchChannel,
+    getTwitchToken,
+    getTwitchGame,
+    handleShoutOut
+} = require(`./handleTwitch`)
 
 // Import helper functions
 const {
@@ -14,52 +116,18 @@ const {
     sayFriends,
     sayCommands,
     toggleDebugMode,
-    rollFunNumber,
-    handleGivenPoints,
-    handleSetPoints,
-    handleLoseAllPoints,
-    getRandomWord,
-    hangmanInit,
-    hangmanAnnounce,
-    checkLetter,
-    solvePuzzle,
-    rockPaperScissors,
-    handleNewChatter,
     getLastMessage,
     getMessageCount,
     yell,
     handleGiveLemon,
-    getDadJoke,
-    getPokemon,
     getColor,
     getRandomUser,
     getRandomChannelMessage,
-    lemonify,
     handleTempCmd,
-    handleGreet,
-    handleMassGreet,
-    handleGreetAll,
-    sayGoodnight,
-    sayYoureWelcome,
-    sayThanks,
-    handleColorChange,
-    handleTurboChange,
-    handleSubChange,
-    handleModChange,
-    handleVIPChange,
-    checkEmoteStreak,
-    emoteReply,
     delayListening,
     ping,
     getToUser,
     printLemon,
-    getTwitchUser,
-    banTwitchUser,
-    getClaims,
-    getTwitchChannel,
-    getTwitchToken,
-    getTwitchGame,
-    handleShoutOut,
     talk
 } = require(`./utils`)
 
@@ -84,9 +152,13 @@ function onMessageHandler(chatroom, tags, message, self) {
 
     process.on('uncaughtException', (err) => {
         const errorPosition = err.stack.split(`\n`)[1].split(`/`)[0].substring(4) + err.stack.split(`\n`)[1].split(`/`)[err.stack.split(`\n`)[1].split(`/`).length - 1]
-        talk(chatroom, `Oops, I just crashed! ${users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : `>(`} ${err.message} ${errorPosition}`)
+        talk(`#jpegstripes`, `Oops, I just crashed! ${users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : `>(`} ${err.message} ${errorPosition}`)
+        talk(`#sclarf`, `Oops, I just crashed! ${users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : `>(`} ${err.message} ${errorPosition}`)
+        talk(`#e1ectroma`, `Oops, I just crashed! ${users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : `>(`} ${err.message} ${errorPosition}`)
+        talk(`#domonintendo1`, `Oops, I just crashed! ${users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : `>(`} ${err.message} ${errorPosition}`)
+        talk(`#ppuyya`, `Oops, I just crashed! ${users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : `>(`} ${err.message} ${errorPosition}`)
         console.log(err)
-        process.exit(1)
+        setTimeout(() => process.exit(1), 1)
     })
     if (msg === `lemony_friend -kill`) {
         talk(chatroom, `I have gone offline! ResidentSleeper`)
@@ -174,8 +246,10 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         return talk(chatroom, `:)`)
     }
     if (command === `!forget`) {
-        delete users[BOT_USERNAME][channel]?.points
-        return talk(chatroom, `I forgor 💀️`)
+        if (points in users[BOT_USERNAME][channel]) {
+            delete users[BOT_USERNAME][channel].points
+            return talk(chatroom, `I forgor 💀️`)
+        }
     }
     if (command === `lookup` && username === `jpegstripes`) { return getTwitchUser(chatroom, toUser.toLowerCase()) }
     if (command === `claims` && username === `jpegstripes`) { return getClaims(chatroom) }
@@ -240,7 +314,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         let data = `${user}: { displayName: '${users[user].displayName}', color: ${users[user].color}`
         for (const key of Object.keys(users[user])) {
             if (typeof users[user][key] === `object`) {
-                data += `, ${key}: { sub: ${users[user][key].sub}, mod: ${users[user][key].mod}, vip: ${users[user][key].vip}, msgCount: ${users[user][key].msgCount}, lastMessage: '${users[user][key].lastMessage}', sentAt: ${users[user][key].sentAt}, away: ${users[user][key].away ? `${users[user][key].away}, awayMessage: '${users[user][key].awayMessage}'` : `${users[user][key].away}`} }`
+                data += `, ${key}: { sub: ${users[user][key]?.sub}, mod: ${users[user][key].mod}, vip: ${users[user][key].vip}, msgCount: ${users[user][key].msgCount}, lastMessage: '${users[user][key].lastMessage}', sentAt: ${users[user][key].sentAt}, away: ${users[user][key].away ? `${users[user][key].away}, awayMessage: '${users[user][key].awayMessage}'` : `${users[user][key].away}`} }`
             }
         }
         data += ` }`
@@ -899,34 +973,20 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             }
         }
 
-        // Look for emote streak (if bot is subbed) - TESTING
-        for (const member of lemonyFresh.channels) {
-            const chan = member.substring(1)
-            if (users[BOT_USERNAME]?.[chan]?.sub) {
-                for (const str of lemonyFresh[chan].emotes) {
-                    if (msg.includes(str)) {
-                        checkEmoteStreak(chatroom, lemonyFresh[chan].emotes)
+        // Listening for a message to be repeated by at least two other users
+        const stopListening = checkStreak(chatroom, msg)
+
+        // Continue listening for emote streak (if bot is subbed)
+        if (!stopListening) {
+            for (const member of lemonyFresh.channels) {
+                const chan = member.substring(1)
+                if (users[BOT_USERNAME]?.[chan]?.sub) {
+                    for (const str of lemonyFresh[chan].emotes) {
+                        if (msg.includes(str)) {
+                            return checkEmoteStreak(chatroom, lemonyFresh[chan].emotes)
+                        }
                     }
                 }
-            }
-        }
-
-        // Looking for a message to be repeated by at least two other users
-        let streakCount = 0
-        const streakUsers = []
-
-        for (const user in users) {
-            if (user !== BOT_USERNAME && users[user][channel]?.lastMessage === msg
-                && msg !== `!play`
-            ) {
-                streakCount++
-                streakUsers.push(users[user].displayName)
-                if (streakCount >= 2) { console.log(`${boldTxt}Listening for message streak... ${streakCount}/3 "${msg}" - ${streakUsers.join(`, `)}${resetTxt}`) }
-            }
-            if (streakCount >= 3) {
-                delayListening()
-                setTimeout(() => { talk(chatroom, msg) }, 1000)
-                return
             }
         }
     }
