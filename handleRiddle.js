@@ -19,13 +19,14 @@ async function getRiddle(chatroom) {
     talk(chatroom, lemonyFresh[channel].riddle.question)
 }
 
-function handleRiddleAnswer(chatroom, args) {
+function handleRiddleAnswer(chatroom, username, args) {
     if (settings.debug) { console.log(`${boldTxt}> handleRiddleAnswer(chatroom: ${chatroom}, args.length: ${args.length})${resetTxt}`) }
     const str = args.map((arg) => arg.toLowerCase()).join(` `)
     const channel = chatroom.substring(1)
     const solved = lemonyFresh[channel].riddle.answer.toLowerCase().includes(str) || str.includes(lemonyFresh[channel].riddle.answer.toLowerCase())
     if (solved) {
-        talk(chatroom, `That's right: ${lemonyFresh[channel].riddle.answer}! :)`)
+        users[username][channel].riddleWins++
+        talk(chatroom, `That's right: ${lemonyFresh[channel].riddle.answer}! You have solved ${users[username][channel].riddleWins} riddle${users[username][channel].riddleWins === 1 ? `` : `s`}! :)`)
         lemonyFresh[channel].riddle.question = ``
         lemonyFresh[channel].riddle.answer = ``
     } else {

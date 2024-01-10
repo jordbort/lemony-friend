@@ -93,10 +93,11 @@ function checkLetter(chatroom, username, guess) {
 
 function solvePuzzle(chatroom, username) {
     if (settings.debug) { console.log(`${boldTxt}> solvePuzzle(chatroom: ${chatroom}, username: ${username})${resetTxt}`) }
-    const hangman = lemonyFresh[chatroom.slice(1)].hangman
-
+    const channel = chatroom.slice(1)
+    const hangman = lemonyFresh[channel].hangman
     hangman.listening = false
-    return talk(chatroom, `Congratulations ${users[username].displayName}, you solved the puzzle! The answer was: "${hangman.answer}" :D`)
+    users[username][channel].hangmanWins++
+    return talk(chatroom, `Congratulations ${users[username].displayName}, you solved the puzzle! The answer was: "${hangman.answer}". You have solved ${users[username][channel].hangmanWins} Hangman answer${users[username][channel].hangmanWins === 1 ? `` : `s`}! :D`)
 }
 
 module.exports = {

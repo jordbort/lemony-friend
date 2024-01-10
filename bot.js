@@ -207,6 +207,8 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             msgCount: 0,
             lastMessage: msg,
             sentAt: Date.now(),
+            hangmanWins: 0,
+            riddleWins: 0,
             away: false,
             awayMessage: ``
         }
@@ -318,7 +320,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     if (command === `!answer`) {
         return lemonyFresh[channel].riddle.question
             ? args[0]
-                ? handleRiddleAnswer(chatroom, args)
+                ? handleRiddleAnswer(chatroom, username, args)
                 : talk(chatroom, `What is your answer, ${displayName}? :)`)
             : talk(chatroom, `You can use !riddle to ask me for a riddle! :)`)
     }
