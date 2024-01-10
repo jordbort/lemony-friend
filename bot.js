@@ -152,14 +152,11 @@ function onMessageHandler(chatroom, tags, message, self) {
 
     process.on('uncaughtException', (err) => {
         const errorPosition = err.stack.split(`\n`)[1].split(`/`)[0].substring(4) + err.stack.split(`\n`)[1].split(`/`)[err.stack.split(`\n`)[1].split(`/`).length - 1]
-        talk(`#jpegstripes`, `Oops, I just crashed! ${users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : `>(`} ${err.message} ${errorPosition}`)
-        talk(`#sclarf`, `Oops, I just crashed! ${users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : `>(`} ${err.message} ${errorPosition}`)
-        talk(`#e1ectroma`, `Oops, I just crashed! ${users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : `>(`} ${err.message} ${errorPosition}`)
-        talk(`#domonintendo1`, `Oops, I just crashed! ${users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : `>(`} ${err.message} ${errorPosition}`)
-        talk(`#ppuyya`, `Oops, I just crashed! ${users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : `>(`} ${err.message} ${errorPosition}`)
+        talk(channel, `Oops, I just crashed! ${users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : `>(`} ${err.message} ${errorPosition}`)
         console.log(err)
-        setTimeout(() => process.exit(1), 1)
+        process.exit(1)
     })
+
     if (msg === `lemony_friend -kill`) {
         talk(chatroom, `I have gone offline! ResidentSleeper`)
         process.exit(0)
