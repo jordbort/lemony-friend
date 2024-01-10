@@ -84,6 +84,12 @@ const { lemonify } = require(`./handleLemonify`)
 // Import Rock, Paper, Scissors
 const { rockPaperScissors } = require(`./handleRPS`)
 
+// Import riddle controls
+const {
+    getRiddle,
+    handleRiddleAnswer
+} = require("./handleRiddle")
+
 // Listen for message streaks and emote streaks
 const {
     checkStreak,
@@ -299,6 +305,22 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             hangman.players.push(username)
             return talk(chatroom, `${displayName}, you can still hop in, you'll go after everyone else! :)`)
         }
+    }
+
+    // Ask for a riddle
+    if (command === `!riddle`) {
+        return lemonyFresh[channel].riddle.question
+            ? talk(chatroom, `I already have a riddle for you: ${lemonyFresh[channel].riddle.question}`)
+            : getRiddle(chatroom)
+    }
+
+    // Answer the riddle
+    if (command === `!answer`) {
+        return lemonyFresh[channel].riddle.question
+            ? args[0]
+                ? handleRiddleAnswer(chatroom, args)
+                : talk(chatroom, `What is your answer, ${displayName}? :)`)
+            : talk(chatroom, `You can use !riddle to ask me for a riddle! :)`)
     }
 
     // Play rock, paper, scissors with the bot

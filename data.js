@@ -102,6 +102,10 @@ const lemonyFresh = {
             guessedLetters: [],
             chances: 6,
             currentPlayer: 0
+        },
+        riddle: {
+            question: ``,
+            answer: ``
         }
     },
     sclarf: {
@@ -138,6 +142,10 @@ const lemonyFresh = {
             guessedLetters: [],
             chances: 6,
             currentPlayer: 0
+        },
+        riddle: {
+            question: ``,
+            answer: ``
         }
     },
     e1ectroma: {
@@ -182,6 +190,10 @@ const lemonyFresh = {
             guessedLetters: [],
             chances: 6,
             currentPlayer: 0
+        },
+        riddle: {
+            question: ``,
+            answer: ``
         }
     },
     domonintendo1: {
@@ -206,6 +218,10 @@ const lemonyFresh = {
             guessedLetters: [],
             chances: 6,
             currentPlayer: 0
+        },
+        riddle: {
+            question: ``,
+            answer: ``
         }
     },
     ppuyya: {
@@ -221,6 +237,10 @@ const lemonyFresh = {
             guessedLetters: [],
             chances: 6,
             currentPlayer: 0
+        },
+        riddle: {
+            question: ``,
+            answer: ``
         }
     }
 }
