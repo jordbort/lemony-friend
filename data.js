@@ -206,7 +206,9 @@ const lemonyFresh = {
             `domoni6Sneeze`,
             `domoni6Dum`,
             `domoni6Love`,
-            `domoni6Boom`
+            `domoni6Boom`,
+            `domoni6Kek`,
+            `domoni6Mingo`
         ],
         redeems: [],
         hangman: {
