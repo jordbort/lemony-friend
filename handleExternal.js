@@ -5,6 +5,7 @@ const { resetTxt, boldTxt, settings } = require(`./config`)
 const { talk } = require(`./utils`)
 
 async function getDadJoke(chatroom) {
+    if (settings.debug) { console.log(`${boldTxt}> getDadJoke(chatroom: ${chatroom})${resetTxt}`) }
     const response = await fetch("https://icanhazdadjoke.com/", {
         headers: {
             "Accept": "application/json",
