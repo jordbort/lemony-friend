@@ -134,6 +134,7 @@ async function getTwitchGame(chatroom, str) {
 async function handleShoutOut(chatroom, user) {
     if (settings.debug) { console.log(`${boldTxt}> handleShoutOut(chatroom: ${chatroom}, user: ${user})${resetTxt}`) }
     const twitchUser = await getTwitchUser(chatroom, user)
+    if (!twitchUser) { return console.log(`${grayTxt}No user found, exiting handleShoutOut function${resetTxt}`) }
     const stream = await getTwitchChannel(chatroom, twitchUser.id)
     let response = `Let's give a shoutout to ${stream.broadcaster_name}! `
     stream.game_name
