@@ -72,6 +72,12 @@ const numbers = [
 ]
 
 // Helper functions
+async function handleUncaughtException(errMsg, location) {
+    return lemonyFresh.channels.forEach((channel) => {
+        talk(channel, `Oops, I just crashed! ${users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : `>(`} ${errMsg} ${location}`)
+    })
+}
+
 function sayRebootMsg(chatroom) {
     if (settings.debug) { console.log(`${boldTxt}> sayRebootMsg(chatroom: ${chatroom})${resetTxt}`) }
     const channel = chatroom.substring(1)
@@ -283,6 +289,7 @@ function talk(chatroom, msg) {
 
 module.exports = {
     client,
+    handleUncaughtException,
     sayRebootMsg,
     sayFriends,
     sayCommands,

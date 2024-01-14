@@ -118,6 +118,7 @@ const {
 // Import helper functions
 const {
     client,
+    handleUncaughtException,
     sayRebootMsg,
     sayFriends,
     sayCommands,
@@ -136,6 +137,13 @@ const {
     printLemon,
     talk
 } = require(`./utils`)
+
+process.on('uncaughtException', async (err) => {
+    const errorPosition = err.stack.split(`\n`)[1].split(`/`)[0].substring(4) + err.stack.split(`\n`)[1].split(`/`)[err.stack.split(`\n`)[1].split(`/`).length - 1]
+    await handleUncaughtException(err.message, errorPosition)
+    console.error(err)
+    process.exit(1)
+})
 
 function onConnectedHandler(addr, port) {
     settings.firstConnection && printLemon()
