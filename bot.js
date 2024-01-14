@@ -281,7 +281,10 @@ ${redBg}lemony_friend has died.${resetTxt}`)
 
     if (command === `!commands`) { return sayCommands(chatroom) }
 
-    if (command === `!so` && toUser) {
+    // Handle shoutout from mod/VIP
+    if (command === `!so`
+        && (users[username][channel].mod || users[username][channel].vip)
+        && toUser) {
         return handleShoutOut(chatroom, toUser.toLowerCase())
     }
 
