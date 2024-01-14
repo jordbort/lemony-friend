@@ -156,22 +156,6 @@ function yell(user, msg) {
     }
 }
 
-function handleGiveLemon(chatroom, username, target) {
-    if (settings.debug) { console.log(`${boldTxt}> handleGiveLemon(chatroom: ${chatroom}, username: ${username}, target: ${target})${resetTxt}`) }
-    if (users[username].lemons > 0) {
-        if (target) {
-            users[username].lemons--
-            users[target].lemons++
-            talk(chatroom, `${users[username].displayName} gave ${users[target].displayName} a lemon!`)
-        } else {
-            users[username].lemons--
-            talk(chatroom, `${users[username].displayName} threw away a lemon!`)
-        }
-    } else {
-        talk(chatroom, `${users[username].displayName} has no lemons!`)
-    }
-}
-
 function getColor(chatroom, user) {
     if (settings.debug) { console.log(`${boldTxt}> getColor(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
     user.color in chatColors
@@ -297,7 +281,6 @@ module.exports = {
     getLastMessage,
     getMessageCount,
     yell,
-    handleGiveLemon,
     getColor,
     getRandomUser,
     getRandomChannelMessage,
