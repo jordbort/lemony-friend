@@ -445,10 +445,10 @@ ${redBg}lemony_friend has died.${resetTxt}`)
 
     // sclarf SUBtember goals
     if (command === `!goals`
-        && args.length
-        && chatroom === `#sclarf`) {
+        && args.length) {
+        if (chatroom === `#sclarf`) {
         const subs = Number(args[0])
-        const goals = {
+            const sclarfGoals = {
             25: `sclarf will play 3d pinball!`,
             50: `sclarf will make a food tirr list!`,
             75: `sclarf will have a fight club movie night!`,
@@ -478,7 +478,16 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             675: `sclarf will sexc sclarf corp calendar`,
             700: `sclarf will go see trom!`
         }
-        if (!isNaN(subs) && subs in goals) { return talk(chatroom, `At ${subs} subs, ${goals[subs]}`) }
+            if (!isNaN(subs) && subs in sclarfGoals) { return talk(chatroom, `At ${subs} subs, ${sclarfGoals[subs]}`) }
+        } else if (chatroom === `#domonintendo1`) {
+            const dollars = Number(args[0])
+            const domoGoals = {
+                50: `domo will do a 12-hour stream!`,
+                100: `domo will do a 12-hour stream + read a children's book in Japanese!`,
+                150: `domo will play Pokemon Fire Red in Japanese until we beat it!`
+            }
+            if (!isNaN(dollars) && dollars in domoGoals) { return talk(chatroom, `At $${dollars}, ${domoGoals[dollars]}`) }
+        }
     }
 
     // !bye OR !gn OR !goodnight
