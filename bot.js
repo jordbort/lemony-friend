@@ -562,8 +562,8 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         if ([`gj`, `nj`].includes(command)) { return sayThanks(chatroom, users[username]) }
 
         // If the first word is `good`/`nice` followed by `job` or `work`
-        const jobPattern = /^job+[^\w\s]/i
-        const workPattern = /^work+[^\w\s]/i
+        const jobPattern = /^job+[^\w\s]*$/i
+        const workPattern = /^work+[^\w\s]*$/i
         if ([`good`, `nice`].includes(command)
             && (args[0]?.match(jobPattern) || args[0]?.match(workPattern))) {
             return sayThanks(chatroom, users[username])
@@ -646,7 +646,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             }
 
             // If `well` followed by `done` came later in the message
-            if (val === `well` && lowercaseArgs[i + 1]?.match(/^done+[^\w\s]/)) { return sayThanks(chatroom, users[username]) }
+            if (val === `well` && lowercaseArgs[i + 1]?.match(/^done+[^\w\s]*$/)) { return sayThanks(chatroom, users[username]) }
         }
         console.log(`${grayTxt}> Bot mentioned, but didn't trigger response${resetTxt}`)
     }
