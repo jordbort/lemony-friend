@@ -434,11 +434,13 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         else { return talk(chatroom, `Greetings, ${users[username].displayName}! :)`) }
     }
 
-    // !tempcmd
-    if (command === `!tempcmd`) { return handleTempCmd(chatroom, username, args) }
+    // !tempcmd or !tmpcmd
+    if ([`!tempcmd`,
+        `!tmpcmd`].includes(command)) { return handleTempCmd(chatroom, username, args) }
 
-    // !tempcmds
-    if (command === `!tempcmds`) {
+    // !tempcmds or !tmpcmds
+    if ([`!tempcmds`,
+        `!tmpcmds`].includes(command)) {
         const commands = []
         for (key in tempCmds) {
             commands.push(`${key} => "${tempCmds[key]}"`)
