@@ -4,7 +4,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 const { users } = require(`./data`)
 
 // Import global settings
-const { resetTxt, boldTxt, settings } = require(`./config`)
+const { resetTxt, boldTxt, grayTxt, settings } = require(`./config`)
 
 // Import helper functions
 const { talk } = require(`./utils`)
@@ -124,7 +124,7 @@ function handleGreetAll(chatroom, currentTime) {
             if (lastChattedAtMins < 60) {
                 usersToGreet.push(users[user].displayName)
             } else {
-                console.log(user, `has not chatted in the past 60 minutes, ignoring...`, lastChattedAtMins)
+                console.log(`${grayTxt}${user}has not chatted in the past 60 minutes, ignoring...${resetTxt}`, lastChattedAtMins)
             }
         }
     }
