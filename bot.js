@@ -209,13 +209,16 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             vip: !!tags.vip || !!tags.badges?.vip,
             msgCount: 0,
             lastMessage: msg,
-            sentAt: Date.now(),
+            sentAt: currentTime,
             hangmanWins: 0,
             riddleWins: 0,
             away: false,
             awayMessage: ``
         }
     }
+    // Checking time comparisons
+    const elapsedMinsSinceLastMsg = (currentTime - users[username][channel].sentAt) / 60000
+
     // Update last message in a chatroom, and increment counter by 1
     users[username][channel].lastMessage = msg
     users[username][channel].sentAt = Date.now()
@@ -1029,6 +1032,13 @@ ${redBg}lemony_friend has died.${resetTxt}`)
 
     // *** FUN NUMBER! ***
     if (users[username][channel].msgCount % funNumberCount === 0) { return rollFunNumber(chatroom, tags, username, msg.split(` `), Math.floor(Math.random() * funNumberTotal)) }
+
+    // Check if user hasn't chatted in more than an hour, but less than 12 hours
+    if (elapsedMinsSinceLastMsg >= 60
+        && elapsedMinsSinceLastMsg < 720) {
+        console.log(`${grayTxt}${displayName} hasn't chatted in the past 1-12 hours${resetTxt}`, elapsedMinsSinceLastMsg)
+        return talk(chatroom, `Welcome back, ${displayName}! :)`)
+    }
 }
 
 client.on('message', onMessageHandler)
