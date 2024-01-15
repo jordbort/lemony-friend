@@ -165,6 +165,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     const color = tags.color
     const firstMsg = tags['first-msg']
     const hangman = lemonyFresh[channel].hangman
+    const verifiedUser = !!tags.badges?.vip || !!tags.vip || tags.mod || username === channel
 
     if (msg === `lemony_friend -kill`) {
         talk(chatroom, `I have gone offline! ResidentSleeper`)
@@ -289,7 +290,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
 
     // Handle shoutout from mod/VIP
     if (command === `!so`
-        && (users[username][channel].mod || users[username][channel].vip)
+        && verifiedUser
         && toUser) {
         return handleShoutOut(chatroom, toUser.toLowerCase())
     }
