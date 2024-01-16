@@ -538,13 +538,6 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     if (msg.toLowerCase().includes(`lemon`)
         || msg.toLowerCase().includes(`melon`)
         || msg.toLowerCase().includes(`lemfriend`)) {
-        // If the first word is a greeting
-        const greetingPattern = /h[ae]+y+[^\w\s]*$|^hi+[^\w\s]*$|^he.*lo+[^\w\s]*$|^howd[a-z][^\w\s]*$|sup+[^\w\s]*$|^wh?[au].*up[^\w\s]*$/i
-        if (command.match(greetingPattern)) {
-            console.log(`${boldTxt}> "${command}" matched greetingPattern${resetTxt}`)
-            return handleGreet(chatroom, users[username])
-        }
-
         // If the first word is `gn` or `bye`
         const goodNightPattern = /^ni(ght|te)[^\w\s]*$|^gn[^\w\s]*$|^(bye+)+[^\w\s]*$/i
         if (command.match(goodNightPattern)) {
