@@ -229,8 +229,9 @@ async function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
     }
     // Give hundreds of points (requires StreamElements)
     else if (funNumber === 4 && chatroom !== `#domonintendo1`) {
+        console.log(users[username][channel].msgCount * 50, `>=`, users[BOT_USERNAME][channel]?.points, `?`, users[username][channel].msgCount * 50 >= users[BOT_USERNAME][channel]?.points)
         const pointsToGive = `points` in Object(users[BOT_USERNAME][channel])
-            ? users[username][channel].msgCount * 50 >= users[username][channel].points
+            ? users[username][channel].msgCount * 50 >= users[BOT_USERNAME][channel].points
                 ? `all`
                 : `${users[username][channel].msgCount * 50}`
             : `${users[username][channel].msgCount * 50}`
