@@ -91,7 +91,8 @@ const lemonyFresh = {
             `!litlizards`,
             `!raccoon`,
             `!gay`,
-            `!turbomaxwaste`
+            `!turbomaxwaste`,
+            `!where`
         ],
         hangman: {
             listening: false,
