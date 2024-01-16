@@ -541,13 +541,13 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         // If the first word is `gn` or `bye`
         const goodNightPattern = /^ni(ght|te)[^\w\s]*$|^gn[^\w\s]*$|^(bye+)+[^\w\s]*$/i
         if (command.match(goodNightPattern)) {
-            console.log(`${boldTxt}> "${command}" matched goodNightPattern${resetTxt}`)
+            console.log(`${grayTxt}> "${command}" matched goodNightPattern${resetTxt}`)
             return sayGoodnight(chatroom, users[username])
         }
 
         // If the first word is `good` followed by "night"-like word
         if (command === `good` && args[0]?.match(goodNightPattern)) {
-            console.log(`${boldTxt}> "good ${args[0]}" matched goodNightPattern${resetTxt}`)
+            console.log(`${grayTxt}> "good ${args[0]}" matched goodNightPattern${resetTxt}`)
             return sayGoodnight(chatroom, users[username])
         }
 
@@ -568,7 +568,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         // If the first word is `thanks`-like
         const thanksLikePattern = /^t(y*(sm*)*|(h*[aeou]*[bmn]*)*(ks+|x+))[^\w\s]*$/i
         if (command.match(thanksLikePattern)) {
-            console.log(`${boldTxt}> "${command}" matched thanksLikePattern${resetTxt}`)
+            console.log(`${grayTxt}> "${command}" matched thanksLikePattern${resetTxt}`)
             return sayYoureWelcome(chatroom, users[username])
         }
 
@@ -576,14 +576,14 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         const thankLikePattern = /^th*[aeou]*[bmn]*[kx]+[^\w\s]*$/i
         const youLikePattern = /^yo?u+[^\w\s]*$|^yew+[^\w\s]*$|^u+[^\w\s]*$/i
         if (command.match(thankLikePattern) && args[0]?.match(youLikePattern)) {
-            console.log(`${boldTxt}> "${command}"/"${args[0]}" matched thankLikePattern & youLikePattern${resetTxt}`)
+            console.log(`${grayTxt}> "${command}"/"${args[0]}" matched thankLikePattern & youLikePattern${resetTxt}`)
             return sayYoureWelcome(chatroom, users[username])
         }
 
         // If the first word is a greeting
         const greetingPattern = /h[ae]+y+[^\w\s]*$|^hi+[^\w\s]*$|^he.*lo+[^\w\s]*$|^howd[a-z][^\w\s]*$|sup+[^\w\s]*$|^wh?[au].*up[^\w\s]*$/i
         if (command.match(greetingPattern)) {
-            console.log(`${boldTxt}> "${command}" matched greetingPattern${resetTxt}`)
+            console.log(`${grayTxt}> "${command}" matched greetingPattern${resetTxt}`)
             return handleGreet(chatroom, users[username])
         }
 
@@ -595,10 +595,10 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         const upPattern = /^up+[^\w\s]*$/i
         // In case saying "what's up" first, and/or `up` doesn't come immediately
         if (command.match(whatsUpPrefixPattern)) {
-            console.log(`${boldTxt}> "${command}" matched whatsUpPrefixPattern${resetTxt}`)
+            console.log(`${grayTxt}> "${command}" matched whatsUpPrefixPattern${resetTxt}`)
             for (const str of lowercaseArgs) {
                 if (str.match(upPattern)) {
-                    console.log(`${boldTxt}> "${str}" matched upPattern${resetTxt}`)
+                    console.log(`${grayTxt}> "${str}" matched upPattern${resetTxt}`)
                     return handleGreet(chatroom, users[username])
                 }
             }
@@ -606,19 +606,17 @@ ${redBg}lemony_friend has died.${resetTxt}`)
 
         // Check all words in message after the first
         for (const [i, val] of lowercaseArgs.entries()) {
-            if (val.match(greetingPattern)) { console.log(`${boldTxt}> "${val}" matched greetingPattern${resetTxt}`) }
-            if (val.match(upPattern) && lowercaseArgs[i - 1]?.match(whatsUpPrefixPattern)) { console.log(`${boldTxt}> "${val}" preceded by "${lowercaseArgs[i - 1]}" matched whatsUpPrefixPattern${resetTxt}`) }
-            if (val.match(whatsUpPrefixPattern)) { console.log(`${boldTxt}> "${val}" matched whatsUpPrefixPattern${resetTxt}`) }
-            if (val.match(goodNightPattern)) { console.log(`${boldTxt}> "${val}" matched goodNightPattern${resetTxt}`) }
-            if (val.match(thanksLikePattern)) { console.log(`${boldTxt}> "${val}" matched thanksLikePattern${resetTxt}`) }
-            if (val.match(thankLikePattern)) { console.log(`${boldTxt}> "${val}" matched thankLikePattern${resetTxt}`) }
-            if (val.match(youLikePattern)) { console.log(`${boldTxt}> "${val}" matched youLikePattern${resetTxt}`) }
-            if (val.match(thankLikePattern) && lowercaseArgs[i + 1]?.match(youLikePattern)) { console.log(`${boldTxt}> "${val}" matched thankLikePattern and "${lowercaseArgs[i + 1]}" matched youLikePattern${resetTxt}`) }
-            if (val.match(thankLikePattern)) { console.log(`${boldTxt}> "${val}" matched thankLikePattern${resetTxt}`) }
-            if (val.match(youLikePattern)) { console.log(`${boldTxt}> "${val}" matched youLikePattern${resetTxt}`) }
-            if ([`gj`, `nj`].includes(val) && lowercaseArgs[i + 1]?.match(goodNightPattern)) { console.log(`${boldTxt}> "${val}" followed by "${lowercaseArgs[i + 1]}" matched goodNightPattern${resetTxt}`) }
-            if ([`good`, `nice`].includes(val) && lowercaseArgs[i + 1]?.match(jobPattern)) { console.log(`${boldTxt}> "${val}" followed by "${lowercaseArgs[i + 1]}" matched jobPattern${resetTxt}`) }
-            if ([`good`, `nice`].includes(val) && lowercaseArgs[i + 1]?.match(workPattern)) { console.log(`${boldTxt}> "${val}" followed by "${lowercaseArgs[i + 1]}" matched workPattern${resetTxt}`) }
+            if (val.match(greetingPattern)) { console.log(`${grayTxt}> "${val}" matched greetingPattern${resetTxt}`) }
+            if (val.match(upPattern) && lowercaseArgs[i - 1]?.match(whatsUpPrefixPattern)) { console.log(`${grayTxt}> "${val}" preceded by "${lowercaseArgs[i - 1]}" matched whatsUpPrefixPattern${resetTxt}`) }
+            if (val.match(whatsUpPrefixPattern)) { console.log(`${grayTxt}> "${val}" matched whatsUpPrefixPattern${resetTxt}`) }
+            if (val.match(goodNightPattern)) { console.log(`${grayTxt}> "${val}" matched goodNightPattern${resetTxt}`) }
+            if (val.match(thanksLikePattern)) { console.log(`${grayTxt}> "${val}" matched thanksLikePattern${resetTxt}`) }
+            if (val.match(thankLikePattern)) { console.log(`${grayTxt}> "${val}" matched thankLikePattern${resetTxt}`) }
+            if (val.match(youLikePattern)) { console.log(`${grayTxt}> "${val}" matched youLikePattern${resetTxt}`) }
+            if (val.match(thankLikePattern) && lowercaseArgs[i + 1]?.match(youLikePattern)) { console.log(`${grayTxt}> "${val}" matched thankLikePattern and "${lowercaseArgs[i + 1]}" matched youLikePattern${resetTxt}`) }
+            if ([`gj`, `nj`].includes(val) && lowercaseArgs[i + 1]?.match(goodNightPattern)) { console.log(`${grayTxt}> "${val}" followed by "${lowercaseArgs[i + 1]}" matched goodNightPattern${resetTxt}`) }
+            if ([`good`, `nice`].includes(val) && lowercaseArgs[i + 1]?.match(jobPattern)) { console.log(`${grayTxt}> "${val}" followed by "${lowercaseArgs[i + 1]}" matched jobPattern${resetTxt}`) }
+            if ([`good`, `nice`].includes(val) && lowercaseArgs[i + 1]?.match(workPattern)) { console.log(`${grayTxt}> "${val}" followed by "${lowercaseArgs[i + 1]}" matched workPattern${resetTxt}`) }
 
             // Checking if greeting came later in message
             if (val.match(greetingPattern)) { return handleGreet(chatroom, users[username]) }
