@@ -146,9 +146,9 @@ function sayRebootMsg(chatroom) {
             ? `I have ${users[BOT_USERNAME].lemons} lemon${users[BOT_USERNAME].lemons === 1 ? `` : `s`}! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`
             : `${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`}`
     ]
-    const response = onlineMsgs[Math.floor(Math.random() * onlineMsgs.length)]
+    const rebootMsg = onlineMsgs[Math.floor(Math.random() * onlineMsgs.length)]
     settings.sayOnlineMsg = false
-    talk(chatroom, response)
+    lemonyFresh.channels.forEach((channel) => { talk(channel, rebootMsg) })
 }
 
 function sayFriends(chatroom) {
