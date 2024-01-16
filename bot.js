@@ -535,6 +535,46 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         }
     }
 
+    // Mentioned by StreamElements
+    if (username === `streamelements` && (msg.includes(BOT_USERNAME))) {
+        console.log(`${grayTxt}> Current points:${resetTxt}`, `points` in Object(users[BOT_USERNAME][channel]) ? users[BOT_USERNAME][channel].points : `(not known)`)
+        // If bot used !gamble all and lost
+        if (msg.match(/lost (every|it)/i)) {
+            return handleLoseAllPoints(chatroom)
+        }
+        const nowHasPattern = /now ha(?:s|ve) \[*(\d*)/i // Set points based on "now has/have..." result
+        if (msg.match(nowHasPattern)) {
+            return handleSetPoints(chatroom, Number(msg.split(nowHasPattern)[1]))
+        }
+        const botHasNumPattern = / lemony_friend has ([^a-z]\d*)/i // Set points based StreamElements replying to '!points lemony_friend'
+        if (msg.match(botHasNumPattern)) {
+            return handleSetPoints(chatroom, Number(msg.split(botHasNumPattern)[1]))
+        }
+        const pointsSetToPattern = /set lemony_friend /i // Triggered by a manual set/bonus of points
+        if (msg.match(pointsSetToPattern)) {
+            return handleSetPoints(chatroom, Number(msg.split(pointsSetToPattern)[1].split(` `)[2]))
+        }
+        const insufficientFundsPattern = /^@?lemony_friend, you only have ([^a-z]\d*)/i // Triggered by insufficient points
+        if (msg.match(insufficientFundsPattern)) {
+            return handleSetPoints(chatroom, Number(msg.split(insufficientFundsPattern)[1]))
+        }
+        // Receiving points from a gifter
+        const receivingPattern = /^(?!lemony_friend).* gave (\d*)/i
+        if (msg.match(receivingPattern)) {
+            return handleGivenPoints(chatroom, msg.split(` `)[0], Number(msg.split(receivingPattern)[1]))
+        }
+        // Checking bot's points if unknown
+        if (!(`points` in Object(users[BOT_USERNAME][channel]))) {
+            return talk(chatroom, `!points`)
+        }
+        // Updating points when giving (if known)
+        const givingPattern = /lemony_friend gave ([^a-z]\d*)/i
+        if (givingPattern.test(msg)){
+            users[BOT_USERNAME][channel].points += Number(msg.split(givingPattern)[1])
+            if (settings.debug) { console.log(`${boldTxt}> New points:${resetTxt}`, users[BOT_USERNAME][channel].points) }
+        }
+    }
+
     // If bot mentioned in message
     if (msg.toLowerCase().includes(`lemon`)
         || msg.toLowerCase().includes(`melon`)
@@ -955,36 +995,6 @@ ${redBg}lemony_friend has died.${resetTxt}`)
                     ? talk(chatroom, `Yes, ${targetedUser.displayName} is a VIP in ${channel}'s chat! :)`)
                     : talk(chatroom, `No, ${targetedUser.displayName} is not a VIP in ${channel}'s chat! :(`)
             }
-        }
-    }
-
-    // Mentioned by StreamElements
-    if (username === `streamelements` && (msg.includes(BOT_USERNAME))) {
-        console.log(`${boldTxt}> Current points:${resetTxt}`, `points` in Object(users[BOT_USERNAME][channel]) ? users[BOT_USERNAME][channel].points : `(not known)`)
-        // If bot used !gamble all and lost
-        if (msg.match(/lost (every|it)/i)) {
-            return handleLoseAllPoints(chatroom)
-        }
-        const nowHasPattern = /now ha(?:s|ve) \[*(\d*)/i // Set points based on "now has/have..." result
-        if (msg.match(nowHasPattern)) {
-            return handleSetPoints(chatroom, Number(msg.split(nowHasPattern)[1]))
-        }
-        const botHasNumPattern = / lemony_friend has ([^a-z]\d*)/i // Set points based StreamElements replying to '!points lemony_friend'
-        if (msg.match(botHasNumPattern)) {
-            return handleSetPoints(chatroom, Number(msg.split(botHasNumPattern)[1]))
-        }
-        const pointsSetToPattern = /set lemony_friend /i // Triggered by a manual set/bonus of points
-        if (msg.match(pointsSetToPattern)) {
-            return handleSetPoints(chatroom, Number(msg.split(pointsSetToPattern)[1].split(` `)[2]))
-        }
-        // Receiving points from a gifter
-        const receivingPattern = /^(?!lemony_friend).* gave (\d*)/i
-        if (msg.match(receivingPattern)) {
-            return handleGivenPoints(chatroom, msg.split(` `)[0], Number(msg.split(receivingPattern)[1]))
-        }
-        // Checking bot's points if unknown
-        if (!(`points` in Object(users[BOT_USERNAME][channel]))) {
-            return talk(chatroom, `!points`)
         }
     }
 
