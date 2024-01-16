@@ -395,7 +395,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     if (command === `!msgcount`) { return getMessageCount(chatroom, users[target] || users[username]) }
 
     // !yell across all lemonyFresh.channels
-    if (command === `!yell`) { return yell(users[username], msg) }
+    if (command === `!yell`) { return yell(users[username], msg.substring(6)) }
 
     // !friend(s) count
     if ([

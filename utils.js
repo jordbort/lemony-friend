@@ -196,9 +196,9 @@ function getMessageCount(chatroom, user) {
     talk(chatroom, response)
 }
 
-function yell(user, msg) {
+function yell(user, message) {
     for (const chatroom of lemonyFresh.channels) {
-        talk(chatroom, `${user.displayName} says: ${msg.substring(6)}`)
+        talk(chatroom, `${user.displayName} says: ${message}`)
     }
 }
 
