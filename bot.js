@@ -529,7 +529,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         }
         // Updating points when giving (if known)
         const givingPattern = /lemony_friend gave ([^a-z]\d*)/i
-        if (givingPattern.test(msg)){
+        if (givingPattern.test(msg)) {
             users[BOT_USERNAME][channel].points += Number(msg.split(givingPattern)[1])
             if (settings.debug) { console.log(`${boldTxt}> New points:${resetTxt}`, users[BOT_USERNAME][channel].points) }
         }
@@ -654,7 +654,8 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         const secondPersonPattern = /you([^npst]|$)/i
         if (secondPersonPattern.test(msg)) {
             console.log(`${grayTxt}> "${msg}" matched secondPersonPattern${resetTxt}`)
-            return checkSentiment(chatroom, msg) }
+            return checkSentiment(chatroom, msg)
+        }
 
         console.log(`${grayTxt}> Bot mentioned, but didn't trigger response${resetTxt}`)
     }
