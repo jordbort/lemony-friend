@@ -62,6 +62,7 @@ const {
 
 // Import fetches from other APIs
 const {
+    checkSentiment,
     getDadJoke,
     getPokemon
 } = require(`./handleExternal`)
@@ -648,6 +649,13 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             // If `well` followed by `done` came later in the message
             if (val === `well` && lowercaseArgs[i + 1]?.match(/^done+[^\w\s]*$/)) { return sayThanks(chatroom, users[username]) }
         }
+
+        // If all else fails, but message includes "you/your/you're"
+        const secondPersonPattern = /you([^npst]|$)/i
+        if (secondPersonPattern.test(msg)) {
+            console.log(`${grayTxt}> "${msg}" matched secondPersonPattern${resetTxt}`)
+            return checkSentiment(chatroom, msg) }
+
         console.log(`${grayTxt}> Bot mentioned, but didn't trigger response${resetTxt}`)
     }
 

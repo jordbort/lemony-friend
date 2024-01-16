@@ -1,8 +1,35 @@
+const API_KEY = process.env.API_KEY
+
 // Import global settings
 const { resetTxt, boldTxt, settings } = require(`./config`)
 
 // Import helper functions
 const { talk } = require(`./utils`)
+
+async function checkSentiment(chatroom, msg) {
+    if (settings.debug) { console.log(`${boldTxt}> checkSentiment(chatroom: ${chatroom}, msg: ${msg})${resetTxt}`) }
+
+    const endpoint = `https://api.api-ninjas.com/v1/sentiment?text=${msg}`
+    const options = {
+        headers: {
+            'X-Api-Key': API_KEY
+        }
+    }
+
+    const response = await fetch(endpoint, options)
+    const data = await response.json()
+    console.log(data)
+
+    'sentiment' in data
+        ? data.sentiment.includes(`NEUTRAL`)
+            ? talk(chatroom, `:p`)
+            : data.sentiment.includes(`POSITIVE`)
+                ? data.sentiment.includes(`WEAK`)
+                    ? talk(chatroom, `:)`)
+                    : talk(chatroom, `:D`)
+                : talk(chatroom, `:(`)
+        : talk(chatroom, `:O`)
+}
 
 async function getDadJoke(chatroom) {
     if (settings.debug) { console.log(`${boldTxt}> getDadJoke(chatroom: ${chatroom})${resetTxt}`) }
@@ -141,6 +168,7 @@ async function getPokemon(chatroom, pokemon) {
 }
 
 module.exports = {
+    checkSentiment,
     getDadJoke,
     getPokemon
 }
