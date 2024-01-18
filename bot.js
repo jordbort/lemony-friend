@@ -111,7 +111,12 @@ const {
     getTwitchChannel,
     getTwitchToken,
     getTwitchGame,
-    handleShoutOut
+    handleShoutOut,
+    startPoll,
+    authorizeToken,
+    validateToken,
+    refreshToken,
+    getOAUTHToken
 } = require(`./handleTwitch`)
 
 // Import uses for lemons
@@ -167,6 +172,8 @@ function onMessageHandler(chatroom, tags, message, self) {
     const firstMsg = tags['first-msg']
     const hangman = lemonyFresh[channel].hangman
     const verifiedUser = !!tags.badges?.vip || !!tags.vip || tags.mod || username === channel
+    const modUser = tags.mod || username === channel
+    const lemonyFreshMember = [`jpegstripes`, `sclarf`, `e1ectroma`, `domonintendo1`, `ppuyya`].includes(username)
 
     if (msg === `lemony_friend -kill`) {
         talk(chatroom, `I have gone offline! ResidentSleeper`)
@@ -256,7 +263,8 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             ? talk(chatroom, `I have ${users[BOT_USERNAME][channel].points} point${users[BOT_USERNAME][channel].points === 1 ? `` : `s`}!`)
             : talk(chatroom, `I don't know how many points I have!`)
     }
-    if (msg === `token` && username === `jpegstripes`) {
+
+    if (command === `!token` && username === `jpegstripes`) {
         getTwitchToken()
         return talk(chatroom, `:)`)
     }
@@ -288,6 +296,13 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     if (command === `!docs`) { return talk(chatroom, `Check out the docs here: https://github.com/jordbort/lemony-friend/blob/main/README.md`) }
 
     if (command === `!commands`) { return sayCommands(chatroom) }
+
+    // Twitch commands
+    if (lemonyFreshMember && command === `!access`) { return getOAUTHToken(chatroom, username) }
+    if (lemonyFreshMember && command === `!authorize`) { return authorizeToken(chatroom, username, args) }
+    if (verifiedUser && command === `!validate`) { return validateToken(chatroom) }
+    if (verifiedUser && command === `!refresh`) { return refreshToken(chatroom) }
+    if (modUser && command === `!poll`) { return startPoll(chatroom, args.join(` `)) }
 
     // Handle shoutout from mod/VIP
     if (command === `!so`
