@@ -1,3 +1,15 @@
+const BOT_ACCESS_TOKEN = process.env.BOT_ACCESS_TOKEN
+const JPEGSTRIPES_ACCESS_TOKEN = process.env.JPEGSTRIPES_ACCESS_TOKEN
+const JPEGSTRIPES_REFRESH_TOKEN = process.env.JPEGSTRIPES_REFRESH_TOKEN
+const SCLARF_ACCESS_TOKEN = process.env.SCLARF_ACCESS_TOKEN
+const SCLARF_REFRESH_TOKEN = process.env.SCLARF_REFRESH_TOKEN
+const E1ECTROMA_ACCESS_TOKEN = process.env.E1ECTROMA_ACCESS_TOKEN
+const E1ECTROMA_REFRESH_TOKEN = process.env.E1ECTROMA_REFRESH_TOKEN
+const DOMONINTENDO1_ACCESS_TOKEN = process.env.DOMONINTENDO1_ACCESS_TOKEN
+const DOMONINTENDO1_REFRESH_TOKEN = process.env.DOMONINTENDO1_REFRESH_TOKEN
+const PPUYYA_ACCESS_TOKEN = process.env.PPUYYA_ACCESS_TOKEN
+const PPUYYA_REFRESH_TOKEN = process.env.PPUYYA_REFRESH_TOKEN
+
 const lemonyFresh = {
     channels: [
         `#jpegstripes`,
@@ -6,8 +18,11 @@ const lemonyFresh = {
         `#domonintendo1`,
         `#ppuyya`
     ],
+    botAccessToken: BOT_ACCESS_TOKEN,
     jpegstripes: {
         id: 70624062,
+        accessToken: JPEGSTRIPES_ACCESS_TOKEN,
+        refreshToken: JPEGSTRIPES_REFRESH_TOKEN,
         emotes: [
             `jpegstCoin`,
             `jpegstTimber`,
@@ -91,7 +106,8 @@ const lemonyFresh = {
             `!litlizards`,
             `!raccoon`,
             `!gay`,
-            `!turbomaxwaste`
+            `!turbomaxwaste`,
+            `!where`
         ],
         hangman: {
             listening: false,
@@ -102,10 +118,16 @@ const lemonyFresh = {
             guessedLetters: [],
             chances: 6,
             currentPlayer: 0
+        },
+        riddle: {
+            question: ``,
+            answer: ``
         }
     },
     sclarf: {
         id: 108504232,
+        accessToken: SCLARF_ACCESS_TOKEN,
+        refreshToken: SCLARF_REFRESH_TOKEN,
         emotes: [
             `sclarfRave`,
             `sclarfWobble`,
@@ -138,10 +160,16 @@ const lemonyFresh = {
             guessedLetters: [],
             chances: 6,
             currentPlayer: 0
+        },
+        riddle: {
+            question: ``,
+            answer: ``
         }
     },
     e1ectroma: {
         id: 467062147,
+        accessToken: E1ECTROMA_ACCESS_TOKEN,
+        refreshToken: E1ECTROMA_REFRESH_TOKEN,
         emotes: [
             `e1ectr4Lfg`,
             `e1ectr4Pikadance`,
@@ -182,10 +210,16 @@ const lemonyFresh = {
             guessedLetters: [],
             chances: 6,
             currentPlayer: 0
+        },
+        riddle: {
+            question: ``,
+            answer: ``
         }
     },
     domonintendo1: {
         id: 100792658,
+        accessToken: DOMONINTENDO1_ACCESS_TOKEN,
+        refreshToken: DOMONINTENDO1_REFRESH_TOKEN,
         emotes: [
             `domoni6Really`,
             `domoni6Bingo`,
@@ -194,7 +228,9 @@ const lemonyFresh = {
             `domoni6Sneeze`,
             `domoni6Dum`,
             `domoni6Love`,
-            `domoni6Boom`
+            `domoni6Boom`,
+            `domoni6Kek`,
+            `domoni6Mingo`
         ],
         redeems: [],
         hangman: {
@@ -206,10 +242,16 @@ const lemonyFresh = {
             guessedLetters: [],
             chances: 6,
             currentPlayer: 0
+        },
+        riddle: {
+            question: ``,
+            answer: ``
         }
     },
     ppuyya: {
         id: 500904880,
+        accessToken: PPUYYA_ACCESS_TOKEN,
+        refreshToken: PPUYYA_REFRESH_TOKEN,
         emotes: [],
         redeems: [],
         hangman: {
@@ -221,6 +263,10 @@ const lemonyFresh = {
             guessedLetters: [],
             chances: 6,
             currentPlayer: 0
+        },
+        riddle: {
+            question: ``,
+            answer: ``
         }
     }
 }

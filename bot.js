@@ -1,17 +1,7 @@
 require(`dotenv`).config()
 const BOT_USERNAME = process.env.BOT_USERNAME
 
-// Import data
-const {
-    lemonyFresh,
-    users,
-    tempCmds
-} = require(`./data`)
-
 // Import global settings
-const { funNumberCount, funNumberTotal, settings } = require(`./config`)
-
-// Import terminal colors
 const {
     resetTxt,
     boldTxt,
@@ -37,64 +27,131 @@ const {
     whiteBg,
     grayBg,
     orangeBg,
-    chatColors
-} = require(`./colors`)
+    chatColors,
+    funNumberCount,
+    funNumberTotal,
+    settings
+} = require(`./config`)
 
-// Import helper functions
+// Import data
 const {
-    client,
-    sayRebootMsg,
-    sayFriends,
-    sayCommands,
-    toggleDebugMode,
-    rollFunNumber,
-    handleGivenPoints,
-    handleSetPoints,
-    handleLoseAllPoints,
-    getRandomWord,
-    hangmanInit,
-    hangmanAnnounce,
-    checkLetter,
-    solvePuzzle,
-    rockPaperScissors,
+    lemonyFresh,
+    users,
+    tempCmds
+} = require(`./data`)
+
+// Handle change of user's properties in chat
+const {
+    handleColorChange,
+    handleTurboChange,
+    handleSubChange,
+    handleModChange,
+    handleVIPChange
+} = require(`./handleChange`)
+
+// Respond to people in chat
+const {
     handleNewChatter,
-    getLastMessage,
-    getMessageCount,
-    yell,
-    getDadJoke,
-    getPokemon,
-    getColor,
-    getRandomUser,
-    getRandomChannelMessage,
-    lemonify,
-    handleTempCmd,
     handleGreet,
     handleMassGreet,
     handleGreetAll,
     sayGoodnight,
     sayYoureWelcome,
-    sayThanks,
-    handleColorChange,
-    handleTurboChange,
-    handleSubChange,
-    handleModChange,
-    handleVIPChange,
+    sayThanks
+} = require(`./handleConversation`)
+
+// Import fetches from other APIs
+const {
+    checkSentiment,
+    getDadJoke,
+    getPokemon
+} = require(`./handleExternal`)
+
+// Import fun number event
+const { rollFunNumber } = require(`./handleFunNumber`)
+
+// Import Hangman controls
+const {
+    getRandomWord,
+    hangmanInit,
+    hangmanAnnounce,
+    checkLetter,
+    solvePuzzle
+} = require(`./handleHangman`)
+
+// Lemonify chat message
+const { lemonify } = require(`./handleLemonify`)
+
+// Import Rock, Paper, Scissors
+const { rockPaperScissors } = require(`./handleRPS`)
+
+// Import riddle controls
+const {
+    getRiddle,
+    handleRiddleAnswer
+} = require("./handleRiddle")
+
+// Listen for message streaks and emote streaks
+const {
+    checkStreak,
     checkEmoteStreak,
-    emoteReply,
-    delayListening,
-    ping,
-    cleanupSpaces,
-    getToUser,
-    printLemon,
+    emoteReply
+} = require(`./handleStreaks`)
+
+// Import StreamElements bot reactions
+const {
+    handleGivenPoints,
+    handleSetPoints,
+    handleLoseAllPoints
+} = require(`./handleStreamElements`)
+
+// Import Twitch functions
+const {
     getTwitchUser,
-    banTwitchUser,
-    getClaims,
     getTwitchChannel,
     getTwitchToken,
-    getTwitchAuthentication,
+    getTwitchGame,
     handleShoutOut,
-    talk
+    startPoll,
+    authorizeToken,
+    validateToken,
+    refreshToken,
+    getOAUTHToken
+} = require(`./handleTwitch`)
+
+// Import uses for lemons
+const { useLemon } = require("./handleUseLemon")
+
+// Import helper functions
+const {
+    client,
+    handleUncaughtException,
+    sayGoals,
+    sayRebootMsg,
+    sayFriends,
+    sayCommands,
+    toggleDebugMode,
+    getLastMessage,
+    getMessageCount,
+    yell,
+    getColor,
+    getRandomUser,
+    getRandomChannelMessage,
+    handleTempCmd,
+    delayListening,
+    ping,
+    getToUser,
+    printLemon,
+    talk,
+    makeLogs
 } = require(`./utils`)
+
+process.on('uncaughtException', async (err) => {
+    const errorPosition = err.stack.split(`\n`)[1].split(`/`)[0].substring(4) + err.stack.split(`\n`)[1].split(`/`)[err.stack.split(`\n`)[1].split(`/`).length - 1]
+    await handleUncaughtException(err.message, errorPosition)
+    console.error(err)
+    process.exit(1)
+})
 
 function onConnectedHandler(addr, port) {
     settings.firstConnection && printLemon()
@@ -107,20 +164,17 @@ function onConnectedHandler(addr, port) {
 }
 
 function onMessageHandler(chatroom, tags, message, self) {
-    const msg = cleanupSpaces(message)
+    const msg = message.replace(/ +/g, ` `)
     const username = tags.username
     const displayName = tags[`display-name`]
     const channel = chatroom.slice(1)
     const color = tags.color
     const firstMsg = tags['first-msg']
     const hangman = lemonyFresh[channel].hangman
+    const verifiedUser = !!tags.badges?.vip || !!tags.vip || tags.mod || username === channel
+    const modUser = tags.mod || username === channel
+    const lemonyFreshMember = [`jpegstripes`, `sclarf`, `e1ectroma`, `domonintendo1`, `ppuyya`].includes(username)
 
-    process.on('uncaughtException', (err) => {
-        const errorPosition = err.stack.split(`\n`)[1].split(`/`)[0].substring(4) + err.stack.split(`\n`)[1].split(`/`)[err.stack.split(`\n`)[1].split(`/`).length - 1]
-        talk(chatroom, `Oops, I just crashed! ${users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : `>(`} ${err.message} ${errorPosition}`)
-        console.log(err)
-        process.exit(1)
-    })
     if (msg === `lemony_friend -kill`) {
         talk(chatroom, `I have gone offline! ResidentSleeper`)
         process.exit(0)
@@ -138,6 +192,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     const command = args.shift().toLowerCase()
     const toUser = args[0] ? getToUser(args[0]) : ``
     const target = toUser.toLowerCase() in users ? toUser.toLowerCase() : null
+    const currentTime = Date.now()
 
     // User attribute change detection
     const colorChanged = username in users && color !== users[username]?.color
@@ -151,7 +206,8 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         users[username] = {
             displayName: tags[`display-name`],
             // turbo: tags.turbo,
-            color: color
+            color: color,
+            lemons: 0
         }
     }
     // Initialize user in a new chatroom
@@ -162,13 +218,22 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             vip: !!tags.vip || !!tags.badges?.vip,
             msgCount: 0,
             lastMessage: msg,
+            sentAt: currentTime,
+            hangmanWins: 0,
+            riddleWins: 0,
             away: false,
             awayMessage: ``
         }
     }
+    // Checking time comparisons
+    const elapsedMinsSinceLastMsg = (currentTime - users[username][channel].sentAt) / 60000
+
     // Update last message in a chatroom, and increment counter by 1
     users[username][channel].lastMessage = msg
+    users[username][channel].sentAt = Date.now()
     users[username][channel].msgCount++
+
+    makeLogs()
 
     // These checks happen earlier in case they happened to the bot
     if (subChange) { return handleSubChange(chatroom, users[username], tags.subscriber) }
@@ -192,27 +257,23 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     if (msg === `tags` && username === `jpegstripes`) { console.log(tags) }
     if (msg === `ping` && username === `jpegstripes`) { ping(args.length ? args : lemonyFresh.channels) }
 
-    if (command === `test` && !isNaN(args[0])) { return rollFunNumber(chatroom, tags, username, msg.split(` `), Number(args[0])) }
+    if (command === `test` && !isNaN(args[0]) && username === `jpegstripes`) { return rollFunNumber(chatroom, tags, username, msg.split(` `), Number(args[0])) }
     if (command === `!test`) {
         return `points` in users[BOT_USERNAME][channel]
             ? talk(chatroom, `I have ${users[BOT_USERNAME][channel].points} point${users[BOT_USERNAME][channel].points === 1 ? `` : `s`}!`)
             : talk(chatroom, `I don't know how many points I have!`)
     }
-    if (msg === `token` && username === `jpegstripes`) {
+
+    if (command === `!token` && username === `jpegstripes`) {
         getTwitchToken()
         return talk(chatroom, `:)`)
     }
-    if (msg === `auth` && username === `jpegstripes`) {
-        return getTwitchAuthentication()
-        // return talk(chatroom, `:D`)
-    }
     if (command === `!forget`) {
-        delete users[BOT_USERNAME][channel]?.points
-        return talk(chatroom, `I forgor 💀️`)
+        if (points in users[BOT_USERNAME][channel]) {
+            delete users[BOT_USERNAME][channel].points
+            return talk(chatroom, `I forgor 💀️`)
+        }
     }
-    if (command === `lookup` && username === `jpegstripes`) { return getTwitchUser(chatroom, toUser.toLowerCase()) }
-    if (command === `ban` && username === `jpegstripes`) { return banTwitchUser(chatroom, toUser.toLowerCase()) }
-    if (command === `claims` && username === `jpegstripes`) { return getClaims(chatroom) }
 
     // If first message since being away
     if (users[username][channel].away) {
@@ -232,9 +293,21 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     \******/
 
     // All commands
+    if (command === `!docs`) { return talk(chatroom, `Check out the docs here: https://github.com/jordbort/lemony-friend/blob/main/README.md`) }
+
     if (command === `!commands`) { return sayCommands(chatroom) }
 
-    if (command === `!so` && toUser) {
+    // Twitch commands
+    if (lemonyFreshMember && command === `!access`) { return getOAUTHToken(chatroom, username) }
+    if (lemonyFreshMember && command === `!authorize`) { return authorizeToken(chatroom, username, args) }
+    if (verifiedUser && command === `!validate`) { return validateToken(chatroom) }
+    if (verifiedUser && command === `!refresh`) { return refreshToken(chatroom) }
+    if (modUser && command === `!poll`) { return startPoll(chatroom, args.join(` `)) }
+
+    // Handle shoutout from mod/VIP
+    if (command === `!so`
+        && verifiedUser
+        && toUser) {
         return handleShoutOut(chatroom, toUser.toLowerCase())
     }
 
@@ -243,7 +316,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         if (hangman.listening) {
             return hangman.signup
                 ? talk(chatroom, `A game of Hangman is starting, type !play to join!`)
-                : talk(chatroom, `A game of Hangman is already in progress! It's currently ${users[players[currentPlayer]].displayName}'s turn.`)
+                : talk(chatroom, `A game of Hangman is already in progress! It's currently ${users[hangman.players[hangman.currentPlayer]].displayName}'s turn.`)
         } else {
             hangmanInit(hangman)
             return hangmanAnnounce(chatroom)
@@ -262,6 +335,22 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         }
     }
 
+    // Ask for a riddle
+    if (command === `!riddle`) {
+        return lemonyFresh[channel].riddle.question
+            ? talk(chatroom, `I already have a riddle for you: ${lemonyFresh[channel].riddle.question}`)
+            : getRiddle(chatroom)
+    }
+
+    // Answer the riddle
+    if (command === `!answer`) {
+        return lemonyFresh[channel].riddle.question
+            ? args[0]
+                ? handleRiddleAnswer(chatroom, username, args)
+                : talk(chatroom, `What is your answer, ${displayName}? :)`)
+            : talk(chatroom, `You can use !riddle to ask me for a riddle! :)`)
+    }
+
     // Play rock, paper, scissors with the bot
     if (command === `!rps`) { return rockPaperScissors(chatroom, username, args[0]?.toLowerCase()) }
 
@@ -272,7 +361,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         let data = `${user}: { displayName: '${users[user].displayName}', color: ${users[user].color}`
         for (const key of Object.keys(users[user])) {
             if (typeof users[user][key] === `object`) {
-                data += `, ${key}: { sub: ${users[user][key].sub}, mod: ${users[user][key].mod}, vip: ${users[user][key].vip}, msgCount: ${users[user][key].msgCount}, lastMessage: '${users[user][key].lastMessage}', away: ${users[user][key].away ? `${users[user][key].away}, awayMessage: '${users[user][key].awayMessage}'` : `${users[user][key].away}`} }`
+                data += `, ${key}: { sub: ${users[user][key]?.sub}, mod: ${users[user][key].mod}, vip: ${users[user][key].vip}, msgCount: ${users[user][key].msgCount}, lastMessage: '${users[user][key].lastMessage}', sentAt: ${users[user][key].sentAt}, away: ${users[user][key].away ? `${users[user][key].away}, awayMessage: '${users[user][key].awayMessage}'` : `${users[user][key].away}`} }`
             }
         }
         data += ` }`
@@ -292,15 +381,18 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             : talk(chatroom, `I am not subbed to: ${allUsers.join(`, `)} :(`)
     }
 
-    // If user mentions a user who is away
-    for (const user of Object.keys(users)) {
-        // console.log(`Checking for ${user}...`)
-        if (msg.toLowerCase().includes(user) && users[user][channel]?.away) {
-            let reply = `Unfortunately ${users[user].displayName} is away from chat right now!`
-            users[user][channel].awayMessage
-                ? reply += ` Their away message: "${users[user][channel].awayMessage}"`
-                : ` :(`
-            return talk(chatroom, reply)
+    // If a user who isn't Nightbot or StreamElements mentions a user who is away
+    if (![`nightbot`, `streamelements`].includes(username)) {
+        for (const user of Object.keys(users)) {
+            // console.log(`Checking for ${user}...`)
+            if (msg.toLowerCase().includes(user) && users[user][channel]?.away) {
+                let reply = `Unfortunately ${users[user].displayName} is away from chat right now! `
+                const elapsedTime = Number(((currentTime - users[user][channel].sentAt) / 60000).toFixed(2))
+                users[user][channel].awayMessage
+                    ? reply += `Their away message: "${users[user][channel].awayMessage}"`
+                    : reply += `They have been away for ${elapsedTime} minute${elapsedTime === 1 ? `` : `s`}`
+                return talk(chatroom, reply)
+            }
         }
     }
 
@@ -317,13 +409,26 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     if (command === `!msgcount`) { return getMessageCount(chatroom, users[target] || users[username]) }
 
     // !yell across all lemonyFresh.channels
-    if (command === `!yell`) { return yell(users[username], msg) }
+    if (command === `!yell`) { return yell(users[username], msg.substring(6)) }
 
     // !friend(s) count
     if ([
         `!friend`,
         `!friends`
     ].includes(command)) { return sayFriends(chatroom) }
+
+    // !lemon(s) count
+    if ([
+        `!lemon`,
+        `!lemons`
+    ].includes(command)) {
+        return target
+            ? talk(chatroom, `${users[target].displayName} has ${users[target].lemons} lemon${users[target].lemons === 1 ? `` : `s`}! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`)
+            : talk(chatroom, `${displayName} has ${users[username].lemons} lemon${users[username].lemons === 1 ? `` : `s`}! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`)
+    }
+
+    // !uselemon (in some way)
+    if (/^!(.+)lemon(.*)$/i.test(command)) { return useLemon(chatroom, command, username, target) }
 
     // lemonify
     if (command === `!lemonify`) {
@@ -336,7 +441,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     // !greet a user or whoever
     if (command === `!greet`) {
         // If !greet all
-        if (args[0] === `all`) { return handleGreetAll(chatroom) }
+        if (args[0] === `all`) { return handleGreetAll(chatroom, currentTime) }
         // If one (known) username is used, greet normally
         if (target && !args[1]) { return handleGreet(chatroom, users[target]) }
         // If multiple args are used
@@ -345,11 +450,13 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         else { return talk(chatroom, `Greetings, ${users[username].displayName}! :)`) }
     }
 
-    // !tempcmd
-    if (command === `!tempcmd`) { return handleTempCmd(chatroom, username, args) }
+    // !tempcmd or !tmpcmd
+    if ([`!tempcmd`,
+        `!tmpcmd`].includes(command)) { return handleTempCmd(chatroom, username, args) }
 
-    // !tempcmds
-    if (command === `!tempcmds`) {
+    // !tempcmds or !tmpcmds
+    if ([`!tempcmds`,
+        `!tmpcmds`].includes(command)) {
         const commands = []
         for (key in tempCmds) {
             commands.push(`${key} => "${tempCmds[key]}"`)
@@ -360,42 +467,10 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     // Check for tempCmd
     if (command in tempCmds) { return talk(chatroom, tempCmds[command]) }
 
-    // sclarf SUBtember goals
+    // Handle channel-specific goals
     if (command === `!goals`
-        && args.length
-        && chatroom === `#sclarf`) {
-        const subs = Number(args[0])
-        const goals = {
-            25: `sclarf will play 3d pinball!`,
-            50: `sclarf will make a food tirr list!`,
-            75: `sclarf will have a fight club movie night!`,
-            100: `sclarf will play hello kitty island adventure!`,
-            125: `sclarf will play a 400-in-1 games console!`,
-            150: `chat decidecs speedrun`,
-            175: `sclarf will play just dance!`,
-            200: `sclarf will do a cosplay!`,
-            225: `lemony fresh stream???`,
-            250: `sclarf will play Pokemon Soul Link!`,
-            275: `mezcal tasting when pp`,
-            300: `bianca stream`,
-            325: `bianca cosplay`,
-            350: `sclarf will do an art stream!`,
-            375: `sclarf will have a casino night!`,
-            400: `sclarf will play Pokemon Infinite fusion`,
-            425: `chat pick cosplay`,
-            450: `sclarf will game give away`,
-            475: `big collab`,
-            500: `sclarf will make a server in minecraft!`,
-            525: `sclarf will play Dream Daddy or another dating sim!`,
-            550: `LEGO STREAM`,
-            575: `cooking adjacent goal`,
-            600: `sclarf will END STREAM IMMEDIATELY`,
-            625: `sclarf will Call shannon wonderwall`,
-            650: `sclarf will taco bell irl stream?`,
-            675: `sclarf will sexc sclarf corp calendar`,
-            700: `sclarf will go see trom!`
-        }
-        if (!isNaN(subs) && subs in goals) { return talk(chatroom, `At ${subs} subs, ${goals[subs]}`) }
+        && args.length) {
+        return sayGoals(chatroom, args)
     }
 
     // !bye OR !gn OR !goodnight
@@ -434,27 +509,60 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         }
     }
 
+    // Mentioned by StreamElements
+    if (username === `streamelements` && (msg.includes(BOT_USERNAME))) {
+        console.log(`${grayTxt}> Current points:${resetTxt}`, `points` in Object(users[BOT_USERNAME][channel]) ? users[BOT_USERNAME][channel].points : `(not known)`)
+        // If bot used !gamble all and lost
+        if (msg.match(/lost (every|it)/i)) {
+            return handleLoseAllPoints(chatroom)
+        }
+        const nowHasPattern = /now ha(?:s|ve) \[*(\d*)/i // Set points based on "now has/have..." result
+        if (msg.match(nowHasPattern)) {
+            return handleSetPoints(chatroom, Number(msg.split(nowHasPattern)[1]))
+        }
+        const botHasNumPattern = / lemony_friend has ([^a-z]\d*)/i // Set points based StreamElements replying to '!points lemony_friend'
+        if (msg.match(botHasNumPattern)) {
+            return handleSetPoints(chatroom, Number(msg.split(botHasNumPattern)[1]))
+        }
+        const pointsSetToPattern = /set lemony_friend /i // Triggered by a manual set/bonus of points
+        if (msg.match(pointsSetToPattern)) {
+            return handleSetPoints(chatroom, Number(msg.split(pointsSetToPattern)[1].split(` `)[2]))
+        }
+        const insufficientFundsPattern = /^@?lemony_friend, you only have ([^a-z]\d*)/i // Triggered by insufficient points
+        if (msg.match(insufficientFundsPattern)) {
+            return handleSetPoints(chatroom, Number(msg.split(insufficientFundsPattern)[1]))
+        }
+        // Receiving points from a gifter
+        const receivingPattern = /^(?!lemony_friend).* gave (\d*)/i
+        if (msg.match(receivingPattern)) {
+            return handleGivenPoints(chatroom, msg.split(` `)[0], Number(msg.split(receivingPattern)[1]))
+        }
+        // Checking bot's points if unknown
+        if (!(`points` in Object(users[BOT_USERNAME][channel]))) {
+            return talk(chatroom, `!points`)
+        }
+        // Updating points when giving (if known)
+        const givingPattern = /lemony_friend gave ([^a-z]\d*)/i
+        if (givingPattern.test(msg)) {
+            users[BOT_USERNAME][channel].points += Number(msg.split(givingPattern)[1])
+            if (settings.debug) { console.log(`${boldTxt}> New points:${resetTxt}`, users[BOT_USERNAME][channel].points) }
+        }
+    }
+
     // If bot mentioned in message
     if (msg.toLowerCase().includes(`lemon`)
         || msg.toLowerCase().includes(`melon`)
         || msg.toLowerCase().includes(`lemfriend`)) {
-        // If the first word is a greeting
-        const greetingPattern = /^hey+[^\w\s]*$|^hi+[^\w\s]*$|^he.*lo+[^\w\s]*$|^howd[a-z][^\w\s]*$|sup+[^\w\s]*$|^wh?[au].*up[^\w\s]*$/i
-        if (command.match(greetingPattern)) {
-            console.log(`${boldTxt}> "${command}" matched greetingPattern${resetTxt}`)
-            return handleGreet(chatroom, users[username])
-        }
-
         // If the first word is `gn` or `bye`
         const goodNightPattern = /^ni(ght|te)[^\w\s]*$|^gn[^\w\s]*$|^(bye+)+[^\w\s]*$/i
         if (command.match(goodNightPattern)) {
-            console.log(`${boldTxt}> "${command}" matched goodNightPattern${resetTxt}`)
+            console.log(`${grayTxt}> "${command}" matched goodNightPattern${resetTxt}`)
             return sayGoodnight(chatroom, users[username])
         }
 
         // If the first word is `good` followed by "night"-like word
         if (command === `good` && args[0]?.match(goodNightPattern)) {
-            console.log(`${boldTxt}> "good ${args[0]}" matched goodNightPattern${resetTxt}`)
+            console.log(`${grayTxt}> "good ${args[0]}" matched goodNightPattern${resetTxt}`)
             return sayGoodnight(chatroom, users[username])
         }
 
@@ -462,20 +570,20 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         if ([`gj`, `nj`].includes(command)) { return sayThanks(chatroom, users[username]) }
 
         // If the first word is `good`/`nice` followed by `job` or `work`
-        const jobPattern = /^job+[^\w\s]/i
-        const workPattern = /^work+[^\w\s]/i
+        const jobPattern = /^job+[^\w\s]*$/i
+        const workPattern = /^work+[^\w\s]*$/i
         if ([`good`, `nice`].includes(command)
             && (args[0]?.match(jobPattern) || args[0]?.match(workPattern))) {
             return sayThanks(chatroom, users[username])
         }
 
         // If the first word is `well` followed by `done`
-        if (command === `well` && args[0]?.match(/^done+[^\w\s]/i)) { return sayThanks(chatroom, users[username]) }
+        if (command === `well` && args[0]?.match(/^done+[^\w\s]*$/i)) { return sayThanks(chatroom, users[username]) }
 
         // If the first word is `thanks`-like
         const thanksLikePattern = /^t(y*(sm*)*|(h*[aeou]*[bmn]*)*(ks+|x+))[^\w\s]*$/i
         if (command.match(thanksLikePattern)) {
-            console.log(`${boldTxt}> "${command}" matched thanksLikePattern${resetTxt}`)
+            console.log(`${grayTxt}> "${command}" matched thanksLikePattern${resetTxt}`)
             return sayYoureWelcome(chatroom, users[username])
         }
 
@@ -483,8 +591,15 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         const thankLikePattern = /^th*[aeou]*[bmn]*[kx]+[^\w\s]*$/i
         const youLikePattern = /^yo?u+[^\w\s]*$|^yew+[^\w\s]*$|^u+[^\w\s]*$/i
         if (command.match(thankLikePattern) && args[0]?.match(youLikePattern)) {
-            console.log(`${boldTxt}> "${command}"/"${args[0]}" matched thankLikePattern & youLikePattern${resetTxt}`)
+            console.log(`${grayTxt}> "${command}"/"${args[0]}" matched thankLikePattern & youLikePattern${resetTxt}`)
             return sayYoureWelcome(chatroom, users[username])
+        }
+
+        // If the first word is a greeting
+        const greetingPattern = /h[ae]+y+[^\w\s]*$|^hi+[^\w\s]*$|^he.*lo+[^\w\s]*$|^howd[a-z][^\w\s]*$|sup+[^\w\s]*$|^wh?[au].*up[^\w\s]*$/i
+        if (command.match(greetingPattern)) {
+            console.log(`${grayTxt}> "${command}" matched greetingPattern${resetTxt}`)
+            return handleGreet(chatroom, users[username])
         }
 
         // All words after the first, in lower case
@@ -495,10 +610,10 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         const upPattern = /^up+[^\w\s]*$/i
         // In case saying "what's up" first, and/or `up` doesn't come immediately
         if (command.match(whatsUpPrefixPattern)) {
-            console.log(`${boldTxt}> "${command}" matched whatsUpPrefixPattern${resetTxt}`)
+            console.log(`${grayTxt}> "${command}" matched whatsUpPrefixPattern${resetTxt}`)
             for (const str of lowercaseArgs) {
                 if (str.match(upPattern)) {
-                    console.log(`${boldTxt}> "${str}" matched upPattern${resetTxt}`)
+                    console.log(`${grayTxt}> "${str}" matched upPattern${resetTxt}`)
                     return handleGreet(chatroom, users[username])
                 }
             }
@@ -506,17 +621,17 @@ ${redBg}lemony_friend has died.${resetTxt}`)
 
         // Check all words in message after the first
         for (const [i, val] of lowercaseArgs.entries()) {
-            if (val.match(greetingPattern)) { console.log(`${boldTxt}> "${val}" matched greetingPattern${resetTxt}`) }
-            if (val.match(goodNightPattern)) { console.log(`${boldTxt}> "${val}" matched goodNightPattern${resetTxt}`) }
-            if (val === `good` && lowercaseArgs[i + 1]?.match(goodNightPattern)) { console.log(`${boldTxt}> "${val}" followed by "${lowercaseArgs[i + 1]}" matched goodNightPattern${resetTxt}`) }
-            if (val.match(thanksLikePattern)) { console.log(`${boldTxt}> "${val}" matched thanksLikePattern${resetTxt}`) }
-            if (val.match(thankLikePattern)) { console.log(`${boldTxt}> "${val}" matched thankLikePattern${resetTxt}`) }
-            if (val.match(youLikePattern)) { console.log(`${boldTxt}> "${val}" matched youLikePattern${resetTxt}`) }
-            if (val.match(thankLikePattern) && lowercaseArgs[i + 1]?.match(youLikePattern)) { console.log(`${boldTxt}> "${val}" matched thankLikePattern and "${lowercaseArgs[i + 1]}" matched youLikePattern${resetTxt}`) }
-            if (val.match(thankLikePattern)) { console.log(`${boldTxt}> "${val}" matched thankLikePattern${resetTxt}`) }
-            if (val.match(youLikePattern)) { console.log(`${boldTxt}> "${val}" matched youLikePattern${resetTxt}`) }
-            if (val.match(whatsUpPrefixPattern)) { console.log(`${boldTxt}> "${val}" matched whatsUpPrefixPattern${resetTxt}`) }
-            if (val.match(upPattern) && lowercaseArgs[i - 1]?.match(whatsUpPrefixPattern)) { console.log(`${boldTxt}> "${val}" preceded by "${lowercaseArgs[i - 1]}" matched whatsUpPrefixPattern${resetTxt}`) }
+            if (val.match(greetingPattern)) { console.log(`${grayTxt}> "${val}" matched greetingPattern${resetTxt}`) }
+            if (val.match(upPattern) && lowercaseArgs[i - 1]?.match(whatsUpPrefixPattern)) { console.log(`${grayTxt}> "${val}" preceded by "${lowercaseArgs[i - 1]}" matched whatsUpPrefixPattern${resetTxt}`) }
+            if (val.match(whatsUpPrefixPattern)) { console.log(`${grayTxt}> "${val}" matched whatsUpPrefixPattern${resetTxt}`) }
+            if (val.match(goodNightPattern)) { console.log(`${grayTxt}> "${val}" matched goodNightPattern${resetTxt}`) }
+            if (val.match(thanksLikePattern)) { console.log(`${grayTxt}> "${val}" matched thanksLikePattern${resetTxt}`) }
+            if (val.match(thankLikePattern)) { console.log(`${grayTxt}> "${val}" matched thankLikePattern${resetTxt}`) }
+            if (val.match(youLikePattern)) { console.log(`${grayTxt}> "${val}" matched youLikePattern${resetTxt}`) }
+            if (val.match(thankLikePattern) && lowercaseArgs[i + 1]?.match(youLikePattern)) { console.log(`${grayTxt}> "${val}" matched thankLikePattern and "${lowercaseArgs[i + 1]}" matched youLikePattern${resetTxt}`) }
+            if ([`gj`, `nj`].includes(val) && lowercaseArgs[i + 1]?.match(goodNightPattern)) { console.log(`${grayTxt}> "${val}" followed by "${lowercaseArgs[i + 1]}" matched goodNightPattern${resetTxt}`) }
+            if ([`good`, `nice`].includes(val) && lowercaseArgs[i + 1]?.match(jobPattern)) { console.log(`${grayTxt}> "${val}" followed by "${lowercaseArgs[i + 1]}" matched jobPattern${resetTxt}`) }
+            if ([`good`, `nice`].includes(val) && lowercaseArgs[i + 1]?.match(workPattern)) { console.log(`${grayTxt}> "${val}" followed by "${lowercaseArgs[i + 1]}" matched workPattern${resetTxt}`) }
 
             // Checking if greeting came later in message
             if (val.match(greetingPattern)) { return handleGreet(chatroom, users[username]) }
@@ -546,8 +661,16 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             }
 
             // If `well` followed by `done` came later in the message
-            if (val === `well` && lowercaseArgs[i + 1].match(/^done+[^\w\s]/)) { return sayThanks(chatroom, users[username]) }
+            if (val === `well` && lowercaseArgs[i + 1]?.match(/^done+[^\w\s]*$/)) { return sayThanks(chatroom, users[username]) }
         }
+
+        // If all else fails, but message includes "you/your/you're"
+        const secondPersonPattern = /you([^npst]|$)/i
+        if (secondPersonPattern.test(msg)) {
+            console.log(`${grayTxt}> "${msg}" matched secondPersonPattern${resetTxt}`)
+            return checkSentiment(chatroom, msg)
+        }
+
         console.log(`${grayTxt}> Bot mentioned, but didn't trigger response${resetTxt}`)
     }
 
@@ -850,36 +973,6 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         }
     }
 
-    // Mentioned by StreamElements
-    if (username === `streamelements` && (msg.includes(BOT_USERNAME))) {
-        console.log(`${boldTxt}> Current points:${resetTxt}`, `points` in Object(users[BOT_USERNAME][channel]) ? users[BOT_USERNAME][channel].points : `(not known)`)
-        // If bot used !gamble all and lost
-        if (msg.match(/lost (every|it)/i)) {
-            return handleLoseAllPoints(chatroom)
-        }
-        const nowHasPattern = /now ha(?:s|ve) \[*(\d*)/i // Set points based on "now has/have..." result
-        if (msg.match(nowHasPattern)) {
-            return handleSetPoints(chatroom, Number(msg.split(nowHasPattern)[1]))
-        }
-        const botHasNumPattern = / lemony_friend has ([^a-z]\d*)/i // Set points based StreamElements replying to '!points lemony_friend'
-        if (msg.match(botHasNumPattern)) {
-            return handleSetPoints(chatroom, Number(msg.split(botHasNumPattern)[1]))
-        }
-        const pointsSetToPattern = /set lemony_friend /i // Triggered by a manual set/bonus of points
-        if (msg.match(pointsSetToPattern)) {
-            return handleSetPoints(chatroom, Number(msg.split(pointsSetToPattern)[1].split(` `)[2]))
-        }
-        // Receiving points from a gifter
-        const receivingPattern = /^((?!lemony_friend).)* gave (\d*)/i
-        if (msg.match(receivingPattern)) {
-            return handleGivenPoints(chatroom, msg.split(receivingPattern)[0], Number(msg.split(receivingPattern)[1]))
-        }
-        // Checking bot's points if unknown
-        if (!(`points` in Object(users[BOT_USERNAME][channel]))) {
-            return talk(chatroom, `!points`)
-        }
-    }
-
     if (hangman.listening && !hangman.signup) {
         if (msg.match(/^[a-z]$/i) && username === hangman.players[hangman.currentPlayer]) {
             return checkLetter(chatroom, username, msg.toUpperCase())
@@ -915,75 +1008,33 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             }
         }
 
-        // Look for emote streak (if bot is subbed) - TESTING
-        for (const member of lemonyFresh.channels) {
-            const chan = member.substring(1)
-            if (users[BOT_USERNAME]?.[chan]?.sub) {
-                for (const str of lemonyFresh[chan].emotes) {
-                    if (msg.includes(str)) {
-                        checkEmoteStreak(chatroom, lemonyFresh[chan])
-                        // break // ?
+        // Listening for a message to be repeated by at least two other users
+        const stopListening = checkStreak(chatroom, msg)
+
+        // Continue listening for emote streak (if bot is subbed)
+        if (!stopListening) {
+            for (const member of lemonyFresh.channels) {
+                const chan = member.substring(1)
+                if (users[BOT_USERNAME]?.[chan]?.sub) {
+                    for (const str of lemonyFresh[chan].emotes) {
+                        if (msg.includes(str)) {
+                            return checkEmoteStreak(chatroom, lemonyFresh[chan].emotes)
+                        }
                     }
                 }
-            }
-        }
-
-        // Look for emote streak (if bot is subbed)
-        // if (users[BOT_USERNAME]?.[`sclarf`]?.sub) {
-        //     for (const str of lemonyFresh.sclarf.emotes) {
-        //         if (msg.includes(str)) {
-        //             checkEmoteStreak(chatroom, sclarfEmotes)
-        //             break
-        //         }
-        //     }
-        // }
-        // if (users[BOT_USERNAME]?.[`domonintendo1`]?.sub) {
-        //     for (const str of lemonyFresh.domonintendo1.emotes) {
-        //         if (msg.includes(str)) {
-        //             checkEmoteStreak(chatroom, domoEmotes)
-        //             break
-        //         }
-        //     }
-        // }
-        // if (users[BOT_USERNAME]?.[`e1ectroma`]?.sub) {
-        //     for (const str of lemonyFresh.e1ectroma.emotes) {
-        //         if (msg.includes(str)) {
-        //             checkEmoteStreak(chatroom, tromEmotes)
-        //             break
-        //         }
-        //     }
-        // }
-        // if (users[BOT_USERNAME]?.[`jpegstripes`]?.sub) {
-        //     for (const str of lemonyFresh.jpegstripes.emotes) {
-        //         if (msg.includes(str)) {
-        //             checkEmoteStreak(chatroom, jpegEmotes)
-        //             break
-        //         }
-        //     }
-        // }
-
-        // Looking for a message to be repeated by at least two other users
-        let streakCount = 0
-        const streakUsers = []
-
-        for (const user in users) {
-            if (user !== BOT_USERNAME && users[user][channel]?.lastMessage === msg
-                && msg !== `!play`
-            ) {
-                streakCount++
-                streakUsers.push(users[user].displayName)
-                if (streakCount >= 2) { console.log(`${boldTxt}Listening for message streak... ${streakCount}/3 "${msg}" - ${streakUsers.join(`, `)}${resetTxt}`) }
-            }
-            if (streakCount >= 3) {
-                delayListening()
-                setTimeout(() => { talk(chatroom, msg) }, 1000)
-                return
             }
         }
     }
 
     // *** FUN NUMBER! ***
     if (users[username][channel].msgCount % funNumberCount === 0) { return rollFunNumber(chatroom, tags, username, msg.split(` `), Math.floor(Math.random() * funNumberTotal)) }
+
+    // Check if user hasn't chatted in more than an hour, but less than 12 hours
+    if (elapsedMinsSinceLastMsg >= 60
+        && elapsedMinsSinceLastMsg < 720) {
+        console.log(`${grayTxt}${displayName} hasn't chatted in the past 1-12 hours${resetTxt}`, elapsedMinsSinceLastMsg)
+        return talk(chatroom, `Welcome back, ${displayName}! :)`)
+    }
 }
 
 client.on('message', onMessageHandler)
