@@ -1,5 +1,17 @@
+const fs = require(`fs`)
 const BOT_USERNAME = process.env.BOT_USERNAME
 const OAUTH_TOKEN = process.env.OAUTH_TOKEN
+const BOT_ACCESS_TOKEN = process.env.BOT_ACCESS_TOKEN
+const JPEGSTRIPES_ACCESS_TOKEN = process.env.JPEGSTRIPES_ACCESS_TOKEN
+const JPEGSTRIPES_REFRESH_TOKEN = process.env.JPEGSTRIPES_REFRESH_TOKEN
+const SCLARF_ACCESS_TOKEN = process.env.SCLARF_ACCESS_TOKEN
+const SCLARF_REFRESH_TOKEN = process.env.SCLARF_REFRESH_TOKEN
+const E1ECTROMA_ACCESS_TOKEN = process.env.E1ECTROMA_ACCESS_TOKEN
+const E1ECTROMA_REFRESH_TOKEN = process.env.E1ECTROMA_REFRESH_TOKEN
+const DOMONINTENDO1_ACCESS_TOKEN = process.env.DOMONINTENDO1_ACCESS_TOKEN
+const DOMONINTENDO1_REFRESH_TOKEN = process.env.DOMONINTENDO1_REFRESH_TOKEN
+const PPUYYA_ACCESS_TOKEN = process.env.PPUYYA_ACCESS_TOKEN
+const PPUYYA_REFRESH_TOKEN = process.env.PPUYYA_REFRESH_TOKEN
 
 // Import global settings
 const { resetTxt, boldTxt, grayTxt, yellowBg, chatColors, settings } = require(`./config`)
@@ -317,6 +329,104 @@ function talk(chatroom, msg) {
     console.log(`${yellowBg}[${time}] <${chatroom.slice(1)}> ${BOT_USERNAME}: ${msg}${resetTxt}`)
 }
 
+function makeLogs() {
+    let data = `🍋️ LEMONY LOGS 🍋️\n\n`
+    if (lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN) { data += `BOT_ACCESS_TOKEN changed, update to: '${lemonyFresh.botAccessToken}'\n` }
+    if (lemonyFresh.jpegstripes.accessToken !== JPEGSTRIPES_ACCESS_TOKEN) { data += `JPEGSTRIPES_ACCESS_TOKEN changed, update to: '${lemonyFresh.jpegstripes.accessToken}'\n` }
+    if (lemonyFresh.jpegstripes.refreshToken !== JPEGSTRIPES_REFRESH_TOKEN) { data += `JPEGSTRIPES_REFRESH_TOKEN changed, update to: '${lemonyFresh.jpegstripes.refreshToken}'\n` }
+    if (lemonyFresh.sclarf.accessToken !== SCLARF_ACCESS_TOKEN) { data += `SCLARF_ACCESS_TOKEN changed, update to: '${lemonyFresh.sclarf.accessToken}'\n` }
+    if (lemonyFresh.sclarf.refreshToken !== SCLARF_REFRESH_TOKEN) { data += `SCLARF_REFRESH_TOKEN changed, update to: '${lemonyFresh.sclarf.refreshToken}'\n` }
+    if (lemonyFresh.e1ectroma.accessToken !== E1ECTROMA_ACCESS_TOKEN) { data += `E1ECTROMA_ACCESS_TOKEN changed, update to: '${lemonyFresh.e1ectroma.accessToken}'\n` }
+    if (lemonyFresh.e1ectroma.refreshToken !== E1ECTROMA_REFRESH_TOKEN) { data += `E1ECTROMA_REFRESH_TOKEN changed, update to: '${lemonyFresh.e1ectroma.refreshToken}'\n` }
+    if (lemonyFresh.domonintendo1.accessToken !== DOMONINTENDO1_ACCESS_TOKEN) { data += `DOMONINTENDO1_ACCESS_TOKEN changed, update to: '${lemonyFresh.domonintendo1.accessToken}'\n` }
+    if (lemonyFresh.domonintendo1.refreshToken !== DOMONINTENDO1_REFRESH_TOKEN) { data += `DOMONINTENDO1_REFRESH_TOKEN changed, update to: '${lemonyFresh.domonintendo1.refreshToken}'\n` }
+    if (lemonyFresh.ppuyya.accessToken !== PPUYYA_ACCESS_TOKEN) { data += `PPUYYA_ACCESS_TOKEN changed, update to: '${lemonyFresh.ppuyya.accessToken}'\n` }
+    if (lemonyFresh.ppuyya.refreshToken !== PPUYYA_REFRESH_TOKEN) { data += `PPUYYA_REFRESH_TOKEN changed, update to: '${lemonyFresh.ppuyya.refreshToken}'\n` }
+    data += `\nlemonyFresh: {\n`
+    for (const key of Object.keys(lemonyFresh)) {
+        if (Array.isArray(lemonyFresh[key])) { // Chatrooms list
+            data += `\t${key}: ['${lemonyFresh[key].join(`', '`)}']\n`
+        } else if (typeof lemonyFresh[key] === `string`) { // Bot access token
+            data += `\t${key}: '${lemonyFresh[key]}'\n`
+        } else {
+            // Channel name
+            data += `\t${key}: {\n`
+            for (const val of Object.keys(lemonyFresh[key])) {
+                if (Array.isArray(lemonyFresh[key][val])) {
+                    if (lemonyFresh[key][val].length === 0) {
+                        data += `\t\t${val}: [],\n`
+                    } else {
+                        data += `\t\t${val}: ['${lemonyFresh[key][val].join(`', '`)}'],\n`
+                    }
+                } else if (typeof lemonyFresh[key][val] === `string`) {
+                    if (lemonyFresh[key][val].length === 0) {
+                        data += `\t\t${val}: '',\n`
+                    } else {
+                        data += `\t\t${val}: '${lemonyFresh[key][val]}',\n`
+                    }
+                } else if (typeof lemonyFresh[key][val] === `number`) {
+                    data += `\t\t${val}: ${lemonyFresh[key][val]},\n`
+                } else if (typeof lemonyFresh[key][val] === `object`) {
+                    data += `\t\t${val}: {\n`
+                    // Hangman/Riddle
+                    for (const gameProp of Object.keys(lemonyFresh[key][val])) {
+                        if (Array.isArray(lemonyFresh[key][val][gameProp])) {
+                            if (lemonyFresh[key][val][gameProp].length === 0) {
+                                data += `\t\t\t${gameProp}: [],\n`
+                            } else {
+                                data += `\t\t\t${gameProp}: ['${lemonyFresh[key][val][gameProp].join(`', '`)}'],\n`
+                            }
+                        } else if (typeof lemonyFresh[key][val][gameProp] === `string`) {
+                            if (lemonyFresh[key][val][gameProp].length === 0) {
+                                data += `\t\t\t${gameProp}: '',\n`
+                            } else {
+                                data += `\t\t\t${gameProp}: ${lemonyFresh[key][val][gameProp]},\n`
+                            }
+                        } else { // number or boolean
+                            data += `\t\t\t${gameProp}: ${lemonyFresh[key][val][gameProp]},\n`
+                        }
+                    }
+                    data += `\t\t},\n`
+                }
+            }
+            data += `\t}\n`
+        }
+    }
+    data += `}\n\n`
+    data += `users: {\n`
+    for (const key of Object.keys(users)) {
+        data += `\t${key}: {\n`
+        for (const val of Object.keys(users[key])) {
+            if (typeof users[key][val] === `string`) {
+                data += `\t\t${val}: '${users[key][val]}',\n`
+            } else if (typeof users[key][val] === `object`) {
+                data += `\t\t${val}: {\n`
+                for (const channelProp of Object.keys(users[key][val])) {
+                    if (typeof users[key][val][channelProp] === `string`) {
+                        data += `\t\t\t${channelProp}: '${users[key][val][channelProp]}',\n`
+                    } else {
+                        data += `\t\t\t${channelProp}: ${users[key][val][channelProp]},\n`
+                    }
+                }
+                data += `\t\t},\n`
+            } else {
+                data += `\t\t${val}: ${users[key][val]},\n`
+            }
+        }
+        data += `\t},\n`
+    }
+    data += `}\n\n`
+    data += `tempCmds: {\n`
+    for (const key of Object.keys(tempCmds)) {
+        data += `\t{ '${key}': '${tempCmds[key]}' }\n`
+    }
+    data += `}`
+
+    fs.writeFile(`lemony_logs.txt`, data, (err) => {
+        if (err) { console.log(`Error writing logs:`, err) }
+    })
+}
+
 module.exports = {
     client,
     handleUncaughtException,
@@ -336,5 +446,6 @@ module.exports = {
     ping,
     getToUser,
     printLemon,
-    talk
+    talk,
+    makeLogs
 }

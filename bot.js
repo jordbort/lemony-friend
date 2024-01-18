@@ -139,7 +139,8 @@ const {
     ping,
     getToUser,
     printLemon,
-    talk
+    talk,
+    makeLogs
 } = require(`./utils`)
 
 process.on('uncaughtException', async (err) => {
@@ -226,6 +227,8 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     users[username][channel].lastMessage = msg
     users[username][channel].sentAt = Date.now()
     users[username][channel].msgCount++
+
+    makeLogs()
 
     // These checks happen earlier in case they happened to the bot
     if (subChange) { return handleSubChange(chatroom, users[username], tags.subscriber) }
