@@ -108,8 +108,6 @@ const {
 // Import Twitch functions
 const {
     getTwitchUser,
-    banTwitchUser,
-    getClaims,
     getTwitchChannel,
     getTwitchToken,
     getTwitchGame,
@@ -268,8 +266,6 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             return talk(chatroom, `I forgor 💀️`)
         }
     }
-    if (command === `lookup` && username === `jpegstripes`) { return getTwitchUser(chatroom, toUser.toLowerCase()) }
-    if (command === `claims` && username === `jpegstripes`) { return getClaims(chatroom) }
 
     // If first message since being away
     if (users[username][channel].away) {

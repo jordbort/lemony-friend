@@ -34,61 +34,6 @@ async function getTwitchUser(chatroom, username) {
             : userInfo.data[0]
 }
 
-async function banTwitchUser(chatroom, username) {
-    if (settings.debug) { console.log(`${boldTxt}> banTwitchUser(chatroom: ${chatroom}, username: ${username})${resetTxt}`) }
-    const channel = chatroom.substring(1)
-
-    const bannedUser = await getTwitchUser(chatroom, username)
-    if (!bannedUser) { return }
-    const bannedUserId = await bannedUser.id
-    const requestBody = {
-        data: {
-            user_id: bannedUserId
-        }
-    }
-    // const broadcaster = await getTwitchUser(chatroom, channel)
-    // const chatroomId = await broadcaster.id
-    // const bot = await getTwitchUser(chatroom, `lemony_friend`)
-    // const botId = await bot.id
-
-    const endpoint = `https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${lemonyFresh[channel].id}&moderator_id=${BOT_ID}`
-    // const endpoint = `https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${chatroomId}&moderator_id=${botId}`
-    const options = {
-        method: 'POST',
-        headers: {
-            authorization: `Bearer ${ACCESS_TOKEN}`,
-            'Client-Id': CLIENT_ID,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
-    }
-
-    console.log(endpoint, options)
-    const response = await fetch(endpoint, options)
-    const data = await response.json()
-    console.log(data)
-
-    return `message` in data
-        ? talk(chatroom, data.message)
-        : talk(chatroom, `Did it work???`)
-}
-
-async function getClaims(chatroom) {
-    if (settings.debug) { console.log(`${boldTxt}> getClaims(chatroom: ${chatroom})${resetTxt}`) }
-
-    const endpoint = `https://id.twitch.tv/oauth2/.well-known/openid-configuration`
-    // const options = {
-    //     headers: {
-    //         authorization: `Bearer ${ACCESS_TOKEN}`,
-    //         "Client-Id": CLIENT_ID
-    //     }
-    // }
-
-    const response = await fetch(endpoint)
-    const data = await response.json()
-    console.log(data)
-}
-
 async function getTwitchChannel(chatroom, broadcaster_id) {
     if (settings.debug) { console.log(`${boldTxt}> getTwitchChannel(broadcaster_id: ${broadcaster_id})${resetTxt}`) }
 
@@ -146,8 +91,6 @@ async function handleShoutOut(chatroom, user) {
 
 module.exports = {
     getTwitchUser,
-    banTwitchUser,
-    getClaims,
     getTwitchChannel,
     getTwitchToken,
     getTwitchGame,
