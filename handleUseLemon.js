@@ -1,6 +1,3 @@
-require(`dotenv`).config()
-const BOT_USERNAME = process.env.BOT_USERNAME
-
 // Import global settings
 const { resetTxt, boldTxt, settings } = require(`./config`)
 
