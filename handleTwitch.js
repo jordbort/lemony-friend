@@ -1,10 +1,9 @@
 const BOT_ID = 893524366
 const CLIENT_ID = process.env.CLIENT_ID
 const CLIENT_SECRET = process.env.CLIENT_SECRET
-let ACCESS_TOKEN = process.env.ACCESS_TOKEN
 
 // Import data
-const { lemonyFresh } = require(`./data`)
+const { lemonyFresh, users } = require(`./data`)
 
 // Import global settings
 const { resetTxt, boldTxt, grayTxt, settings } = require(`./config`)
@@ -18,7 +17,7 @@ async function getTwitchUser(chatroom, username) {
     const endpoint = `https://api.twitch.tv/helix/users?login=${username}`
     const options = {
         headers: {
-            authorization: `Bearer ${ACCESS_TOKEN}`,
+            authorization: `Bearer ${lemonyFresh.botAccessToken}`,
             "Client-Id": CLIENT_ID
         }
     }
@@ -40,7 +39,7 @@ async function getTwitchChannel(chatroom, broadcaster_id) {
     const endpoint = `https://api.twitch.tv/helix/channels?broadcaster_id=${broadcaster_id}`
     const options = {
         headers: {
-            authorization: `Bearer ${ACCESS_TOKEN}`,
+            authorization: `Bearer ${lemonyFresh.botAccessToken}`,
             "Client-Id": CLIENT_ID
         }
     }
@@ -58,7 +57,7 @@ async function getTwitchToken() {
     const response = await fetch(url, { method: "POST" })
     const token = await response.json()
     console.log(`${grayTxt}${JSON.stringify(token)}${resetTxt}`)
-    ACCESS_TOKEN = token.access_token
+    lemonyFresh.botAccessToken = token.access_token
 }
 
 async function getTwitchGame(chatroom, str) {
@@ -66,7 +65,7 @@ async function getTwitchGame(chatroom, str) {
     const endpoint = `https://api.twitch.tv/helix/games?name=${str}`
     const options = {
         headers: {
-            authorization: `Bearer ${ACCESS_TOKEN}`,
+            authorization: `Bearer ${lemonyFresh.botAccessToken}`,
             "Client-Id": CLIENT_ID
         }
     }
@@ -83,7 +82,7 @@ async function handleShoutOut(chatroom, user) {
     const stream = await getTwitchChannel(chatroom, twitchUser.id)
     let response = `Let's give a shoutout to ${stream.broadcaster_name}! `
     stream.game_name
-        ? response += `They were last playing ${stream.game_name}${twitchUser.broadcaster_type ? ` and are a Twitch ${twitchUser.broadcaster_type}!` : `.`}`
+        ? response += `They were last playing ${stream.game_name}${twitchUser.broadcaster_type ? ` and are a Twitch ${twitchUser.broadcaster_type.substring(0, 1).toUpperCase() + twitchUser.broadcaster_type.substring(1)}!` : `.`}`
         : response += `#NoGameGang`
     response += ` Follow them here: https://www.twitch.tv/${stream.broadcaster_login} :)`
     talk(chatroom, response)
