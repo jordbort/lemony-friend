@@ -1,48 +1,23 @@
+const fs = require(`fs`)
 const BOT_USERNAME = process.env.BOT_USERNAME
 const OAUTH_TOKEN = process.env.OAUTH_TOKEN
-const BOT_ID = 893524366
-const CLIENT_ID = process.env.CLIENT_ID
-const CLIENT_SECRET = process.env.CLIENT_SECRET
-let ACCESS_TOKEN = process.env.ACCESS_TOKEN
-
-// Import data
-const {
-    lemonyFresh,
-    users,
-    tempCmds
-} = require(`./data`)
+const BOT_ACCESS_TOKEN = process.env.BOT_ACCESS_TOKEN
+const JPEGSTRIPES_ACCESS_TOKEN = process.env.JPEGSTRIPES_ACCESS_TOKEN
+const JPEGSTRIPES_REFRESH_TOKEN = process.env.JPEGSTRIPES_REFRESH_TOKEN
+const SCLARF_ACCESS_TOKEN = process.env.SCLARF_ACCESS_TOKEN
+const SCLARF_REFRESH_TOKEN = process.env.SCLARF_REFRESH_TOKEN
+const E1ECTROMA_ACCESS_TOKEN = process.env.E1ECTROMA_ACCESS_TOKEN
+const E1ECTROMA_REFRESH_TOKEN = process.env.E1ECTROMA_REFRESH_TOKEN
+const DOMONINTENDO1_ACCESS_TOKEN = process.env.DOMONINTENDO1_ACCESS_TOKEN
+const DOMONINTENDO1_REFRESH_TOKEN = process.env.DOMONINTENDO1_REFRESH_TOKEN
+const PPUYYA_ACCESS_TOKEN = process.env.PPUYYA_ACCESS_TOKEN
+const PPUYYA_REFRESH_TOKEN = process.env.PPUYYA_REFRESH_TOKEN
 
 // Import global settings
-const {
-    resetTxt,
-    boldTxt,
-    // underlined,
-    // inverted,
-    // blackTxt,
-    // redTxt,
-    // greenTxt,
-    // yellowTxt,
-    // blueTxt,
-    // magentaTxt,
-    // cyanTxt,
-    // whiteTxt,
-    grayTxt,
-    // orangeTxt,
-    // blackBg,
-    redBg,
-    // greenBg,
-    yellowBg,
-    // blueBg,
-    // magentaBg,
-    // cyanBg,
-    // whiteBg,
-    // grayBg,
-    // orangeBg,
-    chatColors,
-    funNumberCount,
-    funNumberTotal,
-    settings
-} = require(`./config`)
+const { resetTxt, boldTxt, grayTxt, yellowBg, chatColors, settings } = require(`./config`)
+
+// Import data
+const { lemonyFresh, users, tempCmds } = require(`./data`)
 
 // Create bot client
 const tmi = require('tmi.js')
@@ -55,164 +30,6 @@ const opts = {
 }
 const client = new tmi.client(opts)
 
-const currencies = [
-    {
-        name: `dollars`,
-        abbreviation: `usd`,
-        symbol: `$`,
-        zeroes: ``
-    },
-    {
-        name: `dollars`,
-        abbreviation: `usd`,
-        symbol: `$`,
-        zeroes: ``
-    },
-    {
-        name: `dollars`,
-        abbreviation: `usd`,
-        symbol: `$`,
-        zeroes: ``
-    },
-    {
-        name: `dollars`,
-        abbreviation: `usd`,
-        symbol: `$`,
-        zeroes: ``
-    },
-    {
-        name: `dollars`,
-        abbreviation: `usd`,
-        symbol: `$`,
-        zeroes: ``
-    },
-    {
-        name: `japanese yen`,
-        abbreviation: `jpy`,
-        symbol: `¥`,
-        zeroes: `00`
-    },
-    {
-        name: `japanese yen`,
-        abbreviation: `jpy`,
-        symbol: `¥`,
-        zeroes: `00`
-    },
-    {
-        name: `korean won`,
-        abbreviation: `krw`,
-        symbol: `₩`,
-        zeroes: `000`
-    },
-    {
-        name: `korean won`,
-        abbreviation: `krw`,
-        symbol: `₩`,
-        zeroes: `000`
-    },
-    {
-        name: `turkish lira`,
-        abbreviation: ``,
-        symbol: `₺`,
-        zeroes: `00`
-    },
-    {
-        name: `turkish lira`,
-        abbreviation: ``,
-        symbol: `₺`,
-        zeroes: `00`
-    },
-    {
-        name: `british pound sterling`,
-        abbreviation: `gbp`,
-        symbol: `£`,
-        zeroes: ``
-    },
-    {
-        name: `british pound sterling`,
-        abbreviation: `gbp`,
-        symbol: `£`,
-        zeroes: ``
-    },
-    {
-        name: `mexican pesos`,
-        abbreviation: `mxn`,
-        symbol: `$`,
-        zeroes: `0`
-    },
-    {
-        name: `mexican pesos`,
-        abbreviation: `mxn`,
-        symbol: `$`,
-        zeroes: `0`
-    },
-    {
-        name: `canadian dollars`,
-        abbreviation: `cad`,
-        symbol: `$`,
-        zeroes: `0`
-    },
-    {
-        name: `canadian dollars`,
-        abbreviation: `cad`,
-        symbol: `$`,
-        zeroes: `0`
-    },
-    {
-        name: `euro`,
-        abbreviation: `eur`,
-        symbol: `€`,
-        zeroes: ``
-    },
-    {
-        name: `euro`,
-        abbreviation: `eur`,
-        symbol: `€`,
-        zeroes: ``
-    },
-    {
-        name: `australian dollars`,
-        abbreviation: `aud`,
-        symbol: `$`,
-        zeroes: `0`
-    },
-    {
-        name: `australian dollars`,
-        abbreviation: `aud`,
-        symbol: `$`,
-        zeroes: `0`
-    },
-    {
-        name: `malaysian ringgit`,
-        abbreviation: `myr`,
-        symbol: `RM`,
-        zeroes: `0`
-    },
-    {
-        name: `malaysian ringgit`,
-        abbreviation: `myr`,
-        symbol: `RM`,
-        zeroes: `0`
-    },
-    {
-        name: `indian rupees`,
-        abbreviation: `inr`,
-        symbol: `₹`,
-        zeroes: `00`
-    },
-    {
-        name: `indian rupees`,
-        abbreviation: `inr`,
-        symbol: `₹`,
-        zeroes: `00`
-    },
-    {
-        name: `zimbabwean dollars`,
-        abbreviation: `zwd`,
-        symbol: `$`,
-        zeroes: `0000000000000000`
-    }
-]
 const numbers = [
     `zero`,
     `one`,
@@ -267,6 +84,58 @@ const numbers = [
 ]
 
 // Helper functions
+async function handleUncaughtException(errMsg, location) {
+    return lemonyFresh.channels.forEach((channel) => {
+        talk(channel, `Oops, I just crashed! ${users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : `>(`} ${errMsg} ${location}`)
+    })
+}
+
+function sayGoals(chatroom, args) {
+    if (settings.debug) { console.log(`${boldTxt}> sayGoals(chatroom: ${chatroom}, args: ${args})${resetTxt}`) }
+    if (chatroom === `#sclarf`) {
+        const subs = Number(args[0])
+        const sclarfGoals = {
+            25: `sclarf will play 3d pinball!`,
+            50: `sclarf will make a food tirr list!`,
+            75: `sclarf will have a fight club movie night!`,
+            100: `sclarf will play hello kitty island adventure!`,
+            125: `sclarf will play a 400-in-1 games console!`,
+            150: `chat decidecs speedrun`,
+            175: `sclarf will play just dance!`,
+            200: `sclarf will do a cosplay!`,
+            225: `lemony fresh stream???`,
+            250: `sclarf will play Pokemon Soul Link!`,
+            275: `mezcal tasting when pp`,
+            300: `bianca stream`,
+            325: `bianca cosplay`,
+            350: `sclarf will do an art stream!`,
+            375: `sclarf will have a casino night!`,
+            400: `sclarf will play Pokemon Infinite fusion`,
+            425: `chat pick cosplay`,
+            450: `sclarf will game give away`,
+            475: `big collab`,
+            500: `sclarf will make a server in minecraft!`,
+            525: `sclarf will play Dream Daddy or another dating sim!`,
+            550: `LEGO STREAM`,
+            575: `cooking adjacent goal`,
+            600: `sclarf will END STREAM IMMEDIATELY`,
+            625: `sclarf will Call shannon wonderwall`,
+            650: `sclarf will taco bell irl stream?`,
+            675: `sclarf will sexc sclarf corp calendar`,
+            700: `sclarf will go see trom!`
+        }
+        if (!isNaN(subs) && subs in sclarfGoals) { talk(chatroom, `At ${subs} subs, ${sclarfGoals[subs]}`) }
+    } else if (chatroom === `#domonintendo1`) {
+        const dollars = Number(args[0])
+        const domoGoals = {
+            50: `domo will do a 12-hour stream!`,
+            100: `domo will do a 12-hour stream + read a children's book in Japanese!`,
+            150: `domo will play Pokemon Fire Red in Japanese until we beat it!`
+        }
+        if (!isNaN(dollars) && dollars in domoGoals) { talk(chatroom, `At $${dollars}, ${domoGoals[dollars]}`) }
+    } else { console.log(`${grayTxt}${chatroom.substring(1)} has no goals${resetTxt}`) }
+}
+
 function sayRebootMsg(chatroom) {
     if (settings.debug) { console.log(`${boldTxt}> sayRebootMsg(chatroom: ${chatroom})${resetTxt}`) }
     const channel = chatroom.substring(1)
@@ -289,9 +158,9 @@ function sayRebootMsg(chatroom) {
             ? `I have ${users[BOT_USERNAME].lemons} lemon${users[BOT_USERNAME].lemons === 1 ? `` : `s`}! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`
             : `${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`}`
     ]
-    const response = onlineMsgs[Math.floor(Math.random() * onlineMsgs.length)]
+    const rebootMsg = onlineMsgs[Math.floor(Math.random() * onlineMsgs.length)]
     settings.sayOnlineMsg = false
-    talk(chatroom, response)
+    lemonyFresh.channels.forEach((channel) => { talk(channel, rebootMsg) })
 }
 
 function sayFriends(chatroom) {
@@ -312,255 +181,6 @@ function toggleDebugMode(chatroom, args) {
     settings.debug === initialDebugState
         ? talk(chatroom, `Debug mode is currently ${settings.debug ? `ON` : `OFF`}! :)`)
         : talk(chatroom, `Debug mode is now ${settings.debug ? `ON` : `OFF`}! :)`)
-}
-
-async function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
-    if (settings.debug) { console.log(`${boldTxt}> rollFunNumber(chatroom: ${chatroom}, tags: ${typeof tags}, username: ${username}, msgArr.length: ${msgArr.length}, funNumber: ${funNumber})${resetTxt}`) }
-    const channel = chatroom.substring(1)
-
-    const randCurrency = Math.floor(Math.random() * currencies.length)
-    const currency = currencies[randCurrency]
-    let randomUser = getRandomUser()
-
-    // Make 4-wide message pyramid of first word in message
-    if (funNumber === 0) {
-        const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
-        talk(chatroom, `${msgArr[0]}`)
-        setTimeout(() => talk(chatroom, `${msgArr[0]} ${msgArr[0]}`), delay)
-        setTimeout(() => talk(chatroom, `${msgArr[0]} ${msgArr[0]} ${msgArr[0]}`), delay * 2)
-        setTimeout(() => talk(chatroom, `${msgArr[0]} ${msgArr[0]}`), delay * 3)
-        setTimeout(() => talk(chatroom, `${msgArr[0]}`), delay * 4)
-    }
-    // Turn message count into money
-    else if (funNumber === 1) { talk(chatroom, `Give me ${currency.symbol}${users[username][channel].msgCount}${currency.zeroes} ${currency.abbreviation.toUpperCase()}`) }
-    // Turn message count into money to my account
-    else if (funNumber === 2) {
-        const paymentMethods = [
-            `give me`,
-            `give me`,
-            `venmo me`,
-            `venmo me`,
-            `paypal me`,
-            `paypal me`,
-            `cashapp me`,
-            `cashapp me`,
-            `wire transfer me`,
-            `wire transfer me`,
-            `messenger pigeon me`,
-            `messenger pigeon me`,
-            `pls email me`,
-            `write me a travelers check for`
-        ]
-        const paymentMethod = Math.floor(Math.random() * paymentMethods.length)
-        talk(chatroom, `${paymentMethods[paymentMethod]} ${users[username][channel].msgCount}${currency.zeroes} ${currency.name}`)
-    }
-    // Activate random redeem
-    else if (funNumber === 3) {
-        const redeems = []
-        if (lemonyFresh[channel].redeems.length === 0) {
-            while (randomUser === BOT_USERNAME) { randomUser = getRandomUser() }
-            redeems.push(`!slap ${randomUser}`)
-        } else {
-            redeems.push(...lemonyFresh[channel].redeems)
-        }
-        if (settings.debug) { console.log(redeems) }
-        const redeem = Math.floor(Math.random() * redeems.length)
-        talk(chatroom, redeems[redeem])
-    }
-    // Give hundreds of points (requires StreamElements)
-    else if (funNumber === 4 && chatroom !== `#domonintendo1`) {
-        const pointsToGive = `points` in Object(users[BOT_USERNAME][channel])
-            ? users[username][channel].msgCount * 50 >= users[username][channel].points
-                ? `all`
-                : `${users[username][channel].msgCount * 50}`
-            : `${users[username][channel].msgCount * 50}`
-        talk(chatroom, `!give ${username} ${pointsToGive}`)
-    }
-    // Lemonify a random user's random chat message
-    else if (funNumber === 5) {
-        while (randomUser === BOT_USERNAME) { randomUser = getRandomUser() }
-        const randomMsg = getRandomChannelMessage(users[randomUser])
-        const lemonMsg = lemonify(randomMsg)
-        talk(chatroom, lemonMsg)
-    }
-    // Check for UndertaleBot and interact with a random user
-    else if (funNumber === 6 && `undertalebot` in users && Object.keys(users.undertalebot).includes(channel)) {
-        while ([BOT_USERNAME, `undertalebot`].includes(randomUser)) { randomUser = getRandomUser() }
-        const actions = [
-            `!fight ${users[randomUser].displayName}`,
-            `!act ${users[randomUser].displayName}`,
-            `!mercy ${users[randomUser].displayName}`
-        ]
-        talk(chatroom, actions[Math.floor(Math.random() * actions.length)])
-    }
-    else if (funNumber === 7) { talk(chatroom, `This message has a 1/${(funNumberCount * funNumberTotal).toLocaleString()} chance of appearing`) }
-    else if (funNumber === 8) { talk(chatroom, `${tags.id}`) }
-    else if (funNumber === 9) { talk(chatroom, `${tags[`tmi-sent-ts`]}`) }
-    else if (funNumber === 10) {
-        const broadcaster_id = lemonyFresh[channel].id
-        const twitchChannel = await getTwitchChannel(chatroom, broadcaster_id)
-        const game = twitchChannel.game_name
-        talk(chatroom, `How are you enjoying ${game || `the game`}?`)
-    }
-    else if (funNumber === 11) {
-        users[username].lemons++
-        talk(chatroom, `${users[username].displayName} earned one (1) lemon! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`)
-    }
-}
-
-function handleGivenPoints(chatroom, givingUser, pointsNum) {
-    if (settings.debug) { console.log(`${boldTxt}> handleGivenPoints(chatroom: ${chatroom}, givingUser: ${givingUser}, pointsNum: ${pointsNum})${resetTxt}`) }
-    if (isNaN(pointsNum)) { console.log(`${redBg}${boldTxt}WARNING: pointsNum isn't a number!${resetTxt}`) }
-    const channel = chatroom.substring(1)
-    talk(chatroom, `Thank you for the points, ${givingUser}! :)`)
-    if (`points` in Object(users[BOT_USERNAME][channel])) {
-        users[BOT_USERNAME][channel].points += Number(pointsNum)
-    }
-    else {
-        const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
-        setTimeout(() => talk(chatroom, `!points`), delay)
-    }
-    if (settings.debug) { console.log(`${boldTxt}> New points:${resetTxt}`, `points` in Object(users[BOT_USERNAME][channel]) ? users[BOT_USERNAME][channel].points : `(waiting for reply...)`) }
-}
-
-function handleSetPoints(chatroom, pointsNum) {
-    if (settings.debug) { console.log(`${boldTxt}> handleSetPoints(chatroom: ${chatroom}, pointsNum: ${pointsNum})${resetTxt}`) }
-    if (isNaN(pointsNum)) { console.log(`${redBg}${boldTxt}WARNING: pointsNum isn't a number!${resetTxt}`) }
-    const channel = chatroom.substring(1)
-    if (`points` in users[BOT_USERNAME][channel] && pointsNum > users[BOT_USERNAME][channel].points) { talk(chatroom, `:D`) }
-    users[BOT_USERNAME][channel].points = pointsNum
-    if (settings.debug) { console.log(`${boldTxt}> New points:${resetTxt}`, users[BOT_USERNAME][channel].points) }
-}
-
-function handleLoseAllPoints(chatroom) {
-    if (settings.debug) { console.log(`${boldTxt}> handleLoseAllPoints(chatroom: ${chatroom})${resetTxt}`) }
-    const channel = chatroom.substring(1)
-    users[BOT_USERNAME][channel].points = 0
-    console.log(`> Gambled ALL, LOST ALL, new amount:`, 0)
-    talk(chatroom, `:(`)
-    if (settings.debug) { console.log(`${boldTxt}> New points:${resetTxt}`, users[BOT_USERNAME][channel].points) }
-}
-
-async function getRandomWord() {
-    if (settings.debug) { console.log(`${boldTxt}> getRandomWord()${resetTxt}`) }
-    const response = await fetch(`https://random-word-api.vercel.app/api?words=1`)
-    const data = await response.json()
-    if (settings.debug) { console.log(data) }
-    return data[0]
-}
-
-async function hangmanInit(hangman) {
-    if (settings.debug) { console.log(`${boldTxt}> hangmanInit(hangman: ${typeof hangman})${resetTxt}`) }
-
-    hangman.listening = true
-    hangman.answer = await getRandomWord()
-    hangman.spaces.length = hangman.answer.length
-    hangman.spaces.fill(`_`)
-    hangman.players.length = 0
-    hangman.guessedLetters.length = 0
-    hangman.chances = 6
-    hangman.currentPlayer = 0
-}
-
-function hangmanAnnounce(chatroom) {
-    if (settings.debug) { console.log(`${boldTxt}> hangmanAnnounce(chatroom: ${chatroom})${resetTxt}`) }
-    const channel = chatroom.slice(1)
-    const hangman = lemonyFresh[channel].hangman
-
-    hangman.signup = true
-    talk(chatroom, `I'm thinking of a word... Type !play in the next 30 seconds to join in a game of Hangman! :)`)
-    setTimeout(() => {
-        if (settings.debug) { console.log(`${boldTxt}> 30 seconds has elapsed, signup window closed${resetTxt}`) }
-        hangman.signup = false
-        if (hangman.players.length === 0) {
-            hangman.listening = false
-            talk(chatroom, `No players signed up for Hangman! :(`)
-        } else {
-            talk(chatroom, `${hangman.players.length} player${hangman.players.length === 1 ? `` : `s`} signed up for Hangman! It's a ${hangman.answer.length}-letter word. You go first, ${users[hangman.players[0]].displayName}! :)`)
-            const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
-            const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
-            setTimeout(() => talk(chatroom, statusMsg), delay)
-        }
-    }, 30000)
-}
-
-function checkLetter(chatroom, username, guess) {
-    if (settings.debug) { console.log(`${boldTxt}> checkLetter(chatroom: ${chatroom}, username: ${username}, guess: ${guess})${resetTxt}`) }
-    const channel = chatroom.slice(1)
-    const hangman = lemonyFresh[channel].hangman
-    const player = users[username].displayName
-
-    if (hangman.guessedLetters.includes(guess)) {
-        const listOfLetters = hangman.guessedLetters.length === 1
-            ? hangman.guessedLetters[0]
-            : hangman.guessedLetters.length === 2
-                ? hangman.guessedLetters.join(` and `)
-                : hangman.guessedLetters.slice(0, hangman.guessedLetters.length - 1).join(`, `) + `, and ` + hangman.guessedLetters[hangman.guessedLetters.length - 1]
-        return talk(chatroom, `${player}, the letter${hangman.guessedLetters.length === 1 ? `` : `s`} ${listOfLetters} ${hangman.guessedLetters.length === 1 ? `has` : `have`} already been guessed - try again!`)
-    }
-    hangman.guessedLetters.push(guess)
-    hangman.currentPlayer++
-    if (hangman.currentPlayer === hangman.players.length) { hangman.currentPlayer = 0 }
-    const nextPlayer = users[hangman.players[hangman.currentPlayer]].displayName
-    if (hangman.answer.includes(guess.toLowerCase())) {
-        for (const [i, letter] of hangman.answer.split(``).entries()) {
-            if (letter === guess.toLowerCase()) { hangman.spaces[i] = guess }
-        }
-        if (!hangman.spaces.includes(`_`)) {
-            return solvePuzzle(chatroom, username)
-        }
-        talk(chatroom, `Good job ${player}, ${guess} was in the word! :) Now it's your turn, ${nextPlayer}!`)
-    } else {
-        hangman.chances--
-        if (hangman.chances === 0) {
-            hangman.listening = false
-            return talk(chatroom, `Sorry ${player}, ${guess} wasn't in the word! The answer was "${hangman.answer}". Game over! :(`)
-        }
-        talk(chatroom, `Sorry ${player}, ${guess} wasn't in the word! Minus one chance... :( Now it's your turn, ${nextPlayer}!`)
-    }
-    const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
-    const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
-    setTimeout(() => talk(chatroom, statusMsg), delay)
-}
-
-function solvePuzzle(chatroom, username) {
-    if (settings.debug) { console.log(`${boldTxt}> solvePuzzle(chatroom: ${chatroom}, username: ${username})${resetTxt}`) }
-    const hangman = lemonyFresh[chatroom.slice(1)].hangman
-
-    hangman.listening = false
-    return talk(chatroom, `Congratulations ${users[username].displayName}, you solved the puzzle! The answer was: "${hangman.answer}" :D`)
-}
-
-function rockPaperScissors(chatroom, username, arg) {
-    const rps = [`rock`, `paper`, `scissors`]
-    if (settings.debug) { console.log(`${boldTxt}> rockPaperScissors(rockPaperScissors: ${chatroom}, username: ${username}, arg: ${arg}) ${rps.includes(arg)}${resetTxt}`) }
-    const botChoice = rps[Math.floor(Math.random() * rps.length)]
-    const playerChoice = rps.includes(arg) ? arg : rps[Math.floor(Math.random() * rps.length)]
-    const name = users[username].displayName
-    let response = `${name} throws ${playerChoice}! I throw ${botChoice}`
-    if ((playerChoice === `rock` && botChoice === `paper`)
-        || (playerChoice === `paper` && botChoice === `scissors`)
-        || (playerChoice === `scissors` && botChoice === `rock`)) { response += `. Sorry, I win! :)` }
-    else if ((playerChoice === `rock` && botChoice === `scissors`)
-        || (playerChoice === `paper` && botChoice === `rock`)
-        || (playerChoice === `scissors` && botChoice === `paper`)) { response += `. You win! :D` }
-    else { response += `, too. It's a tie! :O` }
-    talk(chatroom, response)
-}
-
-function handleNewChatter(chatroom, user) {
-    if (settings.debug) { console.log(`${boldTxt}> handleNewChatter(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
-    const greetings = [
-        `Hi ${user.displayName}, welcome to the stream!`,
-        `Hey ${user.displayName}, welcome to the stream!`,
-        `Welcome to the stream, ${user.displayName}!`,
-        `Hi ${user.displayName}, welcome in!`,
-        `Hi ${user.displayName} :)`,
-        `Hello @${user.displayName} welcome in!`,
-        `@${user.displayName} welcome 2 ${chatroom.substring(1, 5)} strem`,
-    ]
-    const greeting = greetings[Math.floor(Math.random() * greetings.length)]
-    setTimeout(() => talk(chatroom, greeting), 5000)
 }
 
 function getLastMessage(chatroom, user, room) {
@@ -588,161 +208,10 @@ function getMessageCount(chatroom, user) {
     talk(chatroom, response)
 }
 
-function yell(user, msg) {
+function yell(user, message) {
     for (const chatroom of lemonyFresh.channels) {
-        talk(chatroom, `${user.displayName} says: ${msg.substring(6)}`)
+        talk(chatroom, `${user.displayName} says: ${message}`)
     }
-}
-
-function handleGiveLemon(chatroom, username, target) {
-    if (settings.debug) { console.log(`${boldTxt}> handleGiveLemon(chatroom: ${chatroom}, username: ${username}, target: ${target})${resetTxt}`) }
-    if (users[username].lemons > 0) {
-        if (target) {
-            users[username].lemons--
-            users[target].lemons++
-            talk(chatroom, `${users[username].displayName} gave ${users[target].displayName} a lemon!`)
-        } else {
-            users[username].lemons--
-            talk(chatroom, `${users[username].displayName} threw away a lemon!`)
-        }
-    } else {
-        talk(chatroom, `${users[username].displayName} has no lemons!`)
-    }
-}
-
-async function getDadJoke(chatroom) {
-    const response = await fetch("https://icanhazdadjoke.com/", {
-        headers: {
-            "Accept": "application/json",
-        }
-    })
-    const data = await response.json()
-    if (settings.debug) { console.log(data) }
-    data.status === 200
-        ? talk(chatroom, data.joke)
-        : talk(chatroom, `Error fetching dad joke! :(`)
-}
-
-async function getPokemon(chatroom, pokemon) {
-    if (settings.debug) { console.log(`${boldTxt}> getPokemon(chatroom: ${chatroom}, pokemon: ${pokemon})${resetTxt}`) }
-    if (!pokemon) { return }
-
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`)
-    if (response.statusText !== `OK`) {
-        talk(chatroom, `Pokemon ${pokemon} was not found! :(`)
-        return
-    }
-    const data = await response.json()
-
-    let message = `#${data.id} ${pokemon.toUpperCase()} `
-
-    const pokemonTypes = []
-    for (const types of data.types) { pokemonTypes.push(types.type.name) }
-    message += `(${pokemonTypes.join(`/`)}) - ${data.abilities.length === 1 ? `Ability` : `Abilities`}: `
-
-    const pokemonAbilities = []
-    for (const abilities of data.abilities) { pokemonAbilities.push(`${abilities.ability.name}${abilities.is_hidden ? ` (hidden)` : ``}`) }
-    message += `${pokemonAbilities.join(`, `)}. `
-
-    let type1Data
-    let type2Data
-    const doubleDamageTo = []
-    const doubleDamageFrom = []
-    const halfDamageTo = []
-    const halfDamageFrom = []
-    const immuneTo = []
-    const immuneFrom = []
-
-    if (pokemonTypes[0]) {
-        // look up one type
-        const response1 = await fetch(`https://pokeapi.co/api/v2/type/${pokemonTypes[0]}`)
-        type1Data = await response1.json()
-        for (const damageType of type1Data.damage_relations.double_damage_to) {
-            if (!doubleDamageTo.includes(damageType.name)) { doubleDamageTo.push(damageType.name) }
-        }
-        for (const damageType of type1Data.damage_relations.double_damage_from) {
-            if (!doubleDamageFrom.includes(damageType.name)) { doubleDamageFrom.push(damageType.name) }
-        }
-        for (const damageType of type1Data.damage_relations.half_damage_to) {
-            if (!halfDamageTo.includes(damageType.name)) { halfDamageTo.push(damageType.name) }
-        }
-        for (const damageType of type1Data.damage_relations.half_damage_from) {
-            if (!halfDamageFrom.includes(damageType.name)) { halfDamageFrom.push(damageType.name) }
-        }
-        for (const damageType of type1Data.damage_relations.no_damage_to) {
-            if (!immuneTo.includes(damageType.name)) { immuneTo.push(damageType.name) }
-        }
-        for (const damageType of type1Data.damage_relations.no_damage_from) {
-            if (!immuneFrom.includes(damageType.name)) { immuneFrom.push(damageType.name) }
-        }
-    }
-    if (pokemonTypes[1]) {
-        // look up two types
-        const response2 = await fetch(`https://pokeapi.co/api/v2/type/${pokemonTypes[1]}`)
-        type2Data = await response2.json()
-        for (const damageType of type2Data.damage_relations.double_damage_to) {
-            if (!doubleDamageTo.includes(damageType.name)) { doubleDamageTo.push(damageType.name) }
-        }
-        for (const damageType of type2Data.damage_relations.double_damage_from) {
-            if (!doubleDamageFrom.includes(damageType.name)) { doubleDamageFrom.push(damageType.name) }
-        }
-        for (const damageType of type2Data.damage_relations.half_damage_to) {
-            if (!halfDamageTo.includes(damageType.name)) { halfDamageTo.push(damageType.name) }
-        }
-        for (const damageType of type2Data.damage_relations.half_damage_from) {
-            if (!halfDamageFrom.includes(damageType.name)) { halfDamageFrom.push(damageType.name) }
-        }
-        for (const damageType of type2Data.damage_relations.no_damage_to) {
-            if (!immuneTo.includes(damageType.name)) { immuneTo.push(damageType.name) }
-        }
-        for (const damageType of type2Data.damage_relations.no_damage_from) {
-            if (!immuneFrom.includes(damageType.name)) { immuneFrom.push(damageType.name) }
-        }
-    }
-
-    // if it TAKES double damage AND half damage FROM a type, remove from BOTH arrays
-    const nullify = []
-    for (const type of doubleDamageFrom) {
-        console.log(`Looking at:`, doubleDamageFrom.indexOf(type), type)
-        if (halfDamageFrom.includes(type)) {
-            console.log(`Found in both:`, type)
-            nullify.push(type)
-        }
-    }
-    for (const dupe of nullify) {
-        doubleDamageFrom.splice(doubleDamageFrom.indexOf(dupe), 1)
-        halfDamageFrom.splice(halfDamageFrom.indexOf(dupe), 1)
-    }
-
-    // Cleaning up immunities
-    for (const type of immuneFrom) {
-        if (halfDamageFrom.includes(type)) {
-            console.log(`"Immunity from" found in halfDamageFrom:`, type)
-            halfDamageFrom.splice(halfDamageFrom.indexOf(type), 1)
-        }
-        if (doubleDamageFrom.includes(type)) {
-            console.log(`"Immunity from" found in doubleDamageFrom:`, type)
-            doubleDamageFrom.splice(doubleDamageFrom.indexOf(type), 1)
-        }
-    }
-
-    if (settings.debug) {
-        console.log(`nullify:`, nullify)
-        console.log(`doubleDamageTo:`, doubleDamageTo)
-        console.log(`doubleDamageFrom:`, doubleDamageFrom)
-        console.log(`halfDamageTo:`, halfDamageTo)
-        console.log(`halfDamageFrom:`, halfDamageFrom)
-        console.log(`immuneTo:`, immuneTo)
-        console.log(`immuneFrom:`, immuneFrom)
-    }
-
-    if (doubleDamageTo.length > 0) { message += `Super effective to ${doubleDamageTo.join(`/`)}-type Pokemon. ` }
-    if (doubleDamageFrom.length > 0) { message += `Weak to ${doubleDamageFrom.join(`/`)}-type moves. ` }
-    if (halfDamageTo.length > 0) { message += `Not very effective to ${halfDamageTo.join(`/`)}-type Pokemon. ` }
-    if (halfDamageFrom.length > 0) { message += `Resistant to ${halfDamageFrom.join(`/`)}-type moves. ` }
-    if (immuneTo.length > 0) { message += `No effect to ${immuneTo.join(`/`)}-type Pokemon. ` }
-    if (immuneFrom.length > 0) { message += `No effect from ${immuneFrom.join(`/`)}-type moves.` }
-    talk(chatroom, message)
 }
 
 function getColor(chatroom, user) {
@@ -776,184 +245,6 @@ function getRandomChannelMessage(user) {
     return randomMessage
 }
 
-function lemonify(str) {
-    if (settings.debug) { console.log(`${boldTxt}> lemonify(str: ${str})${resetTxt}`) }
-    const words = str.split(` `)
-    const reservedKeywords = [
-        `a`,
-        `an`,
-        `this`,
-        `that`,
-        `one`,
-        `the`,
-        `my`,
-        `your`,
-        `his`,
-        `her`,
-        `its`,
-        `our`,
-        `their`,
-        `for`,
-        `and`,
-        `nor`,
-        `by`,
-        `or`,
-        `yet`,
-        `so`,
-        `if`,
-        `when`,
-        `of`,
-        `on`,
-        `these`,
-        `those`,
-        `many`,
-        `some`,
-        `zero`,
-        `one`,
-        `two`,
-        `three`,
-        `four`,
-        `five`,
-        `six`,
-        `seven`,
-        `eight`,
-        `nine`,
-        `ten`,
-        `eleven`,
-        `twelve`,
-        `thirteen`,
-        `fourteen`,
-        `fifteen`,
-        `sixteen`,
-        `seventeen`,
-        `eightteen`,
-        `nineteen`,
-        `twenty`,
-        `thirty`,
-        `forty`,
-        `fifty`,
-        `sixty`,
-        `seventy`,
-        `eighty`,
-        `ninety`,
-        `hundred`,
-        `thousand`,
-        `million`,
-        `billion`,
-        `trillion`,
-        `quadrillion`
-    ]
-
-    // Reading from last word to first
-    for (let i = words.length - 1; i >= 0; i--) {
-        const number = Number(words[i])
-        const append = []
-
-        // Shaving non-alphanumeric characters from the end of the next word (the word it might decide to replace with "lemon")
-        while (words[i + 1] && /[^a-z0-9]$/i.test(words[i + 1])) {
-            append.push(words[i + 1][words[i + 1].length - 1])
-            words[i + 1] = words[i + 1].substring(0, words[i + 1].length - 1)
-        }
-        append.reverse()
-
-        // Definitely singular
-        if ((
-            number === 1
-            || [
-                `a`,
-                `an`,
-                `this`,
-                `that`,
-                `one`
-            ].includes(words[i].toLowerCase())
-            && !reservedKeywords.includes(words[i + 1]))
-            && words[i + 1]
-        ) {
-            if (words[i].toLowerCase() === `an`) { words[i] = `a` }
-            words[i + 1] = `lemon${append.join(``)}`
-        }
-
-        // Definitely plural
-        else if ((
-            ((number || number === 0) && number !== 1)
-            // If a number spelled out, or "these/those/many/some"
-            || [
-                `these`,
-                `those`,
-                `many`,
-                `some`,
-                `zero`,
-                `two`,
-                `three`,
-                `four`,
-                `five`,
-                `six`,
-                `seven`,
-                `eight`,
-                `nine`,
-                `ten`,
-                `eleven`,
-                `twelve`,
-                `thirteen`,
-                `fourteen`,
-                `fifteen`,
-                `sixteen`,
-                `seventeen`,
-                `eightteen`,
-                `nineteen`,
-                `twenty`,
-                `thirty`,
-                `forty`,
-                `fifty`,
-                `sixty`,
-                `seventy`,
-                `eighty`,
-                `ninety`,
-                `hundred`,
-                `thousand`,
-                `million`,
-                `billion`,
-                `trillion`,
-                `quadrillion`
-            ].includes(words[i].toLowerCase()))
-            && words[i + 1]
-            && !reservedKeywords.includes(words[i + 1])
-        ) { words[i + 1] = `lemons${append.join(``)}` }
-
-        // Ambiguous count
-        else if ((
-            [`the`,
-                `my`,
-                `your`,
-                `his`,
-                `her`,
-                `its`,
-                `whose`,
-                `our`,
-                `their`,
-                `for`,
-                `and`,
-                `nor`,
-                `by`,
-                `or`,
-                `yet`,
-                `so`,
-                `if`,
-                `when`,
-                `of`,
-                `on`,
-                `to`
-            ].includes(words[i].toLowerCase()))
-            && words[i + 1]
-            && !reservedKeywords.includes(words[i + 1])
-        ) { words[i + 1] = /[^s][s]$/i.test(words[i + 1]) ? `lemons${append.join(``)}` : `lemon${append.join(``)}` }
-        else if (words[i + 1]) { words[i + 1] = `${words[i + 1]}${append.join(``)}` }
-    }
-
-    const lemonifiedString = words.join(` `)
-    return lemonifiedString
-}
-
 function handleTempCmd(chatroom, username, args) {
     if (settings.debug) { console.log(`${boldTxt}> handleTempCmd(chatroom: ${chatroom}, args: ${args})${resetTxt}`) }
     if (!args[1]) { return talk(chatroom, `Hey ${users[username].displayName}, use this command like: !tempcmd [commandname] [response...]! :)`) }
@@ -972,291 +263,6 @@ function handleTempCmd(chatroom, username, args) {
         tempCmds[args[0].toLowerCase()] = args.slice(1).join(` `)
         return talk(chatroom, `Temporary command "${args[0].toLowerCase()}" has been added! :)`)
     }
-}
-
-function handleGreet(chatroom, user) {
-    if (settings.debug) { console.log(`${boldTxt}> handleGreet(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
-    const greetings = [
-        `Howdy,`,
-        `Hello,`,
-        `Hey,`,
-        `Hi,`,
-        `Hey there,`,
-        `Hello`,
-        `Hey`,
-        `Hi`,
-        `Hey there`
-    ]
-    const greeting = Math.floor(Math.random() * greetings.length)
-    let response = `${greetings[greeting]} ${user.displayName}`
-
-    // If the greeting is "Howdy"
-    if (greeting === 0) {
-        response += `! :)`
-    } else if (greeting < greetings.indexOf(`Hello`)) {
-        // If there's a comma after the greeting
-        const appends = [
-            `How are you doing today?`,
-            `How are you today?`,
-            `How are you doing?`,
-            `How are you?`,
-            `How's it going?`,
-            `How goes it?`
-        ]
-        response += `! ${appends[Math.floor(Math.random() * appends.length)]} :)`
-    } else {
-        // If there's no comma after the greeting
-        const appends = [
-            `how are you doing today?`,
-            `how are you today?`,
-            `how are you doing?`,
-            `how are you?`,
-            `how's it going?`,
-            `how goes it?`
-        ]
-        response += `, ${appends[Math.floor(Math.random() * appends.length)]} :)`
-    }
-    talk(chatroom, response)
-}
-
-function handleMassGreet(chatroom, arr) {
-    if (settings.debug) { console.log(`${boldTxt}> handleGreet(chatroom: ${chatroom}, arr: ${arr})${resetTxt}`) }
-    const response = []
-    const greetings = [
-        `hello`,
-        `howdy`,
-        `hey`,
-        `hi`
-    ]
-    const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)]
-    const emotes = [
-        `HeyGuys`,
-        `:)`
-    ]
-    if (users[BOT_USERNAME]?.[`sclarf`]?.sub) { emotes.push(`sclarfWobble`, `sclarfPls`, `sclarfPog`, `sclarfHowdy`, `sclarfDog`, `sclarfHearts`) }
-    if (users[BOT_USERNAME]?.[`domonintendo1`]?.sub) { emotes.push(`domoni6ChefHey`, `domoni6Sneeze`, `domoni6Love`) }
-    if (users[BOT_USERNAME]?.[`e1ectroma`]?.sub) { emotes.push(`e1ectr4Pikadance`, `e1ectr4Tromadance`, `e1ectr4Hello`, `e1ectr4Hi`, `e1ectr4Smile`, `e1ectr4Ram`, `e1ectr4Salute`, `e1ectr4Lemfresh`) }
-    if (users[BOT_USERNAME]?.[`jpegstripes`]?.sub) { emotes.push(`jpegstBamJAM`, `jpegstKylePls`, `jpegstJulian`, `jpegstHeyGuys`, `jpegstSlay`) }
-    const randomEmote = emotes[Math.floor(Math.random() * emotes.length)]
-    for (let str of arr) {
-        while (str.startsWith(`@`)) { str = str.substring(1) }
-        str.toLowerCase() in users
-            ? response.push(`${randomGreeting} ${users[str.toLowerCase()].displayName} ${randomEmote}`)
-            : response.push(`${randomGreeting} ${str} ${randomEmote}`)
-    }
-    talk(chatroom, response.join(` `))
-}
-
-function handleGreetAll(chatroom, currentTime) {
-    if (settings.debug) { console.log(`${boldTxt}> handleGreetAll(chatroom: ${chatroom}, currentTime: ${currentTime})${resetTxt}`) }
-    const channel = chatroom.substring(1)
-    const usersToGreet = []
-    const response = []
-    const greetings = [
-        `hello`,
-        `howdy`,
-        `hey`,
-        `hi`
-    ]
-    const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)]
-    const emotes = [
-        `HeyGuys`,
-        `:)`
-    ]
-    if (users[BOT_USERNAME]?.[`sclarf`]?.sub) { emotes.push(`sclarfWobble`, `sclarfPls`, `sclarfPog`, `sclarfHowdy`, `sclarfDog`, `sclarfHearts`) }
-    if (users[BOT_USERNAME]?.[`domonintendo1`]?.sub) { emotes.push(`domoni6ChefHey`, `domoni6Sneeze`, `domoni6Love`) }
-    if (users[BOT_USERNAME]?.[`e1ectroma`]?.sub) { emotes.push(`e1ectr4Pikadance`, `e1ectr4Tromadance`, `e1ectr4Hello`, `e1ectr4Hi`, `e1ectr4Smile`, `e1ectr4Ram`, `e1ectr4Salute`, `e1ectr4Lemfresh`) }
-    if (users[BOT_USERNAME]?.[`jpegstripes`]?.sub) { emotes.push(`jpegstBamJAM`, `jpegstKylePls`, `jpegstJulian`, `jpegstHeyGuys`, `jpegstSlay`) }
-    const randomEmote = emotes[Math.floor(Math.random() * emotes.length)]
-    for (const user in users) {
-        if (user !== BOT_USERNAME && channel in users[user]) {
-            const lastChattedAtMins = Number(((currentTime - users[user][channel].sentAt) / 60000).toFixed(2))
-            if (lastChattedAtMins < 60) {
-                usersToGreet.push(users[user].displayName)
-            } else {
-                console.log(user, `has not chatted in the past 60 minutes, ignoring...`, lastChattedAtMins)
-            }
-        }
-    }
-    for (const user of usersToGreet) {
-        response.push(`${randomGreeting} ${user} ${randomEmote}`)
-    }
-    talk(chatroom, response.join(` `))
-}
-
-function sayGoodnight(chatroom, user) {
-    if (settings.debug) { console.log(`${boldTxt}> handleGreet(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
-    const greetings = [
-        `Bye`,
-        `Good night,`,
-        `Sleep well,`,
-        `See you next time,`,
-        `Have a good night,`
-    ]
-    const greeting = Math.floor(Math.random() * greetings.length)
-    let response = `${greetings[greeting]} ${user.displayName}`
-    if (greeting === 0) {
-        const appends = [
-            `sleep well`,
-            `see you next time`,
-            `have a good night`,
-        ]
-        response += `, ${appends[Math.floor(Math.random() * appends.length)]}`
-    }
-    response += `! :)`
-    talk(chatroom, response)
-}
-
-function sayYoureWelcome(chatroom, user) {
-    if (settings.debug) { console.log(`${boldTxt}> sayYoureWelcome(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
-    const welcomes = [
-        `${user.displayName}`,
-        `You're welcome, ${user.displayName}`,
-        `No problem, ${user.displayName}`,
-        `My pleasure, ${user.displayName}`,
-    ]
-    const welcome = Math.floor(Math.random() * welcomes.length)
-    let response = `${welcomes[welcome]}`
-    if (welcome === 0) {
-        const appends = [
-            `you're welcome`,
-            `no problem`,
-            `my pleasure`
-        ]
-        response += ` ${appends[Math.floor(Math.random() * appends.length)]}`
-    }
-    response += `! :)`
-    talk(chatroom, response)
-}
-
-function sayThanks(chatroom, user) {
-    if (settings.debug) { console.log(`${boldTxt}> sayThanks(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
-    const thanks = [
-        `${user.displayName}`,
-        `Thanks, ${user.displayName}`,
-        `Thanks, ${user.displayName}`,
-        `Thanks, ${user.displayName}`,
-        `Thank you, ${user.displayName}`,
-        `Thank you, ${user.displayName}`,
-        `Thank you, ${user.displayName}`,
-        `Thank you so much, ${user.displayName}`,
-        `Hey thanks, ${user.displayName}`,
-        `Aw thanks, ${user.displayName}`
-    ]
-    const sentiment = Math.floor(Math.random() * thanks.length)
-    let response = `${thanks[sentiment]}`
-    if (sentiment === 0) {
-        const appends = [
-            `thanks`,
-            `thank you`,
-            `thank you so much`
-        ]
-        response += ` ${appends[Math.floor(Math.random() * appends.length)]}`
-    }
-    response += `! :)`
-    talk(chatroom, response)
-}
-
-function handleColorChange(chatroom, user, newColor) {
-    if (settings.debug) { console.log(`${boldTxt}> handleColorChange(chatroom: ${chatroom}, user: ${user.displayName}, newColor: ${newColor})${resetTxt}`) }
-    user.color = newColor
-    talk(chatroom, `Acknowledging ${user.displayName}'s color change :)`)
-}
-
-function handleTurboChange(chatroom, user, turboStatus) {
-    if (settings.debug) { console.log(`${boldTxt}> handleTurboChange(chatroom: ${chatroom}, user: ${user.displayName}, turboStatus: ${turboStatus})${resetTxt}`) }
-    user.turbo = turboStatus
-    turboStatus ? talk(chatroom, `Wow, ${user.displayName} got Turbo? :D`) : talk(chatroom, `Did ${user.displayName} stop having Turbo? :O`)
-}
-
-function handleSubChange(chatroom, user, subStatus) {
-    if (settings.debug) { console.log(`${boldTxt}> handleSubChange(chatroom: ${chatroom}, user: ${user.displayName}, subStatus: ${subStatus})${resetTxt}`) }
-    user[chatroom.slice(1)].sub = subStatus
-    if (user.displayName.toLowerCase() === BOT_USERNAME) {
-        setTimeout(() => subStatus
-            ? talk(chatroom, `Thank you for the gift sub! :D`)
-            : talk(chatroom, `Aww, did I lose my sub? :(`), 2000)
-    } else {
-        subStatus
-            ? talk(chatroom, `Wow, ${user.displayName} is subbed now! :D`)
-            : talk(chatroom, `Did ${user.displayName} just lose their sub? :O`)
-    }
-}
-
-function handleModChange(chatroom, user, modStatus) {
-    if (settings.debug) { console.log(`${boldTxt}> handleModChange(chatroom: ${chatroom}, user: ${user.displayName}, modStatus: ${modStatus})${resetTxt}`) }
-    user[chatroom.slice(1)].mod = modStatus
-    if (user.displayName.toLowerCase() === BOT_USERNAME) {
-        setTimeout(() => modStatus
-            ? talk(chatroom, `Thank you for modding me! :D`)
-            : talk(chatroom, `Was I just unmodded? :O`), 2000)
-    } else {
-        modStatus
-            ? talk(chatroom, `Wow, ${user.displayName} became a mod! :D`)
-            : talk(chatroom, `Was ${user.displayName} just unmodded? :O`)
-    }
-}
-
-function handleVIPChange(chatroom, user, vipStatus) {
-    if (settings.debug) { console.log(`${boldTxt}> handleVIPChange(chatroom: ${chatroom}, user: ${user.displayName}, vipStatus: ${vipStatus})${resetTxt}`) }
-    user[chatroom.slice(1)].vip = vipStatus
-    if (user.displayName.toLowerCase() === BOT_USERNAME) {
-        setTimeout(() => vipStatus
-            ? talk(chatroom, `Thank you for giving me VIP! :D`)
-            : talk(chatroom, `Did I just lose VIP? :O`), 2000)
-    } else {
-        vipStatus
-            ? talk(chatroom, `Wow, ${user.displayName} became a VIP! :D`)
-            : talk(chatroom, `Did ${user.displayName} just lose VIP status? :O`)
-    }
-}
-
-function checkEmoteStreak(chatroom, emoteArr) {
-    if (settings.debug) { console.log(`${boldTxt}> checkEmoteStreak(chatroom: ${chatroom}, emoteArr.length: ${emoteArr.length})${resetTxt}`) }
-    const channel = chatroom.substring(1)
-    let emoteStreakCount = 0
-    const emoteStreakUsers = []
-    // Checking if message includes any of the provided emotes
-    for (const user in users) {
-        for (const str of emoteArr) {
-            if (user !== BOT_USERNAME && users[user][channel]?.lastMessage.includes(str)) {
-                emoteStreakCount++
-                emoteStreakUsers.push(users[user].displayName)
-                console.log(`${grayTxt}> found`, str, `from`, user, `emoteStreakCount:${resetTxt}`, emoteStreakCount)
-                if (emoteStreakCount >= 2) { console.log(`${boldTxt}Looking for ${emoteArr[0].substring(0, 4)} emotes... ${emoteStreakCount}/4 messages - ${emoteStreakUsers.join(`, `)}${resetTxt}`) }
-                break
-            }
-        }
-        if (emoteStreakCount >= 4) {
-            console.log(`${grayTxt}> hit${resetTxt}`, emoteStreakCount)
-            delayListening()
-            return emoteReply(chatroom, emoteArr)
-        }
-    }
-}
-
-function emoteReply(chatroom, emoteArr) {
-    if (settings.debug) { console.log(`${boldTxt}> emoteReply(chatroom: ${chatroom}, emoteArr: ${emoteArr})${resetTxt}`) }
-    const channel = chatroom.substring(1)
-    const popularEmotes = Array(emoteArr.length).fill(0)
-    for (const [i, val] of emoteArr.entries()) {
-        for (const user in users) {
-            if (channel in users[user]) {
-                const words = users[user][channel].lastMessage.split(` `)
-                for (const str of words) {
-                    if (str === val) {
-                        popularEmotes[i]++
-                        console.log(`${boldTxt}...${val} increased to ${popularEmotes[i]} from ${users[user].displayName}${resetTxt}`)
-                    }
-                }
-            }
-        }
-    }
-    const mostVotes = Math.max(...popularEmotes)
-    const mostPopularEmoteIdx = popularEmotes.indexOf(mostVotes)
-    const mostPopularEmote = emoteArr[mostPopularEmoteIdx]
-    console.log(popularEmotes, mostPopularEmoteIdx, mostVotes, mostPopularEmote)
-    talk(chatroom, `${mostPopularEmote} ${mostPopularEmote} ${mostPopularEmote} ${mostPopularEmote}`)
 }
 
 function delayListening() {
@@ -1317,194 +323,129 @@ function printLemon() {
     console.log(noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + bkSq + bkSq + bkSq + bkSq + bkSq)
 }
 
-async function getTwitchUser(chatroom, username) {
-    if (settings.debug) { console.log(`${boldTxt}> getTwitchUser(chatroom: ${chatroom}, username: ${username})${resetTxt}`) }
-
-    const endpoint = `https://api.twitch.tv/helix/users?login=${username}`
-    const options = {
-        headers: {
-            authorization: `Bearer ${ACCESS_TOKEN}`,
-            "Client-Id": CLIENT_ID
-        }
-    }
-
-    const response = await fetch(endpoint, options)
-    const userInfo = await response.json()
-    console.log(userInfo)
-
-    return `error` in userInfo
-        ? talk(chatroom, userInfo.error)
-        : userInfo.data.length === 0
-            ? talk(chatroom, `No user ${username} was found! :(`)
-            : userInfo.data[0]
-}
-
-async function banTwitchUser(chatroom, username) {
-    if (settings.debug) { console.log(`${boldTxt}> banTwitchUser(chatroom: ${chatroom}, username: ${username})${resetTxt}`) }
-    const channel = chatroom.substring(1)
-
-    const bannedUser = await getTwitchUser(chatroom, username)
-    if (!bannedUser) { return }
-    const bannedUserId = await bannedUser.id
-    const requestBody = {
-        data: {
-            user_id: bannedUserId
-        }
-    }
-    // const broadcaster = await getTwitchUser(chatroom, channel)
-    // const chatroomId = await broadcaster.id
-    // const bot = await getTwitchUser(chatroom, `lemony_friend`)
-    // const botId = await bot.id
-
-    const endpoint = `https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${lemonyFresh[channel].id}&moderator_id=${BOT_ID}`
-    // const endpoint = `https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${chatroomId}&moderator_id=${botId}`
-    const options = {
-        method: 'POST',
-        headers: {
-            authorization: `Bearer ${ACCESS_TOKEN}`,
-            'Client-Id': CLIENT_ID,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
-    }
-
-    console.log(endpoint, options)
-    const response = await fetch(endpoint, options)
-    const data = await response.json()
-    console.log(data)
-
-    return `message` in data
-        ? talk(chatroom, data.message)
-        : talk(chatroom, `Did it work???`)
-}
-
-async function getClaims(chatroom) {
-    if (settings.debug) { console.log(`${boldTxt}> getClaims(chatroom: ${chatroom})${resetTxt}`) }
-
-    const endpoint = `https://id.twitch.tv/oauth2/.well-known/openid-configuration`
-    // const options = {
-    //     headers: {
-    //         authorization: `Bearer ${ACCESS_TOKEN}`,
-    //         "Client-Id": CLIENT_ID
-    //     }
-    // }
-
-    const response = await fetch(endpoint)
-    const data = await response.json()
-    console.log(data)
-}
-
-async function getTwitchChannel(chatroom, broadcaster_id) {
-    if (settings.debug) { console.log(`${boldTxt}> getTwitchChannel(broadcaster_id: ${broadcaster_id})${resetTxt}`) }
-
-    const endpoint = `https://api.twitch.tv/helix/channels?broadcaster_id=${broadcaster_id}`
-    const options = {
-        headers: {
-            authorization: `Bearer ${ACCESS_TOKEN}`,
-            "Client-Id": CLIENT_ID
-        }
-    }
-
-    const response = await fetch(endpoint, options)
-    const channelnfo = await response.json()
-    console.log(channelnfo)
-
-    return channelnfo?.data[0] || talk(chatroom, `There was a problem getting the channel info! :(`)
-}
-
-async function getTwitchToken() {
-    if (settings.debug) { console.log(`${boldTxt}> getTwitchToken()${resetTxt}`) }
-    const url = `https://id.twitch.tv/oauth2/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&grant_type=client_credentials`;
-    const response = await fetch(url, { method: "POST" })
-    const token = await response.json()
-    console.log(`${grayTxt}${JSON.stringify(token)}${resetTxt}`)
-    ACCESS_TOKEN = token.access_token
-}
-
-async function getTwitchGame(chatroom, str) {
-    if (settings.debug) { console.log(`${boldTxt}> getTwitchGame(str: ${str})${resetTxt}`) }
-    const endpoint = `https://api.twitch.tv/helix/games?name=${str}`
-    const options = {
-        headers: {
-            authorization: `Bearer ${ACCESS_TOKEN}`,
-            "Client-Id": CLIENT_ID
-        }
-    }
-    const response = await fetch(endpoint, options)
-    const data = await response.json()
-    console.log(data)
-    talk(chatroom, `Looking for ${str}!`)
-}
-
-async function handleShoutOut(chatroom, user) {
-    if (settings.debug) { console.log(`${boldTxt}> handleShoutOut(chatroom: ${chatroom}, user: ${user})${resetTxt}`) }
-    const twitchUser = await getTwitchUser(chatroom, user)
-    const stream = await getTwitchChannel(chatroom, twitchUser.id)
-    let response = `Let's give a shoutout to ${stream.broadcaster_name}! `
-    stream.game_name
-        ? response += `They were last playing ${stream.game_name}${twitchUser.broadcaster_type ? ` and are a Twitch ${twitchUser.broadcaster_type}!` : `.`}`
-        : response += `#NoGameGang`
-    response += ` Follow them here: https://www.twitch.tv/${stream.broadcaster_login} :)`
-    talk(chatroom, response)
-}
-
 function talk(chatroom, msg) {
     const time = new Date().toLocaleTimeString()
     client.say(chatroom, msg)
     console.log(`${yellowBg}[${time}] <${chatroom.slice(1)}> ${BOT_USERNAME}: ${msg}${resetTxt}`)
 }
 
+function makeLogs() {
+    let data = `🍋️ LEMONY LOGS 🍋️\n\n`
+    if (lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN) { data += `BOT_ACCESS_TOKEN changed, update to: '${lemonyFresh.botAccessToken}'\n` }
+    if (lemonyFresh.jpegstripes.accessToken !== JPEGSTRIPES_ACCESS_TOKEN) { data += `JPEGSTRIPES_ACCESS_TOKEN changed, update to: '${lemonyFresh.jpegstripes.accessToken}'\n` }
+    if (lemonyFresh.jpegstripes.refreshToken !== JPEGSTRIPES_REFRESH_TOKEN) { data += `JPEGSTRIPES_REFRESH_TOKEN changed, update to: '${lemonyFresh.jpegstripes.refreshToken}'\n` }
+    if (lemonyFresh.sclarf.accessToken !== SCLARF_ACCESS_TOKEN) { data += `SCLARF_ACCESS_TOKEN changed, update to: '${lemonyFresh.sclarf.accessToken}'\n` }
+    if (lemonyFresh.sclarf.refreshToken !== SCLARF_REFRESH_TOKEN) { data += `SCLARF_REFRESH_TOKEN changed, update to: '${lemonyFresh.sclarf.refreshToken}'\n` }
+    if (lemonyFresh.e1ectroma.accessToken !== E1ECTROMA_ACCESS_TOKEN) { data += `E1ECTROMA_ACCESS_TOKEN changed, update to: '${lemonyFresh.e1ectroma.accessToken}'\n` }
+    if (lemonyFresh.e1ectroma.refreshToken !== E1ECTROMA_REFRESH_TOKEN) { data += `E1ECTROMA_REFRESH_TOKEN changed, update to: '${lemonyFresh.e1ectroma.refreshToken}'\n` }
+    if (lemonyFresh.domonintendo1.accessToken !== DOMONINTENDO1_ACCESS_TOKEN) { data += `DOMONINTENDO1_ACCESS_TOKEN changed, update to: '${lemonyFresh.domonintendo1.accessToken}'\n` }
+    if (lemonyFresh.domonintendo1.refreshToken !== DOMONINTENDO1_REFRESH_TOKEN) { data += `DOMONINTENDO1_REFRESH_TOKEN changed, update to: '${lemonyFresh.domonintendo1.refreshToken}'\n` }
+    if (lemonyFresh.ppuyya.accessToken !== PPUYYA_ACCESS_TOKEN) { data += `PPUYYA_ACCESS_TOKEN changed, update to: '${lemonyFresh.ppuyya.accessToken}'\n` }
+    if (lemonyFresh.ppuyya.refreshToken !== PPUYYA_REFRESH_TOKEN) { data += `PPUYYA_REFRESH_TOKEN changed, update to: '${lemonyFresh.ppuyya.refreshToken}'\n` }
+    data += `\nlemonyFresh: {\n`
+    for (const key of Object.keys(lemonyFresh)) {
+        if (Array.isArray(lemonyFresh[key])) { // Chatrooms list
+            data += `\t${key}: ['${lemonyFresh[key].join(`', '`)}']\n`
+        } else if (typeof lemonyFresh[key] === `string`) { // Bot access token
+            data += `\t${key}: '${lemonyFresh[key]}'\n`
+        } else {
+            // Channel name
+            data += `\t${key}: {\n`
+            for (const val of Object.keys(lemonyFresh[key])) {
+                if (Array.isArray(lemonyFresh[key][val])) {
+                    if (lemonyFresh[key][val].length === 0) {
+                        data += `\t\t${val}: [],\n`
+                    } else {
+                        data += `\t\t${val}: ['${lemonyFresh[key][val].join(`', '`)}'],\n`
+                    }
+                } else if (typeof lemonyFresh[key][val] === `string`) {
+                    if (lemonyFresh[key][val].length === 0) {
+                        data += `\t\t${val}: '',\n`
+                    } else {
+                        data += `\t\t${val}: '${lemonyFresh[key][val]}',\n`
+                    }
+                } else if (typeof lemonyFresh[key][val] === `number`) {
+                    data += `\t\t${val}: ${lemonyFresh[key][val]},\n`
+                } else if (typeof lemonyFresh[key][val] === `object`) {
+                    data += `\t\t${val}: {\n`
+                    // Hangman/Riddle
+                    for (const gameProp of Object.keys(lemonyFresh[key][val])) {
+                        if (Array.isArray(lemonyFresh[key][val][gameProp])) {
+                            if (lemonyFresh[key][val][gameProp].length === 0) {
+                                data += `\t\t\t${gameProp}: [],\n`
+                            } else {
+                                data += `\t\t\t${gameProp}: ['${lemonyFresh[key][val][gameProp].join(`', '`)}'],\n`
+                            }
+                        } else if (typeof lemonyFresh[key][val][gameProp] === `string`) {
+                            if (lemonyFresh[key][val][gameProp].length === 0) {
+                                data += `\t\t\t${gameProp}: '',\n`
+                            } else {
+                                data += `\t\t\t${gameProp}: ${lemonyFresh[key][val][gameProp]},\n`
+                            }
+                        } else { // number or boolean
+                            data += `\t\t\t${gameProp}: ${lemonyFresh[key][val][gameProp]},\n`
+                        }
+                    }
+                    data += `\t\t},\n`
+                }
+            }
+            data += `\t}\n`
+        }
+    }
+    data += `}\n\n`
+    data += `users: {\n`
+    for (const key of Object.keys(users)) {
+        data += `\t${key}: {\n`
+        for (const val of Object.keys(users[key])) {
+            if (typeof users[key][val] === `string`) {
+                data += `\t\t${val}: '${users[key][val]}',\n`
+            } else if (typeof users[key][val] === `object`) {
+                data += `\t\t${val}: {\n`
+                for (const channelProp of Object.keys(users[key][val])) {
+                    if (typeof users[key][val][channelProp] === `string`) {
+                        data += `\t\t\t${channelProp}: '${users[key][val][channelProp]}',\n`
+                    } else {
+                        data += `\t\t\t${channelProp}: ${users[key][val][channelProp]},\n`
+                    }
+                }
+                data += `\t\t},\n`
+            } else {
+                data += `\t\t${val}: ${users[key][val]},\n`
+            }
+        }
+        data += `\t},\n`
+    }
+    data += `}\n\n`
+    data += `tempCmds: {\n`
+    for (const key of Object.keys(tempCmds)) {
+        data += `\t{ '${key}': '${tempCmds[key]}' }\n`
+    }
+    data += `}`
+
+    fs.writeFile(`lemony_logs.txt`, data, (err) => {
+        if (err) { console.log(`Error writing logs:`, err) }
+    })
+}
+
 module.exports = {
     client,
+    handleUncaughtException,
+    sayGoals,
     sayRebootMsg,
     sayFriends,
     sayCommands,
     toggleDebugMode,
-    rollFunNumber,
-    handleGivenPoints,
-    handleSetPoints,
-    handleLoseAllPoints,
-    getRandomWord,
-    hangmanInit,
-    hangmanAnnounce,
-    checkLetter,
-    solvePuzzle,
-    rockPaperScissors,
-    handleNewChatter,
     getLastMessage,
     getMessageCount,
     yell,
-    handleGiveLemon,
-    getDadJoke,
-    getPokemon,
     getColor,
     getRandomUser,
     getRandomChannelMessage,
-    lemonify,
     handleTempCmd,
-    handleGreet,
-    handleMassGreet,
-    handleGreetAll,
-    sayGoodnight,
-    sayYoureWelcome,
-    sayThanks,
-    handleColorChange,
-    handleTurboChange,
-    handleSubChange,
-    handleModChange,
-    handleVIPChange,
-    checkEmoteStreak,
-    emoteReply,
     delayListening,
     ping,
     getToUser,
     printLemon,
-    getTwitchUser,
-    banTwitchUser,
-    getClaims,
-    getTwitchChannel,
-    getTwitchToken,
-    getTwitchGame,
-    handleShoutOut,
-    talk
+    talk,
+    makeLogs
 }
