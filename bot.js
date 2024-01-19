@@ -168,7 +168,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     const username = tags.username
     const displayName = tags[`display-name`]
     const channel = chatroom.slice(1)
-    const color = tags.color
+    const color = tags.color || ``
     const firstMsg = tags['first-msg']
     const hangman = lemonyFresh[channel].hangman
     const verifiedUser = !!tags.badges?.vip || !!tags.vip || tags.mod || username === channel
