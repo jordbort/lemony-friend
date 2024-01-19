@@ -215,8 +215,10 @@ function yell(user, message) {
 }
 
 function getColor(chatroom, user) {
-    if (settings.debug) { console.log(`${boldTxt}> getColor(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
-    user.color in chatColors
+    if (settings.debug) { console.log(`${boldTxt}> getColor(chatroom: ${chatroom}, user.color: ${user.color})${resetTxt}`) }
+    !user.color
+        ? talk(chatroom, `I can't tell what ${user.displayName}'s chat color is! :(`)
+        : user.color in chatColors
         ? talk(chatroom, `${user.displayName}'s chat color is ${chatColors[user.color].name}!`)
         : talk(chatroom, `${user.displayName}'s chat color is hex code ${user.color}`)
 }
