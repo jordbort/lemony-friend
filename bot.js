@@ -64,6 +64,7 @@ const {
 const {
     checkSentiment,
     getDadJoke,
+    getDefinition,
     getPokemon
 } = require(`./handleExternal`)
 
@@ -299,7 +300,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
 
     // Twitch commands
     if (lemonyFreshMember && command === `!access`) { return getOAUTHToken(chatroom, username) }
-    if (lemonyFreshMember && command === `!authorize`) { return authorizeToken(chatroom, username, args) }
+    if (lemonyFreshMember && command === `!authorize`) { return authorizeToken(chatroom, username, args.join(` `)) }
     if (verifiedUser && command === `!validate`) { return validateToken(chatroom) }
     if (verifiedUser && command === `!refresh`) { return refreshToken(chatroom) }
     if (modUser && command === `!poll`) { return startPoll(chatroom, args.join(` `)) }
@@ -333,6 +334,13 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             hangman.players.push(username)
             return talk(chatroom, `${displayName}, you can still hop in, you'll go after everyone else! :)`)
         }
+    }
+
+    // Define a word
+    if ([`!define`,
+        `!definition`,
+        `!meaning`].includes(command)) {
+        return getDefinition(chatroom, args.join(` `))
     }
 
     // Ask for a riddle
