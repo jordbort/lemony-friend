@@ -219,8 +219,8 @@ function getColor(chatroom, user) {
     !user.color
         ? talk(chatroom, `I can't tell what ${user.displayName}'s chat color is! :(`)
         : user.color in chatColors
-        ? talk(chatroom, `${user.displayName}'s chat color is ${chatColors[user.color].name}!`)
-        : talk(chatroom, `${user.displayName}'s chat color is hex code ${user.color}`)
+            ? talk(chatroom, `${user.displayName}'s chat color is ${chatColors[user.color].name}!`)
+            : talk(chatroom, `${user.displayName}'s chat color is hex code ${user.color}`)
 }
 
 function getRandomUser() {
