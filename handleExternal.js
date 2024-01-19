@@ -66,8 +66,9 @@ async function getDefinition(chatroom, str) {
         talk(chatroom, `I don't think "${data.word}" is a word! :(`)
     } else {
         let definition = `Definition of "${data.word}":`
-        if (data.definition.split(`. `)[0] === `1`) { definition += ` 1) ${data.definition.split(`. `)[1]}.` }
-        if (data.definition.split(`. `)[2] === `2`) { definition += ` 2) ${data.definition.split(`. `)[3]}.` }
+        const splitDefinition = data.definition.split(`. `)
+        if (splitDefinition.includes(`1`)) { definition += ` 1) ${splitDefinition[splitDefinition.indexOf(`1`) + 1]}.` }
+        if (splitDefinition.includes(`2`)) { definition += ` 2) ${splitDefinition[splitDefinition.indexOf(`2`) + 1]}.` }
         talk(chatroom, definition)
     }
 }
