@@ -688,7 +688,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     if (msg.match(howManyEmotesPattern)) {
         let grabbedUser = msg.split(howManyEmotesPattern)[1].toLowerCase()
         while (grabbedUser.startsWith(`@`)) (grabbedUser = grabbedUser.substring(1))
-        if (grabbedUser in lemonyFresh) {
+        if ([`jpegstripes`, `sclarf`, `e1ectroma`, `domonintendo1`, `ppuyya`].includes(grabbedUser)) {
             return talk(chatroom, `${grabbedUser} has ${lemonyFresh[grabbedUser].emotes.length} emote${lemonyFresh[grabbedUser].emotes.length === 1 ? `` : `s`}!`)
         }
     }
