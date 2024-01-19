@@ -107,16 +107,16 @@ const {
 
 // Import Twitch functions
 const {
-    getTwitchUser,
-    getTwitchChannel,
-    getTwitchToken,
-    getTwitchGame,
-    handleShoutOut,
-    startPoll,
     authorizeToken,
-    validateToken,
+    getOAUTHToken,
+    getTwitchChannel,
+    getTwitchGame,
+    getTwitchToken,
+    getTwitchUser,
+    handleShoutOut,
     refreshToken,
-    getOAUTHToken
+    startPoll,
+    validateToken
 } = require(`./handleTwitch`)
 
 // Import uses for lemons
