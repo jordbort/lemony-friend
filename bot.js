@@ -459,12 +459,16 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     }
 
     // !tempcmd or !tmpcmd
-    if ([`!tempcmd`,
-        `!tmpcmd`].includes(command)) { return handleTempCmd(chatroom, username, args) }
+    if ([
+        `!tempcmd`,
+        `!tmpcmd`
+    ].includes(command)) { return handleTempCmd(chatroom, username, args) }
 
     // !tempcmds or !tmpcmds
-    if ([`!tempcmds`,
-        `!tmpcmds`].includes(command)) {
+    if ([
+        `!tempcmds`,
+        `!tmpcmds`
+    ].includes(command)) {
         const commands = []
         for (key in tempCmds) {
             commands.push(`${key} => "${tempCmds[key]}"`)
@@ -476,7 +480,10 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     if (command in tempCmds) { return talk(chatroom, tempCmds[command]) }
 
     // Handle channel-specific goals
-    if (command === `!goals`
+    if ([
+        `!goal`,
+        `!goals`
+    ].includes(command)
         && args.length) {
         return sayGoals(chatroom, args)
     }
