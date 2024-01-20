@@ -149,6 +149,7 @@ async function pollEnd(chatroom, status) {
 async function pollStart(chatroom, str) {
     if (settings.debug) { console.log(`${boldTxt}> pollStart(chatroom: ${chatroom}, str: ${str})${resetTxt}`) }
     const channel = chatroom.substring(1)
+    if (lemonyFresh[channel].pollId) { return talk(chatroom, `There is already a poll in progress!`) }
     const params = str.split(` / `)
 
     const duration = Number(params.shift())
@@ -158,7 +159,7 @@ async function pollStart(chatroom, str) {
         return talk(chatroom, `Error: Duration should be a number between 15 and 1800. Try: !poll <seconds> / Title of poll / First choice / Second choice ...`)
     }
 
-    // length should be more than 2, and shouldn't be longer than 6 (1 title, 5 choices)
+    // Params length should be more than 2, and shouldn't be longer than 6
     const title = params.shift()
     if (params.length < 2 || params.length > 5) { return talk(chatroom, `Error: Between 2-5 choices are allowed. Try: !poll <seconds> / Title of poll / First choice / Second choice ...`) }
 
