@@ -115,8 +115,9 @@ const {
     getTwitchToken,
     getTwitchUser,
     handleShoutOut,
-    refreshToken,
+    pollEnd,
     pollStart,
+    refreshToken,
     validateToken
 } = require(`./handleTwitch`)
 
@@ -303,6 +304,9 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     if (lemonyFreshMember && command === `!authorize`) { return authorizeToken(chatroom, username, args.join(` `)) }
     if (verifiedUser && command === `!validate`) { return validateToken(chatroom) }
     if (verifiedUser && command === `!refresh`) { return refreshToken(chatroom) }
+    if (modUser && command === `!endpoll`) { return talk(chatroom, lemonyFresh[channel].pollId ? `Use !stoppoll to finish and show the results, or !cancelpoll to remove it! :)` : `There is no active poll! :(`) }
+    if (modUser && command === `!cancelpoll`) { return pollEnd(chatroom, `ARCHIVED`) }
+    if (modUser && command === `!stoppoll`) { return pollEnd(chatroom, `TERMINATED`) }
     if (modUser && command === `!poll`) { return pollStart(chatroom, args.join(` `)) }
 
     // Handle shoutout from mod/VIP

@@ -120,44 +120,29 @@ async function getTwitchUser(chatroom, username) {
             : userInfo.data[0]
 }
 
-async function handleShoutOut(chatroom, user) {
-    if (settings.debug) { console.log(`${boldTxt}> handleShoutOut(chatroom: ${chatroom}, user: ${user})${resetTxt}`) }
-    const twitchUser = await getTwitchUser(chatroom, user)
-    if (!twitchUser) { return console.log(`${grayTxt}No user found, exiting handleShoutOut function${resetTxt}`) }
-    const stream = await getTwitchChannel(chatroom, twitchUser.id)
-    let response = `Let's give a shoutout to ${stream.broadcaster_name}! `
-    stream.game_name
-        ? response += `They were last playing ${stream.game_name}${twitchUser.broadcaster_type ? ` and are a Twitch ${twitchUser.broadcaster_type.substring(0, 1).toUpperCase() + twitchUser.broadcaster_type.substring(1)}!` : `.`}`
-        : response += `#NoGameGang`
-    response += ` Follow them here: https://www.twitch.tv/${stream.broadcaster_login} :)`
-    talk(chatroom, response)
-}
-
-async function refreshToken(chatroom) {
-    if (settings.debug) { console.log(`${boldTxt}> refreshToken(chatroom: ${chatroom})${resetTxt}`) }
+async function pollEnd(chatroom, status) {
+    if (settings.debug) { console.log(`${boldTxt}> pollEnd(chatroom: ${chatroom})${resetTxt}`) }
     const channel = chatroom.substring(1)
-    const refreshToken = lemonyFresh[channel].refreshToken
+    if (!lemonyFresh[channel].pollId) { return talk(chatroom, `There is no active poll! :(`) }
 
-    const endpoint = `https://id.twitch.tv/oauth2/token`
-    const requestBody = `grant_type=refresh_token&refresh_token=${refreshToken}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`
+    const endpoint = `https://api.twitch.tv/helix/polls?broadcaster_id=${lemonyFresh[channel].id}&id=${lemonyFresh[channel].pollId}&status=${status}`
     const options = {
-        method: 'POST',
+        method: 'PATCH',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: requestBody
+            authorization: `Bearer ${lemonyFresh[channel].accessToken}`,
+            'Client-Id': CLIENT_ID
+        }
     }
 
     const response = await fetch(endpoint, options)
     const twitchData = await response.json()
     console.log(twitchData)
 
-    if (`expires_in` in twitchData) {
-        lemonyFresh[channel].accessToken = twitchData.access_token
-        lemonyFresh[channel].refreshToken = twitchData.refresh_token
-        talk(chatroom, `Success! :D`)
-    } else {
-        talk(chatroom, `Error refreshing token :(`)
+    if (`error` in twitchData) {
+        talk(chatroom, `Error ending poll! :(`)
+    } else if (twitchData.data[0].status = status) {
+        lemonyFresh[channel].pollId = ``
+        talk(chatroom, `Poll ${status === `TERMINATED` ? `finished` : `was canceled`}! :)`)
     }
 }
 
@@ -181,7 +166,7 @@ async function pollStart(chatroom, str) {
     params.map((choice) => choices.push({ 'title': choice }))
 
     const requestBody = {
-        "broadcaster_id": lemonyFresh[chatroom.substring(1)].id,
+        "broadcaster_id": lemonyFresh[channel].id,
         "title": title,
         "choices": choices,
         "duration": duration
@@ -224,6 +209,47 @@ async function pollStart(chatroom, str) {
     }
 }
 
+async function handleShoutOut(chatroom, user) {
+    if (settings.debug) { console.log(`${boldTxt}> handleShoutOut(chatroom: ${chatroom}, user: ${user})${resetTxt}`) }
+    const twitchUser = await getTwitchUser(chatroom, user)
+    if (!twitchUser) { return console.log(`${grayTxt}No user found, exiting handleShoutOut function${resetTxt}`) }
+    const stream = await getTwitchChannel(chatroom, twitchUser.id)
+    let response = `Let's give a shoutout to ${stream.broadcaster_name}! `
+    stream.game_name
+        ? response += `They were last playing ${stream.game_name}${twitchUser.broadcaster_type ? ` and are a Twitch ${twitchUser.broadcaster_type.substring(0, 1).toUpperCase() + twitchUser.broadcaster_type.substring(1)}!` : `.`}`
+        : response += `#NoGameGang`
+    response += ` Follow them here: https://www.twitch.tv/${stream.broadcaster_login} :)`
+    talk(chatroom, response)
+}
+
+async function refreshToken(chatroom) {
+    if (settings.debug) { console.log(`${boldTxt}> refreshToken(chatroom: ${chatroom})${resetTxt}`) }
+    const channel = chatroom.substring(1)
+    const refreshToken = lemonyFresh[channel].refreshToken
+
+    const endpoint = `https://id.twitch.tv/oauth2/token`
+    const requestBody = `grant_type=refresh_token&refresh_token=${refreshToken}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: requestBody
+    }
+
+    const response = await fetch(endpoint, options)
+    const twitchData = await response.json()
+    console.log(twitchData)
+
+    if (`expires_in` in twitchData) {
+        lemonyFresh[channel].accessToken = twitchData.access_token
+        lemonyFresh[channel].refreshToken = twitchData.refresh_token
+        talk(chatroom, `Success! :D`)
+    } else {
+        talk(chatroom, `Error refreshing token :(`)
+    }
+}
+
 async function validateToken(chatroom) {
     if (settings.debug) { console.log(`${boldTxt}> validateToken(chatroom: ${chatroom})${resetTxt}`) }
     const channel = chatroom.substring(1)
@@ -251,7 +277,8 @@ module.exports = {
     getTwitchToken,
     getTwitchUser,
     handleShoutOut,
-    refreshToken,
+    pollEnd,
     pollStart,
+    refreshToken,
     validateToken
 }
