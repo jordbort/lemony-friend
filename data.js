@@ -23,6 +23,7 @@ const lemonyFresh = {
         id: 70624062,
         accessToken: JPEGSTRIPES_ACCESS_TOKEN,
         refreshToken: JPEGSTRIPES_REFRESH_TOKEN,
+        pollId: ``,
         emotes: [
             `jpegstCoin`,
             `jpegstTimber`,
@@ -128,6 +129,7 @@ const lemonyFresh = {
         id: 108504232,
         accessToken: SCLARF_ACCESS_TOKEN,
         refreshToken: SCLARF_REFRESH_TOKEN,
+        pollId: ``,
         emotes: [
             `sclarfRave`,
             `sclarfWobble`,
@@ -170,6 +172,7 @@ const lemonyFresh = {
         id: 467062147,
         accessToken: E1ECTROMA_ACCESS_TOKEN,
         refreshToken: E1ECTROMA_REFRESH_TOKEN,
+        pollId: ``,
         emotes: [
             `e1ectr4Lfg`,
             `e1ectr4Pikadance`,
@@ -220,6 +223,7 @@ const lemonyFresh = {
         id: 100792658,
         accessToken: DOMONINTENDO1_ACCESS_TOKEN,
         refreshToken: DOMONINTENDO1_REFRESH_TOKEN,
+        pollId: ``,
         emotes: [
             `domoni6Really`,
             `domoni6Bingo`,
@@ -252,6 +256,7 @@ const lemonyFresh = {
         id: 500904880,
         accessToken: PPUYYA_ACCESS_TOKEN,
         refreshToken: PPUYYA_REFRESH_TOKEN,
+        pollId: ``,
         emotes: [],
         redeems: [],
         hangman: {
