@@ -209,6 +209,8 @@ async function startPoll(chatroom, str) {
             options.headers.authorization = `Bearer ${lemonyFresh[channel].accessToken}`
             const finalAttempt = await fetch(endpoint, options)
             const finalAttemptData = await finalAttempt.json()
+            if (finalAttemptData?.data) { lemonyFresh[channel].pollId = finalAttemptData.data[0].id }
+            setTimeout(() => { lemonyFresh[channel].pollId = `` }, duration * 1000)
             console.log(finalAttemptData)
         } else {
             talk(chatroom, `(Error ${twitchData.status}) ${twitchData.error}: ${twitchData.message}`)
@@ -216,6 +218,8 @@ async function startPoll(chatroom, str) {
     } else if (!twitchData.data) {
         talk(chatroom, `Error creating poll :(`)
     } else {
+        lemonyFresh[channel].pollId = twitchData.data[0].id
+        setTimeout(() => { lemonyFresh[channel].pollId = `` }, duration * 1000)
         talk(chatroom, `Poll created. Go vote! :)`)
     }
 }
