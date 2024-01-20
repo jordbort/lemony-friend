@@ -116,7 +116,7 @@ const {
     getTwitchUser,
     handleShoutOut,
     refreshToken,
-    startPoll,
+    pollStart,
     validateToken
 } = require(`./handleTwitch`)
 
@@ -303,7 +303,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     if (lemonyFreshMember && command === `!authorize`) { return authorizeToken(chatroom, username, args.join(` `)) }
     if (verifiedUser && command === `!validate`) { return validateToken(chatroom) }
     if (verifiedUser && command === `!refresh`) { return refreshToken(chatroom) }
-    if (modUser && command === `!poll`) { return startPoll(chatroom, args.join(` `)) }
+    if (modUser && command === `!poll`) { return pollStart(chatroom, args.join(` `)) }
 
     // Handle shoutout from mod/VIP
     if (command === `!so`

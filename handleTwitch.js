@@ -161,8 +161,8 @@ async function refreshToken(chatroom) {
     }
 }
 
-async function startPoll(chatroom, str) {
-    if (settings.debug) { console.log(`${boldTxt}> startPoll(chatroom: ${chatroom}, str: ${str})${resetTxt}`) }
+async function pollStart(chatroom, str) {
+    if (settings.debug) { console.log(`${boldTxt}> pollStart(chatroom: ${chatroom}, str: ${str})${resetTxt}`) }
     const channel = chatroom.substring(1)
     const params = str.split(` / `)
 
@@ -252,6 +252,6 @@ module.exports = {
     getTwitchUser,
     handleShoutOut,
     refreshToken,
-    startPoll,
+    pollStart,
     validateToken
 }
