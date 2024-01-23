@@ -387,7 +387,7 @@ function makeLogs() {
                             if (lemonyFresh[key][val][gameProp].length === 0) {
                                 data += `\t\t\t${gameProp}: '',\n`
                             } else {
-                                data += `\t\t\t${gameProp}: ${lemonyFresh[key][val][gameProp]},\n`
+                                data += `\t\t\t${gameProp}: '${lemonyFresh[key][val][gameProp]}',\n`
                             }
                         } else { // number or boolean
                             data += `\t\t\t${gameProp}: ${lemonyFresh[key][val][gameProp]},\n`
