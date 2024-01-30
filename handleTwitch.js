@@ -150,7 +150,7 @@ async function pollStart(chatroom, str) {
     if (settings.debug) { console.log(`${boldTxt}> pollStart(chatroom: ${chatroom}, str: ${str})${resetTxt}`) }
     const channel = chatroom.substring(1)
     if (lemonyFresh[channel].pollId) { return talk(chatroom, `There is already a poll in progress!`) }
-    const params = str.split(` / `)
+    const params = str.split(new RegExp(/ ?\/ ?/))
 
     const duration = Number(params.shift())
     if (isNaN(duration)
