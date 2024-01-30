@@ -462,27 +462,6 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         else { return talk(chatroom, `Greetings, ${users[username].displayName}! :)`) }
     }
 
-    // !tempcmd or !tmpcmd
-    if ([
-        `!tempcmd`,
-        `!tmpcmd`
-    ].includes(command)) { return handleTempCmd(chatroom, username, args) }
-
-    // !tempcmds or !tmpcmds
-    if ([
-        `!tempcmds`,
-        `!tmpcmds`
-    ].includes(command)) {
-        const commands = []
-        for (key in tempCmds) {
-            commands.push(`${key} => "${tempCmds[key]}"`)
-        }
-        return talk(chatroom, `There ${commands.length === 1 ? `is` : `are`} ${commands.length} temporary command${commands.length === 1 ? `` : `s`}${commands.length === 0 ? ` :(` : `: ${commands.join(', ')}`}`)
-    }
-
-    // Check for tempCmd
-    if (command in tempCmds) { return talk(chatroom, tempCmds[command]) }
-
     // Handle channel-specific goals
     if ([
         `!goal`,
@@ -991,6 +970,27 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             }
         }
     }
+
+    // !tempcmd or !tmpcmd
+    if ([
+        `!tempcmd`,
+        `!tmpcmd`
+    ].includes(command)) { return handleTempCmd(chatroom, username, args) }
+
+    // !tempcmds or !tmpcmds
+    if ([
+        `!tempcmds`,
+        `!tmpcmds`
+    ].includes(command)) {
+        const commands = []
+        for (key in tempCmds) {
+            commands.push(`${key} => "${tempCmds[key]}"`)
+        }
+        return talk(chatroom, `There ${commands.length === 1 ? `is` : `are`} ${commands.length} temporary command${commands.length === 1 ? `` : `s`}${commands.length === 0 ? ` :(` : `: ${commands.join(', ')}`}`)
+    }
+
+    // Check for tempCmd
+    if (command in tempCmds) { return talk(chatroom, tempCmds[command]) }
 
     if (hangman.listening && !hangman.signup) {
         if (msg.match(/^[a-z]$/i) && username === hangman.players[hangman.currentPlayer]) {
