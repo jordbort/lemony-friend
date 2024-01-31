@@ -227,6 +227,10 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             awayMessage: ``
         }
     }
+
+    // Cleaning up potential undefined user
+    if (`undefined` in users) { delete users.undefined }
+
     // Checking time comparisons
     const elapsedMinsSinceLastMsg = (currentTime - users[username][channel].sentAt) / 60000
 
