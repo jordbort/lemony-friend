@@ -666,8 +666,8 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             if (val === `well` && lowercaseArgs[i + 1]?.match(/^done+[^\w\s]*$/)) { return sayThanks(chatroom, users[username]) }
         }
 
-        // If all else fails, but message includes "you/your/you're"
-        const secondPersonPattern = /you([^npst]|$)/i
+        // If all else fails, but message includes "you/your/you're" or " u / ur/ u"
+        const secondPersonPattern = /you([^npst]|$)| ur?( |$)/i
         if (secondPersonPattern.test(msg)) {
             console.log(`${grayTxt}> "${msg}" matched secondPersonPattern${resetTxt}`)
             return checkSentiment(chatroom, msg)
