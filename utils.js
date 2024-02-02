@@ -277,6 +277,28 @@ function delayListening() {
     }, delayTime * 1000)
 }
 
+function getHappyEmote() {
+    const happyEmotes = [`:D`]
+    if (users[BOT_USERNAME]?.jpegstripes?.sub) { happyEmotes.push(`jpegstSlay`) }
+    if (users[BOT_USERNAME]?.sclarf?.sub) { happyEmotes.push(`sclarfHearts`) }
+    if (users[BOT_USERNAME]?.e1ectroma?.sub) { happyEmotes.push(`e1ectr4Smile`) }
+    if (users[BOT_USERNAME]?.domonintendo1?.sub) { happyEmotes.push(`domoni6Mingo`) }
+    const happyEmote = happyEmotes[Math.floor(Math.random() * happyEmotes.length)]
+    if (settings.debug) { console.log(`${boldTxt}> getHappyEmote('${happyEmote}'), choices:${resetTxt}`, happyEmotes.length) }
+    return happyEmote
+}
+
+function getShockedEmote() {
+    const shockedEmotes = [`:O`]
+    if (users[BOT_USERNAME]?.jpegstripes?.sub) { shockedEmotes.push(`jpegstKylePog`) }
+    if (users[BOT_USERNAME]?.sclarf?.sub) { shockedEmotes.push(`sclarfBlind`) }
+    if (users[BOT_USERNAME]?.e1ectroma?.sub) { shockedEmotes.push(`e1ectr4Heat`) }
+    if (users[BOT_USERNAME]?.domonintendo1?.sub) { shockedEmotes.push(`domoni6Sneeze`) }
+    const shockedEmote = shockedEmotes[Math.floor(Math.random() * shockedEmotes.length)]
+    if (settings.debug) { console.log(`${boldTxt}> getShockedEmote('${shockedEmote}'), choices:${resetTxt}`, shockedEmotes.length) }
+    return shockedEmote
+}
+
 function ping(arr) {
     for (const [i, str] of arr.entries()) {
         setTimeout(() => { talk(str, `hi :)`) }, 1000 * i)
@@ -452,6 +474,8 @@ module.exports = {
     getRandomChannelMessage,
     handleTempCmd,
     delayListening,
+    getHappyEmote,
+    getShockedEmote,
     ping,
     getToUser,
     printLemon,
