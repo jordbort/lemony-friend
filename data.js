@@ -195,7 +195,8 @@ const lemonyFresh = {
             `e1ectr4Moses`,
             `e1ectr4Josie`,
             `e1ectr4Malort`,
-            `e1ectr4Kim`
+            `e1ectr4Heat`,
+            `e1ectr4Umbreon`
         ],
         redeems: [
             `!winner`,
