@@ -33,6 +33,7 @@ const lemonyFresh = {
             `jpegstLucky`,
             `jpegstKetchup`,
             `jpegstJulian`,
+            `jpegstScoot`,
             `jpegstWhitney`,
             `jpegstApollo`,
             `jpegstHeyGuys`,
@@ -43,13 +44,14 @@ const lemonyFresh = {
             `jpegstYes`,
             `jpegstNo`,
             `jpegstOkay`,
-            `jpegstSlay`,
             `jpegstChrome`,
+            `jpegstBroken`,
+            `jpegstSlay`,
             `jpegstTapeEnd`,
             `jpegstBlank`,
             `jpegstDog`,
             `jpegstBonk`,
-            `jpegstBroken`
+            `jpegstMegamind`
         ],
         redeems: [
             `!bigshot`,
