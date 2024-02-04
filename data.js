@@ -110,7 +110,8 @@ const lemonyFresh = {
             `!raccoon`,
             `!gay`,
             `!turbomaxwaste`,
-            `!where`
+            `!where`,
+            `!luigi`
         ],
         hangman: {
             listening: false,
