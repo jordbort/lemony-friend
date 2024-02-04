@@ -45,6 +45,34 @@ async function getDadJoke(chatroom) {
         : talk(chatroom, `Error fetching dad joke! :(`)
 }
 
+async function getDefinition(chatroom, str) {
+    if (settings.debug) { console.log(`${boldTxt}> getDefinition(chatroom: ${chatroom}, str: '${str}')${resetTxt}`) }
+    if (!str) { return talk(chatroom, `Please give me a word to define! :)`) }
+
+    const endpoint = `https://api.api-ninjas.com/v1/dictionary?word=${str}`
+    const options = {
+        headers: {
+            'X-Api-Key': API_KEY
+        }
+    }
+
+    const response = await fetch(endpoint, options)
+    const data = await response.json()
+    console.log(data)
+
+    if ('error' in data) {
+        talk(chatroom, `Error: ${data.error} :(`)
+    } else if (!data.valid || !data.definition) {
+        talk(chatroom, `I don't think "${data.word}" is a word! :(`)
+    } else {
+        let definition = `Definition of "${data.word}":`
+        const splitDefinition = data.definition.split(`. `)
+        if (splitDefinition.includes(`1`)) { definition += ` 1) ${splitDefinition[splitDefinition.indexOf(`1`) + 1]}.` }
+        if (splitDefinition.includes(`2`)) { definition += ` 2) ${splitDefinition[splitDefinition.indexOf(`2`) + 1]}.` }
+        talk(chatroom, definition)
+    }
+}
+
 async function getPokemon(chatroom, pokemon) {
     if (settings.debug) { console.log(`${boldTxt}> getPokemon(chatroom: ${chatroom}, pokemon: ${pokemon})${resetTxt}`) }
     if (!pokemon) { return }
@@ -170,5 +198,6 @@ async function getPokemon(chatroom, pokemon) {
 module.exports = {
     checkSentiment,
     getDadJoke,
+    getDefinition,
     getPokemon
 }

@@ -215,10 +215,12 @@ function yell(user, message) {
 }
 
 function getColor(chatroom, user) {
-    if (settings.debug) { console.log(`${boldTxt}> getColor(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
-    user.color in chatColors
-        ? talk(chatroom, `${user.displayName}'s chat color is ${chatColors[user.color].name}!`)
-        : talk(chatroom, `${user.displayName}'s chat color is hex code ${user.color}`)
+    if (settings.debug) { console.log(`${boldTxt}> getColor(chatroom: ${chatroom}, user.color: ${user.color})${resetTxt}`) }
+    !user.color
+        ? talk(chatroom, `I can't tell what ${user.displayName}'s chat color is! :(`)
+        : user.color in chatColors
+            ? talk(chatroom, `${user.displayName}'s chat color is ${chatColors[user.color].name}!`)
+            : talk(chatroom, `${user.displayName}'s chat color is hex code ${user.color}`)
 }
 
 function getRandomUser() {
@@ -331,6 +333,9 @@ function talk(chatroom, msg) {
 
 function makeLogs() {
     let data = `🍋️ LEMONY LOGS 🍋️\n\n`
+
+    const anyTokenChange = lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN || lemonyFresh.jpegstripes.accessToken !== JPEGSTRIPES_ACCESS_TOKEN || lemonyFresh.jpegstripes.refreshToken !== JPEGSTRIPES_REFRESH_TOKEN || lemonyFresh.sclarf.accessToken !== SCLARF_ACCESS_TOKEN || lemonyFresh.sclarf.refreshToken !== SCLARF_REFRESH_TOKEN || lemonyFresh.e1ectroma.accessToken !== E1ECTROMA_ACCESS_TOKEN || lemonyFresh.e1ectroma.refreshToken !== E1ECTROMA_REFRESH_TOKEN || lemonyFresh.domonintendo1.accessToken !== DOMONINTENDO1_ACCESS_TOKEN || lemonyFresh.domonintendo1.refreshToken !== DOMONINTENDO1_REFRESH_TOKEN || lemonyFresh.ppuyya.accessToken !== PPUYYA_ACCESS_TOKEN || lemonyFresh.ppuyya.refreshToken !== PPUYYA_REFRESH_TOKEN
+    if (anyTokenChange) { data += `* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n` }
     if (lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN) { data += `BOT_ACCESS_TOKEN changed, update to: '${lemonyFresh.botAccessToken}'\n` }
     if (lemonyFresh.jpegstripes.accessToken !== JPEGSTRIPES_ACCESS_TOKEN) { data += `JPEGSTRIPES_ACCESS_TOKEN changed, update to: '${lemonyFresh.jpegstripes.accessToken}'\n` }
     if (lemonyFresh.jpegstripes.refreshToken !== JPEGSTRIPES_REFRESH_TOKEN) { data += `JPEGSTRIPES_REFRESH_TOKEN changed, update to: '${lemonyFresh.jpegstripes.refreshToken}'\n` }
@@ -342,7 +347,9 @@ function makeLogs() {
     if (lemonyFresh.domonintendo1.refreshToken !== DOMONINTENDO1_REFRESH_TOKEN) { data += `DOMONINTENDO1_REFRESH_TOKEN changed, update to: '${lemonyFresh.domonintendo1.refreshToken}'\n` }
     if (lemonyFresh.ppuyya.accessToken !== PPUYYA_ACCESS_TOKEN) { data += `PPUYYA_ACCESS_TOKEN changed, update to: '${lemonyFresh.ppuyya.accessToken}'\n` }
     if (lemonyFresh.ppuyya.refreshToken !== PPUYYA_REFRESH_TOKEN) { data += `PPUYYA_REFRESH_TOKEN changed, update to: '${lemonyFresh.ppuyya.refreshToken}'\n` }
-    data += `\nlemonyFresh: {\n`
+    if (anyTokenChange) { data += `* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n\n` }
+
+    data += `lemonyFresh: {\n`
     for (const key of Object.keys(lemonyFresh)) {
         if (Array.isArray(lemonyFresh[key])) { // Chatrooms list
             data += `\t${key}: ['${lemonyFresh[key].join(`', '`)}']\n`
@@ -393,6 +400,7 @@ function makeLogs() {
         }
     }
     data += `}\n\n`
+
     data += `users: {\n`
     for (const key of Object.keys(users)) {
         data += `\t${key}: {\n`
@@ -416,9 +424,10 @@ function makeLogs() {
         data += `\t},\n`
     }
     data += `}\n\n`
+
     data += `tempCmds: {\n`
     for (const key of Object.keys(tempCmds)) {
-        data += `\t{ '${key}': '${tempCmds[key]}' }\n`
+        data += `\t${key}: '${tempCmds[key]}',\n`
     }
     data += `}`
 
