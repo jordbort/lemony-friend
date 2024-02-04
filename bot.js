@@ -64,6 +64,7 @@ const {
 const {
     checkSentiment,
     getDadJoke,
+    getDefinition,
     getPokemon
 } = require(`./handleExternal`)
 
@@ -107,16 +108,16 @@ const {
 
 // Import Twitch functions
 const {
-    getTwitchUser,
-    getTwitchChannel,
-    getTwitchToken,
-    getTwitchGame,
-    handleShoutOut,
-    startPoll,
     authorizeToken,
-    validateToken,
+    getOAUTHToken,
+    getTwitchChannel,
+    getTwitchGame,
+    getTwitchToken,
+    getTwitchUser,
+    handleShoutOut,
     refreshToken,
-    getOAUTHToken
+    startPoll,
+    validateToken
 } = require(`./handleTwitch`)
 
 // Import uses for lemons
@@ -168,7 +169,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     const username = tags.username
     const displayName = tags[`display-name`]
     const channel = chatroom.slice(1)
-    const color = tags.color
+    const color = tags.color || ``
     const firstMsg = tags['first-msg']
     const hangman = lemonyFresh[channel].hangman
     const verifiedUser = !!tags.badges?.vip || !!tags.vip || tags.mod || username === channel
@@ -299,7 +300,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
 
     // Twitch commands
     if (lemonyFreshMember && command === `!access`) { return getOAUTHToken(chatroom, username) }
-    if (lemonyFreshMember && command === `!authorize`) { return authorizeToken(chatroom, username, args) }
+    if (lemonyFreshMember && command === `!authorize`) { return authorizeToken(chatroom, username, args.join(` `)) }
     if (verifiedUser && command === `!validate`) { return validateToken(chatroom) }
     if (verifiedUser && command === `!refresh`) { return refreshToken(chatroom) }
     if (modUser && command === `!poll`) { return startPoll(chatroom, args.join(` `)) }
@@ -333,6 +334,13 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             hangman.players.push(username)
             return talk(chatroom, `${displayName}, you can still hop in, you'll go after everyone else! :)`)
         }
+    }
+
+    // Define a word
+    if ([`!define`,
+        `!definition`,
+        `!meaning`].includes(command)) {
+        return getDefinition(chatroom, args.join(` `))
     }
 
     // Ask for a riddle
@@ -451,12 +459,16 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     }
 
     // !tempcmd or !tmpcmd
-    if ([`!tempcmd`,
-        `!tmpcmd`].includes(command)) { return handleTempCmd(chatroom, username, args) }
+    if ([
+        `!tempcmd`,
+        `!tmpcmd`
+    ].includes(command)) { return handleTempCmd(chatroom, username, args) }
 
     // !tempcmds or !tmpcmds
-    if ([`!tempcmds`,
-        `!tmpcmds`].includes(command)) {
+    if ([
+        `!tempcmds`,
+        `!tmpcmds`
+    ].includes(command)) {
         const commands = []
         for (key in tempCmds) {
             commands.push(`${key} => "${tempCmds[key]}"`)
@@ -468,7 +480,10 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     if (command in tempCmds) { return talk(chatroom, tempCmds[command]) }
 
     // Handle channel-specific goals
-    if (command === `!goals`
+    if ([
+        `!goal`,
+        `!goals`
+    ].includes(command)
         && args.length) {
         return sayGoals(chatroom, args)
     }
@@ -680,7 +695,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     if (msg.match(howManyEmotesPattern)) {
         let grabbedUser = msg.split(howManyEmotesPattern)[1].toLowerCase()
         while (grabbedUser.startsWith(`@`)) (grabbedUser = grabbedUser.substring(1))
-        if (grabbedUser in lemonyFresh) {
+        if ([`jpegstripes`, `sclarf`, `e1ectroma`, `domonintendo1`, `ppuyya`].includes(grabbedUser)) {
             return talk(chatroom, `${grabbedUser} has ${lemonyFresh[grabbedUser].emotes.length} emote${lemonyFresh[grabbedUser].emotes.length === 1 ? `` : `s`}!`)
         }
     }
