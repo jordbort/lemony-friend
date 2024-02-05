@@ -451,7 +451,7 @@ function makeLogs() {
     for (const key of Object.keys(tempCmds)) {
         data += `\t${key}: '${tempCmds[key]}',\n`
     }
-    data += `}`
+    data += `}\n`
 
     fs.writeFile(`lemony_logs.txt`, data, (err) => {
         if (err) { console.log(`Error writing logs:`, err) }
