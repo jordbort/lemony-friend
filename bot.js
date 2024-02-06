@@ -173,9 +173,9 @@ function onMessageHandler(chatroom, tags, message, self) {
     const color = tags.color || ``
     const firstMsg = tags['first-msg']
     const hangman = lemonyFresh[channel].hangman
-    const verifiedUser = !!tags.badges?.vip || !!tags.vip || tags.mod || username === channel
+    const isModOrVIP = !!tags.badges?.vip || !!tags.vip || tags.mod || username === channel
     const modUser = tags.mod || username === channel
-    const lemonyFreshMember = [`jpegstripes`, `sclarf`, `e1ectroma`, `domonintendo1`, `ppuyya`].includes(username)
+    const lemonyFreshMember = [`jpegstripes`, `sclarf`, `e1ectroma`, `domonintendo1`, `ppuyya`].includes(username) && username === channel
 
     if (msg === `lemony_friend -kill`) {
         talk(chatroom, `I have gone offline! ResidentSleeper`)
@@ -303,21 +303,24 @@ ${redBg}lemony_friend has died.${resetTxt}`)
 
     if (command === `!commands`) { return sayCommands(chatroom) }
 
-    // Twitch commands
-    if (lemonyFreshMember && command === `!access`) { return getOAUTHToken(chatroom, username) }
-    if (lemonyFreshMember && command === `!authorize`) { return authorizeToken(chatroom, username, args.join(` `)) }
-    if (verifiedUser && command === `!validate`) { return validateToken(chatroom) }
-    if (verifiedUser && command === `!refresh`) { return refreshToken(chatroom) }
-    if (modUser && command === `!endpoll`) { return talk(chatroom, lemonyFresh[channel].pollId ? `Use !stoppoll to finish and show the results, or !cancelpoll to remove it! :)` : `There is no active poll! :(`) }
-    if (modUser && command === `!cancelpoll`) { return pollEnd(chatroom, `ARCHIVED`) }
-    if (modUser && command === `!stoppoll`) { return pollEnd(chatroom, `TERMINATED`) }
-    if (modUser && command === `!poll`) { return pollStart(chatroom, args.join(` `)) }
-
-    // Handle shoutout from mod/VIP
-    if (command === `!so`
-        && verifiedUser
-        && toUser) {
-        return handleShoutOut(chatroom, toUser.toLowerCase())
+    // TWITCH COMMANDS
+    // Only the streamer, a mod, or a VIP
+    if (isModOrVIP) {
+        if (command === `!so` && toUser) { return handleShoutOut(chatroom, toUser.toLowerCase()) }
+        if (command === `!validate`) { return validateToken(chatroom) }
+        if (command === `!refresh`) { return refreshToken(chatroom) }
+    }
+    // Only the streamer or a mod
+    if (modUser) {
+        if (command === `!endpoll`) { return talk(chatroom, lemonyFresh[channel].pollId ? `Use !stoppoll to finish and show the results, or !cancelpoll to remove it! :)` : `There is no active poll! :(`) }
+        if (command === `!cancelpoll`) { return lemonyFresh[channel].pollId ? pollEnd(chatroom, `ARCHIVED`) : talk(chatroom, `There is no active poll! :(`) }
+        if (command === `!stoppoll`) { return lemonyFresh[channel].pollId ? pollEnd(chatroom, `TERMINATED`) : talk(chatroom, `There is no active poll! :(`) }
+        if (command === `!poll`) { return !lemonyFresh[channel].pollId ? pollStart(chatroom, args.join(` `)) : talk(channel, `There is already a poll active! :O`) }
+    }
+    // Lemony Fresh channel owner only
+    if (lemonyFreshMember) {
+        if (command === `!access`) { return getOAUTHToken(chatroom, username) }
+        if (command === `!authorize`) { return authorizeToken(chatroom, username, args.join(` `)) }
     }
 
     // Start a game of Hangman (if one isn't already in progress)
