@@ -154,7 +154,9 @@ const lemonyFresh = {
             `sclarfDEEP`,
             `sclarfWave`,
             `sclarfSleep`,
-            `sclarfD8`
+            `sclarfD8`,
+            `sclarfYay`,
+            `sclarfChickenmoley`
         ],
         redeems: [],
         hangman: {
