@@ -209,7 +209,9 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             displayName: tags[`display-name`],
             // turbo: tags.turbo,
             color: color,
-            lemons: 0
+            lemons: 0,
+            hangmanWins: 0,
+            riddleWins: 0
         }
     }
     // Initialize user in a new chatroom
@@ -221,8 +223,6 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             msgCount: 0,
             lastMessage: msg,
             sentAt: currentTime,
-            hangmanWins: 0,
-            riddleWins: 0,
             away: false,
             awayMessage: ``
         }

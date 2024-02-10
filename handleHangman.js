@@ -96,8 +96,8 @@ function solvePuzzle(chatroom, username) {
     const channel = chatroom.slice(1)
     const hangman = lemonyFresh[channel].hangman
     hangman.listening = false
-    users[username][channel].hangmanWins++
-    return talk(chatroom, `Congratulations, the answer was: "${hangman.answer}"! ${users[username].displayName} has solved ${users[username][channel].hangmanWins} Hangman game${users[username][channel].hangmanWins === 1 ? `` : `s`}! :D`)
+    users[username].hangmanWins++
+    return talk(chatroom, `Congratulations, the answer was: "${hangman.answer}"! ${users[username].displayName} has solved ${users[username].hangmanWins} Hangman game${users[username].hangmanWins === 1 ? `` : `s`}! :D`)
 }
 
 module.exports = {
