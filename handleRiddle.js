@@ -25,8 +25,8 @@ function handleRiddleAnswer(chatroom, username, args) {
     const channel = chatroom.substring(1)
     const solved = lemonyFresh[channel].riddle.answer.toLowerCase().includes(str) || str.includes(lemonyFresh[channel].riddle.answer.toLowerCase())
     if (solved) {
-        users[username][channel].riddleWins++
-        talk(chatroom, `That's right: ${lemonyFresh[channel].riddle.answer}! ${users[username].displayName} has solved ${users[username][channel].riddleWins} riddle${users[username][channel].riddleWins === 1 ? `` : `s`}! :)`)
+        users[username].riddleWins++
+        talk(chatroom, `That's right: ${lemonyFresh[channel].riddle.answer}! ${users[username].displayName} has solved ${users[username].riddleWins} riddle${users[username].riddleWins === 1 ? `` : `s`}! :)`)
         lemonyFresh[channel].riddle.question = ``
         lemonyFresh[channel].riddle.answer = ``
     } else {

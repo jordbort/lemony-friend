@@ -120,6 +120,96 @@ async function getTwitchUser(chatroom, username) {
             : userInfo.data[0]
 }
 
+async function pollEnd(chatroom, status) {
+    if (settings.debug) { console.log(`${boldTxt}> pollEnd(chatroom: ${chatroom})${resetTxt}`) }
+    const channel = chatroom.substring(1)
+    if (!lemonyFresh[channel].pollId) { return talk(chatroom, `There is no active poll! :(`) }
+
+    const endpoint = `https://api.twitch.tv/helix/polls?broadcaster_id=${lemonyFresh[channel].id}&id=${lemonyFresh[channel].pollId}&status=${status}`
+    const options = {
+        method: 'PATCH',
+        headers: {
+            authorization: `Bearer ${lemonyFresh[channel].accessToken}`,
+            'Client-Id': CLIENT_ID
+        }
+    }
+
+    const response = await fetch(endpoint, options)
+    const twitchData = await response.json()
+    console.log(twitchData)
+
+    if (`error` in twitchData) {
+        talk(chatroom, `Error ending poll! :(`)
+    } else if (twitchData.data[0].status = status) {
+        lemonyFresh[channel].pollId = ``
+        talk(chatroom, `Poll ${status === `TERMINATED` ? `finished` : `was canceled`}! :)`)
+    }
+}
+
+async function pollStart(chatroom, str) {
+    if (settings.debug) { console.log(`${boldTxt}> pollStart(chatroom: ${chatroom}, str: ${str})${resetTxt}`) }
+    const channel = chatroom.substring(1)
+    if (lemonyFresh[channel].pollId) { return talk(chatroom, `There is already a poll in progress!`) }
+    const params = str.split(new RegExp(/ ?\/ ?/))
+
+    const duration = Number(params.shift())
+    if (isNaN(duration)
+        || duration < 15
+        || duration > 1800) {
+        return talk(chatroom, `Error: Duration should be a number between 15 and 1800. Try: !poll <seconds> / Title of poll / First choice / Second choice ...`)
+    }
+
+    // Params length should be more than 2, and shouldn't be longer than 6
+    const title = params.shift()
+    if (params.length < 2 || params.length > 5) { return talk(chatroom, `Error: Between 2-5 choices are allowed. Try: !poll <seconds> / Title of poll / First choice / Second choice ...`) }
+
+    const choices = []
+    params.map((choice) => choices.push({ 'title': choice }))
+
+    const requestBody = {
+        "broadcaster_id": lemonyFresh[channel].id,
+        "title": title,
+        "choices": choices,
+        "duration": duration
+    }
+
+    const endpoint = `https://api.twitch.tv/helix/polls`
+    const options = {
+        method: 'POST',
+        headers: {
+            authorization: `Bearer ${lemonyFresh[channel].accessToken}`,
+            'Client-Id': CLIENT_ID,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+    }
+
+    const response = await fetch(endpoint, options)
+    const twitchData = await response.json()
+    console.log(twitchData)
+
+    if (`error` in twitchData) {
+        if (twitchData.message === `Invalid OAuth token`) {
+            talk(chatroom, `Hold on, I need to refresh the token...`)
+            await refreshToken(chatroom)
+            options.headers.authorization = `Bearer ${lemonyFresh[channel].accessToken}`
+            const finalAttempt = await fetch(endpoint, options)
+            const finalAttemptData = await finalAttempt.json()
+            if (finalAttemptData?.data) { lemonyFresh[channel].pollId = finalAttemptData.data[0].id }
+            setTimeout(() => { lemonyFresh[channel].pollId = `` }, duration * 1000)
+            console.log(finalAttemptData)
+        } else {
+            talk(chatroom, `(Error ${twitchData.status}) ${twitchData.error}: ${twitchData.message}`)
+        }
+    } else if (!twitchData.data) {
+        talk(chatroom, `Error creating poll :(`)
+    } else {
+        lemonyFresh[channel].pollId = twitchData.data[0].id
+        setTimeout(() => { lemonyFresh[channel].pollId = `` }, duration * 1000)
+        talk(chatroom, `Poll created. Go vote! :)`)
+    }
+}
+
 async function handleShoutOut(chatroom, user) {
     if (settings.debug) { console.log(`${boldTxt}> handleShoutOut(chatroom: ${chatroom}, user: ${user})${resetTxt}`) }
     const twitchUser = await getTwitchUser(chatroom, user)
@@ -161,65 +251,6 @@ async function refreshToken(chatroom) {
     }
 }
 
-async function startPoll(chatroom, str) {
-    if (settings.debug) { console.log(`${boldTxt}> startPoll(chatroom: ${chatroom}, str: ${str})${resetTxt}`) }
-    const channel = chatroom.substring(1)
-    const params = str.split(` / `)
-
-    const duration = Number(params.shift())
-    if (isNaN(duration)
-        || duration < 15
-        || duration > 1800) {
-        return talk(chatroom, `Error: Duration should be a number between 15 and 1800. Try: !poll <seconds> / Title of poll / First choice / Second choice ...`)
-    }
-
-    // length should be more than 2, and shouldn't be longer than 6 (1 title, 5 choices)
-    const title = params.shift()
-    if (params.length < 2 || params.length > 5) { return talk(chatroom, `Error: Between 2-5 choices are allowed. Try: !poll <seconds> / Title of poll / First choice / Second choice ...`) }
-
-    const choices = []
-    params.map((choice) => choices.push({ 'title': choice }))
-
-    const requestBody = {
-        "broadcaster_id": lemonyFresh[chatroom.substring(1)].id,
-        "title": title,
-        "choices": choices,
-        "duration": duration
-    }
-
-    const endpoint = `https://api.twitch.tv/helix/polls`
-    const options = {
-        method: 'POST',
-        headers: {
-            authorization: `Bearer ${lemonyFresh[channel].accessToken}`,
-            'Client-Id': CLIENT_ID,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
-    }
-
-    const response = await fetch(endpoint, options)
-    const twitchData = await response.json()
-    console.log(twitchData)
-
-    if (`error` in twitchData) {
-        if (twitchData.message === `Invalid OAuth token`) {
-            talk(chatroom, `Hold on, I need to refresh the token...`)
-            await refreshToken(chatroom)
-            options.headers.authorization = `Bearer ${lemonyFresh[channel].accessToken}`
-            const finalAttempt = await fetch(endpoint, options)
-            const finalAttemptData = await finalAttempt.json()
-            console.log(finalAttemptData)
-        } else {
-            talk(chatroom, `(Error ${twitchData.status}) ${twitchData.error}: ${twitchData.message}`)
-        }
-    } else if (!twitchData.data) {
-        talk(chatroom, `Error creating poll :(`)
-    } else {
-        talk(chatroom, `Poll created. Go vote! :)`)
-    }
-}
-
 async function validateToken(chatroom) {
     if (settings.debug) { console.log(`${boldTxt}> validateToken(chatroom: ${chatroom})${resetTxt}`) }
     const channel = chatroom.substring(1)
@@ -247,7 +278,8 @@ module.exports = {
     getTwitchToken,
     getTwitchUser,
     handleShoutOut,
+    pollEnd,
+    pollStart,
     refreshToken,
-    startPoll,
     validateToken
 }
