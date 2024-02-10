@@ -124,7 +124,7 @@ function handleGreetAll(chatroom, currentTime) {
             if (lastChattedAtMins < 60) {
                 usersToGreet.push(users[user].displayName)
             } else {
-                console.log(`${grayTxt}${user}has not chatted in the past 60 minutes, ignoring...${resetTxt}`, lastChattedAtMins)
+                console.log(`${grayTxt}${user} has not chatted in the past 60 minutes, ignoring...${resetTxt}`, lastChattedAtMins)
             }
         }
     }

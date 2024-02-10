@@ -115,8 +115,9 @@ const {
     getTwitchToken,
     getTwitchUser,
     handleShoutOut,
+    pollEnd,
+    pollStart,
     refreshToken,
-    startPoll,
     validateToken
 } = require(`./handleTwitch`)
 
@@ -172,9 +173,9 @@ function onMessageHandler(chatroom, tags, message, self) {
     const color = tags.color || ``
     const firstMsg = tags['first-msg']
     const hangman = lemonyFresh[channel].hangman
-    const verifiedUser = !!tags.badges?.vip || !!tags.vip || tags.mod || username === channel
+    const isModOrVIP = !!tags.badges?.vip || !!tags.vip || tags.mod || username === channel
     const modUser = tags.mod || username === channel
-    const lemonyFreshMember = [`jpegstripes`, `sclarf`, `e1ectroma`, `domonintendo1`, `ppuyya`].includes(username)
+    const lemonyFreshMember = [`jpegstripes`, `sclarf`, `e1ectroma`, `domonintendo1`, `ppuyya`].includes(username) && username === channel
 
     if (msg === `lemony_friend -kill`) {
         talk(chatroom, `I have gone offline! ResidentSleeper`)
@@ -208,7 +209,9 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             displayName: tags[`display-name`],
             // turbo: tags.turbo,
             color: color,
-            lemons: 0
+            lemons: 0,
+            hangmanWins: 0,
+            riddleWins: 0
         }
     }
     // Initialize user in a new chatroom
@@ -220,12 +223,14 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             msgCount: 0,
             lastMessage: msg,
             sentAt: currentTime,
-            hangmanWins: 0,
-            riddleWins: 0,
             away: false,
             awayMessage: ``
         }
     }
+
+    // Cleaning up potential undefined user
+    if (`undefined` in users) { delete users.undefined }
+
     // Checking time comparisons
     const elapsedMinsSinceLastMsg = (currentTime - users[username][channel].sentAt) / 60000
 
@@ -298,18 +303,24 @@ ${redBg}lemony_friend has died.${resetTxt}`)
 
     if (command === `!commands`) { return sayCommands(chatroom) }
 
-    // Twitch commands
-    if (lemonyFreshMember && command === `!access`) { return getOAUTHToken(chatroom, username) }
-    if (lemonyFreshMember && command === `!authorize`) { return authorizeToken(chatroom, username, args.join(` `)) }
-    if (verifiedUser && command === `!validate`) { return validateToken(chatroom) }
-    if (verifiedUser && command === `!refresh`) { return refreshToken(chatroom) }
-    if (modUser && command === `!poll`) { return startPoll(chatroom, args.join(` `)) }
-
-    // Handle shoutout from mod/VIP
-    if (command === `!so`
-        && verifiedUser
-        && toUser) {
-        return handleShoutOut(chatroom, toUser.toLowerCase())
+    // TWITCH COMMANDS
+    // Only the streamer, a mod, or a VIP
+    if (isModOrVIP) {
+        if (command === `!so` && toUser) { return handleShoutOut(chatroom, toUser.toLowerCase()) }
+        if (command === `!validate`) { return validateToken(chatroom) }
+        if (command === `!refresh`) { return refreshToken(chatroom) }
+    }
+    // Only the streamer or a mod
+    if (modUser) {
+        if (command === `!endpoll`) { return talk(chatroom, lemonyFresh[channel].pollId ? `Use !stoppoll to finish and show the results, or !cancelpoll to remove it! :)` : `There is no active poll! :(`) }
+        if (command === `!cancelpoll`) { return lemonyFresh[channel].pollId ? pollEnd(chatroom, `ARCHIVED`) : talk(chatroom, `There is no active poll! :(`) }
+        if (command === `!stoppoll`) { return lemonyFresh[channel].pollId ? pollEnd(chatroom, `TERMINATED`) : talk(chatroom, `There is no active poll! :(`) }
+        if (command === `!poll`) { return !lemonyFresh[channel].pollId ? pollStart(chatroom, args.join(` `)) : talk(channel, `There is already a poll active! :O`) }
+    }
+    // Lemony Fresh channel owner only
+    if (lemonyFreshMember) {
+        if (command === `!access`) { return getOAUTHToken(chatroom, username) }
+        if (command === `!authorize`) { return authorizeToken(chatroom, username, args.join(` `)) }
     }
 
     // Start a game of Hangman (if one isn't already in progress)
@@ -458,27 +469,6 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         else { return talk(chatroom, `Greetings, ${users[username].displayName}! :)`) }
     }
 
-    // !tempcmd or !tmpcmd
-    if ([
-        `!tempcmd`,
-        `!tmpcmd`
-    ].includes(command)) { return handleTempCmd(chatroom, username, args) }
-
-    // !tempcmds or !tmpcmds
-    if ([
-        `!tempcmds`,
-        `!tmpcmds`
-    ].includes(command)) {
-        const commands = []
-        for (key in tempCmds) {
-            commands.push(`${key} => "${tempCmds[key]}"`)
-        }
-        return talk(chatroom, `There ${commands.length === 1 ? `is` : `are`} ${commands.length} temporary command${commands.length === 1 ? `` : `s`}${commands.length === 0 ? ` :(` : `: ${commands.join(', ')}`}`)
-    }
-
-    // Check for tempCmd
-    if (command in tempCmds) { return talk(chatroom, tempCmds[command]) }
-
     // Handle channel-specific goals
     if ([
         `!goal`,
@@ -611,7 +601,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         }
 
         // If the first word is a greeting
-        const greetingPattern = /h[ae]+y+[^\w\s]*$|^hi+[^\w\s]*$|^he.*lo+[^\w\s]*$|^howd[a-z][^\w\s]*$|sup+[^\w\s]*$|^wh?[au].*up[^\w\s]*$/i
+        const greetingPattern = /^h[ae]+y+[^\w\s]*$|^hi+[^\w\s]*$|^he.*lo+[^\w\s]*$|^howd[a-z][^\w\s]*$|^sup+[^\w\s]*$|^wh?[au].*up[^\w\s]*$/i
         if (command.match(greetingPattern)) {
             console.log(`${grayTxt}> "${command}" matched greetingPattern${resetTxt}`)
             return handleGreet(chatroom, users[username])
@@ -679,8 +669,8 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             if (val === `well` && lowercaseArgs[i + 1]?.match(/^done+[^\w\s]*$/)) { return sayThanks(chatroom, users[username]) }
         }
 
-        // If all else fails, but message includes "you/your/you're"
-        const secondPersonPattern = /you([^npst]|$)/i
+        // If all else fails, but message includes "you/your/you're" or " u / ur/ u"
+        const secondPersonPattern = /you([^npst]|$)| ur?( |$)/i
         if (secondPersonPattern.test(msg)) {
             console.log(`${grayTxt}> "${msg}" matched secondPersonPattern${resetTxt}`)
             return checkSentiment(chatroom, msg)
@@ -988,6 +978,27 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         }
     }
 
+    // !tempcmd or !tmpcmd
+    if ([
+        `!tempcmd`,
+        `!tmpcmd`
+    ].includes(command)) { return handleTempCmd(chatroom, username, args) }
+
+    // !tempcmds or !tmpcmds
+    if ([
+        `!tempcmds`,
+        `!tmpcmds`
+    ].includes(command)) {
+        const commands = []
+        for (key in tempCmds) {
+            commands.push(`${key} => "${tempCmds[key]}"`)
+        }
+        return talk(chatroom, `There ${commands.length === 1 ? `is` : `are`} ${commands.length} temporary command${commands.length === 1 ? `` : `s`}${commands.length === 0 ? ` :(` : `: ${commands.join(', ')}`}`)
+    }
+
+    // Check for tempCmd
+    if (command in tempCmds) { return talk(chatroom, tempCmds[command]) }
+
     if (hangman.listening && !hangman.signup) {
         if (msg.match(/^[a-z]$/i) && username === hangman.players[hangman.currentPlayer]) {
             return checkLetter(chatroom, username, msg.toUpperCase())
@@ -1044,10 +1055,20 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     // *** FUN NUMBER! ***
     if (users[username][channel].msgCount % funNumberCount === 0) { return rollFunNumber(chatroom, tags, username, msg.split(` `), Math.floor(Math.random() * funNumberTotal)) }
 
-    // Check if user hasn't chatted in more than an hour, but less than 12 hours
+    // Check if user hasn't chatted in more than an hour, but less than 8 hours, and isn't the streamer or a known bot
     if (elapsedMinsSinceLastMsg >= 60
-        && elapsedMinsSinceLastMsg < 720) {
-        console.log(`${grayTxt}${displayName} hasn't chatted in the past 1-12 hours${resetTxt}`, elapsedMinsSinceLastMsg)
+        && elapsedMinsSinceLastMsg < 480
+        && ![
+            channel,
+            `nightbot`,
+            `streamelements`,
+            `blerp`,
+            `soundalerts`,
+            `streamlabs`
+            `undertalebot`,
+            `buttsbot`
+        ].includes(username)) {
+        console.log(`${grayTxt}${displayName} hasn't chatted in the past 1-8 hours${resetTxt}`, elapsedMinsSinceLastMsg)
         return talk(chatroom, `Welcome back, ${displayName}! :)`)
     }
 }
