@@ -601,7 +601,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         }
 
         // If the first word is a greeting
-        const greetingPattern = /h[ae]+y+[^\w\s]*$|^hi+[^\w\s]*$|^he.*lo+[^\w\s]*$|^howd[a-z][^\w\s]*$|sup+[^\w\s]*$|^wh?[au].*up[^\w\s]*$/i
+        const greetingPattern = /^h[ae]+y+[^\w\s]*$|^hi+[^\w\s]*$|^he.*lo+[^\w\s]*$|^howd[a-z][^\w\s]*$|^sup+[^\w\s]*$|^wh?[au].*up[^\w\s]*$/i
         if (command.match(greetingPattern)) {
             console.log(`${grayTxt}> "${command}" matched greetingPattern${resetTxt}`)
             return handleGreet(chatroom, users[username])
