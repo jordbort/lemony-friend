@@ -1055,11 +1055,20 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     // *** FUN NUMBER! ***
     if (users[username][channel].msgCount % funNumberCount === 0) { return rollFunNumber(chatroom, tags, username, msg.split(` `), Math.floor(Math.random() * funNumberTotal)) }
 
-    // Check if user hasn't chatted in more than an hour, but less than 12 hours, and isn't the streamer or a known bot
+    // Check if user hasn't chatted in more than an hour, but less than 8 hours, and isn't the streamer or a known bot
     if (elapsedMinsSinceLastMsg >= 60
-        && elapsedMinsSinceLastMsg < 720
-        && ![channel, `nightbot`, `streamelements`, `blerp`].includes(username)) {
-        console.log(`${grayTxt}${displayName} hasn't chatted in the past 1-12 hours${resetTxt}`, elapsedMinsSinceLastMsg)
+        && elapsedMinsSinceLastMsg < 480
+        && ![
+            channel,
+            `nightbot`,
+            `streamelements`,
+            `blerp`,
+            `soundalerts`,
+            `streamlabs`
+            `undertalebot`,
+            `buttsbot`
+        ].includes(username)) {
+        console.log(`${grayTxt}${displayName} hasn't chatted in the past 1-8 hours${resetTxt}`, elapsedMinsSinceLastMsg)
         return talk(chatroom, `Welcome back, ${displayName}! :)`)
     }
 }
