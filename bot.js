@@ -1064,7 +1064,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             `streamelements`,
             `blerp`,
             `soundalerts`,
-            `streamlabs`
+            `streamlabs`,
             `undertalebot`,
             `buttsbot`
         ].includes(username)) {
