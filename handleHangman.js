@@ -32,7 +32,7 @@ async function hangmanInit(hangman, username) {
 }
 
 function hangmanAnnounce(chatroom) {
-    if (settings.debug) { console.log(`${boldTxt}> hangmanAnnounce(chatroom: ${chatroom})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> hangmanAnnounce(chatroom: '${chatroom}')${resetTxt}`) }
     const channel = chatroom.slice(1)
     const hangman = lemonyFresh[channel].hangman
 
@@ -54,7 +54,7 @@ function hangmanAnnounce(chatroom) {
 }
 
 function checkLetter(chatroom, username, guess) {
-    if (settings.debug) { console.log(`${boldTxt}> checkLetter(chatroom: ${chatroom}, username: ${username}, guess: ${guess})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> checkLetter(chatroom: '${chatroom}', username: '${username}', guess: '${guess}')${resetTxt}`) }
     const channel = chatroom.slice(1)
     const hangman = lemonyFresh[channel].hangman
     const player = users[username].displayName
@@ -93,7 +93,7 @@ function checkLetter(chatroom, username, guess) {
 }
 
 function solvePuzzle(chatroom, username) {
-    if (settings.debug) { console.log(`${boldTxt}> solvePuzzle(chatroom: ${chatroom}, username: ${username})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> solvePuzzle(chatroom: '${chatroom}', username: '${username}')${resetTxt}`) }
     const channel = chatroom.slice(1)
     const hangman = lemonyFresh[channel].hangman
     hangman.listening = false

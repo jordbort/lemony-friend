@@ -8,7 +8,7 @@ const { users } = require(`./data`)
 const { talk } = require(`./utils`)
 
 function useLemon(chatroom, command, username, target) {
-    if (settings.debug) { console.log(`${boldTxt}> handleGiveLemon(chatroom: ${chatroom}, command: ${command}, username: ${username}, target: ${target})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> handleGiveLemon(chatroom: '${chatroom}', command: '${command}', username: '${username}', target: '${target}')${resetTxt}`) }
     const user = users[username]
     const targetUser = users[target]
     const verb = command.split(/^!(.+)lemon(.*)$/)[1]

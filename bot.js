@@ -229,7 +229,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     }
 
     // Cleaning up potential undefined user
-    if (`undefined` in users) { delete users.undefined }
+    if (`undefined` in users) { return delete users.undefined }
 
     // Checking time comparisons
     const elapsedMinsSinceLastMsg = (currentTime - users[username][channel].sentAt) / 60000
@@ -330,7 +330,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
                 ? talk(chatroom, `A game of Hangman is starting, type !play to join!`)
                 : talk(chatroom, `A game of Hangman is already in progress! It's currently ${users[hangman.players[hangman.currentPlayer]].displayName}'s turn.`)
         } else {
-            hangmanInit(hangman)
+            hangmanInit(hangman, username)
             return hangmanAnnounce(chatroom)
         }
     }
@@ -339,9 +339,10 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     if (command === `!play`
         && hangman.listening) {
         if (hangman.signup) {
+            console.log(`${grayTxt}${hangman.players.includes(username) ? `> ${username} already in ${channel}'s Hangman players: ${hangman.players.join(`, `)}` : `> ${username} added to ${channel}'s Hangman players: ${hangman.players.join(`, `)}`}${resetTxt}`)
             if (!hangman.players.includes(username)) { return hangman.players.push(username) }
         } else if (!hangman.players.includes(username)) {
-            // return talk(chatroom, `Sorry ${displayName}, the game has already started, but we'll get you in the next round! :)`)
+            console.log(`${grayTxt}> ${username} added to ${channel}'s Hangman players: ${hangman.players.join(`, `)}}${resetTxt}`)
             hangman.players.push(username)
             return talk(chatroom, `${displayName}, you can still hop in, you'll go after everyone else! :)`)
         }
