@@ -28,7 +28,6 @@ async function hangmanInit(hangman, username) {
     hangman.currentPlayer = 0
     hangman.players.push(username)
     if (settings.debug) { console.log(`${boldTxt}> hangmanInit(hangman: ${typeof hangman}, username: '${username}')${resetTxt}`) }
-    if (settings.debug) { console.log(hangman.players) }
 }
 
 function hangmanAnnounce(chatroom) {
