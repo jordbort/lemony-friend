@@ -369,7 +369,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     }
 
     // Channel-specific raid messages
-    if (command === `raid` && isModOrVIP) { return handleRaid(chatroom) }
+    if (command === `!raid` && isModOrVIP) { return handleRaid(chatroom) }
 
     // Play rock, paper, scissors with the bot
     if (command === `!rps`) { return rockPaperScissors(chatroom, username, args[0]?.toLowerCase()) }
