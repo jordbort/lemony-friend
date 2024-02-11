@@ -350,11 +350,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     }
 
     // Define a word
-    if ([`!define`,
-        `!definition`,
-        `!meaning`].includes(command)) {
-        return getDefinition(chatroom, args.join(` `))
-    }
+    if ([`!define`, `!definition`, `!meaning`].includes(command)) { return getDefinition(chatroom, args.join(` `)) }
 
     // Ask for a riddle
     if (command === `!riddle`) {
@@ -421,10 +417,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     }
 
     // Toggle debug mode
-    if ([
-        `!debug`,
-        `!debugmode`
-    ].includes(command)) { return toggleDebugMode(chatroom, args) }
+    if ([`!debug`, `!debugmode`].includes(command)) { return toggleDebugMode(chatroom, args) }
 
     // !lastmsg (Show a user's last message, optionally in a specified stream)
     if (command === `!lastmsg`) { return getLastMessage(chatroom, users[target] || users[username], args[1]?.toLowerCase()) }
@@ -436,16 +429,10 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     if (command === `!yell`) { return yell(users[username], msg.substring(6)) }
 
     // !friend(s) count
-    if ([
-        `!friend`,
-        `!friends`
-    ].includes(command)) { return sayFriends(chatroom) }
+    if ([`!friend`, `!friends`].includes(command)) { return sayFriends(chatroom) }
 
     // !lemon(s) count
-    if ([
-        `!lemon`,
-        `!lemons`
-    ].includes(command)) {
+    if ([`!lemon`, `!lemons`].includes(command)) {
         return target
             ? talk(chatroom, `${users[target].displayName} has ${users[target].lemons} lemon${users[target].lemons === 1 ? `` : `s`}! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`)
             : talk(chatroom, `${displayName} has ${users[username].lemons} lemon${users[username].lemons === 1 ? `` : `s`}! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`)
@@ -475,10 +462,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     }
 
     // Handle channel-specific goals
-    if ([
-        `!goal`,
-        `!goals`
-    ].includes(command)
+    if ([`!goal`, `!goals`].includes(command)
         && args.length) {
         return sayGoals(chatroom, args)
     }
@@ -493,10 +477,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     }
 
     // !color / !colour
-    if ([
-        `!color`,
-        `!colour`
-    ].includes(command)) { return getColor(chatroom, users[target] || users[username]) }
+    if ([`!color`, `!colour`].includes(command)) { return getColor(chatroom, users[target] || users[username]) }
 
     // !dadjoke
     if (command === `!dadjoke`) { return getDadJoke(chatroom) }
@@ -505,11 +486,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     if (command === `!pokemon`) { return getPokemon(chatroom, args[0]) }
 
     // !away or !brb or !lurk
-    if ([
-        `!away`,
-        `!brb`,
-        `!lurk`
-    ].includes(command)) {
+    if ([`!away`, `!brb`, `!lurk`].includes(command)) {
         users[username][channel].away = true
         if (args.length) { users[username][channel].awayMessage = args.join(` `) }
         if (command !== `!lurk`) {
