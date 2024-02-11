@@ -473,7 +473,7 @@ function handleRaid(chatroom) {
             talk(channel, noSubRaidMessage)
         }, delay)
         setTimeout(() => {
-            talk(channel, `Thanks for sticking around for the raid! If you're subscribed to the channel, you can the first raid message, otherwise you can use the second raid message. ${appendEmote}`)
+            talk(channel, `Thanks for sticking around for the raid! If you're subscribed to the channel, you can use the first raid message, otherwise you can use the second raid message! ${appendEmote}`)
         }, delay * 2)
     }
 }
