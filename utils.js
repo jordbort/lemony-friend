@@ -458,6 +458,26 @@ function makeLogs() {
     })
 }
 
+function handleRaid(chatroom) {
+    if (settings.debug) { console.log(`${boldTxt}> handleRaid(chatroom: ${chatroom})${resetTxt}`) }
+
+    const channel = chatroom.substring(1)
+    const subRaidMessage = lemonyFresh[channel].subRaidMessage
+    const noSubRaidMessage = lemonyFresh[channel].noSubRaidMessage
+    const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip ? 1000 : 2000
+    const appendEmote = users[BOT_USERNAME][channel].sub ? subRaidMessage.split(` `)[0] : `:)`
+    
+    if (subRaidMessage) { talk(channel, subRaidMessage) }
+    if (noSubRaidMessage) {
+        setTimeout(() => {
+            talk(channel, noSubRaidMessage)
+        }, delay)
+        setTimeout(() => {
+            talk(channel, `Thanks for sticking around for the raid! If you're subscribed to the channel, you can the first raid message, otherwise you can use the second raid message. ${appendEmote}`)
+        }, delay * 2)
+    }
+}
+
 module.exports = {
     client,
     handleUncaughtException,
@@ -480,5 +500,6 @@ module.exports = {
     getToUser,
     printLemon,
     talk,
-    makeLogs
+    makeLogs,
+    handleRaid
 }

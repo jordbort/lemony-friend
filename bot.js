@@ -145,7 +145,8 @@ const {
     getToUser,
     printLemon,
     talk,
-    makeLogs
+    makeLogs,
+    handleRaid
 } = require(`./utils`)
 
 process.on('uncaughtException', async (err) => {
@@ -173,8 +174,8 @@ function onMessageHandler(chatroom, tags, message, self) {
     const color = tags.color || ``
     const firstMsg = tags['first-msg']
     const hangman = lemonyFresh[channel].hangman
+    const isMod = tags.mod || username === channel
     const isModOrVIP = !!tags.badges?.vip || !!tags.vip || tags.mod || username === channel
-    const modUser = tags.mod || username === channel
     const lemonyFreshMember = [`jpegstripes`, `sclarf`, `e1ectroma`, `domonintendo1`, `ppuyya`].includes(username) && username === channel
 
     if (msg === `lemony_friend -kill`) {
@@ -311,7 +312,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         if (command === `!refresh`) { return refreshToken(chatroom) }
     }
     // Only the streamer or a mod
-    if (modUser) {
+    if (isMod) {
         if (command === `!endpoll`) { return talk(chatroom, lemonyFresh[channel].pollId ? `Use !stoppoll to finish and show the results, or !cancelpoll to remove it! :)` : `There is no active poll! :(`) }
         if (command === `!cancelpoll`) { return lemonyFresh[channel].pollId ? pollEnd(chatroom, `ARCHIVED`) : talk(chatroom, `There is no active poll! :(`) }
         if (command === `!stoppoll`) { return lemonyFresh[channel].pollId ? pollEnd(chatroom, `TERMINATED`) : talk(chatroom, `There is no active poll! :(`) }
@@ -370,6 +371,9 @@ ${redBg}lemony_friend has died.${resetTxt}`)
                 : talk(chatroom, `What is your answer, ${displayName}? :)`)
             : talk(chatroom, `You can use !riddle to ask me for a riddle! :)`)
     }
+
+    // Channel-specific raid messages
+    if (command === `raid` && isModOrVIP) { return handleRaid(chatroom) }
 
     // Play rock, paper, scissors with the bot
     if (command === `!rps`) { return rockPaperScissors(chatroom, username, args[0]?.toLowerCase()) }

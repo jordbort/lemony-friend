@@ -24,6 +24,8 @@ const lemonyFresh = {
         accessToken: JPEGSTRIPES_ACCESS_TOKEN,
         refreshToken: JPEGSTRIPES_REFRESH_TOKEN,
         pollId: ``,
+        subRaidMessage: `jpegstCoin jpegstJPEG jpegstCoin jpegstRAID jpegstCoin`,
+        noSubRaidMessage: `HeyGuys TombRaid KAPOW JPEG RAID HeyGuys TombRaid KAPOW`,
         emotes: [
             `jpegstCoin`,
             `jpegstTimber`,
@@ -133,6 +135,8 @@ const lemonyFresh = {
         accessToken: SCLARF_ACCESS_TOKEN,
         refreshToken: SCLARF_REFRESH_TOKEN,
         pollId: ``,
+        subRaidMessage: `sclarfWave sclarfHearts sclarfYay SCLARF RAID sclarfYay sclarfHearts sclarfWave`,
+        noSubRaidMessage: `HeyGuys HahaSweat SCLARF RAID HahaSweat HeyGuys`,
         emotes: [
             `sclarfRave`,
             `sclarfWobble`,
@@ -179,6 +183,8 @@ const lemonyFresh = {
         accessToken: E1ECTROMA_ACCESS_TOKEN,
         refreshToken: E1ECTROMA_REFRESH_TOKEN,
         pollId: ``,
+        subRaidMessage: `e1ectr4Smile e1ectr4Pikadance ELECTROMA RAID e1ectr4Pikadance e1ectr4Smile`,
+        noSubRaidMessage: `TombRaid ELECTROMA RAID TombRaid `,
         emotes: [
             `e1ectr4Lfg`,
             `e1ectr4Pikadance`,
@@ -231,6 +237,8 @@ const lemonyFresh = {
         accessToken: DOMONINTENDO1_ACCESS_TOKEN,
         refreshToken: DOMONINTENDO1_REFRESH_TOKEN,
         pollId: ``,
+        subRaidMessage: `domoni6ChefHey HEY, DOMOSAPIENS HAVE ARRIVED domoni6ChefHey`,
+        noSubRaidMessage: `PogChamp HEY, DOMOSAPIENS HAVE ARRIVED PogChamp`,
         emotes: [
             `domoni6Really`,
             `domoni6Bingo`,
@@ -264,6 +272,8 @@ const lemonyFresh = {
         accessToken: PPUYYA_ACCESS_TOKEN,
         refreshToken: PPUYYA_REFRESH_TOKEN,
         pollId: ``,
+        subRaidMessage: ``,
+        noSubRaidMessage: ``,
         emotes: [],
         redeems: [],
         hangman: {
