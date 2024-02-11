@@ -17,9 +17,7 @@ async function getRandomWord() {
     return data[0]
 }
 
-async function hangmanInit(hangman) {
-    if (settings.debug) { console.log(`${boldTxt}> hangmanInit(hangman: ${typeof hangman})${resetTxt}`) }
-
+async function hangmanInit(hangman, username) {
     hangman.listening = true
     hangman.answer = await getRandomWord()
     hangman.spaces.length = hangman.answer.length
@@ -28,6 +26,9 @@ async function hangmanInit(hangman) {
     hangman.guessedLetters.length = 0
     hangman.chances = 6
     hangman.currentPlayer = 0
+    hangman.players.push(username)
+    if (settings.debug) { console.log(`${boldTxt}> hangmanInit(hangman: ${typeof hangman}, username: '${username}')${resetTxt}`) }
+    if (settings.debug) { console.log(hangman.players) }
 }
 
 function hangmanAnnounce(chatroom) {
