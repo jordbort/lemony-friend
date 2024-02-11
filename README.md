@@ -16,6 +16,7 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!define` (or `!definition` or `!meaning`) - This command can be used followed by a word to look up its definition using an API from [API Ninjas](https://api-ninjas.com/).
 - `!riddle` - This command is used to generate a riddle for the chat using an API from [API Ninjas](https://api-ninjas.com/). It can be attempted to be solved by using the `!answer` command.
 - `!answer` - This command is used followed by a guess to attempt to solve the riddle.
+- `!raid` - This command can only be used by a moderator, a VIP, or the streamer. It can be used to post both versions of the channel's raid message - one with sub emotes, and one without.
 - `!rps` - Use this command to challenge lemony_friend to a game of Rock, Paper, Scissors. You may can use `!rps rock` `!rps paper` `!rps scissors` to specify your move, or simply use `!rps` and a move will be chosen at random.
 - `!mystats` - Use this command to get the JSON data of a user.
 - `!subs` - This command can be used to check lemony_friend's subscription status for all channels it is in.
