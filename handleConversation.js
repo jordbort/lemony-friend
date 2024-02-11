@@ -100,8 +100,6 @@ function handleMassGreet(chatroom, arr) {
 function handleGreetAll(chatroom, currentTime) {
     if (settings.debug) { console.log(`${boldTxt}> handleGreetAll(chatroom: ${chatroom}, currentTime: ${currentTime})${resetTxt}`) }
     const channel = chatroom.substring(1)
-    const usersToGreet = []
-    const response = []
     const greetings = [
         `hello`,
         `howdy`,
@@ -109,6 +107,7 @@ function handleGreetAll(chatroom, currentTime) {
         `hi`
     ]
     const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)]
+
     const emotes = [
         `HeyGuys`,
         `:)`
@@ -118,19 +117,30 @@ function handleGreetAll(chatroom, currentTime) {
     if (users[BOT_USERNAME]?.[`e1ectroma`]?.sub) { emotes.push(`e1ectr4Pikadance`, `e1ectr4Tromadance`, `e1ectr4Hello`, `e1ectr4Hi`, `e1ectr4Smile`, `e1ectr4Ram`, `e1ectr4Salute`, `e1ectr4Lemfresh`) }
     if (users[BOT_USERNAME]?.[`jpegstripes`]?.sub) { emotes.push(`jpegstBamJAM`, `jpegstKylePls`, `jpegstJulian`, `jpegstHeyGuys`, `jpegstSlay`) }
     const randomEmote = emotes[Math.floor(Math.random() * emotes.length)]
+
+    const excludedNames = [
+        BOT_USERNAME,
+        `nightbot`,
+        `streamelements`,
+        `blerp`,
+        `soundalerts`,
+        `streamlabs`,
+        `undertalebot`,
+        `buttsbot`
+    ]
+    const usersToGreet = []
     for (const user in users) {
-        if (user !== BOT_USERNAME && channel in users[user]) {
+        if (!excludedNames.includes(user) && channel in users[user]) {
             const lastChattedAtMins = Number(((currentTime - users[user][channel].sentAt) / 60000).toFixed(2))
             if (lastChattedAtMins < 60) {
                 usersToGreet.push(users[user].displayName)
             } else {
-                console.log(`${grayTxt}${user} has not chatted in the past 60 minutes, ignoring...${resetTxt}`, lastChattedAtMins)
+                console.log(`${grayTxt}${users[user].displayName} has not chatted in the past 60 minutes, ignoring...${resetTxt}`, lastChattedAtMins)
             }
         }
     }
-    for (const user of usersToGreet) {
-        response.push(`${randomGreeting} ${user} ${randomEmote}`)
-    }
+
+    const response = usersToGreet.map((user) => `${randomGreeting} ${user} ${randomEmote}`)
     talk(chatroom, response.join(` `))
 }
 
