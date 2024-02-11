@@ -332,7 +332,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
                 : talk(chatroom, `A game of Hangman is already in progress! It's currently ${users[hangman.players[hangman.currentPlayer]].displayName}'s turn.`)
         } else {
             hangmanInit(hangman, username)
-            return hangmanAnnounce(chatroom)
+            return hangmanAnnounce(chatroom, displayName)
         }
     }
 

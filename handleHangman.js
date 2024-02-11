@@ -30,26 +30,29 @@ async function hangmanInit(hangman, username) {
     if (settings.debug) { console.log(`${boldTxt}> hangmanInit(hangman: ${typeof hangman}, username: '${username}')${resetTxt}`) }
 }
 
-function hangmanAnnounce(chatroom) {
+function hangmanAnnounce(chatroom, displayName) {
     if (settings.debug) { console.log(`${boldTxt}> hangmanAnnounce(chatroom: '${chatroom}')${resetTxt}`) }
     const channel = chatroom.slice(1)
     const hangman = lemonyFresh[channel].hangman
-
+    
     hangman.signup = true
-    talk(chatroom, `I'm thinking of a word... Type !play in the next 30 seconds to join in a game of Hangman! :)`)
+    const signupSeconds = 30
+    talk(chatroom, `${displayName} has started a game of Hangman! Type !play in the next ${signupSeconds} seconds if you'd like to join in, too! :)`)
     setTimeout(() => {
-        if (settings.debug) { console.log(`${boldTxt}> 30 seconds has elapsed, signup window closed${resetTxt}`) }
+        // After signup period has ended, close signup window, shuffle players, and start game
         hangman.signup = false
+        hangman.players.sort(() => Math.random() - 0.5)
+        if (settings.debug) { console.log(`${boldTxt}> ${signupSeconds} seconds has elapsed, signup window closed - players: ${hangman.players.length === 0 ? `(none)` : `${hangman.players.join(`, `)}`}${resetTxt}`) }
         if (hangman.players.length === 0) {
             hangman.listening = false
             talk(chatroom, `No players signed up for Hangman! :(`)
         } else {
             talk(chatroom, `${hangman.players.length} player${hangman.players.length === 1 ? `` : `s`} signed up for Hangman! It's a ${hangman.answer.length}-letter word. You go first, ${users[hangman.players[0]].displayName}! :)`)
             const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
-            const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
+            const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip ? 1000 : 2000
             setTimeout(() => talk(chatroom, statusMsg), delay)
         }
-    }, 30000)
+    }, signupSeconds * 1000)
 }
 
 function checkLetter(chatroom, username, guess) {
