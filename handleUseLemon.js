@@ -21,15 +21,15 @@ function useLemon(chatroom, command, username, target) {
             talk(chatroom, `${user.displayName} gave a lemon to ${targetUser.displayName}!`)
         }
         else {
-            talk(chatroom, `JPEGSTRIPES gave away a lemon!`)
+            talk(chatroom, `${user.displayName} gave away a lemon!`)
         }
     } else if (verb === `eat`) {
         user.lemons--
         if (target) {
-            talk(chatroom, `JPEGSTRIPES ate a whole lemon while ${targetUser.displayName} watched.`)
+            talk(chatroom, `${user.displayName} ate a whole lemon while ${targetUser.displayName} watched.`)
         }
         else {
-            talk(chatroom, `JPEGSTRIPES ate a whole lemon. Ack, sour!`)
+            talk(chatroom, `${user.displayName} ate a whole lemon. Ack, sour!`)
         }
     } else if (verb === `make` && suffix) {
         user.lemons--
