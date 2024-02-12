@@ -144,6 +144,7 @@ const {
     getLemonEmote,
     getHappyEmote,
     getSadEmote,
+    getGreetingEmote,
     ping,
     getToUser,
     printLemon,
@@ -464,7 +465,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         // If multiple args are used
         else if (args.length) { return handleMassGreet(chatroom, args) }
         // If no args are used
-        else { return talk(chatroom, `Greetings, ${users[username].displayName}! ${happyEmote}`) }
+        else { return talk(chatroom, `Greetings, ${users[username].displayName}! ${getGreetingEmote()}`) }
     }
 
     // Handle channel-specific goals
