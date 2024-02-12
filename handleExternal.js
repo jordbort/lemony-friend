@@ -4,7 +4,7 @@ const API_KEY = process.env.API_KEY
 const { resetTxt, boldTxt, settings } = require(`./config`)
 
 // Import helper functions
-const { talk } = require(`./utils`)
+const { talk, getSadEmote } = require(`./utils`)
 
 async function checkSentiment(chatroom, msg) {
     if (settings.debug) { console.log(`${boldTxt}> checkSentiment(chatroom: ${chatroom}, msg: ${msg})${resetTxt}`) }
@@ -42,7 +42,7 @@ async function getDadJoke(chatroom) {
     if (settings.debug) { console.log(data) }
     data.status === 200
         ? talk(chatroom, data.joke)
-        : talk(chatroom, `Error fetching dad joke! :(`)
+        : talk(chatroom, `Error fetching dad joke! ${getSadEmote()}`)
 }
 
 async function getDefinition(chatroom, str) {
@@ -60,10 +60,11 @@ async function getDefinition(chatroom, str) {
     const data = await response.json()
     console.log(data)
 
+    const sadEmote = getSadEmote()
     if ('error' in data) {
-        talk(chatroom, `Error: ${data.error} :(`)
+        talk(chatroom, `Error: ${data.error} ${sadEmote}`)
     } else if (!data.valid || !data.definition) {
-        talk(chatroom, `I don't think "${data.word}" is a word! :(`)
+        talk(chatroom, `I don't think "${data.word}" is a word! ${sadEmote}`)
     } else {
         let definition = `Definition of "${data.word}":`
         const splitDefinition = data.definition.split(`. `)
@@ -79,7 +80,7 @@ async function getPokemon(chatroom, pokemon) {
 
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`)
     if (response.statusText !== `OK`) {
-        talk(chatroom, `Pokemon ${pokemon} was not found! :(`)
+        talk(chatroom, `Pokemon ${pokemon} was not found! ${getSadEmote()}`)
         return
     }
     const data = await response.json()

@@ -6,7 +6,7 @@ const { lemonyFresh, users } = require(`./data`)
 
 
 // Import helper functions
-const { talk } = require(`./utils`)
+const { talk, getHappyEmote } = require(`./utils`)
 
 async function getRiddle(chatroom) {
     if (settings.debug) { console.log(`${boldTxt}> getRiddle(chatroom: ${chatroom})${resetTxt}`) }
@@ -26,7 +26,7 @@ function handleRiddleAnswer(chatroom, username, args) {
     const solved = lemonyFresh[channel].riddle.answer.toLowerCase().includes(str) || str.includes(lemonyFresh[channel].riddle.answer.toLowerCase())
     if (solved) {
         users[username].riddleWins++
-        talk(chatroom, `That's right: ${lemonyFresh[channel].riddle.answer}! ${users[username].displayName} has solved ${users[username].riddleWins} riddle${users[username].riddleWins === 1 ? `` : `s`}! :)`)
+        talk(chatroom, `That's right: ${lemonyFresh[channel].riddle.answer}! ${users[username].displayName} has solved ${users[username].riddleWins} riddle${users[username].riddleWins === 1 ? `` : `s`}! ${getHappyEmote()}`)
         lemonyFresh[channel].riddle.question = ``
         lemonyFresh[channel].riddle.answer = ``
     } else {

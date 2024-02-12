@@ -13,7 +13,7 @@ const { lemonify } = require(`./handleLemonify`)
 const { getTwitchChannel } = require(`./handleTwitch`)
 
 // Import helper functions
-const { getRandomUser, getRandomChannelMessage, talk } = require(`./utils`)
+const { getRandomUser, getRandomChannelMessage, talk, getLemonEmote } = require(`./utils`)
 
 const currencies = [
     {
@@ -265,7 +265,7 @@ async function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
     }
     else if (funNumber === 11) {
         users[username].lemons++
-        talk(chatroom, `${users[username].displayName} earned one (1) lemon! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`)
+        talk(chatroom, `${users[username].displayName} earned one (1) lemon! ${getLemonEmote()}`)
     }
 }
 

@@ -7,7 +7,7 @@ const { lemonyFresh, users } = require(`./data`)
 const { resetTxt, boldTxt, settings } = require(`./config`)
 
 // Import helper functions
-const { talk } = require(`./utils`)
+const { talk, getHappyEmote, getSadEmote } = require(`./utils`)
 
 async function getRandomWord() {
     if (settings.debug) { console.log(`${boldTxt}> getRandomWord()${resetTxt}`) }
@@ -34,10 +34,12 @@ function hangmanAnnounce(chatroom, displayName) {
     if (settings.debug) { console.log(`${boldTxt}> hangmanAnnounce(chatroom: '${chatroom}')${resetTxt}`) }
     const channel = chatroom.slice(1)
     const hangman = lemonyFresh[channel].hangman
-    
+
     hangman.signup = true
     const signupSeconds = 30
-    talk(chatroom, `${displayName} has started a game of Hangman! Type !play in the next ${signupSeconds} seconds if you'd like to join in, too! :)`)
+    const happyEmote = getHappyEmote()
+    const sadEmote = getSadEmote()
+    talk(chatroom, `${displayName} has started a game of Hangman! Type !play in the next ${signupSeconds} seconds if you'd like to join in, too! ${happyEmote}`)
     setTimeout(() => {
         // After signup period has ended, close signup window, shuffle players, and start game
         hangman.signup = false
@@ -45,9 +47,9 @@ function hangmanAnnounce(chatroom, displayName) {
         if (settings.debug) { console.log(`${boldTxt}> ${signupSeconds} seconds has elapsed, signup window closed - players: ${hangman.players.length === 0 ? `(none)` : `${hangman.players.join(`, `)}`}${resetTxt}`) }
         if (hangman.players.length === 0) {
             hangman.listening = false
-            talk(chatroom, `No players signed up for Hangman! :(`)
+            talk(chatroom, `No players signed up for Hangman! ${sadEmote}`)
         } else {
-            talk(chatroom, `${hangman.players.length} player${hangman.players.length === 1 ? `` : `s`} signed up for Hangman! It's a ${hangman.answer.length}-letter word. You go first, ${users[hangman.players[0]].displayName}! :)`)
+            talk(chatroom, `${hangman.players.length} player${hangman.players.length === 1 ? `` : `s`} signed up for Hangman! It's a ${hangman.answer.length}-letter word. You go first, ${users[hangman.players[0]].displayName}! ${happyEmote}`)
             const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
             const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip ? 1000 : 2000
             setTimeout(() => talk(chatroom, statusMsg), delay)
@@ -73,6 +75,8 @@ function checkLetter(chatroom, username, guess) {
     hangman.currentPlayer++
     if (hangman.currentPlayer === hangman.players.length) { hangman.currentPlayer = 0 }
     const nextPlayer = users[hangman.players[hangman.currentPlayer]].displayName
+    const happyEmote = getHappyEmote()
+    const sadEmote = getSadEmote()
     if (hangman.answer.includes(guess.toLowerCase())) {
         for (const [i, letter] of hangman.answer.split(``).entries()) {
             if (letter === guess.toLowerCase()) { hangman.spaces[i] = guess }
@@ -80,14 +84,14 @@ function checkLetter(chatroom, username, guess) {
         if (!hangman.spaces.includes(`_`)) {
             return solvePuzzle(chatroom, username)
         }
-        talk(chatroom, `Good job ${player}, ${guess} was in the word! :) Now it's your turn, ${nextPlayer}!`)
+        talk(chatroom, `Good job ${player}, ${guess} was in the word! ${happyEmote} Now it's your turn, ${nextPlayer}!`)
     } else {
         hangman.chances--
         if (hangman.chances === 0) {
             hangman.listening = false
-            return talk(chatroom, `Sorry ${player}, ${guess} wasn't in the word! The answer was "${hangman.answer}". Game over! :(`)
+            return talk(chatroom, `Sorry ${player}, ${guess} wasn't in the word! The answer was "${hangman.answer}". Game over! ${sadEmote}`)
         }
-        talk(chatroom, `Sorry ${player}, ${guess} wasn't in the word! Minus one chance... :( Now it's your turn, ${nextPlayer}!`)
+        talk(chatroom, `Sorry ${player}, ${guess} wasn't in the word! Minus one chance... ${sadEmote} Now it's your turn, ${nextPlayer}!`)
     }
     const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
     const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000

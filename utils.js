@@ -139,9 +139,10 @@ function sayGoals(chatroom, args) {
 function sayRebootMsg(chatroom) {
     if (settings.debug) { console.log(`${boldTxt}> sayRebootMsg(chatroom: ${chatroom})${resetTxt}`) }
     const channel = chatroom.substring(1)
+    const lemonEmote = getLemonEmote()
     const onlineMsgs = [
         `Let's see how long before I crash`,
-        `${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`,
+        `${lemonEmote}`,
         `don't mind me`,
         `(just rebooting again)`,
         `(Windows 95 startup sound plays)`,
@@ -153,10 +154,10 @@ function sayRebootMsg(chatroom) {
         `Let's play Hangman! :)`,
         `nowHasPattern has been updated to /now ha(?:s|ve) \[*(\d*)/i which makes use of capturing and non-capturing groups :)`,
         `${channel} has ${lemonyFresh[channel].emotes.length} emote${lemonyFresh[channel].emotes.length === 1 ? `` : `s`}!`,
-        `It has been ${Date.now()} milliseconds since January 1, 1970, UTC ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh ` : `🍋️`}`,
+        `It has been ${Date.now()} milliseconds since January 1, 1970, UTC ${lemonEmote}`,
         `${BOT_USERNAME in users
-            ? `I have ${users[BOT_USERNAME].lemons} lemon${users[BOT_USERNAME].lemons === 1 ? `` : `s`}! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`
-            : `${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`}`
+            ? `I have ${users[BOT_USERNAME].lemons} lemon${users[BOT_USERNAME].lemons === 1 ? `` : `s`}! ${lemonEmote}`
+            : `${lemonEmote}`}`
     ]
     const rebootMsg = onlineMsgs[Math.floor(Math.random() * onlineMsgs.length)]
     settings.sayOnlineMsg = false
@@ -165,12 +166,12 @@ function sayRebootMsg(chatroom) {
 
 function sayFriends(chatroom) {
     if (settings.debug) { console.log(`${boldTxt}> sayFriends(chatroom: ${chatroom})${resetTxt}`) }
-    talk(chatroom, `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`)
+    talk(chatroom, `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! ${getHappyEmote()}`)
 }
 
 function sayCommands(chatroom) {
     if (settings.debug) { console.log(`${boldTxt}> sayCommands(chatroom: ${chatroom})${resetTxt}`) }
-    talk(chatroom, `Commands: !greet => Say hi to one or more people, !bye => Say goodnight to someone, !hangman => Start a game of Hangman, !rps => Play me in Rock, Paper, Scissors (move optional), !yell => Chat across Lemony Fresh ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh ` : `🍋️`}, !away => (Optionally add an away message), !tempcmd => Make your own command! :)`)
+    talk(chatroom, `Commands: !greet => Say hi to one or more people, !bye => Say goodnight to someone, !hangman => Start a game of Hangman, !rps => Play me in Rock, Paper, Scissors (move optional), !yell => Chat across Lemony Fresh ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh ` : `🍋️`}, !away => (Optionally add an away message), !tempcmd => Make your own command! ${getHappyEmote()}`)
 }
 
 function toggleDebugMode(chatroom, args) {
@@ -217,7 +218,7 @@ function yell(user, message) {
 function getColor(chatroom, user) {
     if (settings.debug) { console.log(`${boldTxt}> getColor(chatroom: ${chatroom}, user.color: ${user.color})${resetTxt}`) }
     !user.color
-        ? talk(chatroom, `I can't tell what ${user.displayName}'s chat color is! :(`)
+        ? talk(chatroom, `I can't tell what ${user.displayName}'s chat color is! ${getSadEmote()}`)
         : user.color in chatColors
             ? talk(chatroom, `${user.displayName}'s chat color is ${chatColors[user.color].name}!`)
             : talk(chatroom, `${user.displayName}'s chat color is hex code ${user.color}`)
@@ -255,7 +256,7 @@ function handleTempCmd(chatroom, username, args) {
             delete tempCmds[args[1].toLowerCase()]
             return talk(chatroom, `Command "${args[1].toLowerCase()}" has been deleted! :)`)
         } else {
-            return talk(chatroom, `No command "${args[1].toLowerCase()}" was found! :(`)
+            return talk(chatroom, `No command "${args[1].toLowerCase()}" was found! ${getSadEmote()}`)
         }
     }
     else if (args[0].toLowerCase() in tempCmds) {
@@ -277,26 +278,39 @@ function delayListening() {
     }, delayTime * 1000)
 }
 
+function getLemonEmote() { return users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️` }
+
 function getHappyEmote() {
     const happyEmotes = [`:D`]
-    if (users[BOT_USERNAME]?.jpegstripes?.sub) { happyEmotes.push(`jpegstSlay`) }
-    if (users[BOT_USERNAME]?.sclarf?.sub) { happyEmotes.push(`sclarfHearts`) }
-    if (users[BOT_USERNAME]?.e1ectroma?.sub) { happyEmotes.push(`e1ectr4Smile`) }
-    if (users[BOT_USERNAME]?.domonintendo1?.sub) { happyEmotes.push(`domoni6Mingo`) }
+    if (users[BOT_USERNAME]?.jpegstripes?.sub) { happyEmotes.push(`jpegstGeno`, `jpegstKylePls`, `jpegstBamJAM`, `jpegstLucky`, `jpegstKetchup`, `jpegstJulian`, `jpegstScoot`, `jpegstYes`, `jpegstSlay`) }
+    if (users[BOT_USERNAME]?.sclarf?.sub) { happyEmotes.push(`sclarfRave`, `sclarfWobble`, `sclarfPls`, `sclarfDog`, `sclarfHearts`, `sclarfYay`) }
+    if (users[BOT_USERNAME]?.e1ectroma?.sub) { happyEmotes.push(`e1ectr4Lfg`, `e1ectr4Pikadance`, `e1ectr4Tromadance`, `e1ectr4Coop`, `e1ectr4Smile`, `e1ectr4Salute`) }
+    if (users[BOT_USERNAME]?.domonintendo1?.sub) { happyEmotes.push(`domoni6Love`, `domoni6Mingo`, `domoni6Bingo`) }
     const happyEmote = happyEmotes[Math.floor(Math.random() * happyEmotes.length)]
     if (settings.debug) { console.log(`${boldTxt}> getHappyEmote('${happyEmote}'), choices:${resetTxt}`, happyEmotes.length) }
     return happyEmote
 }
 
-function getShockedEmote() {
-    const shockedEmotes = [`:O`]
-    if (users[BOT_USERNAME]?.jpegstripes?.sub) { shockedEmotes.push(`jpegstKylePog`) }
-    if (users[BOT_USERNAME]?.sclarf?.sub) { shockedEmotes.push(`sclarfBlind`) }
-    if (users[BOT_USERNAME]?.e1ectroma?.sub) { shockedEmotes.push(`e1ectr4Heat`) }
-    if (users[BOT_USERNAME]?.domonintendo1?.sub) { shockedEmotes.push(`domoni6Sneeze`) }
-    const shockedEmote = shockedEmotes[Math.floor(Math.random() * shockedEmotes.length)]
-    if (settings.debug) { console.log(`${boldTxt}> getShockedEmote('${shockedEmote}'), choices:${resetTxt}`, shockedEmotes.length) }
-    return shockedEmote
+function getSadEmote() {
+    const sadEmotes = [`:(`, `:O`]
+    if (users[BOT_USERNAME]?.jpegstripes?.sub) { sadEmotes.push(`jpegstNo`, `jpegstBroken`) }
+    if (users[BOT_USERNAME]?.sclarf?.sub) { sadEmotes.push(`sclarfBlind`, `sclarfDead`, `sclarfHiss`, `sclarfD8`) }
+    if (users[BOT_USERNAME]?.e1ectroma?.sub) { sadEmotes.push(`e1ectr4Devil`, `e1ectr4Heat`) }
+    if (users[BOT_USERNAME]?.domonintendo1?.sub) { sadEmotes.push(`domoni6Sneeze`, `domoni6Dum`) }
+    const sadEmote = sadEmotes[Math.floor(Math.random() * sadEmotes.length)]
+    if (settings.debug) { console.log(`${boldTxt}> getsadEmote('${sadEmote}'), choices:${resetTxt}`, sadEmotes.length) }
+    return sadEmote
+}
+
+function getGreetingEmote() {
+    const greetingEmotes = [`HeyGuys`, `:)`]
+    if (users[BOT_USERNAME]?.jpegstripes?.sub) { greetingEmotes.push(`jpegstGeno`, `jpegstLucky`, `jpegstKetchup`, `jpegstJulian`, `jpegstScoot`, `jpegstYes`, `jpegstBamJAM`, `jpegstKylePls`, `jpegstHeyGuys`, `jpegstSlay`) }
+    if (users[BOT_USERNAME]?.sclarf?.sub) { greetingEmotes.push(`sclarfWave`, `sclarfRave`, `sclarfWobble`, `sclarfPls`, `sclarfHowdy`, `sclarfDog`, `sclarfHearts`, `sclarfYay`) }
+    if (users[BOT_USERNAME]?.e1ectroma?.sub) { greetingEmotes.push(`e1ectr4Lfg`, `e1ectr4Pikadance`, `e1ectr4Tromadance`, `e1ectr4Hello`, `e1ectr4Hi`, `e1ectr4Smile`, `e1ectr4Ram`, `e1ectr4Salute`, `e1ectr4Lemfresh`) }
+    if (users[BOT_USERNAME]?.domonintendo1?.sub) { greetingEmotes.push(`domoni6Love`, `domoni6Mingo`, `domoni6ChefHey`, `domoni6Sneeze`) }
+    const greetingEmote = greetingEmotes[Math.floor(Math.random() * greetingEmotes.length)]
+    if (settings.debug) { console.log(`${boldTxt}> getgreetingEmote('${greetingEmote}'), choices:${resetTxt}`, greetingEmotes.length) }
+    return greetingEmote
 }
 
 function ping(arr) {
@@ -466,7 +480,7 @@ function handleRaid(chatroom) {
     const noSubRaidMessage = lemonyFresh[channel].noSubRaidMessage
     const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip ? 1000 : 2000
     const appendEmote = users[BOT_USERNAME][channel].sub ? subRaidMessage.split(` `)[0] : `:)`
-    
+
     if (subRaidMessage) { talk(channel, subRaidMessage) }
     if (noSubRaidMessage) {
         setTimeout(() => {
@@ -494,8 +508,10 @@ module.exports = {
     getRandomChannelMessage,
     handleTempCmd,
     delayListening,
+    getLemonEmote,
     getHappyEmote,
-    getShockedEmote,
+    getSadEmote,
+    getGreetingEmote,
     ping,
     getToUser,
     printLemon,
