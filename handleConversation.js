@@ -7,7 +7,7 @@ const { users } = require(`./data`)
 const { resetTxt, boldTxt, grayTxt, settings } = require(`./config`)
 
 // Import helper functions
-const { talk, getHappyEmote, getGreetingEmote } = require(`./utils`)
+const { talk, getGreetingEmote } = require(`./utils`)
 
 function handleNewChatter(chatroom, user) {
     if (settings.debug) { console.log(`${boldTxt}> handleNewChatter(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
@@ -16,7 +16,7 @@ function handleNewChatter(chatroom, user) {
         `Hey ${user.displayName}, welcome to the stream!`,
         `Welcome to the stream, ${user.displayName}!`,
         `Hi ${user.displayName}, welcome in!`,
-        `Hi ${user.displayName} ${getHappyEmote()}`,
+        `Hi ${user.displayName} ${getGreetingEmote()}`,
         `Hello @${user.displayName} welcome in!`,
         `@${user.displayName} welcome 2 ${chatroom.substring(1, 5)} strem`,
     ]
@@ -26,7 +26,7 @@ function handleNewChatter(chatroom, user) {
 
 function handleGreet(chatroom, user) {
     if (settings.debug) { console.log(`${boldTxt}> handleGreet(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
-    const happyEmote = getHappyEmote()
+    const greetingEmote = getGreetingEmote()
     const greetings = [
         `Howdy,`,
         `Hello,`,
@@ -43,7 +43,7 @@ function handleGreet(chatroom, user) {
 
     // If the greeting is "Howdy"
     if (greeting === 0) {
-        response += `! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Ram` : happyEmote}`
+        response += `! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Ram` : greetingEmote}`
     } else if (greeting < greetings.indexOf(`Hello`)) {
         // If there's a comma after the greeting
         const appends = [
@@ -54,7 +54,7 @@ function handleGreet(chatroom, user) {
             `How's it going?`,
             `How goes it?`
         ]
-        response += `! ${appends[Math.floor(Math.random() * appends.length)]} ${happyEmote}`
+        response += `! ${appends[Math.floor(Math.random() * appends.length)]} ${greetingEmote}`
     } else {
         // If there's no comma after the greeting
         const appends = [
@@ -65,7 +65,7 @@ function handleGreet(chatroom, user) {
             `how's it going?`,
             `how goes it?`
         ]
-        response += `, ${appends[Math.floor(Math.random() * appends.length)]} ${happyEmote}`
+        response += `, ${appends[Math.floor(Math.random() * appends.length)]} ${greetingEmote}`
     }
     talk(chatroom, response)
 }
