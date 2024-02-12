@@ -65,7 +65,6 @@ const lemonyFresh = {
             `CherryStomp`,
             `Clap`,
             `diddyJAM`,
-            `diddyJAM`,
             `HYPERCHOP`,
             `JulianGroove`,
             `KEKW`,
