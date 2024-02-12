@@ -175,7 +175,7 @@ const currencies = [
 ]
 
 async function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
-    if (settings.debug) { console.log(`${boldTxt}> rollFunNumber(chatroom: ${chatroom}, tags: ${typeof tags}, username: ${username}, msgArr.length: ${msgArr.length}, funNumber: ${funNumber})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> rollFunNumber(chatroom: ${chatroom}, tags: ${Object.keys(tags).length}, username: ${username}, msgArr.length: ${msgArr.length}, funNumber: ${funNumber})${resetTxt}`) }
     const channel = chatroom.substring(1)
 
     const randCurrency = Math.floor(Math.random() * currencies.length)

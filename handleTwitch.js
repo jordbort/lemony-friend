@@ -156,7 +156,17 @@ async function pollStart(chatroom, str) {
     if (lemonyFresh[channel].pollId) { return talk(chatroom, `There is already a poll in progress!`) }
     const params = str.split(new RegExp(/ ?\/ ?/))
 
-    const duration = Number(params.shift())
+    const seconds = params.shift()
+    let duration = Number(seconds)
+    if ([`<`, `>`].some((bracket) => seconds.includs(bracket))) {
+        const regex = /^<(\d+)>$/
+        if (!seconds.match(regex)) {
+            return talk(chatroom, `Error: Please don't use angle brackets in the seconds! :)`)
+        } else {
+            duration = Number(seconds.split(regex)[1])
+        }
+    }
+
     if (isNaN(duration)
         || duration < 15
         || duration > 1800) {
