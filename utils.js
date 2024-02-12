@@ -139,25 +139,26 @@ function sayGoals(chatroom, args) {
 function sayRebootMsg(chatroom) {
     if (settings.debug) { console.log(`${boldTxt}> sayRebootMsg(chatroom: ${chatroom})${resetTxt}`) }
     const channel = chatroom.substring(1)
-    const lemonEmote = getLemonEmote()
+    const numUsers = Object.keys(users).length
+    const numTempCmds = Object.keys(tempCmds).length
     const onlineMsgs = [
         `Let's see how long before I crash`,
-        `${lemonEmote}`,
+        `${getLemonEmote()}`,
         `don't mind me`,
         `(just rebooting again)`,
         `(Windows 95 startup sound plays)`,
         `I'm onl`,
         `reconnecting...`,
-        `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`,
-        `(there ${Object.keys(tempCmds).length === 1 ? `is` : `are`} ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`,
+        `I have ${numUsers <= 50 ? `${numbers[numUsers]} (${numUsers})` : numUsers} friend${numUsers === 1 ? `` : `s`}! :D`,
+        `(there ${numTempCmds === 1 ? `is` : `are`} ${numTempCmds} temporary command${numTempCmds === 1 ? `` : `s`})`,
         `Debug mode is currently ${settings.debug ? `ON` : `OFF`}! :)`,
         `Let's play Hangman! :)`,
         `nowHasPattern has been updated to /now ha(?:s|ve) \[*(\d*)/i which makes use of capturing and non-capturing groups :)`,
         `${channel} has ${lemonyFresh[channel].emotes.length} emote${lemonyFresh[channel].emotes.length === 1 ? `` : `s`}!`,
-        `It has been ${Date.now()} milliseconds since January 1, 1970, UTC ${lemonEmote}`,
+        `It has been ${Date.now()} milliseconds since January 1, 1970, UTC ${getLemonEmote()}`,
         `${BOT_USERNAME in users
-            ? `I have ${users[BOT_USERNAME].lemons} lemon${users[BOT_USERNAME].lemons === 1 ? `` : `s`}! ${lemonEmote}`
-            : `${lemonEmote}`}`
+            ? `I have ${users[BOT_USERNAME].lemons} lemon${users[BOT_USERNAME].lemons === 1 ? `` : `s`}! ${getLemonEmote()}`
+            : `${getLemonEmote()}`}`
     ]
     const rebootMsg = onlineMsgs[Math.floor(Math.random() * onlineMsgs.length)]
     settings.sayOnlineMsg = false
