@@ -267,6 +267,15 @@ async function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
         users[username].lemons++
         talk(chatroom, `${users[username].displayName} earned one (1) lemon! ${getLemonEmote()}`)
     }
+    // Random wide (and possibly cursed) BTTV emote
+    else if (funNumber === 12) {
+        const curseChance = [`c! `, ``, ``]
+        const cursed = curseChance[Math.floor(Math.random() * curseChance.length)]
+        
+        const emotes = lemonyFresh[channel].bttvEmotes
+        const emote = emotes[Math.floor(Math.random() * emotes.length)]
+        talk(chatroom, `w! ${cursed}${emote}`)
+    }
 }
 
 module.exports = { rollFunNumber }
