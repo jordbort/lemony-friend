@@ -447,7 +447,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     }
 
     // !uselemon (in some way)
-    if (/^!(.+)lemon(.*)$/i.test(command)) { return useLemon(chatroom, command, username, target) }
+    if (/^!([a-z]+)lemon([a-z]*)$/i.test(command)) { return useLemon(chatroom, command, username, target) }
 
     // lemonify
     if (command === `!lemonify`) {
