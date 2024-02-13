@@ -300,7 +300,7 @@ function getHappyEmote(channel) {
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { happyEmotes.push(`domoni6Love`, `domoni6Mingo`, `domoni6Bingo`) }
 
     const happyEmote = happyEmotes[Math.floor(Math.random() * happyEmotes.length)]
-    if (settings.debug) { console.log(`${boldTxt}> getHappyEmote(channel: '${channel}') => '${happyEmote}'), choices:${resetTxt}`, happyEmotes.length) }
+    // if (settings.debug) { console.log(`${boldTxt}> getHappyEmote(channel: '${channel}') => '${happyEmote}'), choices:${resetTxt}`, happyEmotes.length) }
     return happyEmote
 }
 
@@ -317,7 +317,7 @@ function getSadEmote(channel) {
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { sadEmotes.push(`domoni6Sneeze`, `domoni6Dum`) }
 
     const sadEmote = sadEmotes[Math.floor(Math.random() * sadEmotes.length)]
-    if (settings.debug) { console.log(`${boldTxt}> getsadEmote(channel: '${channel}') => '${sadEmote}'), choices:${resetTxt}`, sadEmotes.length) }
+    // if (settings.debug) { console.log(`${boldTxt}> getsadEmote(channel: '${channel}') => '${sadEmote}'), choices:${resetTxt}`, sadEmotes.length) }
     return sadEmote
 }
 
@@ -335,7 +335,7 @@ function getGreetingEmote(channel) {
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { greetingEmotes.push(`domoni6Love`, `domoni6Mingo`, `domoni6ChefHey`, `domoni6Sneeze`) }
 
     const greetingEmote = greetingEmotes[Math.floor(Math.random() * greetingEmotes.length)]
-    if (settings.debug) { console.log(`${boldTxt}> getgreetingEmote(channel: '${channel}') => '${greetingEmote}'), choices:${resetTxt}`, greetingEmotes.length) }
+    // if (settings.debug) { console.log(`${boldTxt}> getgreetingEmote(channel: '${channel}') => '${greetingEmote}'), choices:${resetTxt}`, greetingEmotes.length) }
     return greetingEmote
 }
 
