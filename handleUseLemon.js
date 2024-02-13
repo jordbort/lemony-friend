@@ -18,6 +18,7 @@ function useLemon(chatroom, command, username, target) {
     const singular = user.lemons === 1
     const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
+    const plural = suffix.endsWith(`s`) || suffix.endsWith(`z`)
 
     if ([`give`, `bestow`, `offer`].includes(verb)) {
         if (allLemons) {
@@ -68,6 +69,42 @@ function useLemon(chatroom, command, username, target) {
                     : talk(chatroom, `${user.displayName} ate a whole lemon. Eww, bitter!`)
             }
         }
+    } else if ([`make`].includes(verb)) {
+        if (allLemons) {
+            if (targetUser) {
+                if (coinFlip) {
+                    user.lemons = 0
+                    talk(chatroom, `${user.displayName} made all ${user.lemons} of their lemons into little ${targetUser.displayName}s. They marched away!`)
+                } else {
+                    talk(chatroom, `${targetUser.displayName} made all of ${user.displayName}'s lemons into... lemons. They gave them back!`)
+                }
+            } else {
+                if (coinFlip) {
+                    user.lemons = 0
+                    talk(chatroom, `${user.displayName} "made" with their lemons. And now they're all used up?`)
+                }
+                else {
+                    talk(chatroom, `${user.displayName} made their lemons into... more lemons. Nothing changed!`)
+                }
+            }
+        } else if (!suffix) {
+            if (targetUser) {
+                if (coinFlip) {
+                    user.lemons--
+                    talk(chatroom, `${user.displayName} made a lemon into a little ${targetUser.displayName}. It said "goodbye"!`)
+                } else {
+                    talk(chatroom, `${targetUser.displayName} made a lemon out of ${user.displayName}'s lemon. They handed it back!`)
+                }
+            } else {
+                if (coinFlip) {
+                    user.lemons--
+                    talk(chatroom, `${user.displayName} spent a lemon to "make". And now it's gone?`)
+                }
+                else {
+                    talk(chatroom, `${user.displayName} made a lemon out of their lemon. It is the perpetual lemon cycle.`)
+                }
+            }
+        }
     } else if ([`make`, `bake`, `cook`, `create`, `prepare`, `prep`, `brew`].includes(verb) && suffix) {
         user.lemons--
         const foodPatterns = /^(bar(s?)|cookie(s?)|tart(s?)|pie|hummus|soup|(pound|cup)?cake(s?)|trifle(s?)|muffin(s?)|roll(s?))$/
@@ -84,10 +121,10 @@ function useLemon(chatroom, command, username, target) {
         if (foodPatterns.test(suffix)) {
             if (targetUser) {
                 coinFlip
-                    ? talk(chatroom, `${user.displayName} made ${suffix.endsWith(`s`) ? `` : `a `}lemon ${suffix}, and ${targetUser.displayName} watched them eat ${suffix.endsWith(`s`) ? `them` : `it`}. ${yummySound}!`)
-                    : talk(chatroom, `${user.displayName} made ${suffix.endsWith(`s`) ? `` : `a `}lemon ${suffix}, and ${targetUser.displayName} ate ${suffix.endsWith(`s`) ? `them` : `it`}. ${yummySound}!`)
+                    ? talk(chatroom, `${user.displayName} made ${plural ? `` : `a `}lemon ${suffix}, and ${targetUser.displayName} watched them eat ${plural ? `them` : `it`}. ${yummySound}!`)
+                    : talk(chatroom, `${user.displayName} made ${plural ? `` : `a `}lemon ${suffix}, and ${targetUser.displayName} ate ${plural ? `them` : `it`}. ${yummySound}!`)
             } else {
-                talk(chatroom, `${user.displayName} made ${suffix.endsWith(`s`) ? `` : `a `}lemon ${suffix}, and ate ${suffix.endsWith(`s`) ? `them` : `it`}. ${yummySound}!`)
+                talk(chatroom, `${user.displayName} made ${plural ? `` : `a `}lemon ${suffix}, and ate ${plural ? `them` : `it`}. ${yummySound}!`)
             }
         } else if (drinkPatterns.test(suffix)) {
             if (targetUser) {
@@ -112,12 +149,12 @@ function useLemon(chatroom, command, username, target) {
         } else {
             if (targetUser) {
                 coinFlip
-                    ? talk(chatroom, `${user.displayName} made lemon ${suffix}, and ${targetUser.displayName} consumed it. ${yummySound}!`)
-                    : talk(chatroom, `${user.displayName} made lemon ${suffix}, and ${targetUser.displayName} watched them consume it. ${yummySound}!`)
+                    ? talk(chatroom, `${user.displayName} made ${plural ? `` : `a `}lemon ${suffix}, and ${targetUser.displayName} consumed ${plural ? `them` : `it`}. ${yummySound}!`)
+                    : talk(chatroom, `${user.displayName} made ${plural ? `` : `a `}lemon ${suffix}, and ${targetUser.displayName} watched them consume ${plural ? `them` : `it`}. ${yummySound}!`)
             } else {
                 coinFlip
-                    ? talk(chatroom, `${user.displayName} made lemon ${suffix}, and consumed it. ${yummySound}!`)
-                    : talk(chatroom, `${user.displayName} made lemon ${suffix}, but it fell on the floor... ${yummySound}!`)
+                    ? talk(chatroom, `${user.displayName} made ${plural ? `` : `a `}lemon ${suffix}, and consumed ${plural ? `them` : `it`}. ${yummySound}!`)
+                    : talk(chatroom, `${user.displayName} made ${plural ? `` : `a `}lemon ${suffix}, but ${plural ? `them` : `it`} fell on the floor... ${yummySound}!`)
             }
         }
     } else if ([`throw`, `throwaway`, `yeet`, `toss`, `chunk`].includes(verb)) {
