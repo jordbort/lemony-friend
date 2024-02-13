@@ -799,6 +799,36 @@ function useLemon(chatroom, command, username, target) {
                 talk(chatroom, `${user.displayName} gambled a lemon, and lost it!`)
             }
         }
+    } else if ([`steal`, `take`, `grab`, `thieve`, `nab`, `pickpocket`, `purloin`, `abscondwith`, `loot`, `pilfer`, `runawaywith`, `runoffwith`, `makeoffwith`].includes(verb)) {
+        if (allLemons) {
+            if (targetUser) {
+                if (targetUser.lemons === 0) { talk(chatroom, `${targetUser.displayName} does not have any lemons!`) }
+                const randomChance = Math.floor(Math.random() * 50)
+                if (randomChance) {
+                    talk(chatroom, `${user.displayName} tried to steal ${targetUser}'s lemons, but it didn't work!`)
+                } else {
+                    user.lemons += targetUser.lemons
+                    targetUser.lemons = 0
+                    talk(chatroom, `${user.displayName} managed to steal ALL of ${targetUser}'s lemons!`)
+                }
+            } else {
+                talk(chatroom, `${user.displayName} ran off with all ${user.lemons} of their own lemons! What a steal!`)
+            }
+        } else {
+            if (targetUser) {
+                if (targetUser.lemons === 0) { talk(chatroom, `${targetUser.displayName} does not have any lemons!`) }
+                const randomChance = Math.floor(Math.random() * 20)
+                if (randomChance) {
+                    talk(chatroom, `${user.displayName} tried to steal a lemon from ${targetUser}, but it didn't work!`)
+                } else {
+                    user.lemons++
+                    targetUser.lemons--
+                    talk(chatroom, `${user.displayName} managed to steal a lemon from ${targetUser}!`)
+                }
+            } else {
+                talk(chatroom, `${user.displayName} very stealthily ran off with a lemon... It was their own lemon.`)
+            }
+        }
     } else {
         const nullOutcomes = [
             `exploded`,
