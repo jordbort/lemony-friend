@@ -293,6 +293,94 @@ function useLemon(chatroom, command, username, target) {
                 talk(chatroom, `${user.displayName} peeled a lemon, and threw the rest away.`)
             }
         }
+    } else if ([`wear`, `puton`].includes(verb)) {
+        if (allLemons) {
+            if (targetUser) {
+                if (coinFlip) {
+                    user.lemons = 0
+                    talk(chatroom, `${user.displayName} put all their lemons on ${targetUser.displayName}'s head. Oh no, they fell everywhere and rolled away!`)
+                } else {
+                    talk(chatroom, `${user.displayName} put all their lemons on their head! ${targetUser.displayName} said they look stylish!`)
+                }
+            } else {
+                if (coinFlip) {
+                    user.lemons = 0
+                    talk(chatroom, `${user.displayName} put all their lemons on their head. Oops, they fell off and rolled away!`)
+                } else {
+                    talk(chatroom, `${user.displayName} put all their lemons on their head! Fancy!`)
+                }
+            }
+        } else {
+            if (targetUser) {
+                if (coinFlip) {
+                    user.lemons--
+                    talk(chatroom, `${user.displayName} tried to balance a lemon on ${targetUser.displayName}'s head. It fell off and rolled away...`)
+                } else {
+                    talk(chatroom, `${user.displayName} put a lemon on ${targetUser.displayName}'s head for a quick photo! They gave it back`)
+                }
+            } else {
+                if (coinFlip) {
+                    user.lemons--
+                    talk(chatroom, `${user.displayName} tried to wear a lemon like a shoe, but they crushed it...`)
+                } else {
+                    talk(chatroom, `${user.displayName} wore a lemon on their head like a hat!`)
+                }
+            }
+        }
+    } else if ([`copulatewith`, `havesexwith`, `fuck`, `haveintercoursewith`, `havesexualrelationswith`, `breed`, `makeloveto`, `sex`, `sleepwith`, `fornicate`, `screw`].includes(verb)) {
+        if (allLemons) {
+            if (targetUser) {
+                user.lemons = 0
+                coinFlip
+                    ? talk(chatroom, `${user.displayName} invited ${targetUser.displayName} to have intercourse with their lemons. They said "no thanks".`)
+                    : talk(chatroom, `${user.displayName} invited ${targetUser.displayName} to have intercourse with their lemons. They said "no thanks" (the lemons).`)
+            } else {
+                coinFlip
+                    ? talk(chatroom, `${user.displayName} tried to screw their lemons. One by one, the lemons awkwardly departed.`)
+                    : talk(chatroom, `${user.displayName} tried to screw their lemons. The lemons said "no thanks!" and flew away.`)
+            }
+        } else {
+            if (targetUser) {
+                user.lemons--
+                if (coinFlip) {
+                    talk(chatroom, `${user.displayName} invited ${targetUser.displayName} to have intercourse with their lemon. They said "no thanks".`)
+                } else {
+                    talk(chatroom, `${user.displayName} invited ${targetUser.displayName} to have intercourse with their lemon. It said "no thanks".`)
+                }
+            } else {
+                if (coinFlip) {
+                    talk(chatroom, `${user.displayName} tried to screw a lemon. The lemon declined and left.`)
+                } else {
+                    talk(chatroom, `${user.displayName} tried to screw a lemon. The lemon said "no thanks!" and flew away.`)
+                }
+            }
+        }
+    } else if ([`date`, `gooutwith`, `marry`, `woo`, `court`, `consortwith`, `proposeto`].includes(verb)) {
+        if (allLemons) {
+            if (targetUser) {
+                user.lemons = 0
+                talk(chatroom, `${user.displayName} tried to enter a polygamous relationship with their lemons and ${targetUser.displayName}. It didn't work out.`)
+            } else {
+                if (coinFlip) {
+                    user.lemons = 0
+                    talk(chatroom, `${user.displayName} proposed a relationship with their ${singular ? `lemon and a stranger` : `lemons`}. ${singular ? `The lemon` : `They`} giggled and ran away!`)
+                } else {
+                    talk(chatroom, `${user.displayName} tried to enter a polygamous relationship with their ${singular ? `lemon and a stranger` : `lemons`}. The lemon${singular ? `` : `s`} suggested you should just stay friends.`)
+                }
+            }
+        } else {
+            if (targetUser) {
+                user.lemons--
+                talk(chatroom, `${user.displayName} tried to enter a polygamous relationship with a lemon and ${targetUser.displayName}. It didn't work out.`)
+            } else {
+                if (coinFlip) {
+                    user.lemons--
+                    talk(chatroom, `${user.displayName} tried to ask a lemon out. It giggled and ran away!`)
+                } else {
+                    talk(chatroom, `${user.displayName} asked out their lemon. It suggested you just stay friends.`)
+                }
+            }
+        }
     } else if ([`invest`].includes(verb)) {
         if (allLemons) {
             const randLemons = Math.floor(Math.random() * 3) + 1
