@@ -235,9 +235,10 @@ ${redBg}lemony_friend has died.${resetTxt}`)
 
     // Cleaning up potential undefined user
     if (`undefined` in users) { return delete users.undefined }
-    const happyEmote = getHappyEmote()
-    const sadEmote = getSadEmote()
-    const lemonEmote = getLemonEmote()
+    const greetingEmote = getGreetingEmote(channel)
+    const happyEmote = getHappyEmote(channel)
+    const sadEmote = getSadEmote(channel)
+    const lemonEmote = getLemonEmote(channel)
 
     // Checking time comparisons
     const elapsedMinsSinceLastMsg = (currentTime - users[username][channel].sentAt) / 60000
@@ -465,7 +466,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         // If multiple args are used
         else if (args.length) { return handleMassGreet(chatroom, args) }
         // If no args are used
-        else { return talk(chatroom, `Greetings, ${users[username].displayName}! ${getGreetingEmote()}`) }
+        else { return talk(chatroom, `Greetings, ${users[username].displayName}! ${greetingEmote}`) }
     }
 
     // Handle channel-specific goals

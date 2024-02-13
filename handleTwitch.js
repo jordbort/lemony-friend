@@ -31,8 +31,9 @@ async function authorizeToken(chatroom, user, str) {
     const twitchData = await response.json()
     console.log(twitchData)
 
-    const happyEmote = getHappyEmote()
-    const sadEmote = getSadEmote()
+    const channel = chatroom.substring(1)
+    const happyEmote = getHappyEmote(channel)
+    const sadEmote = getSadEmote(channel)
     if (`expires_in` in twitchData) {
         lemonyFresh[user].accessToken = twitchData.access_token
         lemonyFresh[user].refreshToken = twitchData.refresh_token
@@ -73,7 +74,8 @@ async function getTwitchChannel(chatroom, broadcaster_id) {
     const channelnfo = await response.json()
     console.log(channelnfo)
 
-    return channelnfo?.data[0] || talk(chatroom, `There was a problem getting the channel info! ${getSadEmote()}`)
+    const channel = chatroom.substring(1)
+    return channelnfo?.data[0] || talk(chatroom, `There was a problem getting the channel info! ${getSadEmote(channel)}`)
 }
 
 async function getTwitchGame(chatroom, str) {
@@ -115,18 +117,19 @@ async function getTwitchUser(chatroom, username) {
     const userInfo = await response.json()
     console.log(userInfo)
 
+    const channel = chatroom.substring(1)
     return `error` in userInfo
         ? talk(chatroom, userInfo.error)
         : userInfo.data.length === 0
-            ? talk(chatroom, `No user ${username} was found! ${getSadEmote()}`)
+            ? talk(chatroom, `No user ${username} was found! ${getSadEmote(channel)}`)
             : userInfo.data[0]
 }
 
 async function pollEnd(chatroom, status) {
     if (settings.debug) { console.log(`${boldTxt}> pollEnd(chatroom: ${chatroom})${resetTxt}`) }
     const channel = chatroom.substring(1)
-    const happyEmote = getHappyEmote()
-    const sadEmote = getSadEmote()
+    const happyEmote = getHappyEmote(channel)
+    const sadEmote = getSadEmote(channel)
     if (!lemonyFresh[channel].pollId) { return talk(chatroom, `There is no active poll! ${sadEmote}`) }
 
     const endpoint = `https://api.twitch.tv/helix/polls?broadcaster_id=${lemonyFresh[channel].id}&id=${lemonyFresh[channel].pollId}&status=${status}`
@@ -202,8 +205,8 @@ async function pollStart(chatroom, str) {
     const twitchData = await response.json()
     console.log(twitchData)
 
-    const happyEmote = getHappyEmote()
-    const sadEmote = getSadEmote()
+    const happyEmote = getHappyEmote(channel)
+    const sadEmote = getSadEmote(channel)
     if (`error` in twitchData) {
         if (twitchData.message === `Invalid OAuth token`) {
             talk(chatroom, `Hold on, I need to refresh the token...`)
@@ -258,8 +261,8 @@ async function refreshToken(chatroom) {
     const twitchData = await response.json()
     console.log(twitchData)
 
-    const happyEmote = getHappyEmote()
-    const sadEmote = getSadEmote()
+    const happyEmote = getHappyEmote(channel)
+    const sadEmote = getSadEmote(channel)
     if (`expires_in` in twitchData) {
         lemonyFresh[channel].accessToken = twitchData.access_token
         lemonyFresh[channel].refreshToken = twitchData.refresh_token
@@ -285,7 +288,7 @@ async function validateToken(chatroom) {
 
     return `expires_in` in twitchData
         ? talk(chatroom, `${users[twitchData.login]?.displayName || twitchData.login}'s token expires in ${Math.round(twitchData.expires_in / 60)} minute${Math.round(twitchData.expires_in / 60) === 1 ? `` : `s`}!`)
-        : talk(chatroom, `${channel}'s token is invalid! ${getSadEmote()}`)
+        : talk(chatroom, `${channel}'s token is invalid! ${getSadEmote(channel)}`)
 }
 
 module.exports = {

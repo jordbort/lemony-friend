@@ -11,12 +11,15 @@ const { talk, getGreetingEmote } = require(`./utils`)
 
 function handleNewChatter(chatroom, user) {
     if (settings.debug) { console.log(`${boldTxt}> handleNewChatter(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
+
+    const channel = chatroom.substring(1)
+    const greetingEmote = getGreetingEmote(channel)
     const greetings = [
         `Hi ${user.displayName}, welcome to the stream!`,
         `Hey ${user.displayName}, welcome to the stream!`,
         `Welcome to the stream, ${user.displayName}!`,
         `Hi ${user.displayName}, welcome in!`,
-        `Hi ${user.displayName} ${getGreetingEmote()}`,
+        `Hi ${user.displayName} ${greetingEmote}`,
         `Hello @${user.displayName} welcome in!`,
         `@${user.displayName} welcome 2 ${chatroom.substring(1, 5)} strem`,
     ]
@@ -26,7 +29,7 @@ function handleNewChatter(chatroom, user) {
 
 function handleGreet(chatroom, user) {
     if (settings.debug) { console.log(`${boldTxt}> handleGreet(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
-    const greetingEmote = getGreetingEmote()
+
     const greetings = [
         `Howdy,`,
         `Hello,`,
@@ -41,6 +44,8 @@ function handleGreet(chatroom, user) {
     const greeting = Math.floor(Math.random() * greetings.length)
     let response = `${greetings[greeting]} ${user.displayName}`
 
+    const channel = chatroom.substring(1)
+    const greetingEmote = getGreetingEmote(channel)
     // If the greeting is "Howdy"
     if (greeting === 0) {
         response += `! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Ram` : greetingEmote}`
@@ -72,6 +77,7 @@ function handleGreet(chatroom, user) {
 
 function handleMassGreet(chatroom, arr) {
     if (settings.debug) { console.log(`${boldTxt}> handleGreet(chatroom: ${chatroom}, arr: ${arr})${resetTxt}`) }
+
     const response = []
     const greetings = [
         `hello`,
@@ -80,7 +86,9 @@ function handleMassGreet(chatroom, arr) {
         `hi`
     ]
     const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)]
-    const greetingEmote = getGreetingEmote()
+
+    const channel = chatroom.substring(1)
+    const greetingEmote = getGreetingEmote(channel)
     for (let str of arr) {
         while (str.startsWith(`@`)) { str = str.substring(1) }
         str.toLowerCase() in users
@@ -123,8 +131,7 @@ function handleGreetAll(chatroom, currentTime) {
         `hi`
     ]
     const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)]
-    const greetingEmote = getGreetingEmote()
-
+    const greetingEmote = getGreetingEmote(channel)
     const response = usersToGreet.map((user) => `${randomGreeting} ${user} ${greetingEmote}`)
     talk(chatroom, response.join(` `))
 }
@@ -148,7 +155,10 @@ function sayGoodnight(chatroom, user) {
         ]
         response += `, ${appends[Math.floor(Math.random() * appends.length)]}`
     }
-    response += `! ${getGreetingEmote()}`
+
+    const channel = chatroom.substring(1)
+    const greetingEmote = getGreetingEmote(channel)
+    response += `! ${greetingEmote}`
     talk(chatroom, response)
 }
 
@@ -170,7 +180,9 @@ function sayYoureWelcome(chatroom, user) {
         ]
         response += ` ${appends[Math.floor(Math.random() * appends.length)]}`
     }
-    response += `! ${getGreetingEmote()}`
+    const channel = chatroom.substring(1)
+    const greetingEmote = getGreetingEmote(channel)
+    response += `! ${greetingEmote}`
     talk(chatroom, response)
 }
 
@@ -198,7 +210,9 @@ function sayThanks(chatroom, user) {
         ]
         response += ` ${appends[Math.floor(Math.random() * appends.length)]}`
     }
-    response += `! ${getGreetingEmote()}`
+    const channel = chatroom.substring(1)
+    const greetingEmote = getGreetingEmote(channel)
+    response += `! ${greetingEmote}`
     talk(chatroom, response)
 }
 

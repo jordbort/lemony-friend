@@ -23,10 +23,11 @@ function handleRiddleAnswer(chatroom, username, args) {
     if (settings.debug) { console.log(`${boldTxt}> handleRiddleAnswer(chatroom: ${chatroom}, args.length: ${args.length})${resetTxt}`) }
     const str = args.map((arg) => arg.toLowerCase()).join(` `)
     const channel = chatroom.substring(1)
+    const happyEmote = getHappyEmote(channel)
     const solved = lemonyFresh[channel].riddle.answer.toLowerCase().includes(str) || str.includes(lemonyFresh[channel].riddle.answer.toLowerCase())
     if (solved) {
         users[username].riddleWins++
-        talk(chatroom, `That's right: ${lemonyFresh[channel].riddle.answer}! ${users[username].displayName} has solved ${users[username].riddleWins} riddle${users[username].riddleWins === 1 ? `` : `s`}! ${getHappyEmote()}`)
+        talk(chatroom, `That's right: ${lemonyFresh[channel].riddle.answer}! ${users[username].displayName} has solved ${users[username].riddleWins} riddle${users[username].riddleWins === 1 ? `` : `s`}! ${happyEmote}`)
         lemonyFresh[channel].riddle.question = ``
         lemonyFresh[channel].riddle.answer = ``
     } else {

@@ -14,20 +14,22 @@ function handleColorChange(chatroom, user, newColor) {
 
 function handleTurboChange(chatroom, user, turboStatus) {
     if (settings.debug) { console.log(`${boldTxt}> handleTurboChange(chatroom: ${chatroom}, user: ${user.displayName}, turboStatus: ${turboStatus})${resetTxt}`) }
-    user.turbo = turboStatus
 
-    const happyEmote = getHappyEmote()
-    const sadEmote = getSadEmote()
+    user.turbo = turboStatus
+    const channel = chatroom.substring(1)
+    const happyEmote = getHappyEmote(channel)
+    const sadEmote = getSadEmote(channel)
 
     turboStatus ? talk(chatroom, `Wow, ${user.displayName} got Turbo? ${happyEmote}`) : talk(chatroom, `Did ${user.displayName} stop having Turbo? ${sadEmote}`)
 }
 
 function handleSubChange(chatroom, user, subStatus) {
     if (settings.debug) { console.log(`${boldTxt}> handleSubChange(chatroom: ${chatroom}, user: ${user.displayName}, subStatus: ${subStatus})${resetTxt}`) }
-    user[chatroom.slice(1)].sub = subStatus
 
-    const happyEmote = getHappyEmote()
-    const sadEmote = getSadEmote()
+    const channel = chatroom.substring(1)
+    user[chatroom].sub = subStatus
+    const happyEmote = getHappyEmote(channel)
+    const sadEmote = getSadEmote(channel)
 
     if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => subStatus
@@ -42,10 +44,11 @@ function handleSubChange(chatroom, user, subStatus) {
 
 function handleModChange(chatroom, user, modStatus) {
     if (settings.debug) { console.log(`${boldTxt}> handleModChange(chatroom: ${chatroom}, user: ${user.displayName}, modStatus: ${modStatus})${resetTxt}`) }
-    user[chatroom.slice(1)].mod = modStatus
 
-    const happyEmote = getHappyEmote()
-    const sadEmote = getSadEmote()
+    const channel = chatroom.substring(1)
+    user[channel].mod = modStatus
+    const happyEmote = getHappyEmote(channel)
+    const sadEmote = getSadEmote(channel)
 
     if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => modStatus
@@ -60,10 +63,11 @@ function handleModChange(chatroom, user, modStatus) {
 
 function handleVIPChange(chatroom, user, vipStatus) {
     if (settings.debug) { console.log(`${boldTxt}> handleVIPChange(chatroom: ${chatroom}, user: ${user.displayName}, vipStatus: ${vipStatus})${resetTxt}`) }
-    user[chatroom.slice(1)].vip = vipStatus
 
-    const happyEmote = getHappyEmote()
-    const sadEmote = getSadEmote()
+    const channel = chatroom.substring(1)
+    user[channel].vip = vipStatus
+    const happyEmote = getHappyEmote(channel)
+    const sadEmote = getSadEmote(channel)
 
     if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => vipStatus

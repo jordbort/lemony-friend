@@ -40,9 +40,11 @@ async function getDadJoke(chatroom) {
     })
     const data = await response.json()
     if (settings.debug) { console.log(data) }
+    const channel = chatroom.substring(1)
+    const sadEmote = getSadEmote(channel)
     data.status === 200
         ? talk(chatroom, data.joke)
-        : talk(chatroom, `Error fetching dad joke! ${getSadEmote()}`)
+        : talk(chatroom, `Error fetching dad joke! ${sadEmote}`)
 }
 
 async function getDefinition(chatroom, str) {
@@ -60,7 +62,8 @@ async function getDefinition(chatroom, str) {
     const data = await response.json()
     console.log(data)
 
-    const sadEmote = getSadEmote()
+    const channel = chatroom.substring(1)
+    const sadEmote = getSadEmote(channel)
     if ('error' in data) {
         talk(chatroom, `Error: ${data.error} ${sadEmote}`)
     } else if (!data.valid || !data.definition) {
@@ -79,8 +82,10 @@ async function getPokemon(chatroom, pokemon) {
     if (!pokemon) { return }
 
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`)
+    const channel = chatroom.substring(1)
+    const sadEmote = getSadEmote(channel)
     if (response.statusText !== `OK`) {
-        talk(chatroom, `Pokemon ${pokemon} was not found! ${getSadEmote()}`)
+        talk(chatroom, `Pokemon ${pokemon} was not found! ${sadEmote}`)
         return
     }
     const data = await response.json()

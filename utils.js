@@ -167,12 +167,14 @@ function sayRebootMsg(chatroom) {
 
 function sayFriends(chatroom) {
     if (settings.debug) { console.log(`${boldTxt}> sayFriends(chatroom: ${chatroom})${resetTxt}`) }
-    talk(chatroom, `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! ${getHappyEmote()}`)
+    const channel = chatroom.substring(1)
+    talk(chatroom, `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! ${getHappyEmote(channel)}`)
 }
 
 function sayCommands(chatroom) {
     if (settings.debug) { console.log(`${boldTxt}> sayCommands(chatroom: ${chatroom})${resetTxt}`) }
-    talk(chatroom, `Commands: !greet => Say hi to one or more people, !bye => Say goodnight to someone, !hangman => Start a game of Hangman, !rps => Play me in Rock, Paper, Scissors (move optional), !yell => Chat across Lemony Fresh ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh ` : `🍋️`}, !away => (Optionally add an away message), !tempcmd => Make your own command! ${getHappyEmote()}`)
+    const channel = chatroom.substring(1)
+    talk(chatroom, `Commands: !greet => Say hi to one or more people, !bye => Say goodnight to someone, !hangman => Start a game of Hangman, !rps => Play me in Rock, Paper, Scissors (move optional), !yell => Chat across Lemony Fresh ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh ` : `🍋️`}, !away => (Optionally add an away message), !tempcmd => Make your own command! ${getHappyEmote(channel)}`)
 }
 
 function toggleDebugMode(chatroom, args) {
@@ -218,8 +220,9 @@ function yell(user, message) {
 
 function getColor(chatroom, user) {
     if (settings.debug) { console.log(`${boldTxt}> getColor(chatroom: ${chatroom}, user.color: ${user.color})${resetTxt}`) }
+    const channel = chatroom.substring(1)
     !user.color
-        ? talk(chatroom, `I can't tell what ${user.displayName}'s chat color is! ${getSadEmote()}`)
+        ? talk(chatroom, `I can't tell what ${user.displayName}'s chat color is! ${getSadEmote(channel)}`)
         : user.color in chatColors
             ? talk(chatroom, `${user.displayName}'s chat color is ${chatColors[user.color].name}!`)
             : talk(chatroom, `${user.displayName}'s chat color is hex code ${user.color}`)
@@ -252,12 +255,14 @@ function getRandomChannelMessage(user) {
 function handleTempCmd(chatroom, username, args) {
     if (settings.debug) { console.log(`${boldTxt}> handleTempCmd(chatroom: ${chatroom}, args: ${args})${resetTxt}`) }
     if (!args[1]) { return talk(chatroom, `Hey ${users[username].displayName}, use this command like: !tempcmd [commandname] [response...]! :)`) }
+
+    const channel = chatroom.substring(1)
     if (args[0].toLowerCase() === `delete`) {
         if (args[1].toLowerCase() in tempCmds) {
             delete tempCmds[args[1].toLowerCase()]
             return talk(chatroom, `Command "${args[1].toLowerCase()}" has been deleted! :)`)
         } else {
-            return talk(chatroom, `No command "${args[1].toLowerCase()}" was found! ${getSadEmote()}`)
+            return talk(chatroom, `No command "${args[1].toLowerCase()}" was found! ${getSadEmote(channel)}`)
         }
     }
     else if (args[0].toLowerCase() in tempCmds) {
@@ -281,36 +286,56 @@ function delayListening() {
 
 function getLemonEmote() { return users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️` }
 
-function getHappyEmote() {
+function getHappyEmote(channel) {
     const happyEmotes = [`:D`]
+    if (channel === `jpegstripes`) { happyEmotes.push(`(ditto)`, `diddyJAM`, `KongDance`, `KyleFestivale`, `PartyKirby`, `raccPls`, `racJam`, `ratJAM`, `ScootPatch`, `KetchupWave`, `CherryStomp`, `MitziJump`) }
+    if (channel === `jpegstripes` && !users[BOT_USERNAME]?.jpegstripes?.sub) { happyEmotes.push(`BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`) }
+    if (channel === `sclarf`) { happyEmotes.push(`(ditto)`, `batJAM`, `BoneZone`, `bongoTap`) }
+    if (channel === `e1ectroma`) { happyEmotes.push(`AlienPls`, `BlobDance`, `BoneZone`, `bongoTap`, `chikaYo`, `dekuHYPE`, `ratJAM`) }
+    if (channel === `domonintendo1`) { happyEmotes.push(`catJAM`, `Drake`, `HYPERS`, `NODDERS`, `pepeD`, `pepeDS`, `POGGERS`) }
+
     if (users[BOT_USERNAME]?.jpegstripes?.sub) { happyEmotes.push(`jpegstGeno`, `jpegstKylePls`, `jpegstBamJAM`, `jpegstLucky`, `jpegstKetchup`, `jpegstJulian`, `jpegstScoot`, `jpegstYes`, `jpegstSlay`) }
     if (users[BOT_USERNAME]?.sclarf?.sub) { happyEmotes.push(`sclarfRave`, `sclarfWobble`, `sclarfPls`, `sclarfDog`, `sclarfHearts`, `sclarfYay`) }
     if (users[BOT_USERNAME]?.e1ectroma?.sub) { happyEmotes.push(`e1ectr4Lfg`, `e1ectr4Pikadance`, `e1ectr4Tromadance`, `e1ectr4Coop`, `e1ectr4Smile`, `e1ectr4Salute`) }
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { happyEmotes.push(`domoni6Love`, `domoni6Mingo`, `domoni6Bingo`) }
+
     const happyEmote = happyEmotes[Math.floor(Math.random() * happyEmotes.length)]
-    if (settings.debug) { console.log(`${boldTxt}> getHappyEmote('${happyEmote}'), choices:${resetTxt}`, happyEmotes.length) }
+    if (settings.debug) { console.log(`${boldTxt}> getHappyEmote(channel: '${channel}') => '${happyEmote}'), choices:${resetTxt}`, happyEmotes.length) }
     return happyEmote
 }
 
-function getSadEmote() {
+function getSadEmote(channel) {
     const sadEmotes = [`:(`, `:O`]
+    if (channel === `jpegstripes`) { sadEmotes.push(`BowserRAGE`) }
+    if (channel === `sclarf`) { sadEmotes.push(`Madge`, `NOOO`, `NOPERS`) }
+    if (channel === `e1ectroma`) { sadEmotes.push(`pikaO`, `pressF`, `sadCat`) }
+    if (channel === `domonintendo1`) { sadEmotes.push(`sadCat`, `tenseSmash`) }
+
     if (users[BOT_USERNAME]?.jpegstripes?.sub) { sadEmotes.push(`jpegstNo`, `jpegstBroken`) }
     if (users[BOT_USERNAME]?.sclarf?.sub) { sadEmotes.push(`sclarfBlind`, `sclarfDead`, `sclarfHiss`, `sclarfD8`) }
     if (users[BOT_USERNAME]?.e1ectroma?.sub) { sadEmotes.push(`e1ectr4Devil`, `e1ectr4Heat`) }
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { sadEmotes.push(`domoni6Sneeze`, `domoni6Dum`) }
+
     const sadEmote = sadEmotes[Math.floor(Math.random() * sadEmotes.length)]
-    if (settings.debug) { console.log(`${boldTxt}> getsadEmote('${sadEmote}'), choices:${resetTxt}`, sadEmotes.length) }
+    if (settings.debug) { console.log(`${boldTxt}> getsadEmote(channel: '${channel}') => '${sadEmote}'), choices:${resetTxt}`, sadEmotes.length) }
     return sadEmote
 }
 
-function getGreetingEmote() {
+function getGreetingEmote(channel) {
     const greetingEmotes = [`HeyGuys`, `:)`]
+    if (channel === `jpegstripes`) { greetingEmotes.push(`(ditto)`, `bongoTap`, `KongDance`, `HYPERCHOP`, `PartyKirby`, `raccPls`, `racJam`, `popCat`, `KyleFestivale`) }
+    if (channel === `jpegstripes` && !users[BOT_USERNAME]?.jpegstripes?.sub) { greetingEmotes.push(`ApolloFly`, `BamJAM`, `CherryStomp`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `MitziJump`) }
+    if (channel === `sclarf`) { greetingEmotes.push(`catKISS`, `EZ`, `GIGACHAD`, `gorgHAIP`, `jesusBeBallin`, `LICKA`, `MorshuPls`, `peepoShy`) }
+    if (channel === `e1ectroma`) { greetingEmotes.push(`BlobDance`, `chikaYo`, `dekuHYPE`, `PokemonTrainer`, `popCat`, `RareChar`, `ricardoFlick`) }
+    if (channel === `domonintendo1`) { greetingEmotes.push(`GIGACHAD`, `HYPERS`, `pepeD`, `pepeDS`, `POGGERS`, `ricardoFlick`) }
+
     if (users[BOT_USERNAME]?.jpegstripes?.sub) { greetingEmotes.push(`jpegstGeno`, `jpegstLucky`, `jpegstKetchup`, `jpegstJulian`, `jpegstScoot`, `jpegstYes`, `jpegstBamJAM`, `jpegstKylePls`, `jpegstHeyGuys`, `jpegstSlay`) }
     if (users[BOT_USERNAME]?.sclarf?.sub) { greetingEmotes.push(`sclarfWave`, `sclarfRave`, `sclarfWobble`, `sclarfPls`, `sclarfHowdy`, `sclarfDog`, `sclarfHearts`, `sclarfYay`) }
     if (users[BOT_USERNAME]?.e1ectroma?.sub) { greetingEmotes.push(`e1ectr4Lfg`, `e1ectr4Pikadance`, `e1ectr4Tromadance`, `e1ectr4Hello`, `e1ectr4Hi`, `e1ectr4Smile`, `e1ectr4Ram`, `e1ectr4Salute`, `e1ectr4Lemfresh`) }
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { greetingEmotes.push(`domoni6Love`, `domoni6Mingo`, `domoni6ChefHey`, `domoni6Sneeze`) }
+
     const greetingEmote = greetingEmotes[Math.floor(Math.random() * greetingEmotes.length)]
-    if (settings.debug) { console.log(`${boldTxt}> getgreetingEmote('${greetingEmote}'), choices:${resetTxt}`, greetingEmotes.length) }
+    if (settings.debug) { console.log(`${boldTxt}> getgreetingEmote(channel: '${channel}') => '${greetingEmote}'), choices:${resetTxt}`, greetingEmotes.length) }
     return greetingEmote
 }
 

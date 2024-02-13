@@ -32,13 +32,14 @@ async function hangmanInit(hangman, username) {
 
 function hangmanAnnounce(chatroom, displayName) {
     if (settings.debug) { console.log(`${boldTxt}> hangmanAnnounce(chatroom: '${chatroom}')${resetTxt}`) }
+
     const channel = chatroom.slice(1)
     const hangman = lemonyFresh[channel].hangman
-
     hangman.signup = true
     const signupSeconds = 30
-    const happyEmote = getHappyEmote()
-    const sadEmote = getSadEmote()
+
+    const happyEmote = getHappyEmote(channel)
+    const sadEmote = getSadEmote(channel)
     talk(chatroom, `${displayName} has started a game of Hangman! Type !play in the next ${signupSeconds} seconds if you'd like to join in, too! ${happyEmote}`)
     setTimeout(() => {
         // After signup period has ended, close signup window, shuffle players, and start game
@@ -59,6 +60,7 @@ function hangmanAnnounce(chatroom, displayName) {
 
 function checkLetter(chatroom, username, guess) {
     if (settings.debug) { console.log(`${boldTxt}> checkLetter(chatroom: '${chatroom}', username: '${username}', guess: '${guess}')${resetTxt}`) }
+
     const channel = chatroom.slice(1)
     const hangman = lemonyFresh[channel].hangman
     const player = users[username].displayName
@@ -74,9 +76,10 @@ function checkLetter(chatroom, username, guess) {
     hangman.guessedLetters.push(guess)
     hangman.currentPlayer++
     if (hangman.currentPlayer === hangman.players.length) { hangman.currentPlayer = 0 }
+
     const nextPlayer = users[hangman.players[hangman.currentPlayer]].displayName
-    const happyEmote = getHappyEmote()
-    const sadEmote = getSadEmote()
+    const happyEmote = getHappyEmote(channel)
+    const sadEmote = getSadEmote(channel)
     if (hangman.answer.includes(guess.toLowerCase())) {
         for (const [i, letter] of hangman.answer.split(``).entries()) {
             if (letter === guess.toLowerCase()) { hangman.spaces[i] = guess }
