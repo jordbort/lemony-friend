@@ -8,7 +8,7 @@ const { users } = require(`./data`)
 const { talk } = require(`./utils`)
 
 function useLemon(chatroom, command, username, target) {
-    if (settings.debug) { console.log(`${boldTxt}> handleGiveLemon(chatroom: '${chatroom}', command: '${command}', username: '${username}', target: '${target}')${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> useLemon(chatroom: ${chatroom}, command: ${command}, username: ${username}, target: ${target})${resetTxt}`) }
     const user = users[username]
     const targetUser = users[target]
     const verb = command.split(/^!([a-z]+)lemon([a-z]*)$/)[1]
@@ -69,7 +69,7 @@ function useLemon(chatroom, command, username, target) {
                     : talk(chatroom, `${user.displayName} ate a whole lemon. Eww, bitter!`)
             }
         }
-    } else if ([`make`].includes(verb)) {
+    } else if ([`make`].includes(verb) && (!suffix || allLemons)) {
         if (allLemons) {
             if (targetUser) {
                 if (coinFlip) {
