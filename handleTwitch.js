@@ -161,7 +161,7 @@ async function pollStart(chatroom, str) {
 
     const seconds = params.shift()
     let duration = Number(seconds)
-    if ([`<`, `>`].some((bracket) => seconds.includs(bracket))) {
+    if ([`<`, `>`].some((bracket) => seconds.includes(bracket))) {
         const regex = /^<(\d+)>$/
         if (!seconds.match(regex)) {
             return talk(chatroom, `Error: Please don't use angle brackets in the seconds! :)`)
