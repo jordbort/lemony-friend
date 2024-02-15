@@ -251,9 +251,9 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     makeLogs()
 
     // These checks happen earlier in case they happened to the bot
-    if (subChange) { return handleSubChange(chatroom, users[username], tags.subscriber) }
-    if (modChange) { return handleModChange(chatroom, users[username], tags.mod) }
-    if (vipChange) { return handleVIPChange(chatroom, users[username], tags.vip) }
+    if (subChange) { return handleSubChange(chatroom, username, tags.subscriber) }
+    if (modChange) { return handleModChange(chatroom, username, tags.mod) }
+    if (vipChange) { return handleVIPChange(chatroom, username, tags.vip) }
 
     // Stop here if bot, otherwise log user's chat message
     if (self) { return } else {
