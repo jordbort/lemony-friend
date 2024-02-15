@@ -10,7 +10,7 @@ const { resetTxt, boldTxt, settings } = require(`./config`)
 const { getHypeEmote, getPositiveEmote, getUpsetEmote, getNegativeEmote } = require(`./getEmotes`)
 
 // Import helper functions
-const { talk, getPositiveEmote, getNegativeEmote } = require(`./utils`)
+const { talk } = require(`./utils`)
 
 async function getRandomWord() {
     if (settings.debug) { console.log(`${boldTxt}> getRandomWord()${resetTxt}`) }
