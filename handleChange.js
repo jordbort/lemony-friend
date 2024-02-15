@@ -6,8 +6,11 @@ const { resetTxt, boldTxt, settings } = require(`./config`)
 // Import data
 const { users } = require(`./data`)
 
+// Import emotes
+const { getPositiveEmote, getNegativeEmote } = require(`./getEmotes`)
+
 // Import helper functions
-const { getHappyEmote, getSadEmote, talk } = require(`./utils`)
+const { talk } = require(`./utils`)
 
 function handleColorChange(chatroom, user, newColor) {
     if (settings.debug) { console.log(`${boldTxt}> handleColorChange(chatroom: ${chatroom}, user: ${user.displayName}, newColor: ${newColor})${resetTxt}`) }
@@ -20,10 +23,10 @@ function handleTurboChange(chatroom, user, turboStatus) {
 
     user.turbo = turboStatus
     const channel = chatroom.substring(1)
-    const happyEmote = getHappyEmote(channel)
-    const sadEmote = getSadEmote(channel)
+    const positiveEmote = getPositiveEmote(channel)
+    const negativeEmote = getNegativeEmote(channel)
 
-    turboStatus ? talk(chatroom, `Wow, ${user.displayName} got Turbo? ${happyEmote}`) : talk(chatroom, `Did ${user.displayName} stop having Turbo? ${sadEmote}`)
+    turboStatus ? talk(chatroom, `Wow, ${user.displayName} got Turbo? ${positiveEmote}`) : talk(chatroom, `Did ${user.displayName} stop having Turbo? ${negativeEmote}`)
 }
 
 function handleSubChange(chatroom, username, subStatus) {
@@ -33,17 +36,17 @@ function handleSubChange(chatroom, username, subStatus) {
     const user = users[username]
 
     user[channel].sub = subStatus
-    const happyEmote = getHappyEmote(channel)
-    const sadEmote = getSadEmote(channel)
+    const positiveEmote = getPositiveEmote(channel)
+    const negativeEmote = getNegativeEmote(channel)
 
     if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => subStatus
-            ? talk(chatroom, `Thank you for the gift sub! ${happyEmote}`)
-            : talk(chatroom, `Aww, did I lose my sub? ${sadEmote}`), 2000)
+            ? talk(chatroom, `Thank you for the gift sub! ${positiveEmote}`)
+            : talk(chatroom, `Aww, did I lose my sub? ${negativeEmote}`), 2000)
     } else {
         subStatus
-            ? talk(chatroom, `Wow, ${user.displayName} is subbed now! ${happyEmote}`)
-            : talk(chatroom, `Did ${user.displayName} just lose their sub? ${sadEmote}`)
+            ? talk(chatroom, `Wow, ${user.displayName} is subbed now! ${positiveEmote}`)
+            : talk(chatroom, `Did ${user.displayName} just lose their sub? ${negativeEmote}`)
     }
 }
 
@@ -54,17 +57,17 @@ function handleModChange(chatroom, username, modStatus) {
     const user = users[username]
 
     user[channel].mod = modStatus
-    const happyEmote = getHappyEmote(channel)
-    const sadEmote = getSadEmote(channel)
+    const positiveEmote = getPositiveEmote(channel)
+    const negativeEmote = getNegativeEmote(channel)
 
     if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => modStatus
-            ? talk(chatroom, `Thank you for modding me! ${happyEmote}`)
-            : talk(chatroom, `Was I just unmodded? ${sadEmote}`), 2000)
+            ? talk(chatroom, `Thank you for modding me! ${positiveEmote}`)
+            : talk(chatroom, `Was I just unmodded? ${negativeEmote}`), 2000)
     } else {
         modStatus
-            ? talk(chatroom, `Wow, ${user.displayName} became a mod! ${happyEmote}`)
-            : talk(chatroom, `Was ${user.displayName} just unmodded? ${sadEmote}`)
+            ? talk(chatroom, `Wow, ${user.displayName} became a mod! ${positiveEmote}`)
+            : talk(chatroom, `Was ${user.displayName} just unmodded? ${negativeEmote}`)
     }
 }
 
@@ -75,17 +78,17 @@ function handleVIPChange(chatroom, username, vipStatus) {
     const user = users[username]
 
     user[channel].vip = vipStatus
-    const happyEmote = getHappyEmote(channel)
-    const sadEmote = getSadEmote(channel)
+    const positiveEmote = getPositiveEmote(channel)
+    const negativeEmote = getNegativeEmote(channel)
 
     if (user.displayName.toLowerCase() === BOT_USERNAME) {
         setTimeout(() => vipStatus
-            ? talk(chatroom, `Thank you for giving me VIP! ${happyEmote}`)
-            : talk(chatroom, `Did I just lose VIP? ${sadEmote}`), 2000)
+            ? talk(chatroom, `Thank you for giving me VIP! ${positiveEmote}`)
+            : talk(chatroom, `Did I just lose VIP? ${negativeEmote}`), 2000)
     } else {
         vipStatus
-            ? talk(chatroom, `Wow, ${user.displayName} became a VIP! ${happyEmote}`)
-            : talk(chatroom, `Did ${user.displayName} just lose VIP status? ${sadEmote}`)
+            ? talk(chatroom, `Wow, ${user.displayName} became a VIP! ${positiveEmote}`)
+            : talk(chatroom, `Did ${user.displayName} just lose VIP status? ${negativeEmote}`)
     }
 }
 

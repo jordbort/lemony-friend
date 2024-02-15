@@ -4,8 +4,11 @@ const { users } = require(`./data`)
 // Import global settings
 const { resetTxt, boldTxt, settings } = require(`./config`)
 
+// Import emotes
+const { getHypeEmote } = require(`./getEmotes`)
+
 // Import helper functions
-const { talk, getHappyEmote } = require(`./utils`)
+const { talk } = require(`./utils`)
 
 function rockPaperScissors(chatroom, username, arg) {
     const rps = [`rock`, `paper`, `scissors`]
@@ -20,7 +23,7 @@ function rockPaperScissors(chatroom, username, arg) {
         || (playerChoice === `scissors` && botChoice === `rock`)) { response += `. Sorry, I win! :)` }
     else if ((playerChoice === `rock` && botChoice === `scissors`)
         || (playerChoice === `paper` && botChoice === `rock`)
-        || (playerChoice === `scissors` && botChoice === `paper`)) { response += `. You win! ${getHappyEmote(channel)}` }
+        || (playerChoice === `scissors` && botChoice === `paper`)) { response += `. You win! ${getHypeEmote(channel)}` }
     else { response += `, too. It's a tie! :O` }
     talk(chatroom, response)
 }

@@ -6,8 +6,11 @@ const { lemonyFresh, users } = require(`./data`)
 // Import global settings
 const { resetTxt, boldTxt, settings } = require(`./config`)
 
+// Import emotes
+const { getHypeEmote, getPositiveEmote, getUpsetEmote, getNegativeEmote } = require(`./getEmotes`)
+
 // Import helper functions
-const { talk, getHappyEmote, getSadEmote } = require(`./utils`)
+const { talk, getPositiveEmote, getNegativeEmote } = require(`./utils`)
 
 async function getRandomWord() {
     if (settings.debug) { console.log(`${boldTxt}> getRandomWord()${resetTxt}`) }
@@ -38,9 +41,10 @@ function hangmanAnnounce(chatroom, displayName) {
     hangman.signup = true
     const signupSeconds = 30
 
-    const happyEmote = getHappyEmote(channel)
-    const sadEmote = getSadEmote(channel)
-    talk(chatroom, `${displayName} has started a game of Hangman! Type !play in the next ${signupSeconds} seconds if you'd like to join in, too! ${happyEmote}`)
+    const hypeEmote = getHypeEmote(channel)
+    const positiveEmote = getPositiveEmote(channel)
+    const upsetEmote = getUpsetEmote(channel)
+    talk(chatroom, `${displayName} has started a game of Hangman! Type !play in the next ${signupSeconds} seconds if you'd like to join in, too! ${hypeEmote}`)
     setTimeout(() => {
         // After signup period has ended, close signup window, shuffle players, and start game
         hangman.signup = false
@@ -48,9 +52,9 @@ function hangmanAnnounce(chatroom, displayName) {
         if (settings.debug) { console.log(`${boldTxt}> ${signupSeconds} seconds has elapsed, signup window closed - players: ${hangman.players.length === 0 ? `(none)` : `${hangman.players.join(`, `)}`}${resetTxt}`) }
         if (hangman.players.length === 0) {
             hangman.listening = false
-            talk(chatroom, `No players signed up for Hangman! ${sadEmote}`)
+            talk(chatroom, `No players signed up for Hangman! ${upsetEmote}`)
         } else {
-            talk(chatroom, `${hangman.players.length} player${hangman.players.length === 1 ? `` : `s`} signed up for Hangman! It's a ${hangman.answer.length}-letter word. You go first, ${users[hangman.players[0]].displayName}! ${happyEmote}`)
+            talk(chatroom, `${hangman.players.length} player${hangman.players.length === 1 ? `` : `s`} signed up for Hangman! It's a ${hangman.answer.length}-letter word. You go first, ${users[hangman.players[0]].displayName}! ${positiveEmote}`)
             const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
             const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip ? 1000 : 2000
             setTimeout(() => talk(chatroom, statusMsg), delay)
@@ -78,23 +82,23 @@ function checkLetter(chatroom, username, guess) {
     if (hangman.currentPlayer === hangman.players.length) { hangman.currentPlayer = 0 }
 
     const nextPlayer = users[hangman.players[hangman.currentPlayer]].displayName
-    const happyEmote = getHappyEmote(channel)
-    const sadEmote = getSadEmote(channel)
+    const hypeEmote = getHypeEmote(channel)
+    const upsetEmote = getUpsetEmote(channel)
+    const negativeEmote = getNegativeEmote(channel)
     if (hangman.answer.includes(guess.toLowerCase())) {
         for (const [i, letter] of hangman.answer.split(``).entries()) {
             if (letter === guess.toLowerCase()) { hangman.spaces[i] = guess }
         }
-        if (!hangman.spaces.includes(`_`)) {
-            return solvePuzzle(chatroom, username)
-        }
-        talk(chatroom, `Good job ${player}, ${guess} was in the word! ${happyEmote} Now it's your turn, ${nextPlayer}!`)
+        // If no spaces left, puzzle has been solved
+        if (!hangman.spaces.includes(`_`)) { return solvePuzzle(chatroom, username) }
+        talk(chatroom, `Good job ${player}, ${guess} was in the word! ${hypeEmote} Now it's your turn, ${nextPlayer}!`)
     } else {
         hangman.chances--
         if (hangman.chances === 0) {
             hangman.listening = false
-            return talk(chatroom, `Sorry ${player}, ${guess} wasn't in the word! The answer was "${hangman.answer}". Game over! ${sadEmote}`)
+            return talk(chatroom, `Sorry ${player}, ${guess} wasn't in the word! The answer was "${hangman.answer}". Game over! ${upsetEmote}`)
         }
-        talk(chatroom, `Sorry ${player}, ${guess} wasn't in the word! Minus one chance... ${sadEmote} Now it's your turn, ${nextPlayer}!`)
+        talk(chatroom, `Sorry ${player}, ${guess} wasn't in the word! Minus one chance... ${negativeEmote} Now it's your turn, ${nextPlayer}!`)
     }
     const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
     const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
@@ -104,10 +108,11 @@ function checkLetter(chatroom, username, guess) {
 function solvePuzzle(chatroom, username) {
     if (settings.debug) { console.log(`${boldTxt}> solvePuzzle(chatroom: '${chatroom}', username: '${username}')${resetTxt}`) }
     const channel = chatroom.slice(1)
+    const hypeEmote = getHypeEmote(channel)
     const hangman = lemonyFresh[channel].hangman
     hangman.listening = false
     users[username].hangmanWins++
-    return talk(chatroom, `Congratulations, the answer was: "${hangman.answer}"! ${users[username].displayName} has solved ${users[username].hangmanWins} Hangman game${users[username].hangmanWins === 1 ? `` : `s`}! :D`)
+    return talk(chatroom, `Congratulations, the answer was: "${hangman.answer}"! ${users[username].displayName} has solved ${users[username].hangmanWins} Hangman game${users[username].hangmanWins === 1 ? `` : `s`}! ${hypeEmote}`)
 }
 
 module.exports = {

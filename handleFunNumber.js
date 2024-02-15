@@ -12,8 +12,11 @@ const { lemonify } = require(`./handleLemonify`)
 // Import Twitch functions
 const { getTwitchChannel } = require(`./handleTwitch`)
 
+// Import emotes
+const { getLemonEmote } = require(`./getEmotes`)
+
 // Import helper functions
-const { getRandomUser, getRandomChannelMessage, talk, getLemonEmote } = require(`./utils`)
+const { getRandomUser, getRandomChannelMessage, talk } = require(`./utils`)
 
 const currencies = [
     {
@@ -271,7 +274,7 @@ async function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
     else if (funNumber === 12) {
         const curseChance = [`c! `, ``, ``]
         const cursed = curseChance[Math.floor(Math.random() * curseChance.length)]
-        
+
         const emotes = lemonyFresh[channel].bttvEmotes
         const emote = emotes[Math.floor(Math.random() * emotes.length)]
         talk(chatroom, `w! ${cursed}${emote}`)

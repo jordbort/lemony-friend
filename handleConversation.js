@@ -6,8 +6,11 @@ const { users } = require(`./data`)
 // Import global settings
 const { resetTxt, boldTxt, grayTxt, settings } = require(`./config`)
 
+// Import emotes
+const { getGreetingEmote } = require(`./getEmotes`)
+
 // Import helper functions
-const { talk, getGreetingEmote } = require(`./utils`)
+const { talk } = require(`./utils`)
 
 function handleNewChatter(chatroom, user) {
     if (settings.debug) { console.log(`${boldTxt}> handleNewChatter(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
@@ -19,12 +22,12 @@ function handleNewChatter(chatroom, user) {
         `Hey ${user.displayName}, welcome to the stream!`,
         `Welcome to the stream, ${user.displayName}!`,
         `Hi ${user.displayName}, welcome in!`,
-        `Hi ${user.displayName} ${greetingEmote}`,
+        `Hi @${user.displayName}`,
         `Hello @${user.displayName} welcome in!`,
         `@${user.displayName} welcome 2 ${chatroom.substring(1, 5)} strem`,
     ]
     const greeting = greetings[Math.floor(Math.random() * greetings.length)]
-    setTimeout(() => talk(chatroom, greeting), 5000)
+    setTimeout(() => talk(chatroom, `${greeting} ${greetingEmote}`), 5000)
 }
 
 function handleGreet(chatroom, user) {
