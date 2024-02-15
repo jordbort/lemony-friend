@@ -104,7 +104,7 @@ async function getTwitchGame(chatroom, str) {
     talk(chatroom, `Looking for ${str}!`)
 }
 
-async function getBotToken(chatroom) {
+async function getBotToken(chatroom, replyWanted) {
     if (settings.debug) { console.log(`${boldTxt}> getBotToken()${resetTxt}`) }
     const channel = chatroom.substring(1)
     const hypeEmote = getHypeEmote(channel)
@@ -117,7 +117,7 @@ async function getBotToken(chatroom) {
 
     if (`expires_in` in twitchData) {
         lemonyFresh.botAccessToken = twitchData.access_token
-        talk(chatroom, `Updated! My new token expires in ~${Math.round(twitchData.expires_in / 1000 / 60)} minutes! ${hypeEmote}`)
+        if (replyWanted) { talk(chatroom, `Updated! My new token expires in ~${Math.round(twitchData.expires_in / 1000 / 60)} minutes! ${hypeEmote}`) }
     } else {
         talk(chatroom, `Error updating access token! ${negativeEmote}${twitchData.error ? ` ${twitchData.error}` : ``}`)
     }
@@ -140,11 +140,23 @@ async function getTwitchUser(chatroom, username) {
 
     const channel = chatroom.substring(1)
     const negativeEmote = getNegativeEmote(channel)
-    return `error` in userInfo
-        ? talk(chatroom, `${userInfo.error} ${negativeEmote}`)
-        : userInfo.data.length === 0
-            ? talk(chatroom, `No user ${username} was found! ${negativeEmote}`)
-            : userInfo.data[0]
+    if (`error` in userInfo) {
+        if (userInfo.error === `Unauthorized`) {
+            talk(chatroom, `Hold on, I need to refresh my token...`)
+            await getBotToken(chatroom, false)
+            options.headers.authorization = `Bearer ${lemonyFresh.botAccessToken}`
+            const finalAttempt = await fetch(endpoint, options)
+            const finalAttemptData = await finalAttempt.json()
+            console.log(finalAttemptData)
+            if (userInfo.data[0]?.id) { return userInfo.data[0] }
+        } else {
+            talk(chatroom, `Error: ${userInfo.error} ${negativeEmote}`)
+        }
+    } else if (userInfo.data.length === 0) {
+        return talk(chatroom, `No user ${username} was found! ${negativeEmote}`)
+    } else {
+        return userInfo.data[0]
+    }
 }
 
 async function pollEnd(chatroom, status) {
@@ -232,13 +244,16 @@ async function pollStart(chatroom, str) {
     if (`error` in twitchData) {
         if (twitchData.message === `Invalid OAuth token`) {
             talk(chatroom, `Hold on, I need to refresh the token...`)
-            await refreshToken(chatroom)
+            await refreshToken(chatroom, false)
             options.headers.authorization = `Bearer ${lemonyFresh[channel].accessToken}`
             const finalAttempt = await fetch(endpoint, options)
             const finalAttemptData = await finalAttempt.json()
-            if (finalAttemptData?.data) { lemonyFresh[channel].pollId = finalAttemptData.data[0].id }
-            setTimeout(() => { lemonyFresh[channel].pollId = `` }, duration * 1000)
             console.log(finalAttemptData)
+            if (finalAttemptData?.data) {
+                talk(chatroom, `Poll created, go vote! ${positiveEmote}`)
+                lemonyFresh[channel].pollId = finalAttemptData.data[0].id
+                setTimeout(() => { lemonyFresh[channel].pollId = `` }, duration * 1000)
+            }
         } else {
             talk(chatroom, `(Error ${twitchData.status}) ${twitchData.error}: ${twitchData.message}`)
         }
@@ -247,7 +262,7 @@ async function pollStart(chatroom, str) {
     } else {
         lemonyFresh[channel].pollId = twitchData.data[0].id
         setTimeout(() => { lemonyFresh[channel].pollId = `` }, duration * 1000)
-        talk(chatroom, `Poll created. Go vote! ${positiveEmote}`)
+        talk(chatroom, `Poll created, go vote! ${positiveEmote}`)
     }
 }
 
@@ -264,7 +279,7 @@ async function handleShoutOut(chatroom, user) {
     talk(chatroom, response)
 }
 
-async function refreshToken(chatroom) {
+async function refreshToken(chatroom, replyWanted) {
     if (settings.debug) { console.log(`${boldTxt}> refreshToken(chatroom: ${chatroom})${resetTxt}`) }
     const channel = chatroom.substring(1)
     const refreshToken = lemonyFresh[channel].refreshToken
@@ -288,7 +303,7 @@ async function refreshToken(chatroom) {
     if (`expires_in` in twitchData) {
         lemonyFresh[channel].accessToken = twitchData.access_token
         lemonyFresh[channel].refreshToken = twitchData.refresh_token
-        talk(chatroom, `Success! ${hypeEmote}`)
+        if (replyWanted) { talk(chatroom, `Successfully updated ${channel}'s token! ${hypeEmote}`) }
     } else {
         talk(chatroom, `Error refreshing token! ${negativeEmote}`)
     }

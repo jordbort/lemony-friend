@@ -324,9 +324,9 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     // Only the streamer, a mod, or a VIP
     if (isModOrVIP) {
         if (command === `!so` && toUser) { return handleShoutOut(chatroom, toUser.toLowerCase()) }
-        if (command === `!token`) { return getBotToken(chatroom) } // Refreshes bot's access token
+        if (command === `!token`) { return getBotToken(chatroom, true) } // Refreshes bot's access token
         if (command === `!validate`) { return validateToken(chatroom) } // Checks lifespan of channel's access token
-        if (command === `!refresh`) { return refreshToken(chatroom) } // Manually refreshes a channe's access token
+        if (command === `!refresh`) { return refreshToken(chatroom, true) } // Manually refreshes a channe's access token
     }
     // Only the streamer or a mod
     if (isMod) {
