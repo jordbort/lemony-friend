@@ -1036,16 +1036,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     // Check if user hasn't chatted in more than an hour, but less than 8 hours, and isn't the streamer or a known bot
     if (elapsedMinsSinceLastMsg >= 60
         && elapsedMinsSinceLastMsg < 480
-        && ![
-            channel,
-            `nightbot`,
-            `streamelements`,
-            `blerp`,
-            `soundalerts`,
-            `streamlabs`,
-            `undertalebot`,
-            `buttsbot`
-        ].includes(username)) {
+        && ![channel, `nightbot`, `streamelements`, `blerp`, `soundalerts`, `streamlabs`, `undertalebot`, `buttsbot`].includes(username)) {
         console.log(`${grayTxt}${displayName} hasn't chatted in the past 1-8 hours${resetTxt}`, elapsedMinsSinceLastMsg)
         return talk(chatroom, `Welcome back, ${displayName}! ${greetingEmote}`)
     }

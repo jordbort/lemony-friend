@@ -20,7 +20,7 @@ const { resetTxt, boldTxt, grayTxt, yellowBg, chatColors, settings } = require(`
 const { lemonyFresh, users, tempCmds } = require(`./data`)
 
 // Import emotes
-const { getLemonEmote, getHypeEmote, getPositiveEmote, getUpsetEmote, getNegativeEmote, getGreetingEmote } = require(`./getEmotes`)
+const { getLemonEmote, getHypeEmote, getPositiveEmote, getNegativeEmote, getGreetingEmote } = require(`./getEmotes`)
 
 // Create bot client
 const tmi = require('tmi.js')
@@ -89,7 +89,16 @@ const numbers = [
 // Helper functions
 async function handleUncaughtException(errMsg, location) {
     return lemonyFresh.channels.forEach((chatroom) => {
-        talk(chatroom, `Oops, I just crashed! ${getUpsetEmote(chatroom.substring(1))} ${errMsg} ${location}`)
+        talk(chatroom, `Oops, I just crashed! ${users[BOT_USERNAME]?.jpegstripes?.sub
+            ? `jpegstBroken`
+            : users[BOT_USERNAME]?.sclarf?.sub
+                ? `sclarfDead`
+                : users[BOT_USERNAME]?.e1ectroma?.sub
+                    ? `e1ectr4Heat`
+                    : users[BOT_USERNAME]?.domonintendo1?.sub
+                        ? `domoni6Sneeze`
+                        : `>(`
+            } ${errMsg} ${location}`)
     })
 }
 

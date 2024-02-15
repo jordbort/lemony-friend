@@ -1,5 +1,8 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
+// Import data
+const { users } = require(`./data`)
+
 function getLemonEmote() { return users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️` }
 
 function getHypeEmote(channel) {
@@ -89,6 +92,7 @@ function getGreetingEmote(channel) {
     // if (settings.debug) { console.log(`${boldTxt}> getgreetingEmote(channel: '${channel}') => '${greetingEmote}'), choices:${resetTxt}`, greetingEmotes.length) }
     return greetingEmote
 }
+
 function getDumbEmote(channel) {
     const dumbEmotes = [`:p`]
     if (channel === `jpegstripes`) { dumbEmotes.push(`KEKW`, `modCheck`, `OMEGALUL`, `PepeLaugh`, `popCat`) }
