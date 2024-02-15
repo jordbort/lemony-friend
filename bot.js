@@ -250,7 +250,6 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     const upsetEmote = getUpsetEmote(channel)
     const negativeEmote = getNegativeEmote(channel)
     const greetingEmote = getGreetingEmote(channel)
-    const dumbEmote = getDumbEmote(channel)
 
     // Checking time comparisons
     const elapsedMinsSinceLastMsg = (currentTime - users[username][channel].sentAt) / 60000
@@ -354,8 +353,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     }
 
     // Join a game of Hangman (during the 30-second signup window)
-    if (command === `!play`
-        && hangman.listening) {
+    if (command === `!play` && hangman.listening) {
         if (hangman.signup) {
             console.log(`${grayTxt}${hangman.players.includes(username) ? `> ${username} already in ${channel}'s Hangman players: ${hangman.players.join(`, `)}` : `> ${username} added to ${channel}'s Hangman players: ${hangman.players.join(`, `)}`}${resetTxt}`)
             if (!hangman.players.includes(username)) { return hangman.players.push(username) }
@@ -479,15 +477,10 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     }
 
     // Handle channel-specific goals
-    if ([`!goal`, `!goals`].includes(command)
-        && args.length) {
-        return sayGoals(chatroom, args)
-    }
+    if ([`!goal`, `!goals`].includes(command) && args.length) { return sayGoals(chatroom, args) }
 
     // !bye OR !gn OR !goodnight
-    if (command === `!bye`
-        || command === `!gn`
-        || command === `!goodnight`) {
+    if ([`!bye`, `!gn`, `!goodnight`].includes(command)) {
         if (target) { return sayGoodnight(chatroom, users[target]) }
         else if (args[0]) { return talk(chatroom, `see ya ${args[0]}`) }
         else { return sayGoodnight(chatroom, users[username]) }
@@ -690,8 +683,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     }
 
     // User asking an "am i ...?" question about themselves
-    if (command === `am`
-        && args[0]?.toLowerCase() === `i`) {
+    if (command === `am` && args[0]?.toLowerCase() === `i`) {
         args.shift()
         const lowercaseArgs = args.map(str => str.toLowerCase())
 
@@ -784,8 +776,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     }
 
     // User asking a "do i ...?" question about themselves
-    if (command === `do`
-        && args[0]?.toLowerCase() === `i`) {
+    if (command === `do` && args[0]?.toLowerCase() === `i`) {
         args.shift()
         const lowercaseArgs = args.map(str => str.toLowerCase())
 
@@ -878,10 +869,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     }
 
     // User asking a question about another user
-    if ([
-        `is`,
-        `does`
-    ].includes(command)) {
+    if ([`is`, `does`].includes(command)) {
         // Ignore if other user isn't known
         if (!target) { return }
 
@@ -978,20 +966,11 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     }
 
     // !tempcmd or !tmpcmd
-    if ([
-        `!tempcmd`,
-        `!tmpcmd`
-    ].includes(command)) { return handleTempCmd(chatroom, username, args) }
+    if ([`!tempcmd`, `!tmpcmd`].includes(command)) { return handleTempCmd(chatroom, username, args) }
 
     // !tempcmds or !tmpcmds
-    if ([
-        `!tempcmds`,
-        `!tmpcmds`
-    ].includes(command)) {
-        const commands = []
-        for (key in tempCmds) {
-            commands.push(`${key} => "${tempCmds[key]}"`)
-        }
+    if ([`!tempcmds`, `!tmpcmds`].includes(command)) {
+        const commands = Object.keys(tempCmds).map((key) => `${key} => "${tempCmds[key]}"`)
         return talk(chatroom, `There ${commands.length === 1 ? `is` : `are`} ${commands.length} temporary command${commands.length === 1 ? `` : `s`}${commands.length === 0 ? `! ${negativeEmote}` : `: ${commands.join(', ')}`}`)
     }
 
@@ -1014,7 +993,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
                 hangman.currentPlayer++
                 if (hangman.currentPlayer === hangman.players.length) { hangman.currentPlayer = 0 }
                 const nextPlayer = users[hangman.players[hangman.currentPlayer]].displayName
-                talk(chatroom, `Sorry ${displayName}, "${msg.toLowerCase()}" wasn't the answer! ${hangman.chances} chance${hangman.chances === 1 ? ` left!`: `s left...`} ${negativeEmote} Now it's your turn, ${nextPlayer}!`)
+                talk(chatroom, `Sorry ${displayName}, "${msg.toLowerCase()}" wasn't the answer! ${hangman.chances} chance${hangman.chances === 1 ? ` left!` : `s left...`} ${negativeEmote} Now it's your turn, ${nextPlayer}!`)
                 const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
                 const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
                 setTimeout(() => talk(chatroom, statusMsg), delay)

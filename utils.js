@@ -20,19 +20,10 @@ const { resetTxt, boldTxt, grayTxt, yellowBg, chatColors, settings } = require(`
 const { lemonyFresh, users, tempCmds } = require(`./data`)
 
 // Import emotes
-const {
-    getLemonEmote,
-    getHypeEmote,
-    getPositiveEmote,
-    getUpsetEmote,
-    getNegativeEmote,
-    getGreetingEmote,
-    getDumbEmote
-} = require(`./getEmotes`)
+const { getLemonEmote, getHypeEmote, getPositiveEmote, getUpsetEmote, getNegativeEmote, getGreetingEmote } = require(`./getEmotes`)
 
 // Create bot client
 const tmi = require('tmi.js')
-const { channel } = require('diagnostics_channel')
 const opts = {
     identity: {
         username: BOT_USERNAME,

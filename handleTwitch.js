@@ -9,15 +9,7 @@ const { lemonyFresh, users } = require(`./data`)
 const { resetTxt, boldTxt, grayTxt, settings } = require(`./config`)
 
 // Import emotes
-const {
-    getLemonEmote,
-    getHypeEmote,
-    getPositiveEmote,
-    getUpsetEmote,
-    getNegativeEmote,
-    getGreetingEmote,
-    getDumbEmote
-} = require(`./getEmotes`)
+const { getHypeEmote, getPositiveEmote, getNegativeEmote } = require(`./getEmotes`)
 
 // Import helper functions
 const { talk } = require(`./utils`)
