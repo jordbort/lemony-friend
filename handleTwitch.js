@@ -93,13 +93,23 @@ async function getTwitchGame(chatroom, str) {
     talk(chatroom, `Looking for ${str}!`)
 }
 
-async function getTwitchToken() {
-    if (settings.debug) { console.log(`${boldTxt}> getTwitchToken()${resetTxt}`) }
+async function getBotToken(chatroom) {
+    if (settings.debug) { console.log(`${boldTxt}> getBotToken()${resetTxt}`) }
+    const channel = chatroom.substring(1)
+    const happyEmote = getHappyEmote(channel)
+    const sadEmote = getSadEmote(channel)
+
     const url = `https://id.twitch.tv/oauth2/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&grant_type=client_credentials`;
     const response = await fetch(url, { method: "POST" })
-    const token = await response.json()
-    console.log(`${grayTxt}${JSON.stringify(token)}${resetTxt}`)
-    lemonyFresh.botAccessToken = token.access_token
+    const twitchData = await response.json()
+    console.log(`${grayTxt}${JSON.stringify(twitchData)}${resetTxt}`)
+
+    if (`expires_in` in twitchData) {
+        lemonyFresh.botAccessToken = twitchData.access_token
+        talk(chatroom, `Updated! My new token expires in ~${Math.round(twitchData.expires_in / 1000 / 60)} minutes! ${happyEmote}`)
+    } else {
+        talk(chatroom, `Error access token! ${sadEmote}${twitchData.error ? ` ${twitchData.error}` : ``}`)
+    }
 }
 
 async function getTwitchUser(chatroom, username) {
@@ -296,7 +306,7 @@ module.exports = {
     getOAUTHToken,
     getTwitchChannel,
     getTwitchGame,
-    getTwitchToken,
+    getBotToken,
     getTwitchUser,
     handleShoutOut,
     pollEnd,

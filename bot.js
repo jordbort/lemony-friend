@@ -112,7 +112,7 @@ const {
     getOAUTHToken,
     getTwitchChannel,
     getTwitchGame,
-    getTwitchToken,
+    getBotToken,
     getTwitchUser,
     handleShoutOut,
     pollEnd,
@@ -279,10 +279,6 @@ ${redBg}lemony_friend has died.${resetTxt}`)
             : talk(chatroom, `I don't know how many points I have!`)
     }
 
-    if (command === `!token` && username === `jpegstripes`) {
-        getTwitchToken()
-        return talk(chatroom, `${happyEmote}`)
-    }
     if (command === `!forget`) {
         if (points in users[BOT_USERNAME][channel]) {
             delete users[BOT_USERNAME][channel].points
@@ -316,8 +312,9 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     // Only the streamer, a mod, or a VIP
     if (isModOrVIP) {
         if (command === `!so` && toUser) { return handleShoutOut(chatroom, toUser.toLowerCase()) }
-        if (command === `!validate`) { return validateToken(chatroom) }
-        if (command === `!refresh`) { return refreshToken(chatroom) }
+        if (command === `!token`) { return getBotToken(chatroom) } // Refreshes bot's access token
+        if (command === `!validate`) { return validateToken(chatroom) } // Checks lifespan of channel's access token
+        if (command === `!refresh`) { return refreshToken(chatroom) } // Manually refreshes a channe's access token
     }
     // Only the streamer or a mod
     if (isMod) {
