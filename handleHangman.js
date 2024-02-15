@@ -98,7 +98,7 @@ function checkLetter(chatroom, username, guess) {
             hangman.listening = false
             return talk(chatroom, `Sorry ${player}, ${guess} wasn't in the word! The answer was "${hangman.answer}". Game over! ${upsetEmote}`)
         }
-        talk(chatroom, `Sorry ${player}, ${guess} wasn't in the word! Minus one chance... ${negativeEmote} Now it's your turn, ${nextPlayer}!`)
+        talk(chatroom, `Sorry ${player}, ${guess} wasn't in the word! ${hangman.chances} chance${hangman.chances === 1 ? ` left!`: `s left...`} ${negativeEmote} Now it's your turn, ${nextPlayer}!`)
     }
     const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
     const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000

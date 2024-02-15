@@ -1014,7 +1014,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
                 hangman.currentPlayer++
                 if (hangman.currentPlayer === hangman.players.length) { hangman.currentPlayer = 0 }
                 const nextPlayer = users[hangman.players[hangman.currentPlayer]].displayName
-                talk(chatroom, `Sorry ${displayName}, "${msg.toLowerCase()}" wasn't the answer! Minus one chance... ${negativeEmote} Now it's your turn, ${nextPlayer}!`)
+                talk(chatroom, `Sorry ${displayName}, "${msg.toLowerCase()}" wasn't the answer! ${hangman.chances} chance${hangman.chances === 1 ? ` left!`: `s left...`} ${negativeEmote} Now it's your turn, ${nextPlayer}!`)
                 const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
                 const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
                 setTimeout(() => talk(chatroom, statusMsg), delay)
