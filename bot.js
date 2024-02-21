@@ -132,6 +132,7 @@ const {
     getUpsetEmote,
     getNegativeEmote,
     getGreetingEmote,
+    getByeEmote,
     getDumbEmote
 } = require(`./getEmotes`)
 
@@ -250,6 +251,7 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     const upsetEmote = getUpsetEmote(channel)
     const negativeEmote = getNegativeEmote(channel)
     const greetingEmote = getGreetingEmote(channel)
+    const byeEmote = getByeEmote(channel)
 
     // Checking time comparisons
     const elapsedMinsSinceLastMsg = (currentTime - users[username][channel].sentAt) / 60000
@@ -419,13 +421,9 @@ ${redBg}lemony_friend has died.${resetTxt}`)
     // If a user who isn't Nightbot or StreamElements mentions a user who is away
     if (![`nightbot`, `streamelements`].includes(username)) {
         for (const user of Object.keys(users)) {
-            // console.log(`Checking for ${user}...`)
             if (msg.toLowerCase().includes(user) && users[user][channel]?.away) {
-                let reply = `Unfortunately ${users[user].displayName} is away from chat right now! `
-                const elapsedTime = Number(((currentTime - users[user][channel].sentAt) / 60000).toFixed(2))
-                users[user][channel].awayMessage
-                    ? reply += `Their away message: "${users[user][channel].awayMessage}"`
-                    : reply += `They have been away for ${elapsedTime} minute${elapsedTime === 1 ? `` : `s`}`
+                const elapsedTime = Math.round((currentTime - users[user][channel].sentAt) / 60000)
+                const reply = `${users[user].displayName} has been away for ~${elapsedTime} minute${elapsedTime === 1 ? `` : `s`}!${users[user][channel].awayMessage ? ` Their away message: "${users[user][channel].awayMessage}"` : ``}`
                 return talk(chatroom, reply)
             }
         }
@@ -501,8 +499,8 @@ ${redBg}lemony_friend has died.${resetTxt}`)
         if (args.length) { users[username][channel].awayMessage = args.join(` `) }
         if (command !== `!lurk`) {
             return args.length
-                ? talk(chatroom, `See you later, ${displayName}! I'll pass along your away message if they mention you! ${positiveEmote}`)
-                : talk(chatroom, `See you later, ${displayName}! I'll let people know you're away if they mention you! ${positiveEmote}`)
+                ? talk(chatroom, `See you later, ${displayName}! I'll pass along your away message if they mention you! ${byeEmote}`)
+                : talk(chatroom, `See you later, ${displayName}! I'll let people know you're away if they mention you! ${byeEmote}`)
         }
     }
 

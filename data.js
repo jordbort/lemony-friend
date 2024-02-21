@@ -174,6 +174,7 @@ const lemonyFresh = {
             `sclarfBark`,
             `sclarfSpin`,
             `sclarfPls`,
+            `sclarfPopbonk`,
             `sclarfMad`,
             `sclarfHuh`,
             `sclarfHowdy`,

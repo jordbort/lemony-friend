@@ -24,15 +24,15 @@ function getHypeEmote(channel) {
 }
 
 function getPositiveEmote(channel) {
-    const positiveEmotes = [`:)`, `SeemsGood`]
+    const positiveEmotes = [`:)`]
     if (channel === `jpegstripes`) { positiveEmotes.push(`CherryStomp`) }
-    if (channel === `jpegstripes` && !users[BOT_USERNAME]?.jpegstripes?.sub) { positiveEmotes.push(`ApolloFly`, `BamJAM`, `KetchupWave`, `KyleSwish`, `LuckySway`, `WhitneyVibe`) }
+    if (channel === `jpegstripes` && !users[BOT_USERNAME]?.jpegstripes?.sub) { positiveEmotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
     if (channel === `sclarf`) { positiveEmotes.push(`(ditto)`, `NODDERS`) }
     if (channel === `e1ectroma`) { positiveEmotes.push(`AlienPls`, `PokeMon`, `PokemonTrainer`, `RareChar`) }
     if (channel === `domonintendo1`) { positiveEmotes.push(`HYPERS`, `NODDERS`, `PepoChristmas`) }
 
-    if (users[BOT_USERNAME]?.jpegstripes?.sub) { positiveEmotes.push(`jpegstGeno`, `jpegstKylePls`, `jpegstBamJAM`, `jpegstLucky`, `jpegstKetchup`, `jpegstWhitney`, `jpegstApollo`, `jpegstYes`, `jpegstDog`) }
-    if (users[BOT_USERNAME]?.sclarf?.sub) { positiveEmotes.push(`sclarfDog`, `sclarfHearts`) }
+    if (users[BOT_USERNAME]?.jpegstripes?.sub) { positiveEmotes.push(`jpegstGeno`, `jpegstKylePls`, `jpegstBamJAM`, `jpegstLucky`, `jpegstKetchup`, `jpegstJulian`, `jpegstScoot`, `jpegstWhitney`, `jpegstApollo`, `jpegstYes`, `jpegstDog`) }
+    if (users[BOT_USERNAME]?.sclarf?.sub) { positiveEmotes.push(`sclarfDog`, `sclarfHearts`, `sclarfPopbonk`) }
     if (users[BOT_USERNAME]?.e1ectroma?.sub) { positiveEmotes.push(`e1ectr4Pikadance`, `e1ectr4Coop`, `e1ectr4Smile`, `e1ectr4Salute`, `e1ectr4Lemfresh`, `e1ectr4Moses`, `e1ectr4Josie`) }
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { positiveEmotes.push(`domoni6Bingo`, `domoni6Mingo`) }
 
@@ -93,6 +93,23 @@ function getGreetingEmote(channel) {
     return greetingEmote
 }
 
+function getByeEmote(channel) {
+    const byeEmotes = [`HeyGuys`, `<3`]
+    if (channel === `jpegstripes` && !users[BOT_USERNAME]?.jpegstripes?.sub) { byeEmotes.push(`raccPls`, `WhitneyVibe`) }
+    if (channel === `sclarf`) { byeEmotes.push(`catKISS`, `LICKA`, `MEOW`) }
+    if (channel === `e1ectroma`) { byeEmotes.push(`PokemonTrainer`) }
+    if (channel === `domonintendo1`) { byeEmotes.push(`PepoChristmas`) }
+
+    if (users[BOT_USERNAME]?.jpegstripes?.sub) { byeEmotes.push(`jpegstGeno`, `jpegstKylePls`, `jpegstLucky`, `jpegstKetchup`, `jpegstWhitney`, `jpegstApollo`, `jpegstHeyGuys`, `jpegstTapeEnd`, `jpegstDog`) }
+    if (users[BOT_USERNAME]?.sclarf?.sub) { byeEmotes.push(`sclarfSleep`, `sclarfWave`) }
+    if (users[BOT_USERNAME]?.e1ectroma?.sub) { byeEmotes.push(`e1ectr4Pikadance`, `e1ectr4Hello`, `e1ectr4Smile`, `e1ectr4Ram`, `e1ectr4Salute`, `e1ectr4Lemfresh`, `e1ectr4Moses`, `e1ectr4Josie`) }
+    if (users[BOT_USERNAME]?.domonintendo1?.sub) { byeEmotes.push(`domoni6Love`) }
+
+    const byeEmote = byeEmotes[Math.floor(Math.random() * byeEmotes.length)]
+    // if (settings.debug) { console.log(`${boldTxt}> getbyeEmote(channel: '${channel}') => '${byeEmote}'), choices:${resetTxt}`, byeEmotes.length) }
+    return byeEmote
+}
+
 function getDumbEmote(channel) {
     const dumbEmotes = [`:p`]
     if (channel === `jpegstripes`) { dumbEmotes.push(`KEKW`, `modCheck`, `OMEGALUL`, `PepeLaugh`, `popCat`) }
@@ -117,5 +134,6 @@ module.exports = {
     getUpsetEmote,
     getNegativeEmote,
     getGreetingEmote,
+    getByeEmote,
     getDumbEmote
 }

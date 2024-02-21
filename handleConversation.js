@@ -7,7 +7,7 @@ const { users } = require(`./data`)
 const { resetTxt, boldTxt, grayTxt, settings } = require(`./config`)
 
 // Import emotes
-const { getGreetingEmote, getPositiveEmote } = require(`./getEmotes`)
+const { getGreetingEmote, getPositiveEmote, getByeEmote } = require(`./getEmotes`)
 
 // Import helper functions
 const { talk } = require(`./utils`)
@@ -167,8 +167,8 @@ function sayGoodnight(chatroom, user) {
     }
 
     const channel = chatroom.substring(1)
-    const greetingEmote = getGreetingEmote(channel)
-    response += `! ${greetingEmote}`
+    const byeEmote = getByeEmote(channel)
+    response += `! ${byeEmote}`
     talk(chatroom, response)
 }
 
