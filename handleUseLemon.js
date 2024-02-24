@@ -13,7 +13,8 @@ function useLemon(chatroom, command, username, target) {
     const targetUser = users[target]
     const verb = command.split(/^!([a-z]+)lemon([a-z]*)$/)[1]
     const suffix = command.split(/^!([a-z]+)lemon([a-z]*)$/)[2]
-    if (user.lemons === 0) { return talk(chatroom, `${user.displayName} has no lemons!`) }
+    const theftVerbs = [`steal`, `take`, `grab`, `thieve`, `nab`, `pickpocket`, `purloin`, `abscondwith`, `loot`, `pilfer`, `runawaywith`, `runoffwith`, `makeoffwith`]
+    if (user.lemons === 0 && !theftVerbs.includes(verb)) { return talk(chatroom, `${user.displayName} has no lemons!`) }
 
     const singular = user.lemons === 1
     const coinFlip = Math.floor(Math.random() * 2)
@@ -799,7 +800,7 @@ function useLemon(chatroom, command, username, target) {
                 return talk(chatroom, `${user.displayName} gambled a lemon, and lost it!`)
             }
         }
-    } else if ([`steal`, `take`, `grab`, `thieve`, `nab`, `pickpocket`, `purloin`, `abscondwith`, `loot`, `pilfer`, `runawaywith`, `runoffwith`, `makeoffwith`].includes(verb)) {
+    } else if (theftVerbs.includes(verb)) {
         if (allLemons) {
             if (targetUser) {
                 if (targetUser.lemons === 0) { return talk(chatroom, `${targetUser.displayName} does not have any lemons!`) }
