@@ -12,7 +12,8 @@ const { talk } = require(`./utils`)
 async function checkSentiment(chatroom, msg) {
     if (settings.debug) { console.log(`${boldTxt}> checkSentiment(chatroom: ${chatroom}, msg: ${msg})${resetTxt}`) }
 
-    const endpoint = `https://api.api-ninjas.com/v1/sentiment?text=${msg}`
+    const sanitizedMsg = msg.replace(/[\\{`}%^|]/g, ``)
+    const endpoint = `https://api.api-ninjas.com/v1/sentiment?text=${sanitizedMsg}`
     const options = {
         headers: {
             'X-Api-Key': API_KEY

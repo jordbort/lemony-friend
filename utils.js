@@ -159,17 +159,16 @@ function sayRebootMsg(chatroom) {
     const numTempCmds = Object.keys(tempCmds).length
     const onlineMsgs = [
         `Let's see how long before I crash`,
-        `${lemonEmote}`,
         `don't mind me`,
         `${greetingEmote} (just rebooting again)`,
         `(Windows 95 startup sound plays)`,
         `I'm onl`,
-        `reconnecting...`,
         `I have ${numUsers <= 50 ? `${numbers[numUsers]} (${numUsers})` : numUsers} friend${numUsers === 1 ? `` : `s`}! ${hypeEmote}`,
         `(there ${numTempCmds === 1 ? `is` : `are`} ${numTempCmds} temporary command${numTempCmds === 1 ? `` : `s`})`,
         `Debug mode is currently ${settings.debug ? `ON` : `OFF`}! ${positiveEmote}`,
         `Let's play Hangman! ${positiveEmote}`,
         `nowHasPattern has been updated to /now ha(?:s|ve) \[*(\d*)/i which makes use of capturing and non-capturing groups ${positiveEmote}`,
+        'const sanitizedMsg = msg.replace(/[\\{`}%^|]/g, ``)',
         `${channel} has ${lemonyFresh[channel].emotes.length} emote${lemonyFresh[channel].emotes.length === 1 ? `` : `s`}!`,
         `It has been ${Date.now()} milliseconds since January 1, 1970, UTC ${lemonEmote}`,
         `${BOT_USERNAME in users
