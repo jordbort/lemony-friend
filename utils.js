@@ -19,6 +19,9 @@ const { resetTxt, boldTxt, grayTxt, yellowBg, chatColors, settings } = require(`
 // Import data
 const { lemonyFresh, users, tempCmds } = require(`./data`)
 
+// Import emotes
+const { getLemonEmote, getHypeEmote, getPositiveEmote, getNegativeEmote, getGreetingEmote } = require(`./getEmotes`)
+
 // Create bot client
 const tmi = require('tmi.js')
 const opts = {
@@ -85,8 +88,17 @@ const numbers = [
 
 // Helper functions
 async function handleUncaughtException(errMsg, location) {
-    return lemonyFresh.channels.forEach((channel) => {
-        talk(channel, `Oops, I just crashed! ${users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : `>(`} ${errMsg} ${location}`)
+    return lemonyFresh.channels.forEach((chatroom) => {
+        talk(chatroom, `Oops, I just crashed! ${users[BOT_USERNAME]?.jpegstripes?.sub
+            ? `jpegstBroken`
+            : users[BOT_USERNAME]?.sclarf?.sub
+                ? `sclarfDead`
+                : users[BOT_USERNAME]?.e1ectroma?.sub
+                    ? `e1ectr4Heat`
+                    : users[BOT_USERNAME]?.domonintendo1?.sub
+                        ? `domoni6Sneeze`
+                        : `>(`
+            } ${errMsg} ${location}`)
     })
 }
 
@@ -139,24 +151,29 @@ function sayGoals(chatroom, args) {
 function sayRebootMsg(chatroom) {
     if (settings.debug) { console.log(`${boldTxt}> sayRebootMsg(chatroom: ${chatroom})${resetTxt}`) }
     const channel = chatroom.substring(1)
+    const lemonEmote = getLemonEmote()
+    const hypeEmote = getHypeEmote(channel)
+    const positiveEmote = getPositiveEmote()
+    const greetingEmote = getGreetingEmote(channel)
+    const numUsers = Object.keys(users).length
+    const numTempCmds = Object.keys(tempCmds).length
     const onlineMsgs = [
         `Let's see how long before I crash`,
-        `${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`,
         `don't mind me`,
-        `(just rebooting again)`,
+        `${greetingEmote} (just rebooting again)`,
         `(Windows 95 startup sound plays)`,
         `I'm onl`,
-        `reconnecting...`,
-        `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`,
-        `(there ${Object.keys(tempCmds).length === 1 ? `is` : `are`} ${Object.keys(tempCmds).length} temporary command${Object.keys(tempCmds).length === 1 ? `` : `s`})`,
-        `Debug mode is currently ${settings.debug ? `ON` : `OFF`}! :)`,
-        `Let's play Hangman! :)`,
-        `nowHasPattern has been updated to /now ha(?:s|ve) \[*(\d*)/i which makes use of capturing and non-capturing groups :)`,
+        `I have ${numUsers <= 50 ? `${numbers[numUsers]} (${numUsers})` : numUsers} friend${numUsers === 1 ? `` : `s`}! ${hypeEmote}`,
+        `(there ${numTempCmds === 1 ? `is` : `are`} ${numTempCmds} temporary command${numTempCmds === 1 ? `` : `s`})`,
+        `Debug mode is currently ${settings.debug ? `ON` : `OFF`}! ${positiveEmote}`,
+        `Let's play Hangman! ${positiveEmote}`,
+        `nowHasPattern has been updated to /now ha(?:s|ve) \[*(\d*)/i which makes use of capturing and non-capturing groups ${positiveEmote}`,
+        'const sanitizedMsg = msg.replace(/[\\{`}%^|]/g, ``)',
         `${channel} has ${lemonyFresh[channel].emotes.length} emote${lemonyFresh[channel].emotes.length === 1 ? `` : `s`}!`,
-        `It has been ${Date.now()} milliseconds since January 1, 1970, UTC ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh ` : `🍋️`}`,
+        `It has been ${Date.now()} milliseconds since January 1, 1970, UTC ${lemonEmote}`,
         `${BOT_USERNAME in users
-            ? `I have ${users[BOT_USERNAME].lemons} lemon${users[BOT_USERNAME].lemons === 1 ? `` : `s`}! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`
-            : `${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`}`
+            ? `I have ${users[BOT_USERNAME].lemons} lemon${users[BOT_USERNAME].lemons === 1 ? `` : `s`}! ${lemonEmote}`
+            : `${lemonEmote}`}`
     ]
     const rebootMsg = onlineMsgs[Math.floor(Math.random() * onlineMsgs.length)]
     settings.sayOnlineMsg = false
@@ -165,22 +182,25 @@ function sayRebootMsg(chatroom) {
 
 function sayFriends(chatroom) {
     if (settings.debug) { console.log(`${boldTxt}> sayFriends(chatroom: ${chatroom})${resetTxt}`) }
-    talk(chatroom, `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! :D`)
+    const channel = chatroom.substring(1)
+    talk(chatroom, `I have ${Object.keys(users).length <= 50 ? `${numbers[Object.keys(users).length]} (${Object.keys(users).length})` : Object.keys(users).length} friend${Object.keys(users).length === 1 ? `` : `s`}! ${getHypeEmote(channel)}`)
 }
 
 function sayCommands(chatroom) {
     if (settings.debug) { console.log(`${boldTxt}> sayCommands(chatroom: ${chatroom})${resetTxt}`) }
-    talk(chatroom, `Commands: !greet => Say hi to one or more people, !bye => Say goodnight to someone, !hangman => Start a game of Hangman, !rps => Play me in Rock, Paper, Scissors (move optional), !yell => Chat across Lemony Fresh ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh ` : `🍋️`}, !away => (Optionally add an away message), !tempcmd => Make your own command! :)`)
+    const channel = chatroom.substring(1)
+    talk(chatroom, `Commands: !greet => Say hi to one or more people, !bye => Say goodnight to someone, !hangman => Start a game of Hangman, !rps => Play me in Rock, Paper, Scissors (move optional), !yell => Chat across Lemony Fresh ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh ` : `🍋️`}, !away => (Optionally add an away message), !tempcmd => Make your own command! ${getPositiveEmote(channel)}`)
 }
 
 function toggleDebugMode(chatroom, args) {
     const initialDebugState = settings.debug
+    const positiveEmote = getPositiveEmote(chatroom.substring(1))
     if (args[0]?.toLowerCase() === `on`) { settings.debug = true }
     else if (args[0]?.toLowerCase() === `off`) { settings.debug = false }
     else { settings.debug = !settings.debug }
     settings.debug === initialDebugState
-        ? talk(chatroom, `Debug mode is currently ${settings.debug ? `ON` : `OFF`}! :)`)
-        : talk(chatroom, `Debug mode is now ${settings.debug ? `ON` : `OFF`}! :)`)
+        ? talk(chatroom, `Debug mode is currently ${settings.debug ? `ON` : `OFF`}! ${positiveEmote}`)
+        : talk(chatroom, `Debug mode is now ${settings.debug ? `ON` : `OFF`}! ${positiveEmote}`)
 }
 
 function getLastMessage(chatroom, user, room) {
@@ -216,8 +236,9 @@ function yell(user, message) {
 
 function getColor(chatroom, user) {
     if (settings.debug) { console.log(`${boldTxt}> getColor(chatroom: ${chatroom}, user.color: ${user.color})${resetTxt}`) }
+    const channel = chatroom.substring(1)
     !user.color
-        ? talk(chatroom, `I can't tell what ${user.displayName}'s chat color is! :(`)
+        ? talk(chatroom, `I can't tell what ${user.displayName}'s chat color is! ${getNegativeEmote(channel)}`)
         : user.color in chatColors
             ? talk(chatroom, `${user.displayName}'s chat color is ${chatColors[user.color].name}!`)
             : talk(chatroom, `${user.displayName}'s chat color is hex code ${user.color}`)
@@ -249,21 +270,24 @@ function getRandomChannelMessage(user) {
 
 function handleTempCmd(chatroom, username, args) {
     if (settings.debug) { console.log(`${boldTxt}> handleTempCmd(chatroom: ${chatroom}, args: ${args})${resetTxt}`) }
+    const channel = chatroom.substring(1)
+    const positiveEmote = getPositiveEmote(channel)
     if (!args[1]) { return talk(chatroom, `Hey ${users[username].displayName}, use this command like: !tempcmd [commandname] [response...]! :)`) }
+
     if (args[0].toLowerCase() === `delete`) {
         if (args[1].toLowerCase() in tempCmds) {
             delete tempCmds[args[1].toLowerCase()]
-            return talk(chatroom, `Command "${args[1].toLowerCase()}" has been deleted! :)`)
+            return talk(chatroom, `Command "${args[1].toLowerCase()}" has been deleted! ${positiveEmote}`)
         } else {
-            return talk(chatroom, `No command "${args[1].toLowerCase()}" was found! :(`)
+            return talk(chatroom, `No command "${args[1].toLowerCase()}" was found! ${getNegativeEmote(channel)}`)
         }
     }
     else if (args[0].toLowerCase() in tempCmds) {
         tempCmds[args[0].toLowerCase()] = args.slice(1).join(` `)
-        return talk(chatroom, `Command "${args[0].toLowerCase()}" has been edited! :)`)
+        return talk(chatroom, `Command "${args[0].toLowerCase()}" has been edited! ${positiveEmote}`)
     } else {
         tempCmds[args[0].toLowerCase()] = args.slice(1).join(` `)
-        return talk(chatroom, `Temporary command "${args[0].toLowerCase()}" has been added! :)`)
+        return talk(chatroom, `Temporary command "${args[0].toLowerCase()}" has been added! ${positiveEmote}`)
     }
 }
 
@@ -275,28 +299,6 @@ function delayListening() {
         settings.listening = true
         console.log(`${boldTxt}> Listening for streaks again!${resetTxt}`)
     }, delayTime * 1000)
-}
-
-function getHappyEmote() {
-    const happyEmotes = [`:D`]
-    if (users[BOT_USERNAME]?.jpegstripes?.sub) { happyEmotes.push(`jpegstSlay`) }
-    if (users[BOT_USERNAME]?.sclarf?.sub) { happyEmotes.push(`sclarfHearts`) }
-    if (users[BOT_USERNAME]?.e1ectroma?.sub) { happyEmotes.push(`e1ectr4Smile`) }
-    if (users[BOT_USERNAME]?.domonintendo1?.sub) { happyEmotes.push(`domoni6Mingo`) }
-    const happyEmote = happyEmotes[Math.floor(Math.random() * happyEmotes.length)]
-    if (settings.debug) { console.log(`${boldTxt}> getHappyEmote('${happyEmote}'), choices:${resetTxt}`, happyEmotes.length) }
-    return happyEmote
-}
-
-function getShockedEmote() {
-    const shockedEmotes = [`:O`]
-    if (users[BOT_USERNAME]?.jpegstripes?.sub) { shockedEmotes.push(`jpegstKylePog`) }
-    if (users[BOT_USERNAME]?.sclarf?.sub) { shockedEmotes.push(`sclarfBlind`) }
-    if (users[BOT_USERNAME]?.e1ectroma?.sub) { shockedEmotes.push(`e1ectr4Heat`) }
-    if (users[BOT_USERNAME]?.domonintendo1?.sub) { shockedEmotes.push(`domoni6Sneeze`) }
-    const shockedEmote = shockedEmotes[Math.floor(Math.random() * shockedEmotes.length)]
-    if (settings.debug) { console.log(`${boldTxt}> getShockedEmote('${shockedEmote}'), choices:${resetTxt}`, shockedEmotes.length) }
-    return shockedEmote
 }
 
 function ping(arr) {
@@ -357,7 +359,7 @@ function makeLogs() {
     let data = `🍋️ LEMONY LOGS 🍋️\n\n`
 
     const anyTokenChange = lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN || lemonyFresh.jpegstripes.accessToken !== JPEGSTRIPES_ACCESS_TOKEN || lemonyFresh.jpegstripes.refreshToken !== JPEGSTRIPES_REFRESH_TOKEN || lemonyFresh.sclarf.accessToken !== SCLARF_ACCESS_TOKEN || lemonyFresh.sclarf.refreshToken !== SCLARF_REFRESH_TOKEN || lemonyFresh.e1ectroma.accessToken !== E1ECTROMA_ACCESS_TOKEN || lemonyFresh.e1ectroma.refreshToken !== E1ECTROMA_REFRESH_TOKEN || lemonyFresh.domonintendo1.accessToken !== DOMONINTENDO1_ACCESS_TOKEN || lemonyFresh.domonintendo1.refreshToken !== DOMONINTENDO1_REFRESH_TOKEN || lemonyFresh.ppuyya.accessToken !== PPUYYA_ACCESS_TOKEN || lemonyFresh.ppuyya.refreshToken !== PPUYYA_REFRESH_TOKEN
-    if (anyTokenChange) { data += `* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n` }
+    if (anyTokenChange) { data += `${Array(50).fill(`*`).join(` `)}\n` }
     if (lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN) { data += `BOT_ACCESS_TOKEN changed, update to: '${lemonyFresh.botAccessToken}'\n` }
     if (lemonyFresh.jpegstripes.accessToken !== JPEGSTRIPES_ACCESS_TOKEN) { data += `JPEGSTRIPES_ACCESS_TOKEN changed, update to: '${lemonyFresh.jpegstripes.accessToken}'\n` }
     if (lemonyFresh.jpegstripes.refreshToken !== JPEGSTRIPES_REFRESH_TOKEN) { data += `JPEGSTRIPES_REFRESH_TOKEN changed, update to: '${lemonyFresh.jpegstripes.refreshToken}'\n` }
@@ -369,14 +371,14 @@ function makeLogs() {
     if (lemonyFresh.domonintendo1.refreshToken !== DOMONINTENDO1_REFRESH_TOKEN) { data += `DOMONINTENDO1_REFRESH_TOKEN changed, update to: '${lemonyFresh.domonintendo1.refreshToken}'\n` }
     if (lemonyFresh.ppuyya.accessToken !== PPUYYA_ACCESS_TOKEN) { data += `PPUYYA_ACCESS_TOKEN changed, update to: '${lemonyFresh.ppuyya.accessToken}'\n` }
     if (lemonyFresh.ppuyya.refreshToken !== PPUYYA_REFRESH_TOKEN) { data += `PPUYYA_REFRESH_TOKEN changed, update to: '${lemonyFresh.ppuyya.refreshToken}'\n` }
-    if (anyTokenChange) { data += `* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n\n` }
+    if (anyTokenChange) { data += `${Array(50).fill(`*`).join(` `)}\n\n` }
 
     data += `lemonyFresh: {\n`
     for (const key of Object.keys(lemonyFresh)) {
         if (Array.isArray(lemonyFresh[key])) { // Chatrooms list
-            data += `\t${key}: ['${lemonyFresh[key].join(`', '`)}']\n`
+            data += `\t${key}: ['${lemonyFresh[key].join(`', '`)}'],\n`
         } else if (typeof lemonyFresh[key] === `string`) { // Bot access token
-            data += `\t${key}: '${lemonyFresh[key]}'\n`
+            data += `\t${key}: '${lemonyFresh[key]}',\n`
         } else {
             // Channel name
             data += `\t${key}: {\n`
@@ -418,7 +420,7 @@ function makeLogs() {
                     data += `\t\t},\n`
                 }
             }
-            data += `\t}\n`
+            data += `\t},\n` // End of channel objects
         }
     }
     data += `}\n\n`
@@ -458,6 +460,26 @@ function makeLogs() {
     })
 }
 
+function handleRaid(chatroom) {
+    if (settings.debug) { console.log(`${boldTxt}> handleRaid(chatroom: ${chatroom})${resetTxt}`) }
+
+    const channel = chatroom.substring(1)
+    const subRaidMessage = lemonyFresh[channel].subRaidMessage
+    const noSubRaidMessage = lemonyFresh[channel].noSubRaidMessage
+    const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip ? 1000 : 2000
+    const appendEmote = users[BOT_USERNAME][channel].sub ? subRaidMessage.split(` `)[0] : getPositiveEmote(channel)
+
+    if (subRaidMessage) { talk(channel, subRaidMessage) }
+    if (noSubRaidMessage) {
+        setTimeout(() => {
+            talk(channel, noSubRaidMessage)
+        }, delay)
+        setTimeout(() => {
+            talk(channel, `Thanks for sticking around for the raid! If you're subscribed to the channel, you can use the first raid message, otherwise you can use the second raid message! ${appendEmote}`)
+        }, delay * 2)
+    }
+}
+
 module.exports = {
     client,
     handleUncaughtException,
@@ -474,11 +496,10 @@ module.exports = {
     getRandomChannelMessage,
     handleTempCmd,
     delayListening,
-    getHappyEmote,
-    getShockedEmote,
     ping,
     getToUser,
     printLemon,
     talk,
-    makeLogs
+    makeLogs,
+    handleRaid
 }
