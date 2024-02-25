@@ -12,6 +12,9 @@ const { lemonify } = require(`./handleLemonify`)
 // Import Twitch functions
 const { getTwitchChannel } = require(`./handleTwitch`)
 
+// Import emotes
+const { getLemonEmote } = require(`./getEmotes`)
+
 // Import helper functions
 const { getRandomUser, getRandomChannelMessage, talk } = require(`./utils`)
 
@@ -175,7 +178,7 @@ const currencies = [
 ]
 
 async function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
-    if (settings.debug) { console.log(`${boldTxt}> rollFunNumber(chatroom: ${chatroom}, tags: ${typeof tags}, username: ${username}, msgArr.length: ${msgArr.length}, funNumber: ${funNumber})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> rollFunNumber(chatroom: ${chatroom}, tags: ${Object.keys(tags).length}, username: ${username}, msgArr.length: ${msgArr.length}, funNumber: ${funNumber})${resetTxt}`) }
     const channel = chatroom.substring(1)
 
     const randCurrency = Math.floor(Math.random() * currencies.length)
@@ -265,7 +268,16 @@ async function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
     }
     else if (funNumber === 11) {
         users[username].lemons++
-        talk(chatroom, `${users[username].displayName} earned one (1) lemon! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh` : `🍋️`}`)
+        talk(chatroom, `${users[username].displayName} earned one (1) lemon! ${getLemonEmote()}`)
+    }
+    // Random wide (and possibly cursed) BTTV emote
+    else if (funNumber === 12) {
+        const curseChance = [`c! `, ``, ``]
+        const cursed = curseChance[Math.floor(Math.random() * curseChance.length)]
+
+        const emotes = lemonyFresh[channel].bttvEmotes
+        const emote = emotes[Math.floor(Math.random() * emotes.length)]
+        talk(chatroom, `w! ${cursed}${emote}`)
     }
 }
 

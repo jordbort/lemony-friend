@@ -8,6 +8,9 @@ const { lemonyFresh, users } = require(`./data`)
 // Import global settings
 const { resetTxt, boldTxt, grayTxt, settings } = require(`./config`)
 
+// Import emotes
+const { getHypeEmote, getPositiveEmote, getNegativeEmote } = require(`./getEmotes`)
+
 // Import helper functions
 const { talk } = require(`./utils`)
 
@@ -31,13 +34,16 @@ async function authorizeToken(chatroom, user, str) {
     const twitchData = await response.json()
     console.log(twitchData)
 
+    const channel = chatroom.substring(1)
+    const hypeEmote = getHypeEmote(channel)
+    const negativeEmote = getNegativeEmote(channel)
     if (`expires_in` in twitchData) {
         lemonyFresh[user].accessToken = twitchData.access_token
         lemonyFresh[user].refreshToken = twitchData.refresh_token
-        talk(chatroom, `Token was authorized :)`)
+        talk(chatroom, `Token was authorized! ${hypeEmote}`)
         return true
     } else {
-        talk(chatroom, `Invalid token :(`)
+        talk(chatroom, `Invalid token! ${negativeEmote}`)
         return false
     }
 }
@@ -71,7 +77,8 @@ async function getTwitchChannel(chatroom, broadcaster_id) {
     const channelnfo = await response.json()
     console.log(channelnfo)
 
-    return channelnfo?.data[0] || talk(chatroom, `There was a problem getting the channel info! :(`)
+    const channel = chatroom.substring(1)
+    return channelnfo?.data[0] || talk(chatroom, `There was a problem getting the channel info! ${getNegativeEmote(channel)}`)
 }
 
 async function getTwitchGame(chatroom, str) {
@@ -89,13 +96,23 @@ async function getTwitchGame(chatroom, str) {
     talk(chatroom, `Looking for ${str}!`)
 }
 
-async function getTwitchToken() {
-    if (settings.debug) { console.log(`${boldTxt}> getTwitchToken()${resetTxt}`) }
+async function getBotToken(chatroom, replyWanted) {
+    if (settings.debug) { console.log(`${boldTxt}> getBotToken()${resetTxt}`) }
+    const channel = chatroom.substring(1)
+    const hypeEmote = getHypeEmote(channel)
+    const negativeEmote = getNegativeEmote(channel)
+
     const url = `https://id.twitch.tv/oauth2/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&grant_type=client_credentials`;
     const response = await fetch(url, { method: "POST" })
-    const token = await response.json()
-    console.log(`${grayTxt}${JSON.stringify(token)}${resetTxt}`)
-    lemonyFresh.botAccessToken = token.access_token
+    const twitchData = await response.json()
+    console.log(`${grayTxt}${JSON.stringify(twitchData)}${resetTxt}`)
+
+    if (`expires_in` in twitchData) {
+        lemonyFresh.botAccessToken = twitchData.access_token
+        if (replyWanted) { talk(chatroom, `Updated! My new token expires in ~${Math.round(twitchData.expires_in / 1000 / 60)} minutes! ${hypeEmote}`) }
+    } else {
+        talk(chatroom, `Error updating access token! ${negativeEmote}${twitchData.error ? ` ${twitchData.error}` : ``}`)
+    }
 }
 
 async function getTwitchUser(chatroom, username) {
@@ -113,17 +130,33 @@ async function getTwitchUser(chatroom, username) {
     const userInfo = await response.json()
     console.log(userInfo)
 
-    return `error` in userInfo
-        ? talk(chatroom, userInfo.error)
-        : userInfo.data.length === 0
-            ? talk(chatroom, `No user ${username} was found! :(`)
-            : userInfo.data[0]
+    const channel = chatroom.substring(1)
+    const negativeEmote = getNegativeEmote(channel)
+    if (`error` in userInfo) {
+        if (userInfo.error === `Unauthorized`) {
+            talk(chatroom, `Hold on, I need to refresh my token...`)
+            await getBotToken(chatroom, false)
+            options.headers.authorization = `Bearer ${lemonyFresh.botAccessToken}`
+            const finalAttempt = await fetch(endpoint, options)
+            const finalAttemptData = await finalAttempt.json()
+            console.log(finalAttemptData)
+            if (userInfo.data[0]?.id) { return userInfo.data[0] }
+        } else {
+            talk(chatroom, `Error: ${userInfo.error} ${negativeEmote}`)
+        }
+    } else if (userInfo.data.length === 0) {
+        return talk(chatroom, `No user ${username} was found! ${negativeEmote}`)
+    } else {
+        return userInfo.data[0]
+    }
 }
 
 async function pollEnd(chatroom, status) {
     if (settings.debug) { console.log(`${boldTxt}> pollEnd(chatroom: ${chatroom})${resetTxt}`) }
     const channel = chatroom.substring(1)
-    if (!lemonyFresh[channel].pollId) { return talk(chatroom, `There is no active poll! :(`) }
+    const positiveEmote = getPositiveEmote(channel)
+    const negativeEmote = getNegativeEmote(channel)
+    if (!lemonyFresh[channel].pollId) { return talk(chatroom, `There is no active poll! ${negativeEmote}`) }
 
     const endpoint = `https://api.twitch.tv/helix/polls?broadcaster_id=${lemonyFresh[channel].id}&id=${lemonyFresh[channel].pollId}&status=${status}`
     const options = {
@@ -139,20 +172,32 @@ async function pollEnd(chatroom, status) {
     console.log(twitchData)
 
     if (`error` in twitchData) {
-        talk(chatroom, `Error ending poll! :(`)
+        talk(chatroom, `Error ending poll! ${negativeEmote}`)
     } else if (twitchData.data[0].status = status) {
         lemonyFresh[channel].pollId = ``
-        talk(chatroom, `Poll ${status === `TERMINATED` ? `finished` : `was canceled`}! :)`)
+        talk(chatroom, `Poll ${status === `TERMINATED` ? `finished` : `was canceled`}! ${positiveEmote}`)
     }
 }
 
 async function pollStart(chatroom, str) {
     if (settings.debug) { console.log(`${boldTxt}> pollStart(chatroom: ${chatroom}, str: ${str})${resetTxt}`) }
     const channel = chatroom.substring(1)
-    if (lemonyFresh[channel].pollId) { return talk(chatroom, `There is already a poll in progress!`) }
-    const params = str.split(new RegExp(/ ?\/ ?/))
+    const positiveEmote = getPositiveEmote(channel)
+    const negativeEmote = getNegativeEmote(channel)
+    if (lemonyFresh[channel].pollId) { return talk(chatroom, `There is already a poll in progress! ${negativeEmote}`) }
 
-    const duration = Number(params.shift())
+    const params = str.split(new RegExp(/ ?\/ ?/))
+    const seconds = params.shift()
+    let duration = Number(seconds)
+    if ([`<`, `>`].some((bracket) => seconds.includes(bracket))) {
+        const regex = /^<(\d+)>$/
+        if (!seconds.match(regex)) {
+            return talk(chatroom, `Error: Please don't use angle brackets in the seconds! :)`)
+        } else {
+            duration = Number(seconds.split(regex)[1])
+        }
+    }
+
     if (isNaN(duration)
         || duration < 15
         || duration > 1800) {
@@ -191,22 +236,25 @@ async function pollStart(chatroom, str) {
     if (`error` in twitchData) {
         if (twitchData.message === `Invalid OAuth token`) {
             talk(chatroom, `Hold on, I need to refresh the token...`)
-            await refreshToken(chatroom)
+            await refreshToken(chatroom, false)
             options.headers.authorization = `Bearer ${lemonyFresh[channel].accessToken}`
             const finalAttempt = await fetch(endpoint, options)
             const finalAttemptData = await finalAttempt.json()
-            if (finalAttemptData?.data) { lemonyFresh[channel].pollId = finalAttemptData.data[0].id }
-            setTimeout(() => { lemonyFresh[channel].pollId = `` }, duration * 1000)
             console.log(finalAttemptData)
+            if (finalAttemptData?.data) {
+                talk(chatroom, `Poll created, go vote! ${positiveEmote}`)
+                lemonyFresh[channel].pollId = finalAttemptData.data[0].id
+                setTimeout(() => { lemonyFresh[channel].pollId = `` }, duration * 1000)
+            }
         } else {
             talk(chatroom, `(Error ${twitchData.status}) ${twitchData.error}: ${twitchData.message}`)
         }
     } else if (!twitchData.data) {
-        talk(chatroom, `Error creating poll :(`)
+        talk(chatroom, `Error creating poll! ${negativeEmote}`)
     } else {
         lemonyFresh[channel].pollId = twitchData.data[0].id
         setTimeout(() => { lemonyFresh[channel].pollId = `` }, duration * 1000)
-        talk(chatroom, `Poll created. Go vote! :)`)
+        talk(chatroom, `Poll created, go vote! ${positiveEmote}`)
     }
 }
 
@@ -223,7 +271,7 @@ async function handleShoutOut(chatroom, user) {
     talk(chatroom, response)
 }
 
-async function refreshToken(chatroom) {
+async function refreshToken(chatroom, replyWanted) {
     if (settings.debug) { console.log(`${boldTxt}> refreshToken(chatroom: ${chatroom})${resetTxt}`) }
     const channel = chatroom.substring(1)
     const refreshToken = lemonyFresh[channel].refreshToken
@@ -242,12 +290,14 @@ async function refreshToken(chatroom) {
     const twitchData = await response.json()
     console.log(twitchData)
 
+    const hypeEmote = getHypeEmote(channel)
+    const negativeEmote = getNegativeEmote(channel)
     if (`expires_in` in twitchData) {
         lemonyFresh[channel].accessToken = twitchData.access_token
         lemonyFresh[channel].refreshToken = twitchData.refresh_token
-        talk(chatroom, `Success! :D`)
+        if (replyWanted) { talk(chatroom, `Successfully updated ${channel}'s token! ${hypeEmote}`) }
     } else {
-        talk(chatroom, `Error refreshing token :(`)
+        talk(chatroom, `Error refreshing token! ${negativeEmote}`)
     }
 }
 
@@ -265,9 +315,11 @@ async function validateToken(chatroom) {
     const twitchData = await response.json()
     console.log(twitchData)
 
+    const positiveEmote = getPositiveEmote(channel)
+    const negativeEmote = getNegativeEmote(channel)
     return `expires_in` in twitchData
-        ? talk(chatroom, `${users[twitchData.login]?.displayName || twitchData.login}'s token expires in ${Math.round(twitchData.expires_in / 60)} minute${Math.round(twitchData.expires_in / 60) === 1 ? `` : `s`}!`)
-        : talk(chatroom, `${channel}'s token is invalid! :(`)
+        ? talk(chatroom, `${users[twitchData.login]?.displayName || twitchData.login}'s token expires in ${Math.round(twitchData.expires_in / 60)} minute${Math.round(twitchData.expires_in / 60) === 1 ? `` : `s`}! ${positiveEmote}`)
+        : talk(chatroom, `${channel}'s token is invalid! ${negativeEmote}`)
 }
 
 module.exports = {
@@ -275,7 +327,7 @@ module.exports = {
     getOAUTHToken,
     getTwitchChannel,
     getTwitchGame,
-    getTwitchToken,
+    getBotToken,
     getTwitchUser,
     handleShoutOut,
     pollEnd,

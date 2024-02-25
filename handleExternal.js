@@ -3,13 +3,17 @@ const API_KEY = process.env.API_KEY
 // Import global settings
 const { resetTxt, boldTxt, settings } = require(`./config`)
 
+// Import emotes
+const { getNegativeEmote } = require(`./getEmotes`)
+
 // Import helper functions
 const { talk } = require(`./utils`)
 
 async function checkSentiment(chatroom, msg) {
     if (settings.debug) { console.log(`${boldTxt}> checkSentiment(chatroom: ${chatroom}, msg: ${msg})${resetTxt}`) }
 
-    const endpoint = `https://api.api-ninjas.com/v1/sentiment?text=${msg}`
+    const sanitizedMsg = msg.replace(/[\\{`}%^|]/g, ``)
+    const endpoint = `https://api.api-ninjas.com/v1/sentiment?text=${sanitizedMsg}`
     const options = {
         headers: {
             'X-Api-Key': API_KEY
@@ -40,9 +44,11 @@ async function getDadJoke(chatroom) {
     })
     const data = await response.json()
     if (settings.debug) { console.log(data) }
+    const channel = chatroom.substring(1)
+    const negativeEmote = getNegativeEmote(channel)
     data.status === 200
         ? talk(chatroom, data.joke)
-        : talk(chatroom, `Error fetching dad joke! :(`)
+        : talk(chatroom, `Error fetching dad joke! ${negativeEmote}`)
 }
 
 async function getDefinition(chatroom, str) {
@@ -60,10 +66,12 @@ async function getDefinition(chatroom, str) {
     const data = await response.json()
     console.log(data)
 
+    const channel = chatroom.substring(1)
+    const negativeEmote = getNegativeEmote(channel)
     if ('error' in data) {
-        talk(chatroom, `Error: ${data.error} :(`)
+        talk(chatroom, `Error: ${data.error} ${negativeEmote}`)
     } else if (!data.valid || !data.definition) {
-        talk(chatroom, `I don't think "${data.word}" is a word! :(`)
+        talk(chatroom, `I don't think "${data.word}" is a word! ${negativeEmote}`)
     } else {
         let definition = `Definition of "${data.word}":`
         const splitDefinition = data.definition.split(`. `)
@@ -78,8 +86,10 @@ async function getPokemon(chatroom, pokemon) {
     if (!pokemon) { return }
 
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`)
+    const channel = chatroom.substring(1)
+    const negativeEmote = getNegativeEmote(channel)
     if (response.statusText !== `OK`) {
-        talk(chatroom, `Pokemon ${pokemon} was not found! :(`)
+        talk(chatroom, `Pokemon ${pokemon} was not found! ${negativeEmote}`)
         return
     }
     const data = await response.json()

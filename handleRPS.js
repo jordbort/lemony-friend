@@ -4,6 +4,9 @@ const { users } = require(`./data`)
 // Import global settings
 const { resetTxt, boldTxt, settings } = require(`./config`)
 
+// Import emotes
+const { getHypeEmote } = require(`./getEmotes`)
+
 // Import helper functions
 const { talk } = require(`./utils`)
 
@@ -14,12 +17,13 @@ function rockPaperScissors(chatroom, username, arg) {
     const playerChoice = rps.includes(arg) ? arg : rps[Math.floor(Math.random() * rps.length)]
     const name = users[username].displayName
     let response = `${name} throws ${playerChoice}! I throw ${botChoice}`
+    const channel = chatroom.substring(1)
     if ((playerChoice === `rock` && botChoice === `paper`)
         || (playerChoice === `paper` && botChoice === `scissors`)
         || (playerChoice === `scissors` && botChoice === `rock`)) { response += `. Sorry, I win! :)` }
     else if ((playerChoice === `rock` && botChoice === `scissors`)
         || (playerChoice === `paper` && botChoice === `rock`)
-        || (playerChoice === `scissors` && botChoice === `paper`)) { response += `. You win! :D` }
+        || (playerChoice === `scissors` && botChoice === `paper`)) { response += `. You win! ${getHypeEmote(channel)}` }
     else { response += `, too. It's a tie! :O` }
     talk(chatroom, response)
 }
