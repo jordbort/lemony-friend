@@ -153,9 +153,7 @@ const {
     getRandomChannelMessage,
     handleTempCmd,
     delayListening,
-    ping,
     chant,
-    getToUser,
     printLemon,
     talk,
     makeLogs,
@@ -194,8 +192,8 @@ function onMessageHandler(chatroom, tags, message, self) {
     // Command and arguments parser
     const args = msg.split(` `)
     const command = args.shift().toLowerCase()
-    const toUser = args[0] ? getToUser(args[0]) : ``
-    const target = toUser.toLowerCase() in users ? toUser.toLowerCase() : null
+    const toUser = args[0] ? args[0].replace(/^@/, ``) : null
+    const target = toUser && toUser.toLowerCase() in users ? toUser.toLowerCase() : null
     const currentTime = Date.now()
 
     // User attribute change detection

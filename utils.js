@@ -301,12 +301,6 @@ function delayListening() {
     }, delayTime * 1000)
 }
 
-function ping(arr) {
-    for (const [i, str] of arr.entries()) {
-        setTimeout(() => { talk(str, `hi :)`) }, 1000 * i)
-    }
-}
-
 function chant(chatroom, args) {
     if (settings.debug) { console.log(`${boldTxt}> chant(chatroom: ${chatroom}, args: ${args})${resetTxt}`) }
     const chant = args.map((word) => {
@@ -316,12 +310,6 @@ function chant(chatroom, args) {
     })
     const response = Array(settings.chantCount).fill(`${chant.join(` `)} ${settings.chantEmote}`)
     return talk(chatroom, `:mega: ${response.join(` `)}`)
-}
-
-function getToUser(str) {
-    let toUser = str
-    while (toUser.startsWith(`@`)) { toUser = toUser.substring(1) }
-    return toUser
 }
 
 function printLemon() {
@@ -507,9 +495,7 @@ module.exports = {
     getRandomChannelMessage,
     handleTempCmd,
     delayListening,
-    ping,
     chant,
-    getToUser,
     printLemon,
     talk,
     makeLogs,
