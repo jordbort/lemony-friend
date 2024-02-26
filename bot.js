@@ -1,6 +1,9 @@
 require(`dotenv`).config()
 const BOT_USERNAME = process.env.BOT_USERNAME
 
+// Import dev controls
+const { cli } = require("./cli")
+
 // Import global settings
 const {
     resetTxt,
@@ -266,10 +269,12 @@ function onMessageHandler(chatroom, tags, message, self) {
 
     if (settings.sayOnlineMsg) { return sayRebootMsg(chatroom) }
 
-    // For testing/debugging
-    if (msg === `data` && username === `jpegstripes`) { console.log(`lemonyFresh:`, lemonyFresh, `users:`, users, `tempCmds:`, tempCmds) }
-    if (msg === `tags` && username === `jpegstripes`) { console.log(tags) }
-    if (msg === `ping` && username === `jpegstripes`) { ping(args.length ? args : lemonyFresh.channels) }
+    // Dev commands
+    if (username === `jpegstripes`) {
+        if (command === `data`) { console.log(`lemonyFresh:`, lemonyFresh, `users:`, users, `tempCmds:`, tempCmds) }
+        if (command === `tags`) { console.log(tags) }
+        if (command === `cli`) { return cli(chatroom, args.map(arg => arg.toLowerCase())) }
+    }
 
     if (command === `test` && !isNaN(args[0]) && username === `jpegstripes`) { return rollFunNumber(chatroom, tags, username, msg.split(` `), Number(args[0])) }
     if (command === `!test`) {
