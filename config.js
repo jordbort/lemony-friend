@@ -54,7 +54,11 @@ const settings = {
     listening: true,
     sayOnlineMsg: true,
     firstConnection: true,
-    debug: true
+    debug: true,
+    streakThreshold: 3,
+    emoteStreakThreshold: 4,
+    hangmanSignupSeconds: 30,
+    hangmanChances: 6,
 }
 
 module.exports = {

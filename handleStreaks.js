@@ -18,9 +18,9 @@ function checkStreak(chatroom, msg) {
             && msg !== `!play`) {
             streakCount++
             streakUsers.push(users[user].displayName)
-            if (streakCount >= 2) { console.log(`${boldTxt}> checkStreak("${msg}")`, streakCount, `/ 3 - ${streakUsers.join(`, `)}${resetTxt}`) }
+            if (streakCount >= 2) { console.log(`${boldTxt}> checkStreak("${msg}")`, streakCount, `/ ${settings.streakThreshold} - ${streakUsers.join(`, `)}${resetTxt}`) }
         }
-        if (streakCount >= 3) {
+        if (streakCount >= settings.streakThreshold) {
             delayListening()
             setTimeout(() => { talk(chatroom, msg) }, 1000)
             return true
@@ -41,12 +41,12 @@ function checkEmoteStreak(chatroom, emoteArr) {
                 emoteStreakCount++
                 emoteStreakUsers.push(users[user].displayName)
                 console.log(`${grayTxt}> found`, emote, `from`, user, `emoteStreakCount:${resetTxt}`, emoteStreakCount)
-                if (emoteStreakCount >= 2) { console.log(`${boldTxt}Looking for ${emoteArr[0].substring(0, 4)} emotes... ${emoteStreakCount}/4 messages - ${emoteStreakUsers.join(`, `)}${resetTxt}`) }
+                if (emoteStreakCount >= 2) { console.log(`${boldTxt}Looking for ${emoteArr[0].substring(0, 4)} emotes... ${emoteStreakCount}/${settings.emoteStreakThreshold} messages - ${emoteStreakUsers.join(`, `)}${resetTxt}`) }
                 break
             }
         }
     }
-    if (emoteStreakCount >= 4) {
+    if (emoteStreakCount >= settings.emoteStreakThreshold) {
         console.log(`${grayTxt}> hit${resetTxt}`, emoteStreakCount)
         delayListening()
         return emoteReply(chatroom, emoteArr)
