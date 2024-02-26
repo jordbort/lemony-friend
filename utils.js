@@ -307,6 +307,17 @@ function ping(arr) {
     }
 }
 
+function chant(chatroom, args) {
+    if (settings.debug) { console.log(`${boldTxt}> chant(chatroom: ${chatroom}, args: ${args})${resetTxt}`) }
+    const chant = args.map((word) => {
+        return !lemonyFresh.jpegstripes.emotes.includes(word) && !lemonyFresh.sclarf.emotes.includes(word) && !lemonyFresh.e1ectroma.emotes.includes(word) && !lemonyFresh.domonintendo1.emotes.includes(word) && !lemonyFresh.ppuyya.emotes.includes(word)
+            ? word.toUpperCase()
+            : word
+    })
+    const response = Array(settings.chantCount).fill(`${chant.join(` `)} ${settings.chantEmote}`)
+    return talk(chatroom, `:mega: ${response.join(` `)}`)
+}
+
 function getToUser(str) {
     let toUser = str
     while (toUser.startsWith(`@`)) { toUser = toUser.substring(1) }
@@ -497,6 +508,7 @@ module.exports = {
     handleTempCmd,
     delayListening,
     ping,
+    chant,
     getToUser,
     printLemon,
     talk,

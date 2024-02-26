@@ -59,6 +59,8 @@ const settings = {
     emoteStreakThreshold: 4,
     hangmanSignupSeconds: 30,
     hangmanChances: 6,
+    chantCount: 8,
+    chantEmote: `:clap:`
 }
 
 module.exports = {

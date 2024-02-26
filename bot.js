@@ -154,6 +154,7 @@ const {
     handleTempCmd,
     delayListening,
     ping,
+    chant,
     getToUser,
     printLemon,
     talk,
@@ -329,6 +330,9 @@ function onMessageHandler(chatroom, tags, message, self) {
         if (command === `!access`) { return getOAUTHToken(chatroom, username) }
         if (command === `!authorize`) { return authorizeToken(chatroom, username, args.join(` `)) }
     }
+
+    // Chant
+    if (command === `!chant`) { return chant(chatroom, args) }
 
     // Start a game of Hangman (if one isn't already in progress)
     if (command === `!hangman`) {
