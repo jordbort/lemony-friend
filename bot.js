@@ -28,8 +28,6 @@ const {
     grayBg,
     orangeBg,
     chatColors,
-    funNumberCount,
-    funNumberTotal,
     settings
 } = require(`./config`)
 
@@ -1019,7 +1017,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     }
 
     // *** FUN NUMBER! ***
-    if (users[username][channel].msgCount % funNumberCount === 0) { return rollFunNumber(chatroom, tags, username, msg.split(` `), Math.floor(Math.random() * funNumberTotal)) }
+    if (user[channel].msgCount % settings.funNumberCount === 0) { return rollFunNumber(chatroom, tags, username, msg.split(` `), Math.floor(Math.random() * settings.funNumberTotal)) }
 
     // Check if user hasn't chatted in more than an hour, but less than 8 hours, and isn't the streamer or a known bot
     if (elapsedMinsSinceLastMsg >= 60

@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 // Import global settings
-const { resetTxt, boldTxt, funNumberCount, funNumberTotal, settings } = require(`./config`)
+const { resetTxt, boldTxt, settings } = require(`./config`)
 
 // Import data
 const { lemonyFresh, users } = require(`./data`)
@@ -257,7 +257,7 @@ async function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
         ]
         talk(chatroom, actions[Math.floor(Math.random() * actions.length)])
     }
-    else if (funNumber === 7) { talk(chatroom, `This message has a 1/${(funNumberCount * funNumberTotal).toLocaleString()} chance of appearing`) }
+    else if (funNumber === 7) { talk(chatroom, `This message has a 1/${(settings.funNumberCount * settings.funNumberTotal).toLocaleString()} chance of appearing`) }
     else if (funNumber === 8) { talk(chatroom, `${tags.id}`) }
     else if (funNumber === 9) { talk(chatroom, `${tags[`tmi-sent-ts`]}`) }
     else if (funNumber === 10) {

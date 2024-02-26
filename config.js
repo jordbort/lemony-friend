@@ -46,15 +46,13 @@ const chatColors = {
 }
 
 // Global settings
-const funNumberCount = 25
-
-const funNumberTotal = 50
-
 const settings = {
     listening: true,
     sayOnlineMsg: true,
     firstConnection: true,
     debug: true,
+    funNumberCount: 25,
+    funNumberTotal: 50,
     streakThreshold: 3,
     emoteStreakThreshold: 4,
     hangmanSignupSeconds: 30,
@@ -89,7 +87,5 @@ module.exports = {
     grayBg,
     orangeBg,
     chatColors,
-    funNumberCount,
-    funNumberTotal,
     settings
 }
