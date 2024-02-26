@@ -116,6 +116,7 @@ const {
     getBotToken,
     getTwitchUser,
     handleShoutOut,
+    makeAnnouncement,
     pollEnd,
     pollStart,
     refreshToken,
@@ -318,14 +319,15 @@ function onMessageHandler(chatroom, tags, message, self) {
         if (command === `!so` && toUser) { return handleShoutOut(chatroom, toUser.toLowerCase()) }
         if (command === `!token`) { return getBotToken(chatroom, true) } // Refreshes bot's access token
         if (command === `!validate`) { return validateToken(chatroom) } // Checks lifespan of channel's access token
-        if (command === `!refresh`) { return refreshToken(chatroom, true) } // Manually refreshes a channe's access token
+        if (command === `!refresh`) { return refreshToken(chatroom, true) } // Manually refreshes a channel's access token
     }
     // Only the streamer or a mod
     if (isMod) {
+        if (command.match(/^!announce([a-z]*)$/)) { return makeAnnouncement(chatroom, command.split(/^!announce([a-z]*)$/)[1], username, args.join(` `)) }
+        if (command === `!poll`) { return !lemonyFresh[channel].pollId ? pollStart(chatroom, args.join(` `)) : talk(channel, `There is already a poll active! ${negativeEmote}`) }
         if (command === `!endpoll`) { return talk(chatroom, lemonyFresh[channel].pollId ? `Use !stoppoll to finish and show the results, or !cancelpoll to remove it! ${positiveEmote}` : `There is no active poll! ${negativeEmote}`) }
         if (command === `!cancelpoll`) { return lemonyFresh[channel].pollId ? pollEnd(chatroom, `ARCHIVED`) : talk(chatroom, `There is no active poll! ${negativeEmote}`) }
         if (command === `!stoppoll`) { return lemonyFresh[channel].pollId ? pollEnd(chatroom, `TERMINATED`) : talk(chatroom, `There is no active poll! ${negativeEmote}`) }
-        if (command === `!poll`) { return !lemonyFresh[channel].pollId ? pollStart(chatroom, args.join(` `)) : talk(channel, `There is already a poll active! ${negativeEmote}`) }
     }
     // Lemony Fresh channel owner only
     if (lemonyFreshMember) {

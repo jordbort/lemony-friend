@@ -52,7 +52,7 @@ async function getOAUTHToken(chatroom, user) {
     if (settings.debug) { console.log(`${boldTxt}> getOAUTHToken(chatroom: ${chatroom}, user: ${user})${resetTxt}`) }
 
     // Scope for making polls, reading polls, and making announcements
-    const urlEncodedScope = `channel%3Amanage%3Apolls+channel%3Aread%3Apolls`
+    const urlEncodedScope = `channel%3Amanage%3Apolls+channel%3Aread%3Apolls+moderator%3Amanage%3Aannouncements`
 
     const endpoint = `https://id.twitch.tv/oauth2/authorize`
 
@@ -271,6 +271,37 @@ async function handleShoutOut(chatroom, user) {
     talk(chatroom, response)
 }
 
+async function makeAnnouncement(chatroom, commandSuffix, username, message) {
+    if (settings.debug) { console.log(`${boldTxt}> makeAnnouncement(chatroom: ${chatroom}, commandSuffix: ${commandSuffix}, username: ${username}, message: ${message})${resetTxt}`) }
+
+    const channel = chatroom.substring(1)
+    const negativeEmote = getNegativeEmote(channel)
+    if (!message) { return talk(chatroom, `No announcement message provided! ${negativeEmote}`) }
+
+    const color = [`blue`, `green`, `orange`, `purple`].includes(commandSuffix) ? commandSuffix : `primary`
+    const requestBody = {
+        message: message,
+        color: color
+    }
+    const endpoint = `https://api.twitch.tv/helix/chat/announcements?broadcaster_id=${lemonyFresh[channel].id}&moderator_id=${lemonyFresh[channel].id}`
+    const options = {
+        method: 'POST',
+        headers: {
+            authorization: `Bearer ${lemonyFresh[channel].accessToken}`,
+            "Client-Id": CLIENT_ID,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+    }
+
+    const response = await fetch(endpoint, options)
+    if (response.status !== 204) {
+        const data = await response.json()
+        console.log(data)
+        talk(chatroom, `${data.error}: ${data.message}`)
+    }
+}
+
 async function refreshToken(chatroom, replyWanted) {
     if (settings.debug) { console.log(`${boldTxt}> refreshToken(chatroom: ${chatroom})${resetTxt}`) }
     const channel = chatroom.substring(1)
@@ -330,6 +361,7 @@ module.exports = {
     getBotToken,
     getTwitchUser,
     handleShoutOut,
+    makeAnnouncement,
     pollEnd,
     pollStart,
     refreshToken,
