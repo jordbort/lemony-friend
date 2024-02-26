@@ -389,7 +389,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     if (command === `!mystats`) {
         const user = target || username
         console.log(`${user}:`, users[user])
-        let data = `${user}: { displayName: '${users[user].displayName}', color: ${users[user].color}`
+        let data = `${user}: { displayName: '${users[user].displayName}', color: ${users[user].color}, lemons: ${users[user].lemons}, hangmanWins: ${users[user].hangmanWins}, riddleWins: ${users[user].riddleWins}`
         for (const key of Object.keys(users[user])) {
             if (typeof users[user][key] === `object`) {
                 data += `, ${key}: { sub: ${users[user][key]?.sub}, mod: ${users[user][key].mod}, vip: ${users[user][key].vip}, msgCount: ${users[user][key].msgCount}, lastMessage: '${users[user][key].lastMessage}', sentAt: ${users[user][key].sentAt}, away: ${users[user][key].away ? `${users[user][key].away}, awayMessage: '${users[user][key].awayMessage}'` : `${users[user][key].away}`} }`
