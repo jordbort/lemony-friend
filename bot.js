@@ -316,7 +316,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     // TWITCH COMMANDS
     // Only the streamer, a mod, or a VIP
     if (isModOrVIP) {
-        if (command === `!so` && toUser) { return handleShoutOut(chatroom, toUser.toLowerCase()) }
+        if (command === `!so` && toUser) { return handleShoutOut(chatroom, username, toUser.toLowerCase()) }
         if (command === `!token`) { return getBotToken(chatroom, true) } // Refreshes bot's access token
         if (command === `!validate`) { return validateToken(chatroom) } // Checks lifespan of channel's access token
         if (command === `!refresh`) { return refreshToken(chatroom, true) } // Manually refreshes a channel's access token

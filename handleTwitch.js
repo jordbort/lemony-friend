@@ -52,7 +52,7 @@ async function getOAUTHToken(chatroom, user) {
     if (settings.debug) { console.log(`${boldTxt}> getOAUTHToken(chatroom: ${chatroom}, user: ${user})${resetTxt}`) }
 
     // Scope for making polls, reading polls, and making announcements
-    const urlEncodedScope = `channel%3Amanage%3Apolls+channel%3Aread%3Apolls+moderator%3Amanage%3Aannouncements`
+    const urlEncodedScope = `channel%3Amanage%3Apolls+channel%3Aread%3Apolls+moderator%3Amanage%3Aannouncements+moderator%3Amanage%3Ashoutouts`
 
     const endpoint = `https://id.twitch.tv/oauth2/authorize`
 
@@ -258,21 +258,44 @@ async function pollStart(chatroom, str) {
     }
 }
 
-async function handleShoutOut(chatroom, user) {
-    if (settings.debug) { console.log(`${boldTxt}> handleShoutOut(chatroom: ${chatroom}, user: ${user})${resetTxt}`) }
-    const twitchUser = await getTwitchUser(chatroom, user)
+async function handleShoutOut(chatroom, username, toUser) {
+    if (settings.debug) { console.log(`${boldTxt}> handleShoutOut(chatroom: ${chatroom}, username: ${username}, toUser: ${toUser})${resetTxt}`) }
+
+    const twitchUser = await getTwitchUser(chatroom, toUser)
     if (!twitchUser) { return console.log(`${grayTxt}No user found, exiting handleShoutOut function${resetTxt}`) }
     const stream = await getTwitchChannel(chatroom, twitchUser.id)
     let response = `Let's give a shoutout to ${stream.broadcaster_name}! `
+
     stream.game_name
         ? response += `They were last playing ${stream.game_name}${twitchUser.broadcaster_type ? ` and are a Twitch ${twitchUser.broadcaster_type.substring(0, 1).toUpperCase() + twitchUser.broadcaster_type.substring(1)}!` : `.`}`
         : response += `#NoGameGang`
     response += ` Follow them here: https://www.twitch.tv/${stream.broadcaster_login} :)`
+
+    // Twitch official shoutout (if not to self or current channel)
+    const channel = chatroom.substring(1)
+    if (users[username][channel].mod && ![channel, username].includes(toUser)) {
+        const endpoint = `https://api.twitch.tv/helix/chat/shoutouts?from_broadcaster_id=${lemonyFresh[channel].id}&to_broadcaster_id=${twitchUser.id}&moderator_id=${lemonyFresh[channel].id}`
+        const options = {
+            method: 'POST',
+            headers: {
+                authorization: `Bearer ${lemonyFresh[channel].accessToken}`,
+                "Client-Id": CLIENT_ID
+            }
+        }
+        const response = await fetch(endpoint, options)
+        if (response.status !== 204) {
+            const data = await response.json()
+            console.log(data)
+        }
+    } else {
+        console.log(`${grayTxt}> Can't give shoutout to ${toUser === username ? `self` : `current channel`}${resetTxt}`)
+    }
+
     talk(chatroom, response)
 }
 
 async function makeAnnouncement(chatroom, commandSuffix, username, message) {
-    if (settings.debug) { console.log(`${boldTxt}> makeAnnouncement(chatroom: ${chatroom}, commandSuffix: ${commandSuffix}, username: ${username}, message: ${message})${resetTxt}`) }
+    if (settings.debug) { console.log(`${boldTxt}> makeAnnouncement(chatroom: ${chatroom}, color: ${[`blue`, `green`, `orange`, `purple`].includes(commandSuffix) ? commandSuffix : `primary`}, username: ${username}, message: ${message})${resetTxt}`) }
 
     const channel = chatroom.substring(1)
     const negativeEmote = getNegativeEmote(channel)
