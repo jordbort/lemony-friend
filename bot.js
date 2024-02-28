@@ -182,7 +182,6 @@ function onConnectedHandler(addr, port) {
 function onMessageHandler(chatroom, tags, message, self) {
     const msg = message.replace(/ +/g, ` `)
     const username = tags.username
-    const displayName = tags[`display-name`]
     const channel = chatroom.slice(1)
     const color = tags.color || ``
     const firstMsg = tags['first-msg']
@@ -289,6 +288,14 @@ function onMessageHandler(chatroom, tags, message, self) {
             delete users[BOT_USERNAME][channel].points
             return talk(chatroom, `I forgor 💀️`)
         }
+    }
+
+    // If guessing the Fun Timer correctly
+    if (lemonyFresh[channel].funTimerGuesser === username && msg.includes(lemonyFresh[channel].funTimer)) {
+        lemonyFresh[channel].funTimer = 0
+        lemonyFresh[channel].funTimerGuesser = ``
+        user.lemons++
+        return talk(chatroom, `That's right ${user.displayName}, have a lemon! ${lemonEmote}`)
     }
 
     // If first message since being away
