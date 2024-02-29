@@ -356,106 +356,62 @@ function talk(chatroom, msg) {
 
 const startTime = new Date().toLocaleString(`en-US`, { timeZone: `EST` })
 function makeLogs() {
-    let data = `🍋️ LEMONY LOGS 🍋️\n\n`
+    let log = `🍋️ LEMONY LOGS 🍋️\n`
+    log += `Session started: ${startTime}\n\n`
 
     const anyTokenChange = lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN || lemonyFresh.jpegstripes.accessToken !== JPEGSTRIPES_ACCESS_TOKEN || lemonyFresh.jpegstripes.refreshToken !== JPEGSTRIPES_REFRESH_TOKEN || lemonyFresh.sclarf.accessToken !== SCLARF_ACCESS_TOKEN || lemonyFresh.sclarf.refreshToken !== SCLARF_REFRESH_TOKEN || lemonyFresh.e1ectroma.accessToken !== E1ECTROMA_ACCESS_TOKEN || lemonyFresh.e1ectroma.refreshToken !== E1ECTROMA_REFRESH_TOKEN || lemonyFresh.domonintendo1.accessToken !== DOMONINTENDO1_ACCESS_TOKEN || lemonyFresh.domonintendo1.refreshToken !== DOMONINTENDO1_REFRESH_TOKEN || lemonyFresh.ppuyya.accessToken !== PPUYYA_ACCESS_TOKEN || lemonyFresh.ppuyya.refreshToken !== PPUYYA_REFRESH_TOKEN
-    if (anyTokenChange) { data += `${Array(50).fill(`*`).join(` `)}\n` }
-    if (lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN) { data += `BOT_ACCESS_TOKEN changed, update to: '${lemonyFresh.botAccessToken}'\n` }
-    if (lemonyFresh.jpegstripes.accessToken !== JPEGSTRIPES_ACCESS_TOKEN) { data += `JPEGSTRIPES_ACCESS_TOKEN changed, update to: '${lemonyFresh.jpegstripes.accessToken}'\n` }
-    if (lemonyFresh.jpegstripes.refreshToken !== JPEGSTRIPES_REFRESH_TOKEN) { data += `JPEGSTRIPES_REFRESH_TOKEN changed, update to: '${lemonyFresh.jpegstripes.refreshToken}'\n` }
-    if (lemonyFresh.sclarf.accessToken !== SCLARF_ACCESS_TOKEN) { data += `SCLARF_ACCESS_TOKEN changed, update to: '${lemonyFresh.sclarf.accessToken}'\n` }
-    if (lemonyFresh.sclarf.refreshToken !== SCLARF_REFRESH_TOKEN) { data += `SCLARF_REFRESH_TOKEN changed, update to: '${lemonyFresh.sclarf.refreshToken}'\n` }
-    if (lemonyFresh.e1ectroma.accessToken !== E1ECTROMA_ACCESS_TOKEN) { data += `E1ECTROMA_ACCESS_TOKEN changed, update to: '${lemonyFresh.e1ectroma.accessToken}'\n` }
-    if (lemonyFresh.e1ectroma.refreshToken !== E1ECTROMA_REFRESH_TOKEN) { data += `E1ECTROMA_REFRESH_TOKEN changed, update to: '${lemonyFresh.e1ectroma.refreshToken}'\n` }
-    if (lemonyFresh.domonintendo1.accessToken !== DOMONINTENDO1_ACCESS_TOKEN) { data += `DOMONINTENDO1_ACCESS_TOKEN changed, update to: '${lemonyFresh.domonintendo1.accessToken}'\n` }
-    if (lemonyFresh.domonintendo1.refreshToken !== DOMONINTENDO1_REFRESH_TOKEN) { data += `DOMONINTENDO1_REFRESH_TOKEN changed, update to: '${lemonyFresh.domonintendo1.refreshToken}'\n` }
-    if (lemonyFresh.ppuyya.accessToken !== PPUYYA_ACCESS_TOKEN) { data += `PPUYYA_ACCESS_TOKEN changed, update to: '${lemonyFresh.ppuyya.accessToken}'\n` }
-    if (lemonyFresh.ppuyya.refreshToken !== PPUYYA_REFRESH_TOKEN) { data += `PPUYYA_REFRESH_TOKEN changed, update to: '${lemonyFresh.ppuyya.refreshToken}'\n` }
-    if (anyTokenChange) { data += `${Array(50).fill(`*`).join(` `)}\n\n` }
+    if (anyTokenChange) { log += `${Array(50).fill(`*`).join(` `)}\n` }
+    if (lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN) { log += `BOT_ACCESS_TOKEN changed, update to: '${lemonyFresh.botAccessToken}'\n` }
+    if (lemonyFresh.jpegstripes.accessToken !== JPEGSTRIPES_ACCESS_TOKEN) { log += `JPEGSTRIPES_ACCESS_TOKEN changed, update to: '${lemonyFresh.jpegstripes.accessToken}'\n` }
+    if (lemonyFresh.jpegstripes.refreshToken !== JPEGSTRIPES_REFRESH_TOKEN) { log += `JPEGSTRIPES_REFRESH_TOKEN changed, update to: '${lemonyFresh.jpegstripes.refreshToken}'\n` }
+    if (lemonyFresh.sclarf.accessToken !== SCLARF_ACCESS_TOKEN) { log += `SCLARF_ACCESS_TOKEN changed, update to: '${lemonyFresh.sclarf.accessToken}'\n` }
+    if (lemonyFresh.sclarf.refreshToken !== SCLARF_REFRESH_TOKEN) { log += `SCLARF_REFRESH_TOKEN changed, update to: '${lemonyFresh.sclarf.refreshToken}'\n` }
+    if (lemonyFresh.e1ectroma.accessToken !== E1ECTROMA_ACCESS_TOKEN) { log += `E1ECTROMA_ACCESS_TOKEN changed, update to: '${lemonyFresh.e1ectroma.accessToken}'\n` }
+    if (lemonyFresh.e1ectroma.refreshToken !== E1ECTROMA_REFRESH_TOKEN) { log += `E1ECTROMA_REFRESH_TOKEN changed, update to: '${lemonyFresh.e1ectroma.refreshToken}'\n` }
+    if (lemonyFresh.domonintendo1.accessToken !== DOMONINTENDO1_ACCESS_TOKEN) { log += `DOMONINTENDO1_ACCESS_TOKEN changed, update to: '${lemonyFresh.domonintendo1.accessToken}'\n` }
+    if (lemonyFresh.domonintendo1.refreshToken !== DOMONINTENDO1_REFRESH_TOKEN) { log += `DOMONINTENDO1_REFRESH_TOKEN changed, update to: '${lemonyFresh.domonintendo1.refreshToken}'\n` }
+    if (lemonyFresh.ppuyya.accessToken !== PPUYYA_ACCESS_TOKEN) { log += `PPUYYA_ACCESS_TOKEN changed, update to: '${lemonyFresh.ppuyya.accessToken}'\n` }
+    if (lemonyFresh.ppuyya.refreshToken !== PPUYYA_REFRESH_TOKEN) { log += `PPUYYA_REFRESH_TOKEN changed, update to: '${lemonyFresh.ppuyya.refreshToken}'\n` }
+    if (anyTokenChange) { log += `${Array(50).fill(`*`).join(` `)}\n\n` }
 
-    data += `lemonyFresh: {\n`
-    for (const key of Object.keys(lemonyFresh)) {
-        if (Array.isArray(lemonyFresh[key])) { // Chatrooms list
-            data += `\t${key}: ['${lemonyFresh[key].join(`', '`)}'],\n`
-        } else if (typeof lemonyFresh[key] === `string`) { // Bot access token
-            data += `\t${key}: '${lemonyFresh[key]}',\n`
-        } else {
-            // Channel name
-            data += `\t${key}: {\n`
-            for (const val of Object.keys(lemonyFresh[key])) {
-                if (Array.isArray(lemonyFresh[key][val])) {
-                    if (lemonyFresh[key][val].length === 0) {
-                        data += `\t\t${val}: [],\n`
-                    } else {
-                        data += `\t\t${val}: ['${lemonyFresh[key][val].join(`', '`)}'],\n`
-                    }
-                } else if (typeof lemonyFresh[key][val] === `string`) {
-                    if (lemonyFresh[key][val].length === 0) {
-                        data += `\t\t${val}: '',\n`
-                    } else {
-                        data += `\t\t${val}: '${lemonyFresh[key][val]}',\n`
-                    }
-                } else if (typeof lemonyFresh[key][val] === `number`) {
-                    data += `\t\t${val}: ${lemonyFresh[key][val]},\n`
-                } else if (typeof lemonyFresh[key][val] === `object`) {
-                    data += `\t\t${val}: {\n`
-                    // Hangman/Riddle
-                    for (const gameProp of Object.keys(lemonyFresh[key][val])) {
-                        if (Array.isArray(lemonyFresh[key][val][gameProp])) {
-                            if (lemonyFresh[key][val][gameProp].length === 0) {
-                                data += `\t\t\t${gameProp}: [],\n`
-                            } else {
-                                data += `\t\t\t${gameProp}: ['${lemonyFresh[key][val][gameProp].join(`', '`)}'],\n`
-                            }
-                        } else if (typeof lemonyFresh[key][val][gameProp] === `string`) {
-                            if (lemonyFresh[key][val][gameProp].length === 0) {
-                                data += `\t\t\t${gameProp}: '',\n`
-                            } else {
-                                data += `\t\t\t${gameProp}: '${lemonyFresh[key][val][gameProp]}',\n`
-                            }
-                        } else { // number or boolean
-                            data += `\t\t\t${gameProp}: ${lemonyFresh[key][val][gameProp]},\n`
-                        }
-                    }
-                    data += `\t\t},\n`
-                }
-            }
-            data += `\t},\n` // End of channel objects
+    function renderObj(obj, objName, indentation = ``) {
+        const tab = `${indentation}\t`
+        const data = [`${objName}: {`]
+        if (Object.keys(obj).length) {
+            const keys = `\n${Object.keys(obj).map((key) => {
+                return typeof obj[key] === `string`
+                    ? `${tab}${key}: '${obj[key]}'`
+                    : typeof obj[key] === `object`
+                        ? Array.isArray(obj[key])
+                            ? `${tab}${key}: [${obj[key].length
+                                ? obj[key].map((val) => { return typeof val === `string` ? `'${val}'` : val }).join(`, `)
+                                : ``
+                            }]`
+                            : `${tab}${renderObj(obj[key], key, tab)}`
+                        : `${tab}${key}: ${obj[key]}`
+            }).join(`,\n`)}`
+            data.push(keys)
         }
+        data.push(`\n${indentation}}`)
+        return data.join(``)
     }
-    data += `}\n\n`
+    log += `${renderObj(lemonyFresh, `lemonyFresh`)}\n\n${renderObj(users, `users`)}\n\n${renderObj(tempCmds, `tempCmds`)}\n`
 
-    data += `users: {\n`
-    for (const key of Object.keys(users)) {
-        data += `\t${key}: {\n`
-        for (const val of Object.keys(users[key])) {
-            if (typeof users[key][val] === `string`) {
-                data += `\t\t${val}: '${users[key][val]}',\n`
-            } else if (typeof users[key][val] === `object`) {
-                data += `\t\t${val}: {\n`
-                for (const channelProp of Object.keys(users[key][val])) {
-                    if (typeof users[key][val][channelProp] === `string`) {
-                        data += `\t\t\t${channelProp}: '${users[key][val][channelProp]}',\n`
-                    } else {
-                        data += `\t\t\t${channelProp}: ${users[key][val][channelProp]},\n`
-                    }
-                }
-                data += `\t\t},\n`
-            } else {
-                data += `\t\t${val}: ${users[key][val]},\n`
-            }
-        }
-        data += `\t},\n`
-    }
-    data += `}\n\n`
+    if (anyTokenChange) { log += `\n${Array(50).fill(`*`).join(` `)}\n` }
+    if (lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN) { log += `BOT_ACCESS_TOKEN changed, update to: '${lemonyFresh.botAccessToken}'\n` }
+    if (lemonyFresh.jpegstripes.accessToken !== JPEGSTRIPES_ACCESS_TOKEN) { log += `JPEGSTRIPES_ACCESS_TOKEN changed, update to: '${lemonyFresh.jpegstripes.accessToken}'\n` }
+    if (lemonyFresh.jpegstripes.refreshToken !== JPEGSTRIPES_REFRESH_TOKEN) { log += `JPEGSTRIPES_REFRESH_TOKEN changed, update to: '${lemonyFresh.jpegstripes.refreshToken}'\n` }
+    if (lemonyFresh.sclarf.accessToken !== SCLARF_ACCESS_TOKEN) { log += `SCLARF_ACCESS_TOKEN changed, update to: '${lemonyFresh.sclarf.accessToken}'\n` }
+    if (lemonyFresh.sclarf.refreshToken !== SCLARF_REFRESH_TOKEN) { log += `SCLARF_REFRESH_TOKEN changed, update to: '${lemonyFresh.sclarf.refreshToken}'\n` }
+    if (lemonyFresh.e1ectroma.accessToken !== E1ECTROMA_ACCESS_TOKEN) { log += `E1ECTROMA_ACCESS_TOKEN changed, update to: '${lemonyFresh.e1ectroma.accessToken}'\n` }
+    if (lemonyFresh.e1ectroma.refreshToken !== E1ECTROMA_REFRESH_TOKEN) { log += `E1ECTROMA_REFRESH_TOKEN changed, update to: '${lemonyFresh.e1ectroma.refreshToken}'\n` }
+    if (lemonyFresh.domonintendo1.accessToken !== DOMONINTENDO1_ACCESS_TOKEN) { log += `DOMONINTENDO1_ACCESS_TOKEN changed, update to: '${lemonyFresh.domonintendo1.accessToken}'\n` }
+    if (lemonyFresh.domonintendo1.refreshToken !== DOMONINTENDO1_REFRESH_TOKEN) { log += `DOMONINTENDO1_REFRESH_TOKEN changed, update to: '${lemonyFresh.domonintendo1.refreshToken}'\n` }
+    if (lemonyFresh.ppuyya.accessToken !== PPUYYA_ACCESS_TOKEN) { log += `PPUYYA_ACCESS_TOKEN changed, update to: '${lemonyFresh.ppuyya.accessToken}'\n` }
+    if (lemonyFresh.ppuyya.refreshToken !== PPUYYA_REFRESH_TOKEN) { log += `PPUYYA_REFRESH_TOKEN changed, update to: '${lemonyFresh.ppuyya.refreshToken}'\n` }
+    if (anyTokenChange) { log += `${Array(50).fill(`*`).join(` `)}\n` }
 
-    data += `tempCmds: {\n`
-    for (const key of Object.keys(tempCmds)) {
-        data += `\t${key}: '${tempCmds[key]}',\n`
-    }
-    data += `}\n`
-
-    fs.writeFile(`lemony_logs.txt`, data, (err) => {
+    fs.writeFile(`lemony_logs.txt`, log, (err) => {
         if (err) { console.log(`Error writing logs:`, err) }
     })
 }
