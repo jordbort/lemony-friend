@@ -349,11 +349,12 @@ function printLemon() {
 }
 
 function talk(chatroom, msg) {
-    const time = new Date().toLocaleTimeString()
+    const time = new Date().toLocaleTimeString(settings.timeLocale, settings.timeZone)
     client.say(chatroom, msg)
     console.log(`${yellowBg}[${time}] <${chatroom.slice(1)}> ${BOT_USERNAME}: ${msg}${resetTxt}`)
 }
 
+const startTime = new Date().toLocaleString(`en-US`, { timeZone: `EST` })
 function makeLogs() {
     let data = `🍋️ LEMONY LOGS 🍋️\n\n`
 

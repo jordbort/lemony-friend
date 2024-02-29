@@ -47,12 +47,14 @@ const chatColors = {
 
 // Global settings
 const settings = {
-    listening: true,
-    sayOnlineMsg: true,
-    firstConnection: true,
     debug: true,
+    timeLocale: `en-US`,
+    timeZone: { timeZone: `America/New_York` },
+    firstConnection: true,
+    sayOnlineMsg: true,
     funNumberCount: 25,
     funNumberTotal: 50,
+    listening: true,
     streakThreshold: 3,
     emoteStreakThreshold: 4,
     hangmanSignupSeconds: 30,

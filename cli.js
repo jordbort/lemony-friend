@@ -4,55 +4,63 @@ const { talk } = require("./utils")
 
 function cli(chatroom, args) {
     if ([`settings`, `s`].includes(args[0])) {
-        if (args[1] === `listening`) {
-            if (![`true`, `t`, `false`, `f`].includes(args[2])) { return talk(chatroom, `> Setting '${args[1]}' must be of value BOOLEAN (currently: ${settings.listening})`) }
-            if ([`true`, `t`].includes(args[2])) { settings.listening = true }
-            if ([`false`, `f`].includes(args[2])) { settings.listening = false }
-            return talk(chatroom, `> Setting 'listening' set to ${settings.listening}`)
-        } else if (args[1] === `sayonlinemsg`) {
-            if (![`true`, `t`, `false`, `f`].includes(args[2])) { return talk(chatroom, `> Setting '${args[1]}' must be of value BOOLEAN (currently: ${settings.sayOnlineMsg})`) }
-            if ([`true`, `t`].includes(args[2])) { settings.sayOnlineMsg = true }
-            if ([`false`, `f`].includes(args[2])) { settings.sayOnlineMsg = false }
-            return talk(chatroom, `> Setting 'sayOnlineMsg' set to ${settings.sayOnlineMsg}`)
-        } else if (args[1] === `firstconnection`) {
-            if (![`true`, `t`, `false`, `f`].includes(args[2])) { return talk(chatroom, `> Setting '${args[1]}' must be of value BOOLEAN (currently: ${settings.firstConnection})`) }
-            if ([`true`, `t`].includes(args[2])) { settings.firstConnection = true }
-            if ([`false`, `f`].includes(args[2])) { settings.firstConnection = false }
-            return talk(chatroom, `> Setting 'firstConnection' set to ${settings.firstConnection}`)
-        } else if (args[1] === `debug`) {
-            if (![`true`, `t`, `false`, `f`].includes(args[2])) { return talk(chatroom, `> Setting '${args[1]}' must be of value BOOLEAN (currently: ${settings.debug})`) }
+        if ([`debug`, `d`].includes(args[1])) {
+            if (![`true`, `t`, `false`, `f`].includes(args[2])) { return talk(chatroom, `> Setting 'debug' must be of value BOOLEAN (currently: ${settings.debug})`) }
             if ([`true`, `t`].includes(args[2])) { settings.debug = true }
             if ([`false`, `f`].includes(args[2])) { settings.debug = false }
             return talk(chatroom, `> Setting 'debug' set to ${settings.debug}`)
-        } else if (args[1] === `funnumbercount`) {
-            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${args[1]}' must be of value NUMBER (currently: ${settings.funNumberCount})`) }
+        } else if ([`timelocale`, `tl`].includes(args[1])) {
+            if (!args[2]) { return talk(chatroom, `> Setting 'timeLocale' is currently: ${settings.timeLocale}`) }
+            settings.timeLocale = args[2]
+            return talk(chatroom, `> Setting 'timeLocale' set to ${settings.timeLocale}`)
+        } else if ([`timezone`, `tz`].includes(args[1])) {
+            if (!args[2]) { return talk(chatroom, `> Setting 'timeZone' is currently: ${settings.timeZone.timeZone}`) }
+            settings.timeZone.timeZone = args[2]
+            return talk(chatroom, `> Setting 'timeZone' set to ${settings.timeZone.timeZone}`)
+        } else if ([`firstconnection`, `fc`].includes(args[1])) {
+            if (![`true`, `t`, `false`, `f`].includes(args[2])) { return talk(chatroom, `> Setting 'firstConnection' must be of value BOOLEAN (currently: ${settings.firstConnection})`) }
+            if ([`true`, `t`].includes(args[2])) { settings.firstConnection = true }
+            if ([`false`, `f`].includes(args[2])) { settings.firstConnection = false }
+            return talk(chatroom, `> Setting 'firstConnection' set to ${settings.firstConnection}`)
+        } else if ([`sayonlinemsg`, `som`].includes(args[1])) {
+            if (![`true`, `t`, `false`, `f`].includes(args[2])) { return talk(chatroom, `> Setting 'sayOnlineMsg' must be of value BOOLEAN (currently: ${settings.sayOnlineMsg})`) }
+            if ([`true`, `t`].includes(args[2])) { settings.sayOnlineMsg = true }
+            if ([`false`, `f`].includes(args[2])) { settings.sayOnlineMsg = false }
+            return talk(chatroom, `> Setting 'sayOnlineMsg' set to ${settings.sayOnlineMsg}`)
+        } else if ([`funnumbercount`, `fnc`].includes(args[1])) {
+            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting 'funNumberCount' must be of value NUMBER (currently: ${settings.funNumberCount})`) }
             settings.funNumberCount = args[2]
             return talk(chatroom, `> Setting 'funNumberCount' set to ${settings.funNumberCount}`)
-        } else if (args[1] === `funnumbertotal`) {
-            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${args[1]}' must be of value NUMBER (currently: ${settings.funNumberTotal})`) }
+        } else if ([`funnumbertotal`, `fnt`].includes(args[1])) {
+            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting 'funNumberTotal' must be of value NUMBER (currently: ${settings.funNumberTotal})`) }
             settings.funNumberTotal = args[2]
             return talk(chatroom, `> Setting 'funNumberTotal' set to ${settings.funNumberTotal}`)
-        } else if (args[1] === `streakthreshold`) {
-            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${args[1]}' must be of value NUMBER (currently: ${settings.streakThreshold})`) }
+        } else if ([`listening`, `l`].includes(args[1])) {
+            if (![`true`, `t`, `false`, `f`].includes(args[2])) { return talk(chatroom, `> Setting 'listening' must be of value BOOLEAN (currently: ${settings.listening})`) }
+            if ([`true`, `t`].includes(args[2])) { settings.listening = true }
+            if ([`false`, `f`].includes(args[2])) { settings.listening = false }
+            return talk(chatroom, `> Setting 'listening' set to ${settings.listening}`)
+        } else if ([`streakthreshold`, `st`].includes(args[1])) {
+            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting 'streakThreshold' must be of value NUMBER (currently: ${settings.streakThreshold})`) }
             settings.streakThreshold = args[2]
             return talk(chatroom, `> Setting 'streakThreshold' set to ${settings.streakThreshold}`)
-        } else if (args[1] === `emotestreakthreshold`) {
-            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${args[1]}' must be of value NUMBER (currently: ${settings.emoteStreakThreshold})`) }
+        } else if ([`emotestreakthreshold`, `est`].includes(args[1])) {
+            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting 'emoteStreakThreshold' must be of value NUMBER (currently: ${settings.emoteStreakThreshold})`) }
             settings.emoteStreakThreshold = args[2]
             return talk(chatroom, `> Setting 'emoteStreakThreshold' set to ${settings.emoteStreakThreshold}`)
-        } else if (args[1] === `hangmansignupseconds`) {
-            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${args[1]}' must be of value NUMBER (currently: ${settings.hangmanSignupSeconds})`) }
+        } else if ([`hangmansignupseconds`, `hss`].includes(args[1])) {
+            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting 'hangmanSignupSeconds' must be of value NUMBER (currently: ${settings.hangmanSignupSeconds})`) }
             settings.hangmanSignupSeconds = args[2]
             return talk(chatroom, `> Setting 'hangmanSignupSeconds' set to ${settings.hangmanSignupSeconds}`)
-        } else if (args[1] === `hangmanchances`) {
-            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${args[1]}' must be of value NUMBER (currently: ${settings.hangmanChances})`) }
+        } else if ([`hangmanchances`, `hc`].includes(args[1])) {
+            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting 'hangmanChances' must be of value NUMBER (currently: ${settings.hangmanChances})`) }
             settings.hangmanChances = args[2]
             return talk(chatroom, `> Setting 'hangmanChances' set to ${settings.hangmanChances}`)
-        } else if (args[1] === `chantcount`) {
-            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${args[1]}' must be of value NUMBER (currently: ${settings.chantCount})`) }
+        } else if ([`chantcount`, `cc`].includes(args[1])) {
+            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting 'chantCount' must be of value NUMBER (currently: ${settings.chantCount})`) }
             settings.chantCount = args[2]
             return talk(chatroom, `> Setting 'chantCount' set to ${settings.chantCount}`)
-        } else if (args[1] === `chantemote`) {
+        } else if ([`chantemote`, `ce`].includes(args[1])) {
             settings.chantEmote = args[2]
             return talk(chatroom, `> Setting 'chantEmote' set to '${settings.chantEmote}'`)
         } else { return talk(chatroom, `> Possible 'settings' controls: listening, sayOnlineMsg, firstConnection, debug, funNumberCount, funNumberTotal, streakThreshold, emoteStreakThreshold, hangmanSignupSeconds, hangmanChances, chantCount, chantEmote`) }

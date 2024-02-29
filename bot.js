@@ -171,7 +171,7 @@ process.on('uncaughtException', async (err) => {
 
 function onConnectedHandler(addr, port) {
     settings.firstConnection && printLemon()
-    const time = new Date().toLocaleTimeString()
+    const time = new Date().toLocaleTimeString(settings.timeLocale, settings.timeZone)
     settings.firstConnection
         ? console.log(`[${time}] 🍋 Connected to ${addr}:${port}`)
         : console.log(`[${time}] 🍋 Re-connected to ${addr}:${port}`)
@@ -259,7 +259,7 @@ function onMessageHandler(chatroom, tags, message, self) {
 
     // Stop here if bot, otherwise log user's chat message
     if (self) { return } else {
-        const time = new Date().toLocaleTimeString()
+        const time = new Date().toLocaleTimeString(settings.timeLocale, settings.timeZone)
         console.log(`[${time}] <${channel}> ${color in chatColors ? chatColors[color].terminalColor : whiteTxt}${username}: ${msg}${resetTxt}`)
     }
 
@@ -302,7 +302,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     if (user[channel].away) {
         user[channel].away = false
         user[channel].awayMessage = ``
-        return talk(chatroom, `Welcome back, ${user.displayName}! ${greetingEmote}`)
+        return setTimeout(() => talk(chatroom, `Welcome back, ${user.displayName}! ${greetingEmote}`), 5000)
     }
 
     if (colorChanged) { return handleColorChange(chatroom, user, color) }
@@ -1039,7 +1039,7 @@ function onMessageHandler(chatroom, tags, message, self) {
         && elapsedMinsSinceLastMsg < 480
         && ![channel, `nightbot`, `streamelements`, `blerp`, `soundalerts`, `streamlabs`, `undertalebot`, `buttsbot`].includes(username)) {
         console.log(`${grayTxt}${username} hasn't chatted in the past 1-8 hours${resetTxt}`, elapsedMinsSinceLastMsg)
-        return talk(chatroom, `Welcome back, ${user.displayName}! ${greetingEmote}`)
+        return setTimeout(() => talk(chatroom, `Welcome back, ${user.displayName}! ${greetingEmote}`), 5000)
     }
 }
 
