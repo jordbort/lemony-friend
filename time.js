@@ -1,3 +1,6 @@
+// Import global settings
+const { resetTxt, boldTxt, settings } = require(`./config`)
+
 // Import emotes
 const { getPositiveEmote } = require(`./getEmotes`)
 
