@@ -138,6 +138,13 @@ const {
     getDumbEmote
 } = require(`./getEmotes`)
 
+// Import time lookup
+const {
+    validTimeZones,
+    validLocales,
+    getTime
+} = require(`./time`)
+
 // Import helper functions
 const {
     client,
@@ -341,6 +348,9 @@ function onMessageHandler(chatroom, tags, message, self) {
         if (command === `!access`) { return getOAUTHToken(chatroom, username) }
         if (command === `!authorize`) { return authorizeToken(chatroom, username, args.join(` `)) }
     }
+
+    // Current time
+    if (command === `!time`) { return getTime(chatroom, args[0], args[1]) }
 
     // Chant
     if (command === `!chant`) { return chant(chatroom, args) }
