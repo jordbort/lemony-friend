@@ -17,7 +17,7 @@ const PPUYYA_REFRESH_TOKEN = process.env.PPUYYA_REFRESH_TOKEN
 const { resetTxt, boldTxt, grayTxt, yellowBg, chatColors, settings } = require(`./config`)
 
 // Import data
-const { lemonyFresh, users, tempCmds } = require(`./data`)
+const { lemonyFresh, mods, users, tempCmds } = require(`./data`)
 
 // Import emotes
 const { getLemonEmote, getHypeEmote, getPositiveEmote, getNegativeEmote, getGreetingEmote } = require(`./getEmotes`)
@@ -161,16 +161,16 @@ function sayRebootMsg(chatroom) {
         `Let's see how long before I crash`,
         `don't mind me`,
         `${greetingEmote} (just rebooting again)`,
-        `(Windows 95 startup sound plays)`,
+        `(Windows 98 startup sound plays)`,
         `I'm onl`,
         `I have ${numUsers <= 50 ? `${numbers[numUsers]} (${numUsers})` : numUsers} friend${numUsers === 1 ? `` : `s`}! ${hypeEmote}`,
         `(there ${numTempCmds === 1 ? `is` : `are`} ${numTempCmds} temporary command${numTempCmds === 1 ? `` : `s`})`,
-        `Debug mode is currently ${settings.debug ? `ON` : `OFF`}! ${positiveEmote}`,
         `Let's play Hangman! ${positiveEmote}`,
         `nowHasPattern has been updated to /now ha(?:s|ve) \[*(\d*)/i which makes use of capturing and non-capturing groups ${positiveEmote}`,
         'const sanitizedMsg = msg.replace(/[\\{`}%^|]/g, ``)',
         `${channel} has ${lemonyFresh[channel].emotes.length} emote${lemonyFresh[channel].emotes.length === 1 ? `` : `s`}!`,
         `It has been ${Date.now()} milliseconds since January 1, 1970, UTC ${lemonEmote}`,
+        `Mods can now let me make announcements in their name! ${positiveEmote}`,
         `${BOT_USERNAME in users
             ? `I have ${users[BOT_USERNAME].lemons} lemon${users[BOT_USERNAME].lemons === 1 ? `` : `s`}! ${lemonEmote}`
             : `${lemonEmote}`}`
@@ -395,7 +395,7 @@ function makeLogs() {
         data.push(`\n${indentation}}`)
         return data.join(``)
     }
-    log += `${renderObj(lemonyFresh, `lemonyFresh`)}\n\n${renderObj(users, `users`)}\n\n${renderObj(tempCmds, `tempCmds`)}\n`
+    log += `${renderObj(lemonyFresh, `lemonyFresh`)}\n\n${renderObj(mods, `mods`)}\n\n${renderObj(users, `users`)}\n\n${renderObj(tempCmds, `tempCmds`)}\n`
 
     if (anyTokenChange) { log += `\n${Array(50).fill(`*`).join(` `)}\n` }
     if (lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN) { log += `BOT_ACCESS_TOKEN changed, update to: '${lemonyFresh.botAccessToken}'\n` }

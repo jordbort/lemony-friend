@@ -433,12 +433,15 @@ const lemonyFresh = {
     }
 }
 
+const mods = {}
+
 const users = {}
 
 const tempCmds = {}
 
 module.exports = {
     lemonyFresh,
+    mods,
     users,
     tempCmds
 }

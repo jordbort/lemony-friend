@@ -37,6 +37,7 @@ const {
 // Import data
 const {
     lemonyFresh,
+    mods,
     users,
     tempCmds
 } = require(`./data`)
@@ -195,7 +196,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     const hangman = lemonyFresh[channel].hangman
     const isMod = tags.mod || username === channel
     const isModOrVIP = !!tags.badges?.vip || !!tags.vip || tags.mod || username === channel
-    const lemonyFreshMember = [`jpegstripes`, `sclarf`, `e1ectroma`, `domonintendo1`, `ppuyya`].includes(username) && username === channel
+    const lemonyFreshMember = [`jpegstripes`, `sclarf`, `e1ectroma`, `domonintendo1`, `ppuyya`]
 
     // Command and arguments parser
     const args = msg.split(` `)
@@ -235,6 +236,22 @@ function onMessageHandler(chatroom, tags, message, self) {
             awayMessage: ``
         }
     }
+    if (tags.mod) {
+        if (!(username in mods)) {
+            mods[username] = {
+                id: tags[`user-id`],
+                isModIn: [],
+                accessToken: ``,
+                refreshToken: ``
+            }
+            if (username in lemonyFresh) {
+                mods[username].accessToken = lemonyFresh[username].accessToken
+                mods[username].refreshToken = lemonyFresh[username].refreshToken
+            }
+        }
+        if (!mods[username].isModIn.includes(chatroom)) { mods[username].isModIn.push(chatroom) }
+    }
+
     const user = users[username]
 
     // Cleaning up potential undefined user
@@ -333,18 +350,18 @@ function onMessageHandler(chatroom, tags, message, self) {
         if (command === `!so` && toUser) { return handleShoutOut(chatroom, username, toUser.toLowerCase()) }
         if (command === `!token`) { return getBotToken(chatroom, true) } // Refreshes bot's access token
         if (command === `!validate`) { return validateToken(chatroom) } // Checks lifespan of channel's access token
-        if (command === `!refresh`) { return refreshToken(chatroom, true) } // Manually refreshes a channel's access token
     }
     // Only the streamer or a mod
     if (isMod) {
+        if (command === `!refresh`) { return refreshToken(chatroom, toUser?.toLowerCase() === channel ? channel : username, true) } // Manually refreshes the channel or the mod's access token
         if (command.match(/^!announce([a-z]*)$/)) { return makeAnnouncement(chatroom, command.split(/^!announce([a-z]*)$/)[1], username, args.join(` `)) }
         if (command === `!poll`) { return !lemonyFresh[channel].pollId ? pollStart(chatroom, args.join(` `)) : talk(channel, `There is already a poll active! ${negativeEmote}`) }
         if (command === `!endpoll`) { return talk(chatroom, lemonyFresh[channel].pollId ? `Use !stoppoll to finish and show the results, or !cancelpoll to remove it! ${positiveEmote}` : `There is no active poll! ${negativeEmote}`) }
         if (command === `!cancelpoll`) { return lemonyFresh[channel].pollId ? pollEnd(chatroom, `ARCHIVED`) : talk(chatroom, `There is no active poll! ${negativeEmote}`) }
         if (command === `!stoppoll`) { return lemonyFresh[channel].pollId ? pollEnd(chatroom, `TERMINATED`) : talk(chatroom, `There is no active poll! ${negativeEmote}`) }
     }
-    // Lemony Fresh channel owner only
-    if (lemonyFreshMember) {
+    // Lemony Fresh channels or their mods only
+    if (lemonyFreshMember || isMod) {
         if (command === `!access`) { return getOAUTHToken(chatroom, username) }
         if (command === `!authorize`) { return authorizeToken(chatroom, username, args.join(` `)) }
     }
