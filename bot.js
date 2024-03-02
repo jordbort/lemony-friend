@@ -239,7 +239,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     if (tags.mod) {
         if (!(username in mods)) {
             mods[username] = {
-                id: tags[`user-id`],
+                id: Number(tags[`user-id`]),
                 isModIn: [],
                 accessToken: ``,
                 refreshToken: ``

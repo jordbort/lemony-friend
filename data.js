@@ -9,6 +9,8 @@ const DOMONINTENDO1_ACCESS_TOKEN = process.env.DOMONINTENDO1_ACCESS_TOKEN
 const DOMONINTENDO1_REFRESH_TOKEN = process.env.DOMONINTENDO1_REFRESH_TOKEN
 const PPUYYA_ACCESS_TOKEN = process.env.PPUYYA_ACCESS_TOKEN
 const PPUYYA_REFRESH_TOKEN = process.env.PPUYYA_REFRESH_TOKEN
+const CATJERKY_ACCESS_TOKEN = process.env.CATJERKY_ACCESS_TOKEN
+const CATJERKY_REFRESH_TOKEN = process.env.CATJERKY_REFRESH_TOKEN
 
 const lemonyFresh = {
     channels: [
@@ -433,7 +435,14 @@ const lemonyFresh = {
     }
 }
 
-const mods = {}
+const mods = {
+    catjerky: {
+        id: 61517604,
+        isModIn: ['#jpegstripes', '#domonintendo1'],
+        accessToken: CATJERKY_ACCESS_TOKEN,
+        refreshToken: CATJERKY_REFRESH_TOKEN
+    }
+}
 
 const users = {}
 

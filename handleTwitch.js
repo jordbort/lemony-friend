@@ -14,10 +14,10 @@ const { getHypeEmote, getPositiveEmote, getNegativeEmote } = require(`./getEmote
 // Import helper functions
 const { talk } = require(`./utils`)
 
-async function authorizeToken(chatroom, user, str) {
-    if (settings.debug) { console.log(`${boldTxt}> authorizeToken(chatroom: ${chatroom}, user: ${user}, str: ${str})${resetTxt}`) }
+async function authorizeToken(chatroom, username, str) {
+    if (settings.debug) { console.log(`${boldTxt}> authorizeToken(chatroom: ${chatroom}, username: ${username}, str: ${str})${resetTxt}`) }
     const authCodePattern = /^http:\/\/localhost:3000\/\?code=([a-z0-9]*)&scope=.*$/
-    if (!authCodePattern.test(str)) { return talk(chatroom, `${users[user].displayName}, when using the !authorize command, please paste the whole URL after!`) }
+    if (!authCodePattern.test(str)) { return talk(chatroom, `${users[username].displayName}, when using the !authorize command, please paste the whole URL after!`) }
     const authCode = str.split(authCodePattern)[1]
 
     const requestBody = `client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${authCode}&grant_type=authorization_code&redirect_uri=http://localhost:3000`
@@ -38,12 +38,18 @@ async function authorizeToken(chatroom, user, str) {
     const hypeEmote = getHypeEmote(channel)
     const negativeEmote = getNegativeEmote(channel)
     if (`expires_in` in twitchData) {
-        lemonyFresh[user].accessToken = twitchData.access_token
-        lemonyFresh[user].refreshToken = twitchData.refresh_token
+        if (username in lemonyFresh) {
+            lemonyFresh[username].accessToken = twitchData.access_token
+            lemonyFresh[username].refreshToken = twitchData.refresh_token
+        }
+        if (username in mods) {
+            mods[username].accessToken = twitchData.access_token
+            mods[username].refreshToken = twitchData.refresh_token
+        }
         talk(chatroom, `Token was authorized! ${hypeEmote}`)
         return true
     } else {
-        talk(chatroom, `Invalid token! ${negativeEmote}`)
+        talk(chatroom, `Failed to authorize token ${negativeEmote}`)
         return false
     }
 }
