@@ -281,7 +281,7 @@ async function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
         const emote = emotes[Math.floor(Math.random() * emotes.length)]
         talk(chatroom, `w! h! ${cursed}${emote}`)
     }
-    // Re-delay (or start) a message that will post in one hour
+    // Re-delay (or start) a message that will post in 30 minutes
     else if ([13, 14, 15].includes(funNumber)) {
         if (!lemonyFresh[channel].funTimerGuesser) {
             clearTimeout(lemonyFresh[channel].funTimer)
@@ -289,11 +289,11 @@ async function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
             const timer = setTimeout(() => {
                 lemonyFresh[channel].funTimerGuesser = username
                 talk(chatroom, `Do you remember the number, ${users[username].displayName}?`)
-            }, 5000)
+            }, 1800000)
             lemonyFresh[channel].funTimer
                 ? talk(chatroom, `Forget ${lemonyFresh[channel].funTimer}, now I need ${users[username].displayName} to remember ${timer}`)
                 : talk(chatroom, `I need ${users[username].displayName} to remember ${timer}`)
-            lemonyFresh[channel].funTimer = timer
+            lemonyFresh[channel].funTimer = Number(timer)
         } else {
             console.log(`${grayTxt}> Fun Timer can't be updated because we're waiting on ${lemonyFresh[channel].funTimerGuesser} to say ${lemonyFresh[channel].funTimer}${resetTxt}`)
         }
