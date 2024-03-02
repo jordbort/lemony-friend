@@ -309,7 +309,7 @@ function chant(chatroom, args) {
             : word
     })
     const response = Array(settings.chantCount).fill(`${chant.join(` `)} ${settings.chantEmote}`)
-    return talk(chatroom, `:mega: ${response.join(` `)}`)
+    return talk(chatroom, `📣️ ${response.join(` `)}`)
 }
 
 function printLemon() {

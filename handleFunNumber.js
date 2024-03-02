@@ -289,7 +289,7 @@ async function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
             const timer = setTimeout(() => {
                 lemonyFresh[channel].funTimerGuesser = username
                 talk(chatroom, `Do you remember the number, ${users[username].displayName}?`)
-            }, 1800000)
+            }, settings.funTimerDuration)
             lemonyFresh[channel].funTimer
                 ? talk(chatroom, `Forget ${lemonyFresh[channel].funTimer}, now I need ${users[username].displayName} to remember ${timer}`)
                 : talk(chatroom, `I need ${users[username].displayName} to remember ${timer}`)

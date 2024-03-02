@@ -54,13 +54,14 @@ const settings = {
     sayOnlineMsg: true,
     funNumberCount: 25,
     funNumberTotal: 50,
+    funTimerDuration: 1800000,
     listening: true,
     streakThreshold: 3,
     emoteStreakThreshold: 4,
     hangmanSignupSeconds: 30,
     hangmanChances: 6,
     chantCount: 8,
-    chantEmote: `:clap:`
+    chantEmote: `👏️`
 }
 
 module.exports = {
