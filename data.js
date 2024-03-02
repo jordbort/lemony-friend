@@ -436,6 +436,12 @@ const lemonyFresh = {
 }
 
 const mods = {
+    lemony_friend: {
+        id: 893524366,
+        isModIn: ['#jpegstripes', '#e1ectroma'],
+        accessToken: '',
+        refreshToken: '',
+    },
     catjerky: {
         id: 61517604,
         isModIn: ['#jpegstripes', '#domonintendo1'],
