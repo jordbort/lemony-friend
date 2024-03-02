@@ -140,16 +140,16 @@ async function getTwitchUser(chatroom, username) {
     const negativeEmote = getNegativeEmote(channel)
     if (`error` in userInfo) {
         if (userInfo.error === `Unauthorized`) {
-            talk(chatroom, `Hold on, I need to refresh my token...`)
+            // talk(chatroom, `Hold on, I need to refresh my token...`)
+            console.log(`${grayTxt}> Error, attempting to refresh access token...${resetTxt}`)
             await getBotToken(chatroom, false)
             options.headers.authorization = `Bearer ${lemonyFresh.botAccessToken}`
             const finalAttempt = await fetch(endpoint, options)
             const finalAttemptData = await finalAttempt.json()
             console.log(finalAttemptData)
             if (userInfo.data[0]?.id) { return userInfo.data[0] }
-        } else {
-            talk(chatroom, `Error: ${userInfo.error} ${negativeEmote}`)
         }
+        talk(chatroom, `Error: ${userInfo.error} ${negativeEmote}`)
     } else if (userInfo.data.length === 0) {
         return talk(chatroom, `No user ${username} was found! ${negativeEmote}`)
     } else {
@@ -241,7 +241,8 @@ async function pollStart(chatroom, str) {
 
     if (`error` in twitchData) {
         if (twitchData.message === `Invalid OAuth token`) {
-            talk(chatroom, `Hold on, I need to refresh the token...`)
+            // talk(chatroom, `Hold on, I need to refresh the token...`)
+            console.log(`${grayTxt}> Error, attempting to refresh access token...${resetTxt}`)
             await refreshToken(chatroom, channel, false)
             options.headers.authorization = `Bearer ${lemonyFresh[channel].accessToken}`
             const finalAttempt = await fetch(endpoint, options)
@@ -250,11 +251,10 @@ async function pollStart(chatroom, str) {
             if (finalAttemptData?.data) {
                 talk(chatroom, `Poll created, go vote! ${positiveEmote}`)
                 lemonyFresh[channel].pollId = finalAttemptData.data[0].id
-                setTimeout(() => { lemonyFresh[channel].pollId = `` }, duration * 1000)
+                return setTimeout(() => { lemonyFresh[channel].pollId = `` }, duration * 1000)
             }
-        } else {
-            talk(chatroom, `(Error ${twitchData.status}) ${twitchData.error}: ${twitchData.message}`)
         }
+        talk(chatroom, `(Error ${twitchData.status}) ${twitchData.error}: ${twitchData.message}`)
     } else if (!twitchData.data) {
         talk(chatroom, `Error creating poll! ${negativeEmote}`)
     } else {
@@ -301,7 +301,8 @@ async function handleShoutOut(chatroom, username, toUser) {
             const data = await response.json()
             console.log(data)
             if (response.status === 401) {
-                talk(chatroom, `Hold on, I need to refresh ${username in mods && mods[username].isModIn.includes(chatroom) && mods[username].accessToken ? username : channel}'s token...`)
+                // talk(chatroom, `Hold on, I need to refresh ${username in mods && mods[username].isModIn.includes(chatroom) && mods[username].accessToken ? username : channel}'s token...`)
+                console.log(`${grayTxt}> Error, attempting to refresh access token...${resetTxt}`)
                 await refreshToken(chatroom, username in mods && mods[username].isModIn.includes(chatroom) && mods[username].accessToken ? username : channel, false)
                 options.headers.authorization = `Bearer ${username in mods && mods[username].isModIn.includes(chatroom) && mods[username].accessToken ? mods[username].accessToken : lemonyFresh[channel].accessToken}`
                 const finalAttempt = await fetch(endpoint, options)
@@ -358,7 +359,8 @@ async function makeAnnouncement(chatroom, commandSuffix, username, message) {
         const data = await response.json()
         console.log(data)
         if (response.status === 401) {
-            talk(chatroom, `Hold on, I need to refresh ${username in mods && mods[username].isModIn.includes(chatroom) && mods[username].accessToken ? username : channel}'s token...`)
+            // talk(chatroom, `Hold on, I need to refresh ${username in mods && mods[username].isModIn.includes(chatroom) && mods[username].accessToken ? username : channel}'s token...`)
+            console.log(`${grayTxt}> Error, attempting to refresh access token...${resetTxt}`)
             await refreshToken(chatroom, username in mods && mods[username].isModIn.includes(chatroom) && mods[username].accessToken ? username : channel, false)
             options.headers.authorization = `Bearer ${username in mods && mods[username].isModIn.includes(chatroom) && mods[username].accessToken ? mods[username].accessToken : lemonyFresh[channel].accessToken}`
             const finalAttempt = await fetch(endpoint, options)
