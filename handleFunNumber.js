@@ -279,7 +279,7 @@ async function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
 
         const emotes = lemonyFresh[channel].bttvEmotes
         const emote = emotes[Math.floor(Math.random() * emotes.length)]
-        talk(chatroom, `w! ${cursed}${emote}`)
+        talk(chatroom, `w! h! ${cursed}${emote}`)
     }
     // Re-delay (or start) a message that will post in one hour
     else if ([13, 14, 15].includes(funNumber)) {
