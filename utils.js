@@ -169,7 +169,7 @@ function sayRebootMsg(chatroom) {
         `nowHasPattern has been updated to /now ha(?:s|ve) \[*(\d*)/i which makes use of capturing and non-capturing groups ${positiveEmote}`,
         'const sanitizedMsg = msg.replace(/[\\{`}%^|]/g, ``)',
         `${channel} has ${lemonyFresh[channel].emotes.length} emote${lemonyFresh[channel].emotes.length === 1 ? `` : `s`}!`,
-        `It has been ${Date.now()} milliseconds since January 1, 1970, UTC ${lemonEmote}`,
+        `It has been ${Date.now().toLocaleString(`en-US`)} milliseconds since January 1, 1970, 12:00:00 AM UTC ${lemonEmote}`,
         `Mods can now let me make announcements in their name! ${positiveEmote}`,
         `${BOT_USERNAME in users
             ? `I have ${users[BOT_USERNAME].lemons} lemon${users[BOT_USERNAME].lemons === 1 ? `` : `s`}! ${lemonEmote}`
