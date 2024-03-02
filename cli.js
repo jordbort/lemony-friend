@@ -1,68 +1,217 @@
 const { settings } = require(`./config`)
-const { users, lemonyFresh } = require(`./data`)
+const { lemonyFresh, mods, users } = require(`./data`)
 const { talk } = require("./utils")
+
+const settingsOptions = {
+    debug: {
+        aliases: [`debug`, `d`],
+        name: `debug`
+    },
+    timelocale: {
+        aliases: [`timelocale`, `tl`],
+        name: `timeLocale`
+    },
+    timezone: {
+        aliases: [`timezone`, `tz`],
+        name: `timeZone`
+    },
+    firstconnection: {
+        aliases: [`firstconnection`, `fc`],
+        name: `firstConnection`
+    },
+    sayonlinemsg: {
+        aliases: [`sayonlinemsg`, `som`],
+        name: `sayOnlineMsg`
+    },
+    funnumbercount: {
+        aliases: [`funnumbercount`, `fnc`],
+        name: `funNumberCount`
+    },
+    funnumbertotal: {
+        aliases: [`funnumbertotal`, `fnt`],
+        name: `funNumberTotal`
+    },
+    funtimerduration: {
+        aliases: [`funtimerduration`, `ftd`],
+        name: `funTimerDuration`
+    },
+    listening: {
+        aliases: [`listening`, `l`],
+        name: `listening`
+    },
+    streakthreshold: {
+        aliases: [`streakthreshold`, `st`],
+        name: `streakThreshold`
+    },
+    emotestreakthreshold: {
+        aliases: [`emotestreakthreshold`, `est`],
+        name: `emoteStreakThreshold`
+    },
+    hangmansignupseconds: {
+        aliases: [`hangmansignupseconds`, `hss`],
+        name: `hangmanSignupSeconds`
+    },
+    hangmanchances: {
+        aliases: [`hangmanchances`, `hc`],
+        name: `hangmanChances`
+    },
+    chantcount: {
+        aliases: [`chantcount`, `cc`],
+        name: `chantCount`
+    },
+    chantemote: {
+        aliases: [`chantemote`, `ce`],
+        name: `chantEmote`
+    }
+}
+const usersOptions = {
+    displayname: {
+        aliases: [`displayname`, `n`],
+        name: `displayName`
+    },
+    lemons: {
+        aliases: [`lemons`, `l`],
+        name: `lemons`
+    },
+    hangmanwins: {
+        aliases: [`hangmanwins`, `hw`],
+        name: `hangmanWins`
+    },
+    riddlewins: {
+        aliases: [`riddlewins`, `rw`],
+        name: `riddleWins`
+    },
+    sub: {
+        aliases: [`sub`, `s`],
+        name: `displayName`
+    },
+    mod: {
+        aliases: [`mod`, `m`],
+        name: `lemons`
+    },
+    vip: {
+        aliases: [`vip`, `v`],
+        name: `hangmanWins`
+    },
+    msgcount: {
+        aliases: [`msgcount`, `mc`],
+        name: `riddleWins`
+    },
+    lastmessage: {
+        aliases: [`lastmessage`, `lm`],
+        name: `displayName`
+    },
+    away: {
+        aliases: [`away`, `a`],
+        name: `lemons`
+    },
+    awaymessage: {
+        aliases: [`awaymessage`, `am`],
+        name: `hangmanWins`
+    }
+}
+const lemonyFreshOptions = {
+    funtimer: {
+        aliases: [`funtimer`, `ft`],
+        name: `displayName`
+    },
+    funtimerguesser: {
+        aliases: [`funtimerguesser`, `ftg`],
+        name: `lemons`
+    },
+    pollid: {
+        aliases: [`pollid`, `p`],
+        name: `hangmanWins`
+    }
+}
+const modOptions = {
+    id: {
+        aliases: [`id`, `i`],
+        name: `id`
+    },
+    ismodin: {
+        aliases: [`ismodin`, `m`],
+        name: `isModIn`
+    },
+    accesstoken: {
+        aliases: [`accesstoken`, `at`],
+        name: `accessToken`
+    },
+    refreshtoken: {
+        aliases: [`refreshtoken`, `rt`],
+        name: `refreshToken`
+    }
+}
+const { debug, timelocale, timezone, firstconnection, sayonlinemsg, funnumbercount, funnumbertotal, funtimerduration, listening, streakthreshold, emotestreakthreshold, hangmansignupseconds, hangmanchances, chantcount, chantemote } = settingsOptions
+const { displayname, lemons, hangmanwins, riddlewins, sub, mod, vip, msgcount, lastmessage, away, awaymessage } = usersOptions
+const { funtimer, funtimerguesser, pollid } = lemonyFreshOptions
+const { id, ismodin, accesstoken, refreshtoken } = modOptions
 
 function cli(chatroom, args) {
     if ([`settings`, `s`].includes(args[0])) {
-        if ([`debug`, `d`].includes(args[1])) {
-            if (![`true`, `t`, `false`, `f`].includes(args[2])) { return talk(chatroom, `> Setting 'debug' must be of value BOOLEAN (currently: ${settings.debug})`) }
-            if ([`true`, `t`].includes(args[2])) { settings.debug = true }
-            if ([`false`, `f`].includes(args[2])) { settings.debug = false }
-            return talk(chatroom, `> Setting 'debug' set to ${settings.debug}`)
-        } else if ([`timelocale`, `tl`].includes(args[1])) {
-            if (!args[2]) { return talk(chatroom, `> Setting 'timeLocale' is currently: ${settings.timeLocale}`) }
-            settings.timeLocale = args[2]
-            return talk(chatroom, `> Setting 'timeLocale' set to ${settings.timeLocale}`)
-        } else if ([`timezone`, `tz`].includes(args[1])) {
-            if (!args[2]) { return talk(chatroom, `> Setting 'timeZone' is currently: ${settings.timeZone.timeZone}`) }
-            settings.timeZone.timeZone = args[2]
-            return talk(chatroom, `> Setting 'timeZone' set to ${settings.timeZone.timeZone}`)
-        } else if ([`firstconnection`, `fc`].includes(args[1])) {
-            if (![`true`, `t`, `false`, `f`].includes(args[2])) { return talk(chatroom, `> Setting 'firstConnection' must be of value BOOLEAN (currently: ${settings.firstConnection})`) }
-            if ([`true`, `t`].includes(args[2])) { settings.firstConnection = true }
-            if ([`false`, `f`].includes(args[2])) { settings.firstConnection = false }
-            return talk(chatroom, `> Setting 'firstConnection' set to ${settings.firstConnection}`)
-        } else if ([`sayonlinemsg`, `som`].includes(args[1])) {
-            if (![`true`, `t`, `false`, `f`].includes(args[2])) { return talk(chatroom, `> Setting 'sayOnlineMsg' must be of value BOOLEAN (currently: ${settings.sayOnlineMsg})`) }
-            if ([`true`, `t`].includes(args[2])) { settings.sayOnlineMsg = true }
-            if ([`false`, `f`].includes(args[2])) { settings.sayOnlineMsg = false }
-            return talk(chatroom, `> Setting 'sayOnlineMsg' set to ${settings.sayOnlineMsg}`)
-        } else if ([`funnumbercount`, `fnc`].includes(args[1])) {
-            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting 'funNumberCount' must be of value NUMBER (currently: ${settings.funNumberCount})`) }
-            settings.funNumberCount = args[2]
-            return talk(chatroom, `> Setting 'funNumberCount' set to ${settings.funNumberCount}`)
-        } else if ([`funnumbertotal`, `fnt`].includes(args[1])) {
-            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting 'funNumberTotal' must be of value NUMBER (currently: ${settings.funNumberTotal})`) }
-            settings.funNumberTotal = args[2]
-            return talk(chatroom, `> Setting 'funNumberTotal' set to ${settings.funNumberTotal}`)
-        } else if ([`listening`, `l`].includes(args[1])) {
-            if (![`true`, `t`, `false`, `f`].includes(args[2])) { return talk(chatroom, `> Setting 'listening' must be of value BOOLEAN (currently: ${settings.listening})`) }
-            if ([`true`, `t`].includes(args[2])) { settings.listening = true }
-            if ([`false`, `f`].includes(args[2])) { settings.listening = false }
-            return talk(chatroom, `> Setting 'listening' set to ${settings.listening}`)
-        } else if ([`streakthreshold`, `st`].includes(args[1])) {
-            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting 'streakThreshold' must be of value NUMBER (currently: ${settings.streakThreshold})`) }
-            settings.streakThreshold = args[2]
-            return talk(chatroom, `> Setting 'streakThreshold' set to ${settings.streakThreshold}`)
-        } else if ([`emotestreakthreshold`, `est`].includes(args[1])) {
-            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting 'emoteStreakThreshold' must be of value NUMBER (currently: ${settings.emoteStreakThreshold})`) }
-            settings.emoteStreakThreshold = args[2]
-            return talk(chatroom, `> Setting 'emoteStreakThreshold' set to ${settings.emoteStreakThreshold}`)
-        } else if ([`hangmansignupseconds`, `hss`].includes(args[1])) {
-            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting 'hangmanSignupSeconds' must be of value NUMBER (currently: ${settings.hangmanSignupSeconds})`) }
-            settings.hangmanSignupSeconds = args[2]
-            return talk(chatroom, `> Setting 'hangmanSignupSeconds' set to ${settings.hangmanSignupSeconds}`)
-        } else if ([`hangmanchances`, `hc`].includes(args[1])) {
-            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting 'hangmanChances' must be of value NUMBER (currently: ${settings.hangmanChances})`) }
-            settings.hangmanChances = args[2]
-            return talk(chatroom, `> Setting 'hangmanChances' set to ${settings.hangmanChances}`)
-        } else if ([`chantcount`, `cc`].includes(args[1])) {
-            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting 'chantCount' must be of value NUMBER (currently: ${settings.chantCount})`) }
-            settings.chantCount = args[2]
-            return talk(chatroom, `> Setting 'chantCount' set to ${settings.chantCount}`)
-        } else if ([`chantemote`, `ce`].includes(args[1])) {
-            settings.chantEmote = args[2]
-            return talk(chatroom, `> Setting 'chantEmote' set to '${settings.chantEmote}'`)
+        if (debug.aliases.includes(args[1])) {
+            if (![`true`, `t`, `false`, `f`].includes(args[2])) { return talk(chatroom, `> Setting '${debug.name}' must be of value BOOLEAN (currently: ${settings[debug.name]})`) }
+            if ([`true`, `t`].includes(args[2])) { settings[debug.name] = true }
+            if ([`false`, `f`].includes(args[2])) { settings[debug.name] = false }
+            return talk(chatroom, `> Setting '${debug.name}' set to ${settings[debug.name]}`)
+        } else if (timelocale.aliases.includes(args[1])) {
+            if (!args[2]) { return talk(chatroom, `> Setting '${timelocale.name}' is currently: ${settings[timelocale.name]}`) }
+            settings[timelocale.name] = args[2]
+            return talk(chatroom, `> Setting '${timelocale.name}' set to ${settings[timelocale.name]}`)
+        } else if (timezone.aliases.includes(args[1])) {
+            if (!args[2]) { return talk(chatroom, `> Setting '${timezone.name}' is currently: ${settings.timeZone[timezone.name]}`) }
+            settings.timeZone[timezone.name] = args[2]
+            return talk(chatroom, `> Setting '${timezone.name}' set to ${settings.timeZone[timezone.name]}`)
+        } else if (firstconnection.aliases.includes(args[1])) {
+            if (![`true`, `t`, `false`, `f`].includes(args[2])) { return talk(chatroom, `> Setting '${firstconnection.name}' must be of value BOOLEAN (currently: ${settings[firstconnection.name]})`) }
+            if ([`true`, `t`].includes(args[2])) { settings[firstconnection.name] = true }
+            if ([`false`, `f`].includes(args[2])) { settings[firstconnection.name] = false }
+            return talk(chatroom, `> Setting '${firstconnection.name}' set to ${settings[firstconnection.name]}`)
+        } else if (sayonlinemsg.aliases.includes(args[1])) {
+            if (![`true`, `t`, `false`, `f`].includes(args[2])) { return talk(chatroom, `> Setting '${sayonlinemsg.name}' must be of value BOOLEAN (currently: ${settings[sayonlinemsg.name]})`) }
+            if ([`true`, `t`].includes(args[2])) { settings[sayonlinemsg.name] = true }
+            if ([`false`, `f`].includes(args[2])) { settings[sayonlinemsg.name] = false }
+            return talk(chatroom, `> Setting '${sayonlinemsg.name}' set to ${settings[sayonlinemsg.name]}`)
+        } else if (funnumbercount.aliases.includes(args[1])) {
+            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${funnumbercount.name}' must be of value NUMBER (currently: ${settings[funnumbercount.name]})`) }
+            settings[funnumbercount.name] = args[2]
+            return talk(chatroom, `> Setting '${funnumbercount.name}' set to ${settings[funnumbercount.name]}`)
+        } else if (funnumbertotal.aliases.includes(args[1])) {
+            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${funnumbertotal.name}' must be of value NUMBER (currently: ${settings[funnumbertotal.name]})`) }
+            settings[funnumbertotal.name] = args[2]
+            return talk(chatroom, `> Setting '${funnumbertotal.name}' set to ${settings[funnumbertotal.name]}`)
+        } else if (funtimerduration.aliases.includes(args[1])) {
+            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${funtimerduration.name}' must be of value NUMBER (currently: ${settings[funtimerduration.name]})`) }
+            settings[funtimerduration.name] = args[2]
+            return talk(chatroom, `> Setting '${funtimerduration.name}' set to ${settings[funtimerduration.name]}`)
+        } else if (listening.aliases.includes(args[1])) {
+            if (![`true`, `t`, `false`, `f`].includes(args[2])) { return talk(chatroom, `> Setting '${listening.name}' must be of value BOOLEAN (currently: ${settings[listening.name]})`) }
+            if ([`true`, `t`].includes(args[2])) { settings[listening.name] = true }
+            if ([`false`, `f`].includes(args[2])) { settings[listening.name] = false }
+            return talk(chatroom, `> Setting '${listening.name}' set to ${settings[listening.name]}`)
+        } else if (streakthreshold.aliases.includes(args[1])) {
+            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${streakthreshold.name}' must be of value NUMBER (currently: ${settings[streakthreshold.name]})`) }
+            settings[streakthreshold.name] = args[2]
+            return talk(chatroom, `> Setting '${streakthreshold.name}' set to ${settings[streakthreshold.name]}`)
+        } else if (emotestreakthreshold.aliases.includes(args[1])) {
+            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${emotestreakthreshold.name}' must be of value NUMBER (currently: ${settings[emotestreakthreshold.name]})`) }
+            settings[emotestreakthreshold.name] = args[2]
+            return talk(chatroom, `> Setting '${emotestreakthreshold.name}' set to ${settings[emotestreakthreshold.name]}`)
+        } else if (hangmansignupseconds.aliases.includes(args[1])) {
+            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${hangmansignupseconds.name}' must be of value NUMBER (currently: ${settings[hangmansignupseconds.name]})`) }
+            settings[hangmansignupseconds.name] = args[2]
+            return talk(chatroom, `> Setting '${hangmansignupseconds.name}' set to ${settings[hangmansignupseconds.name]}`)
+        } else if (hangmanchances.aliases.includes(args[1])) {
+            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${hangmanchances.name}' must be of value NUMBER (currently: ${settings[hangmanchances.name]})`) }
+            settings[hangmanchances.name] = args[2]
+            return talk(chatroom, `> Setting '${hangmanchances.name}' set to ${settings[hangmanchances.name]}`)
+        } else if (chantcount.aliases.includes(args[1])) {
+            if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${chantcount.name}' must be of value NUMBER (currently: ${settings[chantcount.name]})`) }
+            settings[chantcount.name] = args[2]
+            return talk(chatroom, `> Setting '${chantcount.name}' set to ${settings[chantcount.name]}`)
+        } else if (chantemote.aliases.includes(args[1])) {
+            settings[chantemote.name] = args[2]
+            return talk(chatroom, `> Setting '${chantemote.name}' set to ${settings[chantemote.name]}`)
         } else { return talk(chatroom, `> Possible 'settings' controls: listening, sayOnlineMsg, firstConnection, debug, funNumberCount, funNumberTotal, streakThreshold, emoteStreakThreshold, hangmanSignupSeconds, hangmanChances, chantCount, chantEmote`) }
     } else if ([`users`, `u`].includes(args[0])) {
         if (!args[1]) { return talk(chatroom, `> You must specify a user`) }
@@ -71,51 +220,51 @@ function cli(chatroom, args) {
             if ([`delete`, `d`].includes(args[2])) {
                 delete users[user]
                 return talk(chatroom, `> User '${user}' deleted`)
-            } else if ([`displayname`, `n`].includes(args[2])) {
-                users[user].displayName = args.slice(3).join(` `)
-                return talk(chatroom, `> User '${user}' displayName set to '${users[user].displayName}'`)
-            } else if ([`lemons`, `l`].includes(args[2])) {
-                if (!args[3] || isNaN(Number(args[3]))) { return talk(chatroom, `> User's 'lemons' must be of value NUMBER (currently: ${users[user].lemons})`) }
-                users[user].lemons = Number(args[3])
-                return talk(chatroom, `> User '${user}' lemons set to ${users[user].lemons}`)
-            } else if ([`hangmanwins`, `hw`].includes(args[2])) {
-                if (!args[3] || isNaN(Number(args[3]))) { return talk(chatroom, `> User's 'hangmanwins' must be of value NUMBER (currently: ${users[user].hangmanWins})`) }
-                users[user].hangmanWins = Number(args[3])
-                return talk(chatroom, `> User '${user}' hangmanWins set to ${users[user].hangmanWins}`)
-            } else if ([`riddlewins`, `rw`].includes(args[2])) {
-                if (!args[3] || isNaN(Number(args[3]))) { return talk(chatroom, `> User's 'riddlewins' must be of value NUMBER (currently: ${users[user].riddleWins})`) }
-                users[user].riddleWins = Number(args[3])
-                return talk(chatroom, `> User '${user}' riddleWins set to ${users[user].riddleWins}`)
+            } else if (displayname.aliases.includes(args[2])) {
+                users[user][displayname.name] = args.slice(3).join(` `)
+                return talk(chatroom, `> User '${user}' ${displayname.name} set to '${users[user][displayname.name]}'`)
+            } else if (lemons.aliases.includes(args[2])) {
+                if (!args[3] || isNaN(Number(args[3]))) { return talk(chatroom, `> User's 'lemons' must be of value NUMBER (currently: ${users[user][lemons.name]})`) }
+                users[user][lemons.name] = Number(args[3])
+                return talk(chatroom, `> User '${user}' ${lemons.name} set to ${users[user][lemons.name]}`)
+            } else if (hangmanwins.aliases.includes(args[2])) {
+                if (!args[3] || isNaN(Number(args[3]))) { return talk(chatroom, `> User's 'hangmanwins' must be of value NUMBER (currently: ${users[user][hangmanwins.name]})`) }
+                users[user][hangmanwins.name] = Number(args[3])
+                return talk(chatroom, `> User '${user}' ${hangmanwins.name} set to ${users[user][hangmanwins.name]}`)
+            } else if (riddlewins.aliases.includes(args[2])) {
+                if (!args[3] || isNaN(Number(args[3]))) { return talk(chatroom, `> User's 'riddlewins' must be of value NUMBER (currently: ${users[user][riddlewins.name]})`) }
+                users[user][riddlewins.name] = Number(args[3])
+                return talk(chatroom, `> User '${user}' ${riddlewins.name} set to ${users[user][riddlewins.name]}`)
             } else if ([`jpegstripes`, `j`, `sclarf`, `s`, `e1ectroma`, `e`, `domonintendo1`, `d`, `ppuyya`, `p`].includes(args[2])) {
                 const channel = [`jpegstripes`, `j`].includes(args[2]) ? `jpegstripes` : [`sclarf`, `s`].includes(args[2]) ? `sclarf` : [`e1ectroma`, `e`].includes(args[2]) ? `e1ectroma` : [`domonintendo1`, `d`].includes(args[2]) ? `domonintendo1` : `ppuyya`
-                if ([`sub`, `s`].includes(args[3])) {
-                    if (![`true`, `t`, `false`, `f`].includes(args[4])) { return talk(chatroom, `> User in ${channel}'s '${args[3]}' must be of value BOOLEAN (currently: ${users[user][channel].sub})`) }
-                    if ([`true`, `t`].includes(args[4])) { users[user][channel].sub = true }
-                    if ([`false`, `f`].includes(args[4])) { users[user][channel].sub = false }
-                    return talk(chatroom, `> User '${user}' sub in '${channel}' set to ${users[user][channel].sub}`)
-                } else if ([`mod`, `m`].includes(args[3])) {
-                    if (![`true`, `t`, `false`, `f`].includes(args[4])) { return talk(chatroom, `> User in ${channel}'s '${args[3]}' must be of value BOOLEAN (currently: ${users[user][channel].mod})`) }
-                    if ([`true`, `t`].includes(args[4])) { users[user][channel].mod = true }
-                    if ([`false`, `f`].includes(args[4])) { users[user][channel].mod = false }
-                    return talk(chatroom, `> User '${user}' mod in '${channel}' set to ${users[user][channel].mod}`)
-                } else if ([`vip`, `v`].includes(args[3])) {
-                    if (![`true`, `t`, `false`, `f`].includes(args[4])) { return talk(chatroom, `> User in ${channel}'s '${args[3]}' must be of value BOOLEAN (currently: ${users[user][channel].vip})`) }
-                    if ([`true`, `t`].includes(args[4])) { users[user][channel].vip = true }
-                    if ([`false`, `f`].includes(args[4])) { users[user][channel].vip = false }
-                    return talk(chatroom, `> User '${user}' vip in '${channel}' set to ${users[user][channel].vip}`)
-                } else if ([`msgcount`, `mc`].includes(args[3])) {
-                    if (!args[4] || isNaN(Number(args[4]))) { return talk(chatroom, `> User in ${channel}'s '${args[3]}' must be of value NUMBER (currently: ${users[user][channel].msgCount})`) }
-                    users[user][channel].msgCount = Number(args[4])
-                    return talk(chatroom, `> User '${user}' msgCount in '${channel}' set to ${users[user][channel].msgCount}`)
-                } else if ([`lastmessage`, `lm`].includes(args[3])) {
-                    users[user][channel].lastMessage = args.slice(4).join(` `)
-                    return talk(chatroom, `> User '${user}' lastMessage in '${channel}' set to '${users[user][channel].lastMessage}'`)
-                } else if ([`away`, `a`].includes(args[3])) {
-                    if (![`true`, `t`, `false`, `f`].includes(args[4])) { return talk(chatroom, `> User in ${channel}'s '${args[3]}' must be of value BOOLEAN (currently: ${users[user][channel].away})`) }
-                    if ([`true`, `t`].includes(args[4])) { users[user][channel].away = true }
-                    if ([`false`, `f`].includes(args[4])) { users[user][channel].away = false }
-                    return talk(chatroom, `> User '${user}' away in '${channel}' set to ${users[user][channel].away}`)
-                } else if ([`awaymessage`, `am`].includes(args[3])) {
+                if (sub.aliases.includes(args[3])) {
+                    if (![`true`, `t`, `false`, `f`].includes(args[4])) { return talk(chatroom, `> User in ${channel}'s '${sub.name}' must be of value BOOLEAN (currently: ${users[user][channel][sub.name]})`) }
+                    if ([`true`, `t`].includes(args[4])) { users[user][channel][sub.name] = true }
+                    if ([`false`, `f`].includes(args[4])) { users[user][channel][sub.name] = false }
+                    return talk(chatroom, `> User '${user}' sub in '${channel}' set to ${users[user][channel][sub.name]}`)
+                } else if (mod.aliases.includes(args[3])) {
+                    if (![`true`, `t`, `false`, `f`].includes(args[4])) { return talk(chatroom, `> User in ${channel}'s '${mod.name}' must be of value BOOLEAN (currently: ${users[user][channel][mod.name]})`) }
+                    if ([`true`, `t`].includes(args[4])) { users[user][channel][mod.name] = true }
+                    if ([`false`, `f`].includes(args[4])) { users[user][channel][mod.name] = false }
+                    return talk(chatroom, `> User '${user}' mod in '${channel}' set to ${users[user][channel][mod.name]}`)
+                } else if (vip.aliases.includes(args[3])) {
+                    if (![`true`, `t`, `false`, `f`].includes(args[4])) { return talk(chatroom, `> User in ${channel}'s '${vip.name}' must be of value BOOLEAN (currently: ${users[user][channel][vip.name]})`) }
+                    if ([`true`, `t`].includes(args[4])) { users[user][channel][vip.name] = true }
+                    if ([`false`, `f`].includes(args[4])) { users[user][channel][vip.name] = false }
+                    return talk(chatroom, `> User '${user}' vip in '${channel}' set to ${users[user][channel][vip.name]}`)
+                } else if (msgcount.aliases.includes(args[3])) {
+                    if (!args[4] || isNaN(Number(args[4]))) { return talk(chatroom, `> User in ${channel}'s '${msgcount.name}' must be of value NUMBER (currently: ${users[user][channel][msgcount.name]})`) }
+                    users[user][channel][msgcount.name] = Number(args[4])
+                    return talk(chatroom, `> User '${user}' msgCount in '${channel}' set to ${users[user][channel][msgcount.name]}`)
+                } else if (lastmessage.aliases.includes(args[3])) {
+                    users[user][channel][lastmessage.name] = args.slice(4).join(` `)
+                    return talk(chatroom, `> User '${user}' lastMessage in '${channel}' set to '${users[user][channel][lastmessage.name]}'`)
+                } else if (away.aliases.includes(args[3])) {
+                    if (![`true`, `t`, `false`, `f`].includes(args[4])) { return talk(chatroom, `> User in ${channel}'s '${away.name}' must be of value BOOLEAN (currently: ${users[user][channel][away.name]})`) }
+                    if ([`true`, `t`].includes(args[4])) { users[user][channel][away.name] = true }
+                    if ([`false`, `f`].includes(args[4])) { users[user][channel][away.name] = false }
+                    return talk(chatroom, `> User '${user}' away in '${channel}' set to ${users[user][channel][away.name]}`)
+                } else if (awaymessage.aliases.includes(args[3])) {
                     users[user][channel].awayMessage = args.slice(4).join(` `)
                     return talk(chatroom, `> User '${user}' awayMessage in '${channel}' set to '${users[user][channel].awayMessage}'`)
                 } else { return talk(chatroom, `> Possible '${channel}' controls for user '${user}': (s) sub, (m) mod, (v) vip, (mc) msgCount, (lm) lastMessage, (a) away, (am) awayMessage`) }
@@ -124,39 +273,39 @@ function cli(chatroom, args) {
     } else if ([`lemonyfresh`, `lf`].includes(args[0])) {
         if (![`jpegstripes`, `j`, `sclarf`, `s`, `e1ectroma`, `e`, `domonintendo1`, `d`, `ppuyya`, `p`].includes(args[1])) { return talk(chatroom, `> You must specify a Lemony Fresh member`) }
         const channel = [`jpegstripes`, `j`].includes(args[1]) ? `jpegstripes` : [`sclarf`, `s`].includes(args[1]) ? `sclarf` : [`e1ectroma`, `e`].includes(args[1]) ? `e1ectroma` : [`domonintendo1`, `d`].includes(args[1]) ? `domonintendo1` : `ppuyya`
-        if ([`funtimer`, `ft`].includes(args[2])) {
-            lemonyFresh[channel].funTimer = Number(args[3]) || 0
-            return talk(chatroom, `> ${channel} 'funTimer' set to ${lemonyFresh[channel].funTimer}`)
-        } else if ([`funtimerguesser`, `ftg`].includes(args[2])) {
-            lemonyFresh[channel].funTimerGuesser = args[3] || ``
-            return talk(chatroom, `> ${channel} 'funTimerGuesser' set to ${lemonyFresh[channel].funTimerGuesser}`)
-        } else if ([`pollid`, `p`].includes(args[2])) {
-            lemonyFresh[channel].pollId = args[3] || ``
-            return talk(chatroom, `> ${channel} 'pollId' set to ${lemonyFresh[channel].pollId}`)
+        if (funtimer.aliases.includes(args[2])) {
+            lemonyFresh[channel][funtimer.name] = Number(args[3]) || 0
+            return talk(chatroom, `> ${channel} 'funTimer' set to ${lemonyFresh[channel][funtimer.name]}`)
+        } else if (funtimerguesser.aliases.includes(args[2])) {
+            lemonyFresh[channel][funtimerguesser.name] = args[3] || ``
+            return talk(chatroom, `> ${channel} 'funTimerGuesser' set to ${lemonyFresh[channel][funtimerguesser.name]}`)
+        } else if (pollid.aliases.includes(args[2])) {
+            lemonyFresh[channel][pollid.name] = args[3] || ``
+            return talk(chatroom, `> ${channel} 'pollId' set to ${lemonyFresh[channel][pollid.name]}`)
         } else { return talk(chatroom, `> Possible lemonyFresh controls for member '${channel}': (ft) funTimer (ftg) funTimerGuesser (p) pollId`) }
     } else if ([`mods`, `m`].includes(args[0])) {
         if (!args[1]) { return talk(chatroom, `> You must specify a moderator`) }
         const user = args[1].replace(/^@/, ``)
         if (user in mods) {
-            if ([`id`, `i`].includes(args[2])) {
-                if (!args[3] || isNaN(Number(args[3]))) { return talk(chatroom, `> Mod 'id' must be of value NUMBER (currently: ${mods[user].id})`) }
-                mods[user].id = Number(args[3])
-                return talk(chatroom, `> Mod '${user}' id set to ${mods[user].id}`)
-            } else if ([`ismodin`, `m`].includes(args[2])) {
-                if (!args[3]) { return talk(chatroom, `> Mod is moderating in: ${mods[user].isModIn.join(`, `)} - Edit list with: (c) clear (p) push`) }
+            if (id.aliases.includes(args[2])) {
+                if (!args[3] || isNaN(Number(args[3]))) { return talk(chatroom, `> Mod 'id' must be of value NUMBER (currently: ${mods[user][id.name]})`) }
+                mods[user][id.name] = Number(args[3])
+                return talk(chatroom, `> Mod '${user}' id set to ${mods[user][id.name]}`)
+            } else if (ismodin.aliases.includes(args[2])) {
+                if (!args[3]) { return talk(chatroom, `> Mod is moderating in: ${mods[user][ismodin.name].join(`, `)} - Edit list with: (c) clear (p) push`) }
                 if ([`clear`, `c`].includes(args[3])) {
-                    mods[user].isModIn.length = 0
+                    mods[user][ismodin.name].length = 0
                     return talk(chatroom, `> Mod channels list cleared!`)
                 } else if ([`push`, `p`].includes(args[3]) && args[4]) {
-                    mods[user].isModIn.push(args[4])
-                    return talk(chatroom, `> Mod is moderating in: ${mods[user].isModIn.join(`, `)}`)
+                    mods[user][ismodin.name].push(args[4])
+                    return talk(chatroom, `> Mod is moderating in: ${mods[user][ismodin.name].join(`, `)}`)
                 }
-            } else if ([`accesstoken`, `at`].includes(args[3])) {
-                mods[user].accessToken = args[3] || ``
-                return talk(chatroom, `> ${channel} 'accessToken' set to ${mods[user].accessToken}`)
-            } else if ([`refreshtoken`, `rt`].includes(args[3])) {
-                mods[user].refreshToken = args[3] || ``
-                return talk(chatroom, `> ${channel} 'refreshToken' set to ${mods[user].refreshToken}`)
+            } else if (accesstoken.aliases.includes(args[2])) {
+                mods[user][accesstoken.name] = args[3] || ``
+                return talk(chatroom, `> Mod ${user} '${accesstoken.name}' set to ${mods[user][accesstoken.name]}`)
+            } else if (refreshtoken.aliases.includes(args[2])) {
+                mods[user][refreshtoken.name] = args[3] || ``
+                return talk(chatroom, `> Mod ${user} '${refreshtoken.name}' set to ${mods[user][refreshtoken.name]}`)
             } else { return talk(chatroom, `> Possible controls for mod '${user}': (i) id (m) isModIn (at) accessToken (rt) refreshToken`) }
         } else { return talk(chatroom, `> Mod '${user}' is not known`) }
         if (![`jpegstripes`, `j`, `sclarf`, `s`, `e1ectroma`, `e`, `domonintendo1`, `d`, `ppuyya`, `p`].includes(args[1])) { return talk(chatroom, `> You must specify a Lemony Fresh member`) }
