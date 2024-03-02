@@ -75,15 +75,15 @@ function cli(chatroom, args) {
                 users[user].displayName = args.slice(3).join(` `)
                 return talk(chatroom, `> User '${user}' displayName set to '${users[user].displayName}'`)
             } else if ([`lemons`, `l`].includes(args[2])) {
-                if (!args[3] || isNaN(Number(args[3]))) { return talk(chatroom, `> User's '${args[2]}' must be of value NUMBER (currently: ${users[user].lemons})`) }
+                if (!args[3] || isNaN(Number(args[3]))) { return talk(chatroom, `> User's 'lemons' must be of value NUMBER (currently: ${users[user].lemons})`) }
                 users[user].lemons = Number(args[3])
                 return talk(chatroom, `> User '${user}' lemons set to ${users[user].lemons}`)
             } else if ([`hangmanwins`, `hw`].includes(args[2])) {
-                if (!args[3] || isNaN(Number(args[3]))) { return talk(chatroom, `> User's '${args[2]}' must be of value NUMBER (currently: ${users[user].hangmanWins})`) }
+                if (!args[3] || isNaN(Number(args[3]))) { return talk(chatroom, `> User's 'hangmanwins' must be of value NUMBER (currently: ${users[user].hangmanWins})`) }
                 users[user].hangmanWins = Number(args[3])
                 return talk(chatroom, `> User '${user}' hangmanWins set to ${users[user].hangmanWins}`)
             } else if ([`riddlewins`, `rw`].includes(args[2])) {
-                if (!args[3] || isNaN(Number(args[3]))) { return talk(chatroom, `> User's '${args[2]}' must be of value NUMBER (currently: ${users[user].riddleWins})`) }
+                if (!args[3] || isNaN(Number(args[3]))) { return talk(chatroom, `> User's 'riddlewins' must be of value NUMBER (currently: ${users[user].riddleWins})`) }
                 users[user].riddleWins = Number(args[3])
                 return talk(chatroom, `> User '${user}' riddleWins set to ${users[user].riddleWins}`)
             } else if ([`jpegstripes`, `j`, `sclarf`, `s`, `e1ectroma`, `e`, `domonintendo1`, `d`, `ppuyya`, `p`].includes(args[2])) {
@@ -134,6 +134,43 @@ function cli(chatroom, args) {
             lemonyFresh[channel].pollId = args[3] || ``
             return talk(chatroom, `> ${channel} 'pollId' set to ${lemonyFresh[channel].pollId}`)
         } else { return talk(chatroom, `> Possible lemonyFresh controls for member '${channel}': (ft) funTimer (ftg) funTimerGuesser (p) pollId`) }
+    } else if ([`mods`, `m`].includes(args[0])) {
+        if (!args[1]) { return talk(chatroom, `> You must specify a moderator`) }
+        const user = args[1].replace(/^@/, ``)
+        if (user in mods) {
+            if ([`id`, `i`].includes(args[2])) {
+                if (!args[3] || isNaN(Number(args[3]))) { return talk(chatroom, `> Mod 'id' must be of value NUMBER (currently: ${mods[user].id})`) }
+                mods[user].id = Number(args[3])
+                return talk(chatroom, `> Mod '${user}' id set to ${mods[user].id}`)
+            } else if ([`ismodin`, `m`].includes(args[2])) {
+                if (!args[3]) { return talk(chatroom, `> Mod is moderating in: ${mods[user].isModIn.join(`, `)} - Edit list with: (c) clear (p) push`) }
+                if ([`clear`, `c`].includes(args[3])) {
+                    mods[user].isModIn.length = 0
+                    return talk(chatroom, `> Mod channels list cleared!`)
+                } else if ([`push`, `p`].includes(args[3]) && args[4]) {
+                    mods[user].isModIn.push(args[4])
+                    return talk(chatroom, `> Mod is moderating in: ${mods[user].isModIn.join(`, `)}`)
+                }
+            } else if ([`accesstoken`, `at`].includes(args[3])) {
+                mods[user].accessToken = args[3] || ``
+                return talk(chatroom, `> ${channel} 'accessToken' set to ${mods[user].accessToken}`)
+            } else if ([`refreshtoken`, `rt`].includes(args[3])) {
+                mods[user].refreshToken = args[3] || ``
+                return talk(chatroom, `> ${channel} 'refreshToken' set to ${mods[user].refreshToken}`)
+            } else { return talk(chatroom, `> Possible controls for mod '${user}': (i) id (m) isModIn (at) accessToken (rt) refreshToken`) }
+        } else { return talk(chatroom, `> Mod '${user}' is not known`) }
+        if (![`jpegstripes`, `j`, `sclarf`, `s`, `e1ectroma`, `e`, `domonintendo1`, `d`, `ppuyya`, `p`].includes(args[1])) { return talk(chatroom, `> You must specify a Lemony Fresh member`) }
+        const channel = [`jpegstripes`, `j`].includes(args[1]) ? `jpegstripes` : [`sclarf`, `s`].includes(args[1]) ? `sclarf` : [`e1ectroma`, `e`].includes(args[1]) ? `e1ectroma` : [`domonintendo1`, `d`].includes(args[1]) ? `domonintendo1` : `ppuyya`
+        if ([`funtimer`, `ft`].includes(args[2])) {
+            lemonyFresh[channel].funTimer = Number(args[3]) || 0
+            return talk(chatroom, `> ${channel} 'funTimer' set to ${lemonyFresh[channel].funTimer}`)
+        } else if ([`funtimerguesser`, `ftg`].includes(args[2])) {
+            lemonyFresh[channel].funTimerGuesser = args[3] || ``
+            return talk(chatroom, `> ${channel} 'funTimerGuesser' set to ${lemonyFresh[channel].funTimerGuesser}`)
+        } else if ([`pollid`, `p`].includes(args[2])) {
+            lemonyFresh[channel].pollId = args[3] || ``
+            return talk(chatroom, `> ${channel} 'pollId' set to ${lemonyFresh[channel].pollId}`)
+        } else { return talk(chatroom, `> Possible mod controls for member '${channel}': (ft) funTimer (ftg) funTimerGuesser (p) pollId`) }
     } else { talk(chatroom, `> Possible configurations: (s) settings, (u) users, (lf) lemonyFresh`) }
 }
 
