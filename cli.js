@@ -288,17 +288,18 @@ function cli(chatroom, args) {
         const user = args[1].replace(/^@/, ``)
         if (user in mods) {
             if (id.aliases.includes(args[2])) {
-                if (!args[3] || isNaN(Number(args[3]))) { return talk(chatroom, `> Mod 'id' must be of value NUMBER (currently: ${mods[user][id.name]})`) }
+                if (!args[3] || isNaN(Number(args[3]))) { return talk(chatroom, `> Mod ${user} 'id' must be of value NUMBER (currently: ${mods[user][id.name]})`) }
                 mods[user][id.name] = Number(args[3])
                 return talk(chatroom, `> Mod '${user}' id set to ${mods[user][id.name]}`)
             } else if (ismodin.aliases.includes(args[2])) {
-                if (!args[3]) { return talk(chatroom, `> Mod is moderating in: ${mods[user][ismodin.name].join(`, `)} - Edit list with: (c) clear (p) push`) }
+                if (!args[3]) { return talk(chatroom, `> Mod '${user}' is moderating in: [${mods[user][ismodin.name].join(`, `)}] - Edit list with: (c) clear (p) push`) }
                 if ([`clear`, `c`].includes(args[3])) {
                     mods[user][ismodin.name].length = 0
-                    return talk(chatroom, `> Mod channels list cleared!`)
+                    return talk(chatroom, `> Mod '${user}' channels list cleared!`)
                 } else if ([`push`, `p`].includes(args[3]) && args[4]) {
-                    mods[user][ismodin.name].push(args[4])
-                    return talk(chatroom, `> Mod is moderating in: ${mods[user][ismodin.name].join(`, `)}`)
+                    const channel = args[4].startsWith(`#`) ? args[4] : `#${args[4]}`
+                    mods[user][ismodin.name].push(channel)
+                    return talk(chatroom, `> Mod '${user}' is moderating in: [${mods[user][ismodin.name].join(`, `)}]`)
                 }
             } else if (accesstoken.aliases.includes(args[2])) {
                 mods[user][accesstoken.name] = args[3] || ``
