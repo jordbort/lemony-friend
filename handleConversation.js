@@ -4,7 +4,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 const { users } = require(`./data`)
 
 // Import global settings
-const { resetTxt, boldTxt, grayTxt, settings } = require(`./config`)
+const { resetTxt, boldTxt, grayTxt, settings, timers } = require(`./config`)
 
 // Import emotes
 const { getGreetingEmote, getPositiveEmote, getByeEmote } = require(`./getEmotes`)
