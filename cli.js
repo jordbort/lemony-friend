@@ -1,5 +1,10 @@
+// Import global settings
 const { settings } = require(`./config`)
+
+// Import data
 const { lemonyFresh, mods, users } = require(`./data`)
+
+// Import bot's ability to speak
 const { talk } = require("./utils")
 
 const settingsOptions = {
