@@ -88,45 +88,45 @@ const usersOptions = {
     },
     sub: {
         aliases: [`sub`, `s`],
-        name: `displayName`
+        name: `sub`
     },
     mod: {
         aliases: [`mod`, `m`],
-        name: `lemons`
+        name: `mod`
     },
     vip: {
         aliases: [`vip`, `v`],
-        name: `hangmanWins`
+        name: `vip`
     },
     msgcount: {
         aliases: [`msgcount`, `mc`],
-        name: `riddleWins`
+        name: `msgCount`
     },
     lastmessage: {
         aliases: [`lastmessage`, `lm`],
-        name: `displayName`
+        name: `lastMessage`
     },
     away: {
         aliases: [`away`, `a`],
-        name: `lemons`
+        name: `away`
     },
     awaymessage: {
         aliases: [`awaymessage`, `am`],
-        name: `hangmanWins`
+        name: `awayMessage`
     }
 }
 const lemonyFreshOptions = {
     funtimer: {
         aliases: [`funtimer`, `ft`],
-        name: `displayName`
+        name: `funTimer`
     },
     funtimerguesser: {
         aliases: [`funtimerguesser`, `ftg`],
-        name: `lemons`
+        name: `funTimerGuesser`
     },
     pollid: {
         aliases: [`pollid`, `p`],
-        name: `hangmanWins`
+        name: `pollId`
     }
 }
 const modOptions = {
@@ -179,40 +179,35 @@ function cli(chatroom, args) {
             return talk(chatroom, `> Setting '${sayonlinemsg.name}' set to ${settings[sayonlinemsg.name]}`)
         } else if (funnumbercount.aliases.includes(args[1])) {
             if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${funnumbercount.name}' must be of value NUMBER (currently: ${settings[funnumbercount.name]})`) }
-            settings[funnumbercount.name] = args[2]
+            settings[funnumbercount.name] = Number(args[2])
             return talk(chatroom, `> Setting '${funnumbercount.name}' set to ${settings[funnumbercount.name]}`)
         } else if (funnumbertotal.aliases.includes(args[1])) {
             if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${funnumbertotal.name}' must be of value NUMBER (currently: ${settings[funnumbertotal.name]})`) }
-            settings[funnumbertotal.name] = args[2]
+            settings[funnumbertotal.name] = Number(args[2])
             return talk(chatroom, `> Setting '${funnumbertotal.name}' set to ${settings[funnumbertotal.name]}`)
         } else if (funtimerduration.aliases.includes(args[1])) {
             if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${funtimerduration.name}' must be of value NUMBER (currently: ${settings[funtimerduration.name]})`) }
-            settings[funtimerduration.name] = args[2]
+            settings[funtimerduration.name] = Number(args[2])
             return talk(chatroom, `> Setting '${funtimerduration.name}' set to ${settings[funtimerduration.name]}`)
-        } else if (listening.aliases.includes(args[1])) {
-            if (![`true`, `t`, `false`, `f`].includes(args[2])) { return talk(chatroom, `> Setting '${listening.name}' must be of value BOOLEAN (currently: ${settings[listening.name]})`) }
-            if ([`true`, `t`].includes(args[2])) { settings[listening.name] = true }
-            if ([`false`, `f`].includes(args[2])) { settings[listening.name] = false }
-            return talk(chatroom, `> Setting '${listening.name}' set to ${settings[listening.name]}`)
         } else if (streakthreshold.aliases.includes(args[1])) {
             if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${streakthreshold.name}' must be of value NUMBER (currently: ${settings[streakthreshold.name]})`) }
-            settings[streakthreshold.name] = args[2]
+            settings[streakthreshold.name] = Number(args[2])
             return talk(chatroom, `> Setting '${streakthreshold.name}' set to ${settings[streakthreshold.name]}`)
         } else if (emotestreakthreshold.aliases.includes(args[1])) {
             if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${emotestreakthreshold.name}' must be of value NUMBER (currently: ${settings[emotestreakthreshold.name]})`) }
-            settings[emotestreakthreshold.name] = args[2]
+            settings[emotestreakthreshold.name] = Number(args[2])
             return talk(chatroom, `> Setting '${emotestreakthreshold.name}' set to ${settings[emotestreakthreshold.name]}`)
         } else if (hangmansignupseconds.aliases.includes(args[1])) {
             if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${hangmansignupseconds.name}' must be of value NUMBER (currently: ${settings[hangmansignupseconds.name]})`) }
-            settings[hangmansignupseconds.name] = args[2]
+            settings[hangmansignupseconds.name] = Number(args[2])
             return talk(chatroom, `> Setting '${hangmansignupseconds.name}' set to ${settings[hangmansignupseconds.name]}`)
         } else if (hangmanchances.aliases.includes(args[1])) {
             if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${hangmanchances.name}' must be of value NUMBER (currently: ${settings[hangmanchances.name]})`) }
-            settings[hangmanchances.name] = args[2]
+            settings[hangmanchances.name] = Number(args[2])
             return talk(chatroom, `> Setting '${hangmanchances.name}' set to ${settings[hangmanchances.name]}`)
         } else if (chantcount.aliases.includes(args[1])) {
             if (!args[2] || isNaN(Number(args[2]))) { return talk(chatroom, `> Setting '${chantcount.name}' must be of value NUMBER (currently: ${settings[chantcount.name]})`) }
-            settings[chantcount.name] = args[2]
+            settings[chantcount.name] = Number(args[2])
             return talk(chatroom, `> Setting '${chantcount.name}' set to ${settings[chantcount.name]}`)
         } else if (chantemote.aliases.includes(args[1])) {
             settings[chantemote.name] = args[2]
@@ -280,10 +275,10 @@ function cli(chatroom, args) {
         const channel = [`jpegstripes`, `j`].includes(args[1]) ? `jpegstripes` : [`sclarf`, `s`].includes(args[1]) ? `sclarf` : [`e1ectroma`, `e`].includes(args[1]) ? `e1ectroma` : [`domonintendo1`, `d`].includes(args[1]) ? `domonintendo1` : `ppuyya`
         if (funtimer.aliases.includes(args[2])) {
             lemonyFresh[channel][funtimer.name] = Number(args[3]) || 0
-            return talk(chatroom, `> ${channel} 'funTimer' set to ${lemonyFresh[channel][funtimer.name]}`)
+            return talk(chatroom, `> ${channel} '${funtimer.name}' set to ${lemonyFresh[channel][funtimer.name]}`)
         } else if (funtimerguesser.aliases.includes(args[2])) {
             lemonyFresh[channel][funtimerguesser.name] = args[3] || ``
-            return talk(chatroom, `> ${channel} 'funTimerGuesser' set to ${lemonyFresh[channel][funtimerguesser.name]}`)
+            return talk(chatroom, `> ${channel} '${funtimerguesser.name}' set to ${lemonyFresh[channel][funtimerguesser.name]}`)
         } else if (pollid.aliases.includes(args[2])) {
             lemonyFresh[channel][pollid.name] = args[3] || ``
             return talk(chatroom, `> ${channel} 'pollId' set to ${lemonyFresh[channel][pollid.name]}`)
