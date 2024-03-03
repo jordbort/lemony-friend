@@ -200,6 +200,7 @@ function onMessageHandler(chatroom, tags, message, self) {
 
     // Command and arguments parser
     const args = msg.split(` `)
+    const lowercaseArgs = args.map(str => str.toLowerCase())
     const command = args.shift().toLowerCase()
     const toUser = args[0] ? args[0].replace(/^@/, ``) : null
     const target = toUser && toUser.toLowerCase() in users ? toUser.toLowerCase() : null
@@ -627,9 +628,6 @@ function onMessageHandler(chatroom, tags, message, self) {
             return handleGreet(chatroom, user)
         }
 
-        // All words after the first, in lower case
-        const lowercaseArgs = args.map(str => str.toLowerCase())
-
         // Checking for "what's up"
         const whatsUpPrefixPattern = /^wh?[au]t?['"]*s*[^\w\s]*$/i
         const upPattern = /^up+[^\w\s]*$/i
@@ -1029,20 +1027,12 @@ function onMessageHandler(chatroom, tags, message, self) {
         }
     }
 
+    // change settings.listening to settings.cooldown[`listening`] - consider renaming settings.cooldown[timer] from `listening` to `streaksTimer`
     if (settings.listening || channel === BOT_USERNAME) {
-        // Parsing each message word
-        const lowercaseArgs = args.map(str => str.toLowerCase())
-        for (const str of lowercaseArgs) {
-            // If a word starts with "but", and has a 4th letter that isn't T or punctuation, make it "BUTT-(rest of word)"
-            if (str.match(/^but[a-s|u-z]/i)) {
-                delayListening()
-                return talk(chatroom, `${str[0].toUpperCase()}${str.slice(1).toLowerCase()}? More like BUTT-${str.slice(3).toLowerCase()}`)
-            }
-        }
-
         // Listening for a message to be repeated by at least two other users
         const stopListening = checkStreak(chatroom, msg)
 
+        // create separate cooldown timer settings.cooldown[`emoteStreaksTimer`] - consider renaming settings.cooldown[timer] from `listening` to `streaksTimer`
         // Continue listening for emote streak (if bot is subbed)
         if (!stopListening) {
             for (const member of lemonyFresh.channels) {
@@ -1056,6 +1046,11 @@ function onMessageHandler(chatroom, tags, message, self) {
                 }
             }
         }
+    }
+
+    // If a word starts with "but", and has a 4th letter that isn't T or punctuation, make it "BUTT-(rest of word)"
+    for (const str of lowercaseArgs) {
+        if (str.match(/^but[a-s|u-z]/i)) { return talk(chatroom, `${str[0].toUpperCase()}${str.slice(1).toLowerCase()}? More like BUTT-${str.slice(3).toLowerCase()}`) }
     }
 
     // *** FUN NUMBER! ***
