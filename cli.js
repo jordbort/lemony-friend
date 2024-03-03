@@ -1,5 +1,5 @@
 // Import global settings
-const { settings } = require(`./config`)
+const { settings, timers } = require(`./config`)
 
 // Import data
 const { lemonyFresh, mods, users } = require(`./data`)
@@ -39,10 +39,6 @@ const settingsOptions = {
     funtimerduration: {
         aliases: [`funtimerduration`, `ftd`],
         name: `funTimerDuration`
-    },
-    listening: {
-        aliases: [`listening`, `l`],
-        name: `listening`
     },
     streakthreshold: {
         aliases: [`streakthreshold`, `st`],
@@ -116,6 +112,10 @@ const usersOptions = {
     }
 }
 const lemonyFreshOptions = {
+    accesstoken: {
+        aliases: [`accesstoken`, `ft`],
+        name: `accessToken`
+    },
     funtimer: {
         aliases: [`funtimer`, `ft`],
         name: `funTimer`
@@ -147,10 +147,21 @@ const modOptions = {
         name: `refreshToken`
     }
 }
-const { debug, timelocale, timezone, firstconnection, sayonlinemsg, funnumbercount, funnumbertotal, funtimerduration, listening, streakthreshold, emotestreakthreshold, hangmansignupseconds, hangmanchances, chantcount, chantemote } = settingsOptions
+const timersOptions = {
+    cooldown: {
+        aliases: [`cooldown`, `cd`],
+        name: `cooldown`
+    },
+    listening: {
+        aliases: [`listening`, `l`],
+        name: `listening`
+    }
+}
+const { debug, timelocale, timezone, firstconnection, sayonlinemsg, funnumbercount, funnumbertotal, funtimerduration, streakthreshold, emotestreakthreshold, hangmansignupseconds, hangmanchances, chantcount, chantemote } = settingsOptions
 const { displayname, lemons, hangmanwins, riddlewins, sub, mod, vip, msgcount, lastmessage, away, awaymessage } = usersOptions
 const { funtimer, funtimerguesser, pollid } = lemonyFreshOptions
 const { id, ismodin, accesstoken, refreshtoken } = modOptions
+const { cooldown, listening } = timersOptions
 
 function cli(chatroom, args) {
     if ([`settings`, `s`].includes(args[0])) {
@@ -212,7 +223,7 @@ function cli(chatroom, args) {
         } else if (chantemote.aliases.includes(args[1])) {
             settings[chantemote.name] = args[2]
             return talk(chatroom, `> Setting '${chantemote.name}' set to ${settings[chantemote.name]}`)
-        } else { return talk(chatroom, `> Possible 'settings' controls: listening, sayOnlineMsg, firstConnection, debug, funNumberCount, funNumberTotal, streakThreshold, emoteStreakThreshold, hangmanSignupSeconds, hangmanChances, chantCount, chantEmote`) }
+        } else { return talk(chatroom, `> Possible 'settings' controls: sayOnlineMsg, firstConnection, debug, funNumberCount, funNumberTotal, streakThreshold, emoteStreakThreshold, hangmanSignupSeconds, hangmanChances, chantCount, chantEmote`) }
     } else if ([`users`, `u`].includes(args[0])) {
         if (!args[1]) { return talk(chatroom, `> You must specify a user`) }
         const user = args[1].replace(/^@/, ``)
@@ -273,7 +284,10 @@ function cli(chatroom, args) {
     } else if ([`lemonyfresh`, `lf`].includes(args[0])) {
         if (![`jpegstripes`, `j`, `sclarf`, `s`, `e1ectroma`, `e`, `domonintendo1`, `d`, `ppuyya`, `p`].includes(args[1])) { return talk(chatroom, `> You must specify a Lemony Fresh member`) }
         const channel = [`jpegstripes`, `j`].includes(args[1]) ? `jpegstripes` : [`sclarf`, `s`].includes(args[1]) ? `sclarf` : [`e1ectroma`, `e`].includes(args[1]) ? `e1ectroma` : [`domonintendo1`, `d`].includes(args[1]) ? `domonintendo1` : `ppuyya`
-        if (funtimer.aliases.includes(args[2])) {
+        if (accesstoken.aliases.includes(args[2])) {
+            lemonyFresh[channel][accesstoken.name] = args[3] || ``
+            return talk(chatroom, `> ${channel} '${accesstoken.name}' set to ${lemonyFresh[channel][accesstoken.name]}`)
+        } else if (funtimer.aliases.includes(args[2])) {
             lemonyFresh[channel][funtimer.name] = Number(args[3]) || 0
             return talk(chatroom, `> ${channel} '${funtimer.name}' set to ${lemonyFresh[channel][funtimer.name]}`)
         } else if (funtimerguesser.aliases.includes(args[2])) {
@@ -309,19 +323,21 @@ function cli(chatroom, args) {
                 return talk(chatroom, `> Mod ${user} '${refreshtoken.name}' set to ${mods[user][refreshtoken.name]}`)
             } else { return talk(chatroom, `> Possible controls for mod '${user}': (i) id (m) isModIn (at) accessToken (rt) refreshToken`) }
         } else { return talk(chatroom, `> Mod '${user}' is not known`) }
-        if (![`jpegstripes`, `j`, `sclarf`, `s`, `e1ectroma`, `e`, `domonintendo1`, `d`, `ppuyya`, `p`].includes(args[1])) { return talk(chatroom, `> You must specify a Lemony Fresh member`) }
-        const channel = [`jpegstripes`, `j`].includes(args[1]) ? `jpegstripes` : [`sclarf`, `s`].includes(args[1]) ? `sclarf` : [`e1ectroma`, `e`].includes(args[1]) ? `e1ectroma` : [`domonintendo1`, `d`].includes(args[1]) ? `domonintendo1` : `ppuyya`
-        if ([`funtimer`, `ft`].includes(args[2])) {
-            lemonyFresh[channel].funTimer = Number(args[3]) || 0
-            return talk(chatroom, `> ${channel} 'funTimer' set to ${lemonyFresh[channel].funTimer}`)
-        } else if ([`funtimerguesser`, `ftg`].includes(args[2])) {
-            lemonyFresh[channel].funTimerGuesser = args[3] || ``
-            return talk(chatroom, `> ${channel} 'funTimerGuesser' set to ${lemonyFresh[channel].funTimerGuesser}`)
-        } else if ([`pollid`, `p`].includes(args[2])) {
-            lemonyFresh[channel].pollId = args[3] || ``
-            return talk(chatroom, `> ${channel} 'pollId' set to ${lemonyFresh[channel].pollId}`)
-        } else { return talk(chatroom, `> Possible mod controls for member '${channel}': (ft) funTimer (ftg) funTimerGuesser (p) pollId`) }
-    } else { talk(chatroom, `> Possible configurations: (s) settings, (u) users, (lf) lemonyFresh`) }
+    } else if ([`timers`, `t`].includes(args[0])) {
+        if (!args[1]) { return talk(chatroom, `> You must specify a command/cooldown timer`) }
+        if (args[1] in timers) {
+            if (cooldown.aliases.includes(args[2])) {
+                if (!args[3] || isNaN(Number(args[3]))) { return talk(chatroom, `> Timer ${args[1]} '${cooldown.name}' must be of value NUMBER (currently: ${timers[args[1]][cooldown.name]})`) }
+                timers[args[1]][cooldown.name] = Number(args[3])
+                return talk(chatroom, `> Timer ${args[1]} '${cooldown.name}' set to ${timers[args[1]][cooldown.name]}`)
+            } else if (listening.aliases.includes(args[2])) {
+                if (![`true`, `t`, `false`, `f`].includes(args[3])) { return talk(chatroom, `> Timer ${args[1]} '${listening.name}' must be of value BOOLEAN (currently: ${timers[args[1]][listening.name]})`) }
+                if ([`true`, `t`].includes(args[3])) { timers[listening.name] = true }
+                if ([`false`, `f`].includes(args[3])) { timers[listening.name] = false }
+                return talk(chatroom, `> Setting '${listening.name}' set to ${timers[listening.name]}`)
+            } else { return talk(chatroom, `> Possible 'timers' controls for command/timer '${args[1]}': (cd) cooldown (l) listening`) }
+        } else { return talk(chatroom, `> Command/timer '${args[1]}' not recognized`) }
+    } else { talk(chatroom, `> Possible configurations: (s) settings, (m) mods, (t) timers, (u) users, (lf) lemonyFresh`) }
 }
 
 module.exports = { cli }

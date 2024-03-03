@@ -30,7 +30,8 @@ const {
     grayBg,
     orangeBg,
     chatColors,
-    settings
+    settings,
+    timers
 } = require(`./config`)
 
 // Import data
@@ -148,6 +149,8 @@ const {
 // Import helper functions
 const {
     handleUncaughtException,
+    talk,
+    resetCooldownTimer,
     sayGoals,
     sayRebootMsg,
     sayFriends,
@@ -160,7 +163,6 @@ const {
     getRandomUser,
     getRandomChannelMessage,
     handleTempCmd,
-    delayListening,
     chant,
     printLemon,
     makeLogs,
@@ -282,28 +284,53 @@ function onMessageHandler(chatroom, tags, message, self) {
     REPLY CASES
     \*********/
 
-    if (command === `!break`) { return null[`self-imposed crash`] }
     if (settings.sayOnlineMsg) { return sayRebootMsg(chatroom) }
 
     // Dev commands
     if (username === `jpegstripes`) {
-        if (command === `data`) { console.log(`lemonyFresh:`, lemonyFresh, `users:`, users, `tempCmds:`, tempCmds) }
-        if (command === `tags`) { console.log(tags) }
-        if (command === `cli`) { return cli(chatroom, args.map(arg => arg.toLowerCase())) }
+        if (command === `data`) {
+            if (timers[command].listening) {
+                resetCooldownTimer(command)
+                return console.log(`lemonyFresh:`, lemonyFresh, `users:`, users, `tempCmds:`, tempCmds)
+            } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+        }
+        if (command === `tags`) {
+            if (timers[command].listening) {
+                resetCooldownTimer(command)
+                return console.log(tags)
+            } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+        }
+        if (command === `cli`) {
+            if (timers[command].listening) {
+                resetCooldownTimer(command)
+                return cli(chatroom, args.map(arg => arg.toLowerCase()))
+            } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+        }
     }
 
-    if (command === `test` && !isNaN(args[0]) && username === `jpegstripes`) { return rollFunNumber(chatroom, tags, username, msg.split(` `), Number(args[0])) }
+    if (command === `test` && !isNaN(args[0]) && username === `jpegstripes`) {
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            return rollFunNumber(chatroom, tags, username, msg.split(` `), Number(args[0]))
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+    }
     if (command === `!test`) {
-        return `points` in users[BOT_USERNAME][channel]
-            ? talk(chatroom, `I have ${users[BOT_USERNAME][channel].points} point${users[BOT_USERNAME][channel].points === 1 ? `` : `s`}!`)
-            : talk(chatroom, `I don't know how many points I have!`)
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            return `points` in users[BOT_USERNAME][channel]
+                ? talk(chatroom, `I have ${users[BOT_USERNAME][channel].points} point${users[BOT_USERNAME][channel].points === 1 ? `` : `s`}!`)
+                : talk(chatroom, `I don't know how many points I have!`)
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
     }
 
     if (command === `!forget`) {
-        if (points in users[BOT_USERNAME][channel]) {
-            delete users[BOT_USERNAME][channel].points
-            return talk(chatroom, `I forgor 💀️`)
-        }
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            if (points in users[BOT_USERNAME][channel]) {
+                delete users[BOT_USERNAME][channel].points
+                return talk(chatroom, `I forgor 💀️`)
+            }
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
     }
 
     // If guessing the Fun Timer correctly
@@ -325,119 +352,235 @@ function onMessageHandler(chatroom, tags, message, self) {
     // if (turboChange) { return handleTurboChange(chatroom, user, tags.turbo) }
 
     // User's first message in a given channel
-    if (firstMsg) { return handleNewChatter(chatroom, user) }
+    if (firstMsg) {
+        if (timers[`new-chatter`].listening) {
+            resetCooldownTimer(`new-chatter`)
+            return handleNewChatter(chatroom, user)
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+    }
 
     /******\
     COMMANDS
     \******/
 
     // All commands
-    if (command === `!docs`) { return talk(chatroom, `Check out the docs here: https://github.com/jordbort/lemony-friend/blob/main/README.md`) }
+    if (command === `!docs`) {
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            return talk(chatroom, `Check out the docs here: https://github.com/jordbort/lemony-friend/blob/main/README.md`)
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+    }
 
-    if (command === `!commands`) { return sayCommands(chatroom) }
+    if (command === `!commands`) {
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            return sayCommands(chatroom)
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+    }
 
     // TWITCH COMMANDS
     // Only the streamer, a mod, or a VIP
     if (isModOrVIP) {
-        if (command === `!so` && toUser) { return handleShoutOut(chatroom, username, toUser.toLowerCase()) }
-        if (command === `!token`) { return getBotToken(chatroom, true) } // Refreshes bot's access token
-        if (command === `!validate`) { return validateToken(chatroom) } // Checks lifespan of channel's access token
+        if (command === `!so` && toUser) {
+            if (timers[command].listening) {
+                resetCooldownTimer(command)
+                return handleShoutOut(chatroom, username, toUser.toLowerCase())
+            } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+        }
+        // Refreshes bot's access token
+        if (command === `!token`) {
+            if (timers[command].listening) {
+                resetCooldownTimer(command)
+                return getBotToken(chatroom, true)
+            } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+        }
+        // Checks lifespan of channel's access token
+        if (command === `!validate`) {
+            if (timers[command].listening) {
+                resetCooldownTimer(command)
+                return validateToken(chatroom)
+            } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+        }
     }
     // Only the streamer or a mod
     if (isMod) {
-        if (command === `!refresh`) { return refreshToken(chatroom, toUser?.toLowerCase() === channel ? channel : username, true) } // Manually refreshes the channel or the mod's access token
-        if (command.match(/^!announce([a-z]*)$/)) { return makeAnnouncement(chatroom, command.split(/^!announce([a-z]*)$/)[1], username, args.join(` `)) }
-        if (command === `!poll`) { return !lemonyFresh[channel].pollId ? pollStart(chatroom, args.join(` `)) : talk(channel, `There is already a poll active! ${negativeEmote}`) }
-        if (command === `!endpoll`) { return talk(chatroom, lemonyFresh[channel].pollId ? `Use !stoppoll to finish and show the results, or !cancelpoll to remove it! ${positiveEmote}` : `There is no active poll! ${negativeEmote}`) }
-        if (command === `!cancelpoll`) { return lemonyFresh[channel].pollId ? pollEnd(chatroom, `ARCHIVED`) : talk(chatroom, `There is no active poll! ${negativeEmote}`) }
-        if (command === `!stoppoll`) { return lemonyFresh[channel].pollId ? pollEnd(chatroom, `TERMINATED`) : talk(chatroom, `There is no active poll! ${negativeEmote}`) }
+        // Manually refreshes the channel or the mod's access token
+        if (command === `!refresh`) {
+            if (timers[command].listening) {
+                resetCooldownTimer(command)
+                return refreshToken(chatroom, toUser?.toLowerCase() === channel ? channel : username, true)
+            } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+        }
+        if (command.match(/^!announce([a-z]*)$/)) {
+            if (timers[command].listening) {
+                resetCooldownTimer(command)
+                return makeAnnouncement(chatroom, command.split(/^!announce([a-z]*)$/)[1], username, args.join(` `))
+            } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+        }
+        if (command === `!poll`) {
+            if (timers[command].listening) {
+                resetCooldownTimer(command)
+                return !lemonyFresh[channel].pollId ? pollStart(chatroom, args.join(` `)) : talk(channel, `There is already a poll active! ${negativeEmote}`)
+            } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+        }
+        if (command === `!endpoll`) {
+            if (timers[command].listening) {
+                resetCooldownTimer(command)
+                return talk(chatroom, lemonyFresh[channel].pollId ? `Use !stoppoll to finish and show the results, or !cancelpoll to remove it! ${positiveEmote}` : `There is no active poll! ${negativeEmote}`)
+            } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+        }
+        if (command === `!cancelpoll`) {
+            if (timers[command].listening) {
+                resetCooldownTimer(command)
+                return lemonyFresh[channel].pollId ? pollEnd(chatroom, `ARCHIVED`) : talk(chatroom, `There is no active poll! ${negativeEmote}`)
+            } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+        }
+        if (command === `!stoppoll`) {
+            if (timers[command].listening) {
+                resetCooldownTimer(command)
+                return lemonyFresh[channel].pollId ? pollEnd(chatroom, `TERMINATED`) : talk(chatroom, `There is no active poll! ${negativeEmote}`)
+            } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+        }
     }
     // Lemony Fresh channels or their mods only
     if (lemonyFreshMember || isMod) {
-        if (command === `!access`) { return getOAUTHToken(chatroom, username) }
-        if (command === `!authorize`) { return authorizeToken(chatroom, username, args.join(` `)) }
+        if (command === `!access`) {
+            if (timers[command].listening) {
+                resetCooldownTimer(command)
+                return getOAUTHToken(chatroom, username)
+            } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+        }
+        if (command === `!authorize`) {
+            if (timers[command].listening) {
+                resetCooldownTimer(command)
+                return authorizeToken(chatroom, username, args.join(` `))
+            } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+        }
     }
 
     // Current time
-    if (command === `!time`) { return getTime(chatroom, args[0], args[1]) }
+    if (command === `!time`) {
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            return getTime(chatroom, args[0], args[1])
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+    }
 
     // Chant
-    if (command === `!chant`) { return chant(chatroom, args) }
+    if (command === `!chant`) {
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            return chant(chatroom, args)
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+    }
 
     // Start a game of Hangman (if one isn't already in progress)
     if (command === `!hangman`) {
-        if (hangman.listening) {
-            return hangman.signup
-                ? talk(chatroom, `A game of Hangman is starting, type !play to join!`)
-                : talk(chatroom, `A game of Hangman is already in progress! It's currently ${users[hangman.players[hangman.currentPlayer]].displayName}'s turn.`)
-        } else {
-            hangmanInit(hangman, username)
-            return hangmanAnnounce(chatroom, user.displayName)
-        }
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            if (hangman.listening) {
+                return hangman.signup
+                    ? talk(chatroom, `A game of Hangman is starting, type !play to join!`)
+                    : talk(chatroom, `A game of Hangman is already in progress! It's currently ${users[hangman.players[hangman.currentPlayer]].displayName}'s turn.`)
+            } else {
+                hangmanInit(hangman, username)
+                return hangmanAnnounce(chatroom, user.displayName)
+            }
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
     }
 
     // Join a game of Hangman (during the 30-second signup window)
     if (command === `!play` && hangman.listening) {
-        if (hangman.signup) {
-            console.log(`${grayTxt}${hangman.players.includes(username) ? `> ${username} already in ${channel}'s Hangman players: ${hangman.players.join(`, `)}` : `> ${username} added to ${channel}'s Hangman players: ${hangman.players.join(`, `)}`}${resetTxt}`)
-            if (!hangman.players.includes(username)) { return hangman.players.push(username) }
-        } else if (!hangman.players.includes(username)) {
-            console.log(`${grayTxt}> ${username} added to ${channel}'s Hangman players: ${hangman.players.join(`, `)}}${resetTxt}`)
-            hangman.players.push(username)
-            return talk(chatroom, `${user.displayName}, you can still hop in, you'll go after everyone else! ${positiveEmote}`)
-        }
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            if (hangman.signup) {
+                console.log(`${grayTxt}${hangman.players.includes(username) ? `> ${username} already in ${channel}'s Hangman players: ${hangman.players.join(`, `)}` : `> ${username} added to ${channel}'s Hangman players: ${hangman.players.join(`, `)}`}${resetTxt}`)
+                if (!hangman.players.includes(username)) { return hangman.players.push(username) }
+            } else if (!hangman.players.includes(username)) {
+                console.log(`${grayTxt}> ${username} added to ${channel}'s Hangman players: ${hangman.players.join(`, `)}}${resetTxt}`)
+                hangman.players.push(username)
+                return talk(chatroom, `${user.displayName}, you can still hop in, you'll go after everyone else! ${positiveEmote}`)
+            }
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
     }
 
     // Define a word
-    if ([`!define`, `!definition`, `!meaning`].includes(command)) { return getDefinition(chatroom, args.join(` `)) }
+    if ([`!define`, `!definition`, `!meaning`].includes(command)) {
+        if (timers[`!define`].listening) {
+            resetCooldownTimer(`!define`)
+            return getDefinition(chatroom, args.join(` `))
+        } else { console.log(`${grayTxt}> Must wait for '!define' cooldown${resetTxt}`) }
+    }
 
     // Ask for a riddle
     if (command === `!riddle`) {
-        return lemonyFresh[channel].riddle.question
-            ? talk(chatroom, `I already have a riddle for you: ${lemonyFresh[channel].riddle.question}`)
-            : getRiddle(chatroom)
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            return lemonyFresh[channel].riddle.question
+                ? talk(chatroom, `I already have a riddle for you: ${lemonyFresh[channel].riddle.question}`)
+                : getRiddle(chatroom)
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
     }
 
     // Answer the riddle
     if (command === `!answer`) {
-        return lemonyFresh[channel].riddle.question
-            ? args[0]
-                ? handleRiddleAnswer(chatroom, username, args)
-                : talk(chatroom, `What is your answer, ${user.displayName}? ${positiveEmote}`)
-            : talk(chatroom, `You can use !riddle to ask me for a riddle! ${positiveEmote}`)
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            return lemonyFresh[channel].riddle.question
+                ? args[0]
+                    ? handleRiddleAnswer(chatroom, username, args)
+                    : talk(chatroom, `What is your answer, ${user.displayName}? ${positiveEmote}`)
+                : talk(chatroom, `You can use !riddle to ask me for a riddle! ${positiveEmote}`)
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
     }
 
     // Channel-specific raid messages
-    if (command === `!raid` && isModOrVIP) { return handleRaid(chatroom) }
+    if (command === `!raid` && isModOrVIP) {
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            return handleRaid(chatroom)
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+    }
 
     // Play rock, paper, scissors with the bot
-    if (command === `!rps`) { return rockPaperScissors(chatroom, username, args[0]?.toLowerCase()) }
+    if (command === `!rps`) {
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            return rockPaperScissors(chatroom, username, args[0]?.toLowerCase())
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+    }
 
     // JSON stats of user or toUser
     if (command === `!mystats`) {
-        const user = target || username
-        console.log(`${user}:`, users[user])
-        let data = `${user}: { displayName: '${users[user].displayName}', color: ${users[user].color}, lemons: ${users[user].lemons}, hangmanWins: ${users[user].hangmanWins}, riddleWins: ${users[user].riddleWins}`
-        for (const key of Object.keys(users[user])) {
-            if (typeof users[user][key] === `object`) {
-                data += `, ${key}: { sub: ${users[user][key]?.sub}, mod: ${users[user][key].mod}, vip: ${users[user][key].vip}, msgCount: ${users[user][key].msgCount}, lastMessage: '${users[user][key].lastMessage}', sentAt: ${users[user][key].sentAt}, away: ${users[user][key].away ? `${users[user][key].away}, awayMessage: '${users[user][key].awayMessage}'` : `${users[user][key].away}`} }`
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            const user = target || username
+            console.log(`${user}:`, users[user])
+            let data = `${user}: { displayName: '${users[user].displayName}', color: ${users[user].color}, lemons: ${users[user].lemons}, hangmanWins: ${users[user].hangmanWins}, riddleWins: ${users[user].riddleWins}`
+            for (const key of Object.keys(users[user])) {
+                if (typeof users[user][key] === `object`) {
+                    data += `, ${key}: { sub: ${users[user][key]?.sub}, mod: ${users[user][key].mod}, vip: ${users[user][key].vip}, msgCount: ${users[user][key].msgCount}, lastMessage: '${users[user][key].lastMessage}', sentAt: ${users[user][key].sentAt}, away: ${users[user][key].away ? `${users[user][key].away}, awayMessage: '${users[user][key].awayMessage}'` : `${users[user][key].away}`} }`
+                }
             }
-        }
-        data += ` }`
-        return talk(chatroom, data)
+            data += ` }`
+            return talk(chatroom, data)
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
     }
 
     // Check which channels the bot is subbed to
     if (command === `!subs`) {
-        const subbedUsers = []
-        const allUsers = []
-        for (const key of Object.keys(users[BOT_USERNAME])) {
-            if (users[BOT_USERNAME][key]?.sub === true) { subbedUsers.push(key) }
-            else if (typeof users[BOT_USERNAME][key] === `object`) { allUsers.push(key) }
-        }
-        return subbedUsers.length
-            ? talk(chatroom, `I am subbed to: ${subbedUsers.join(`, `)} ${hypeEmote}`)
-            : talk(chatroom, `I am not subbed to: ${allUsers.join(`, `)} ${upsetEmote}`)
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            const subbedUsers = []
+            const allUsers = []
+            for (const key of Object.keys(users[BOT_USERNAME])) {
+                if (users[BOT_USERNAME][key]?.sub === true) { subbedUsers.push(key) }
+                else if (typeof users[BOT_USERNAME][key] === `object`) { allUsers.push(key) }
+            }
+            return subbedUsers.length
+                ? talk(chatroom, `I am subbed to: ${subbedUsers.join(`, `)} ${hypeEmote}`)
+                : talk(chatroom, `I am not subbed to: ${allUsers.join(`, `)} ${upsetEmote}`)
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
     }
 
     // If a user who isn't Nightbot or StreamElements mentions a user who is away
@@ -452,36 +595,72 @@ function onMessageHandler(chatroom, tags, message, self) {
     }
 
     // Toggle debug mode
-    if ([`!debug`, `!debugmode`].includes(command)) { return toggleDebugMode(chatroom, args) }
+    if ([`!debug`, `!debugmode`].includes(command)) {
+        if (timers[`!debug`].listening) {
+            resetCooldownTimer(`!debug`)
+            return toggleDebugMode(chatroom, args)
+        } else { console.log(`${grayTxt}> Must wait for '!debug' cooldown${resetTxt}`) }
+    }
 
     // !lastmsg (Show a user's last message, optionally in a specified stream)
-    if (command === `!lastmsg`) { return getLastMessage(chatroom, users[target] || user, args[1]?.toLowerCase()) }
+    if (command === `!lastmsg`) {
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            return getLastMessage(chatroom, users[target] || user, args[1]?.toLowerCase())
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+    }
 
     // !msgcount (Show a user's last message)
-    if (command === `!msgcount`) { return getMessageCount(chatroom, users[target] || user) }
+    if (command === `!msgcount`) {
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            return getMessageCount(chatroom, users[target] || user)
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+    }
 
     // !yell across all lemonyFresh.channels
-    if (command === `!yell`) { return yell(user, msg.substring(6)) }
+    if (command === `!yell`) {
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            return yell(user, msg.substring(6))
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+    }
 
     // !friend(s) count
-    if ([`!friend`, `!friends`].includes(command)) { return sayFriends(chatroom) }
+    if ([`!friend`, `!friends`].includes(command)) {
+        if (timers[`!friend`].listening) {
+            resetCooldownTimer(`!friend`)
+            return sayFriends(chatroom)
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+    }
 
     // !lemon(s) count
     if ([`!lemon`, `!lemons`].includes(command)) {
-        return target
-            ? talk(chatroom, `${users[target].displayName} has ${users[target].lemons} lemon${users[target].lemons === 1 ? `` : `s`}! ${lemonEmote}`)
-            : talk(chatroom, `${user.displayName} has ${user.lemons} lemon${user.lemons === 1 ? `` : `s`}! ${lemonEmote}`)
+        if (timers[`!lemon`].listening) {
+            resetCooldownTimer(`!lemon`)
+            return target
+                ? talk(chatroom, `${users[target].displayName} has ${users[target].lemons} lemon${users[target].lemons === 1 ? `` : `s`}! ${lemonEmote}`)
+                : talk(chatroom, `${user.displayName} has ${user.lemons} lemon${user.lemons === 1 ? `` : `s`}! ${lemonEmote}`)
+        } else { console.log(`${grayTxt}> Must wait for '!lemon' cooldown${resetTxt}`) }
     }
 
     // !uselemon (in some way)
-    if (/^!([a-z]+)lemon([a-z]*)$/i.test(command)) { return useLemon(chatroom, command, username, target) }
+    if (/^!([a-z]+)lemon([a-z]*)$/i.test(command)) {
+        if (timers[`!uselemon`].listening) {
+            resetCooldownTimer(`!uselemon`)
+            return useLemon(chatroom, command, username, target)
+        } else { console.log(`${grayTxt}> Must wait for '!uselemon' cooldown${resetTxt}`) }
+    }
 
     // lemonify
     if (command === `!lemonify`) {
-        if (!target) { return talk(chatroom, `${lemonEmote}${lemonEmote}${lemonEmote} ${positiveEmote}`) }
-        const channelMsg = users[target][channel]?.lastMessage || getRandomChannelMessage(users[target])
-        const lemonMsg = lemonify(channelMsg)
-        return talk(chatroom, lemonMsg)
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            if (!target) { return talk(chatroom, `${lemonEmote}${lemonEmote}${lemonEmote} ${positiveEmote}`) }
+            const channelMsg = users[target][channel]?.lastMessage || getRandomChannelMessage(users[target])
+            const lemonMsg = lemonify(channelMsg)
+            return talk(chatroom, lemonMsg)
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
     }
 
     // !greet a user or whoever
@@ -497,33 +676,56 @@ function onMessageHandler(chatroom, tags, message, self) {
     }
 
     // Handle channel-specific goals
-    if ([`!goal`, `!goals`].includes(command) && args.length) { return sayGoals(chatroom, args) }
+    if ([`!goal`, `!goals`].includes(command) && args.length) {
+        if (timers[`!goal`].listening) {
+            resetCooldownTimer(`!goal`)
+            return sayGoals(chatroom, args)
+        } else { console.log(`${grayTxt}> Must wait for '!goal' cooldown${resetTxt}`) }
+    }
 
     // !bye OR !gn OR !goodnight
-    if ([`!bye`, `!gn`, `!goodnight`].includes(command)) {
+    if ([`!gn`, `!goodnight`, `!bye`].includes(command)) {
         if (target) { return sayGoodnight(chatroom, users[target]) }
         else if (args[0]) { return talk(chatroom, `see ya ${args[0]}`) }
         else { return sayGoodnight(chatroom, user) }
     }
 
     // !color / !colour
-    if ([`!color`, `!colour`].includes(command)) { return getColor(chatroom, users[target] || user) }
+    if ([`!color`, `!colour`].includes(command)) {
+        if (timers[`!color`].listening) {
+            resetCooldownTimer(`!color`)
+            return getColor(chatroom, users[target] || user)
+        } else { console.log(`${grayTxt}> Must wait for '!color' cooldown${resetTxt}`) }
+    }
 
     // !dadjoke
-    if (command === `!dadjoke`) { return getDadJoke(chatroom) }
+    if (command === `!dadjoke`) {
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            return getDadJoke(chatroom)
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+    }
 
     // !pokemon
-    if (command === `!pokemon`) { return getPokemon(chatroom, args[0]) }
+    if (command === `!pokemon`) {
+        if (timers[command].listening) {
+            resetCooldownTimer(command)
+            return getPokemon(chatroom, args[0])
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
+    }
 
     // !away or !brb or !lurk
-    if ([`!away`, `!brb`, `!lurk`].includes(command)) {
-        user[channel].away = true
-        if (args.length) { user[channel].awayMessage = args.join(` `) }
-        if (command !== `!lurk`) {
-            return args.length
-                ? talk(chatroom, `See you later, ${user.displayName}! I'll pass along your away message if they mention you! ${byeEmote}`)
-                : talk(chatroom, `See you later, ${user.displayName}! I'll let people know you're away if they mention you! ${byeEmote}`)
-        }
+    if ([`!lurk`, `!away`, `!brb`].includes(command)) {
+        if (timers[`!lurk`].listening) {
+            resetCooldownTimer(`!lurk`)
+            user[channel].away = true
+            if (args.length) { user[channel].awayMessage = args.join(` `) }
+            if (command !== `!lurk`) {
+                return args.length
+                    ? talk(chatroom, `See you later, ${user.displayName}! I'll pass along your away message if they mention you! ${byeEmote}`)
+                    : talk(chatroom, `See you later, ${user.displayName}! I'll let people know you're away if they mention you! ${byeEmote}`)
+            }
+        } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
     }
 
     // Mentioned by StreamElements
@@ -1018,8 +1220,7 @@ function onMessageHandler(chatroom, tags, message, self) {
         }
     }
 
-    // change settings.listening to settings.cooldown[`listening`] - consider renaming settings.cooldown[timer] from `listening` to `streaksTimer`
-    if (settings.listening || channel === BOT_USERNAME) {
+    if (timers.streak.listening || channel === BOT_USERNAME) {
         // Listening for a message to be repeated by at least two other users
         const stopListening = checkStreak(chatroom, msg)
 

@@ -16,7 +16,7 @@ const CATJERKY_ACCESS_TOKEN = process.env.CATJERKY_ACCESS_TOKEN
 const CATJERKY_REFRESH_TOKEN = process.env.CATJERKY_REFRESH_TOKEN
 
 // Import global settings
-const { resetTxt, boldTxt, grayTxt, yellowBg, chatColors, settings } = require(`./config`)
+const { resetTxt, boldTxt, grayTxt, yellowBg, chatColors, settings, timers } = require(`./config`)
 
 // Import data
 const { lemonyFresh, mods, users, tempCmds } = require(`./data`)
@@ -93,6 +93,16 @@ async function handleUncaughtException(errMsg, location) {
     if (settings.debug) { console.log(`${boldTxt}> handleUncaughtException(errMsg: ${errMsg}, location: ${location})${resetTxt}`) }
     const emote = users[BOT_USERNAME]?.jpegstripes?.sub ? `jpegstBroken` : users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Heat` : users[BOT_USERNAME]?.domonintendo1?.sub ? `domoni6Sneeze` : `>(`
     return lemonyFresh.channels.forEach((chatroom) => { talk(chatroom, `Oops, I just crashed! ${emote} ${errMsg} ${location}`) })
+}
+
+function resetCooldownTimer(command) {
+    if (settings.debug && timers[command].cooldown) { console.log(`${boldTxt}> resetCooldownTimer('${command}') ${timers[command].cooldown / 1000} second${timers[command].cooldown / 1000 === 1 ? `` : `s`}...${resetTxt}`) }
+    timers[command].listening = false
+    clearTimeout(timers[command].timerId)
+    timers[command].timerId = Number(setTimeout(() => {
+        timers[command].listening = true
+        if (timers[command].cooldown) { console.log(`${boldTxt}> Listening for '${command}' again!${resetTxt}`) }
+    }, timers[command].cooldown))
 }
 
 function sayGoals(chatroom, args) {
@@ -284,16 +294,6 @@ function handleTempCmd(chatroom, username, args) {
     }
 }
 
-function delayListening() {
-    const delayTime = 30
-    console.log(`${boldTxt}> delayListening() ${delayTime} seconds...${resetTxt}`)
-    settings.listening = false
-    setTimeout(() => {
-        settings.listening = true
-        console.log(`${boldTxt}> Listening for streaks again!${resetTxt}`)
-    }, delayTime * 1000)
-}
-
 function chant(chatroom, args) {
     if (settings.debug) { console.log(`${boldTxt}> chant(chatroom: ${chatroom}, args: ${args})${resetTxt}`) }
     const chant = args.map((word) => {
@@ -391,6 +391,7 @@ function makeLogs() {
     if (mods.catjerky.refreshToken !== CATJERKY_REFRESH_TOKEN) { log += `CATJERKY_REFRESH_TOKEN changed, update to: '${mods.catjerky.refreshToken}'\n` }
     if (anyTokenChange) { log += `${Array(50).fill(`*`).join(` `)}\n\n` }
 
+    log += `${renderObj(lemonyFresh, `lemonyFresh`)}\n\n${renderObj(settings, `settings`)}\n\n${renderObj(timers, `timers`)}\n\n${renderObj(mods, `mods`)}\n\n${renderObj(users, `users`)}\n\n${renderObj(tempCmds, `tempCmds`)}\n`
 
     if (anyTokenChange) { log += `\n${Array(50).fill(`*`).join(` `)}\n` }
     if (lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN) { log += `BOT_ACCESS_TOKEN changed, update to: '${lemonyFresh.botAccessToken}'\n` }
@@ -436,6 +437,7 @@ function handleRaid(chatroom) {
 module.exports = {
     client,
     handleUncaughtException,
+    resetCooldownTimer,
     sayGoals,
     sayRebootMsg,
     sayFriends,
@@ -448,7 +450,6 @@ module.exports = {
     getRandomUser,
     getRandomChannelMessage,
     handleTempCmd,
-    delayListening,
     chant,
     printLemon,
     talk,

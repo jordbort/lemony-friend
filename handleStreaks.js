@@ -1,13 +1,13 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 // Import global settings
-const { resetTxt, boldTxt, grayTxt, settings } = require(`./config`)
+const { resetTxt, boldTxt, grayTxt, settings, timers } = require(`./config`)
 
 // Import data
 const { users } = require(`./data`)
 
 // Import helper functions
-const { delayListening, talk } = require(`./utils`)
+const { talk, resetCooldownTimer } = require(`./utils`)
 
 function checkStreak(chatroom, msg) {
     let streakCount = 0
@@ -21,9 +21,11 @@ function checkStreak(chatroom, msg) {
             if (streakCount >= 2) { console.log(`${boldTxt}> checkStreak("${msg}")`, streakCount, `/ ${settings.streakThreshold} - ${streakUsers.join(`, `)}${resetTxt}`) }
         }
         if (streakCount >= settings.streakThreshold) {
-            delayListening()
-            setTimeout(() => { talk(chatroom, msg) }, 1000)
-            return true
+            if (timers.streak.listening) {
+                resetCooldownTimer(`streak`)
+                setTimeout(() => { talk(chatroom, msg) }, 1000)
+                return true
+            } else {console.log(`${grayTxt}> Must wait for 'streak' cooldown${resetTxt}`)}
         }
     }
     return false
@@ -48,8 +50,10 @@ function checkEmoteStreak(chatroom, emoteArr) {
     }
     if (emoteStreakCount >= settings.emoteStreakThreshold) {
         console.log(`${grayTxt}> hit${resetTxt}`, emoteStreakCount)
-        delayListening()
-        return emoteReply(chatroom, emoteArr)
+        if (timers.streak.listening) {
+            resetCooldownTimer(`streak`)
+            return emoteReply(chatroom, emoteArr)
+        } else {console.log(`${grayTxt}> Must wait for 'streak' cooldown${resetTxt}`)}
     }
 }
 
