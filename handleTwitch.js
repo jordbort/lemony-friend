@@ -300,6 +300,8 @@ async function handleShoutOut(chatroom, username, toUser) {
         if (response.status !== 204) {
             const data = await response.json()
             console.log(data)
+            // If too many requests, stop attempting
+            if (response.status === 429) { return }
             if (response.status === 401) {
                 // talk(chatroom, `Hold on, I need to refresh ${username in mods && mods[username].isModIn.includes(chatroom) && mods[username].accessToken ? username : channel}'s token...`)
                 console.log(`${grayTxt}> Error, attempting to refresh access token...${resetTxt}`)
