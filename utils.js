@@ -95,6 +95,39 @@ async function handleUncaughtException(errMsg, location) {
     return lemonyFresh.channels.forEach((chatroom) => { talk(chatroom, `Oops, I just crashed! ${emote} ${errMsg} ${location}`) })
 }
 
+function applyNicknames(chatroom) {
+    if (settings.debug) { console.log(`${boldTxt}> applyNicknames(chatroom: ${chatroom})${resetTxt}`) }
+    const nicknames = COMMON_NICKNAMES.split(`,`)
+    const updatedUsers = []
+    const skippedUsers = []
+    const unknownUsers = []
+    for (const [i, name] of nicknames.entries()) {
+        if (i % 2 === 0) {
+            const nickname = nicknames[i + 1]
+            if (name in users) {
+                if (users[name].displayName !== nickname) {
+                    users[name].displayName = nickname
+                    updatedUsers.push(nickname)
+                } else { skippedUsers.push(nickname) }
+            } else { unknownUsers.push(name) }
+        }
+    }
+    const response = []
+    if (updatedUsers.length) {
+        console.log(`${grayTxt}updatedUsers: ${updatedUsers.join(`, `)}${resetTxt}`)
+        response.push(`${updatedUsers.length} updated`)
+    }
+    if (skippedUsers.length) {
+        console.log(`${grayTxt}skippedUsers: ${skippedUsers.join(`, `)}${resetTxt}`)
+        response.push(`${skippedUsers.length} skipped`)
+    }
+    if (unknownUsers.length) {
+        console.log(`${grayTxt}unknownUsers: ${unknownUsers.join(`, `)}${resetTxt}`)
+        response.push(`${unknownUsers.length} not known yet`)
+    }
+    talk(chatroom, `> ${response.join(`, `)}`)
+}
+
 function resetCooldownTimer(command) {
     if (settings.debug && timers[command].cooldown) { console.log(`${boldTxt}> resetCooldownTimer('${command}') ${timers[command].cooldown / 1000} second${timers[command].cooldown / 1000 === 1 ? `` : `s`}...${resetTxt}`) }
     timers[command].listening = false
