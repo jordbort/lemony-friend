@@ -148,26 +148,42 @@ const {
 
 // Import helper functions
 const {
-    handleUncaughtException,
+    client,
     talk,
-    resetCooldownTimer,
-    sayGoals,
-    sayRebootMsg,
-    sayFriends,
-    sayCommands,
-    toggleDebugMode,
-    getLastMessage,
-    getMessageCount,
     yell,
-    getColor,
-    getRandomUser,
-    getRandomChannelMessage,
+    handleUncaughtException,
+    applyNicknames,
+    resetCooldownTimer,
+    toggleDebugMode,
     handleTempCmd,
     chant,
-    printLemon,
-    makeLogs,
     handleRaid
 } = require(`./utils`)
+
+// Import log functions
+const {
+    renderObj,
+    makeLogs
+} = require("./makeLogs")
+
+const { sayGoals } = require("./sayGoals")
+
+// Import informational reports
+const {
+    sayFriends,
+    sayCommands,
+    sayRebootMsg
+} = require("./announcements")
+
+const {
+    getLastMessage,
+    getMessageCount,
+    getColor,
+    getRandomUser,
+    getRandomChannelMessage
+} = require("./getInfo")
+
+const { printLemon } = require("./printLemon")
 
 function onConnectedHandler(addr, port) {
     settings.firstConnection && printLemon()
@@ -306,6 +322,7 @@ function onMessageHandler(chatroom, tags, message, self) {
                 return cli(chatroom, args.map(arg => arg.toLowerCase()))
             } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
         }
+        if (command === `!apply`) { return applyNicknames(chatroom) }
     }
 
     if (command === `test` && !isNaN(args[0]) && username === `jpegstripes`) {
@@ -363,7 +380,7 @@ function onMessageHandler(chatroom, tags, message, self) {
     COMMANDS
     \******/
 
-    // All commands
+    // Link to README
     if (command === `!docs`) {
         if (timers[command].listening) {
             resetCooldownTimer(command)
@@ -371,6 +388,7 @@ function onMessageHandler(chatroom, tags, message, self) {
         } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
     }
 
+    // All commands
     if (command === `!commands`) {
         if (timers[command].listening) {
             resetCooldownTimer(command)
@@ -731,35 +749,33 @@ function onMessageHandler(chatroom, tags, message, self) {
     // Mentioned by StreamElements
     if (username === `streamelements` && (msg.includes(BOT_USERNAME))) {
         console.log(`${grayTxt}> Current points:${resetTxt}`, `points` in Object(users[BOT_USERNAME][channel]) ? users[BOT_USERNAME][channel].points : `(not known)`)
+
         // If bot used !gamble all and lost
-        if (msg.match(/lost (every|it)/i)) {
-            return handleLoseAllPoints(chatroom)
-        }
-        const nowHasPattern = /now ha(?:s|ve) \[*(\d*)/i // Set points based on "now has/have..." result
-        if (msg.match(nowHasPattern)) {
-            return handleSetPoints(chatroom, Number(msg.split(nowHasPattern)[1]))
-        }
-        const botHasNumPattern = / lemony_friend has ([^a-z]\d*)/i // Set points based StreamElements replying to '!points lemony_friend'
-        if (msg.match(botHasNumPattern)) {
-            return handleSetPoints(chatroom, Number(msg.split(botHasNumPattern)[1]))
-        }
-        const pointsSetToPattern = /set lemony_friend /i // Triggered by a manual set/bonus of points
-        if (msg.match(pointsSetToPattern)) {
-            return handleSetPoints(chatroom, Number(msg.split(pointsSetToPattern)[1].split(` `)[2]))
-        }
-        const insufficientFundsPattern = /^@?lemony_friend, you only have ([^a-z]\d*)/i // Triggered by insufficient points
-        if (msg.match(insufficientFundsPattern)) {
-            return handleSetPoints(chatroom, Number(msg.split(insufficientFundsPattern)[1]))
-        }
+        if (msg.match(/lost (every|it)/i)) { return handleLoseAllPoints(chatroom) }
+
+        // Set points based on "now has/have..." result
+        const nowHasPattern = /now ha(?:s|ve) \[*(\d*)/i
+        if (msg.match(nowHasPattern)) { return handleSetPoints(chatroom, Number(msg.split(nowHasPattern)[1])) }
+
+        // Set points based StreamElements replying to '!points lemony_friend'
+        const botHasNumPattern = / lemony_friend has ([^a-z]\d*)/i
+        if (msg.match(botHasNumPattern)) { return handleSetPoints(chatroom, Number(msg.split(botHasNumPattern)[1])) }
+
+        // Triggered by a manual set/bonus of points
+        const pointsSetToPattern = /set lemony_friend /i
+        if (msg.match(pointsSetToPattern)) { return handleSetPoints(chatroom, Number(msg.split(pointsSetToPattern)[1].split(` `)[2])) }
+
+        // Triggered by insufficient points
+        const insufficientFundsPattern = /^@?lemony_friend, you only have ([^a-z]\d*)/i
+        if (msg.match(insufficientFundsPattern)) { return handleSetPoints(chatroom, Number(msg.split(insufficientFundsPattern)[1])) }
+
         // Receiving points from a gifter
         const receivingPattern = /^(?!lemony_friend).* gave (\d*)/i
-        if (msg.match(receivingPattern)) {
-            return handleGivenPoints(chatroom, msg.split(` `)[0], Number(msg.split(receivingPattern)[1]))
-        }
+        if (msg.match(receivingPattern)) { return handleGivenPoints(chatroom, msg.split(` `)[0], Number(msg.split(receivingPattern)[1])) }
+
         // Checking bot's points if unknown
-        if (!(`points` in Object(users[BOT_USERNAME][channel]))) {
-            return talk(chatroom, `!points`)
-        }
+        if (!(`points` in Object(users[BOT_USERNAME][channel]))) { return talk(chatroom, `!points`) }
+
         // Updating points when giving (if known)
         const givingPattern = /lemony_friend gave ([^a-z]\d*)/i
         if (givingPattern.test(msg)) {
