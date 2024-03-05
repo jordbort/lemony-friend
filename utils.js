@@ -61,15 +61,15 @@ function applyNicknames(chatroom) {
     }
     const response = []
     if (updatedUsers.length) {
-        console.log(`${grayTxt}updatedUsers: ${updatedUsers.join(`, `)}${resetTxt}`)
+        console.log(`${grayTxt}> updatedUsers: ${updatedUsers.join(`, `)}${resetTxt}`)
         response.push(`${updatedUsers.length} updated`)
     }
     if (skippedUsers.length) {
-        console.log(`${grayTxt}skippedUsers: ${skippedUsers.join(`, `)}${resetTxt}`)
+        console.log(`${grayTxt}> skippedUsers: ${skippedUsers.join(`, `)}${resetTxt}`)
         response.push(`${skippedUsers.length} skipped`)
     }
     if (unknownUsers.length) {
-        console.log(`${grayTxt}unknownUsers: ${unknownUsers.join(`, `)}${resetTxt}`)
+        console.log(`${grayTxt}> unknownUsers: ${unknownUsers.join(`, `)}${resetTxt}`)
         response.push(`${unknownUsers.length} not known yet`)
     }
     talk(chatroom, `> ${response.join(`, `)}`)
