@@ -170,6 +170,7 @@ const {
     sayRebootMsg
 } = require("./announcements")
 
+// Import user data fetches
 const {
     getLastMessage,
     getMessageCount,
