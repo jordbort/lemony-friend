@@ -806,11 +806,11 @@ function useLemon(chatroom, command, username, target) {
                 if (targetUser.lemons === 0) { return talk(chatroom, `${targetUser.displayName} does not have any lemons!`) }
                 const randomChance = Math.floor(Math.random() * 50)
                 if (randomChance) {
-                    return talk(chatroom, `${user.displayName} tried to steal ${targetUser}'s lemons, but it didn't work!`)
+                    return talk(chatroom, `${user.displayName} tried to steal ${targetUser.displayName}'s lemons, but it didn't work!`)
                 } else {
                     user.lemons += targetUser.lemons
                     targetUser.lemons = 0
-                    return talk(chatroom, `${user.displayName} managed to steal ALL of ${targetUser}'s lemons!`)
+                    return talk(chatroom, `${user.displayName} managed to steal ALL of ${targetUser.displayName}'s lemons!`)
                 }
             } else {
                 return talk(chatroom, `${user.displayName} ran off with all ${user.lemons} of their own lemons! What a steal!`)
@@ -820,11 +820,11 @@ function useLemon(chatroom, command, username, target) {
                 if (targetUser.lemons === 0) { return talk(chatroom, `${targetUser.displayName} does not have any lemons!`) }
                 const randomChance = Math.floor(Math.random() * 20)
                 if (randomChance) {
-                    return talk(chatroom, `${user.displayName} tried to steal a lemon from ${targetUser}, but it didn't work!`)
+                    return talk(chatroom, `${user.displayName} tried to steal a lemon from ${targetUser.displayName}, but it didn't work!`)
                 } else {
                     user.lemons++
                     targetUser.lemons--
-                    return talk(chatroom, `${user.displayName} managed to steal a lemon from ${targetUser}!`)
+                    return talk(chatroom, `${user.displayName} managed to steal a lemon from ${targetUser.displayName}!`)
                 }
             } else {
                 return talk(chatroom, `${user.displayName} very stealthily ran off with a lemon... It was their own lemon.`)

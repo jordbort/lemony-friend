@@ -3,7 +3,7 @@ const CLIENT_ID = process.env.CLIENT_ID
 const CLIENT_SECRET = process.env.CLIENT_SECRET
 
 // Import data
-const { lemonyFresh, users } = require(`./data`)
+const { lemonyFresh, mods, users } = require(`./data`)
 
 // Import global settings
 const { resetTxt, boldTxt, grayTxt, settings } = require(`./config`)
@@ -14,10 +14,10 @@ const { getHypeEmote, getPositiveEmote, getNegativeEmote } = require(`./getEmote
 // Import helper functions
 const { talk } = require(`./utils`)
 
-async function authorizeToken(chatroom, user, str) {
-    if (settings.debug) { console.log(`${boldTxt}> authorizeToken(chatroom: ${chatroom}, user: ${user}, str: ${str})${resetTxt}`) }
+async function authorizeToken(chatroom, username, str) {
+    if (settings.debug) { console.log(`${boldTxt}> authorizeToken(chatroom: ${chatroom}, username: ${username}, str: ${str})${resetTxt}`) }
     const authCodePattern = /^http:\/\/localhost:3000\/\?code=([a-z0-9]*)&scope=.*$/
-    if (!authCodePattern.test(str)) { return talk(chatroom, `${users[user].displayName}, when using the !authorize command, please paste the whole URL after!`) }
+    if (!authCodePattern.test(str)) { return talk(chatroom, `${users[username].displayName}, when using the !authorize command, please paste the whole URL after!`) }
     const authCode = str.split(authCodePattern)[1]
 
     const requestBody = `client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${authCode}&grant_type=authorization_code&redirect_uri=http://localhost:3000`
@@ -38,12 +38,18 @@ async function authorizeToken(chatroom, user, str) {
     const hypeEmote = getHypeEmote(channel)
     const negativeEmote = getNegativeEmote(channel)
     if (`expires_in` in twitchData) {
-        lemonyFresh[user].accessToken = twitchData.access_token
-        lemonyFresh[user].refreshToken = twitchData.refresh_token
+        if (username in lemonyFresh) {
+            lemonyFresh[username].accessToken = twitchData.access_token
+            lemonyFresh[username].refreshToken = twitchData.refresh_token
+        }
+        if (username in mods) {
+            mods[username].accessToken = twitchData.access_token
+            mods[username].refreshToken = twitchData.refresh_token
+        }
         talk(chatroom, `Token was authorized! ${hypeEmote}`)
         return true
     } else {
-        talk(chatroom, `Invalid token! ${negativeEmote}`)
+        talk(chatroom, `Failed to authorize token ${negativeEmote}`)
         return false
     }
 }
@@ -52,7 +58,7 @@ async function getOAUTHToken(chatroom, user) {
     if (settings.debug) { console.log(`${boldTxt}> getOAUTHToken(chatroom: ${chatroom}, user: ${user})${resetTxt}`) }
 
     // Scope for making polls, reading polls, and making announcements
-    const urlEncodedScope = `channel%3Amanage%3Apolls+channel%3Aread%3Apolls`
+    const urlEncodedScope = `channel%3Amanage%3Apolls+channel%3Aread%3Apolls+moderator%3Amanage%3Aannouncements+moderator%3Amanage%3Ashoutouts`
 
     const endpoint = `https://id.twitch.tv/oauth2/authorize`
 
@@ -134,16 +140,16 @@ async function getTwitchUser(chatroom, username) {
     const negativeEmote = getNegativeEmote(channel)
     if (`error` in userInfo) {
         if (userInfo.error === `Unauthorized`) {
-            talk(chatroom, `Hold on, I need to refresh my token...`)
+            // talk(chatroom, `Hold on, I need to refresh my token...`)
+            console.log(`${grayTxt}> Unauthorized from getTwitchUser(), attempting to refresh access token...${resetTxt}`)
             await getBotToken(chatroom, false)
             options.headers.authorization = `Bearer ${lemonyFresh.botAccessToken}`
             const finalAttempt = await fetch(endpoint, options)
             const finalAttemptData = await finalAttempt.json()
             console.log(finalAttemptData)
             if (userInfo.data[0]?.id) { return userInfo.data[0] }
-        } else {
-            talk(chatroom, `Error: ${userInfo.error} ${negativeEmote}`)
         }
+        talk(chatroom, `Error: ${userInfo.error} ${negativeEmote}`)
     } else if (userInfo.data.length === 0) {
         return talk(chatroom, `No user ${username} was found! ${negativeEmote}`)
     } else {
@@ -235,8 +241,9 @@ async function pollStart(chatroom, str) {
 
     if (`error` in twitchData) {
         if (twitchData.message === `Invalid OAuth token`) {
-            talk(chatroom, `Hold on, I need to refresh the token...`)
-            await refreshToken(chatroom, false)
+            // talk(chatroom, `Hold on, I need to refresh the token...`)
+            console.log(`${grayTxt}> Unauthorized from pollStart(), attempting to refresh access token...${resetTxt}`)
+            await refreshToken(chatroom, channel, false)
             options.headers.authorization = `Bearer ${lemonyFresh[channel].accessToken}`
             const finalAttempt = await fetch(endpoint, options)
             const finalAttemptData = await finalAttempt.json()
@@ -244,11 +251,10 @@ async function pollStart(chatroom, str) {
             if (finalAttemptData?.data) {
                 talk(chatroom, `Poll created, go vote! ${positiveEmote}`)
                 lemonyFresh[channel].pollId = finalAttemptData.data[0].id
-                setTimeout(() => { lemonyFresh[channel].pollId = `` }, duration * 1000)
+                return setTimeout(() => { lemonyFresh[channel].pollId = `` }, duration * 1000)
             }
-        } else {
-            talk(chatroom, `(Error ${twitchData.status}) ${twitchData.error}: ${twitchData.message}`)
         }
+        talk(chatroom, `(Error ${twitchData.status}) ${twitchData.error}: ${twitchData.message}`)
     } else if (!twitchData.data) {
         talk(chatroom, `Error creating poll! ${negativeEmote}`)
     } else {
@@ -258,23 +264,123 @@ async function pollStart(chatroom, str) {
     }
 }
 
-async function handleShoutOut(chatroom, user) {
-    if (settings.debug) { console.log(`${boldTxt}> handleShoutOut(chatroom: ${chatroom}, user: ${user})${resetTxt}`) }
-    const twitchUser = await getTwitchUser(chatroom, user)
+async function handleShoutOut(chatroom, username, toUser) {
+    if (settings.debug) { console.log(`${boldTxt}> handleShoutOut(chatroom: ${chatroom}, username: ${username}, toUser: ${toUser})${resetTxt}`) }
+
+    const twitchUser = await getTwitchUser(chatroom, toUser)
     if (!twitchUser) { return console.log(`${grayTxt}No user found, exiting handleShoutOut function${resetTxt}`) }
     const stream = await getTwitchChannel(chatroom, twitchUser.id)
     let response = `Let's give a shoutout to ${stream.broadcaster_name}! `
+
     stream.game_name
         ? response += `They were last playing ${stream.game_name}${twitchUser.broadcaster_type ? ` and are a Twitch ${twitchUser.broadcaster_type.substring(0, 1).toUpperCase() + twitchUser.broadcaster_type.substring(1)}!` : `.`}`
         : response += `#NoGameGang`
     response += ` Follow them here: https://www.twitch.tv/${stream.broadcaster_login} :)`
+
     talk(chatroom, response)
+
+    // Twitch official shoutout (if not to self or current channel)
+    const channel = chatroom.substring(1)
+    if ((users[username][channel].mod || username === channel)) {
+        if (channel === toUser) { return console.log(`${grayTxt}> Can't give shoutout to ${channel}${resetTxt}`) }
+        const token = username in mods && mods[username].isModIn.includes(chatroom) && mods[username].accessToken
+            ? mods[username].accessToken
+            : lemonyFresh[channel].accessToken
+
+        const moderatorId = username in mods && mods[username].isModIn.includes(chatroom) && mods[username].accessToken
+            ? mods[username].id
+            : lemonyFresh[channel].id
+
+        const endpoint = `https://api.twitch.tv/helix/chat/shoutouts?from_broadcaster_id=${lemonyFresh[channel].id}&to_broadcaster_id=${twitchUser.id}&moderator_id=${moderatorId}`
+        const options = {
+            method: 'POST',
+            headers: {
+                authorization: `Bearer ${token}`,
+                "Client-Id": CLIENT_ID
+            }
+        }
+        const response = await fetch(endpoint, options)
+        // If too many requests, stop attempting
+        if (response.status !== 204) {
+            const data = await response.json()
+            console.log(data)
+            if (response.status === 401) {
+                // talk(chatroom, `Hold on, I need to refresh ${username in mods && mods[username].isModIn.includes(chatroom) && mods[username].accessToken ? username : channel}'s token...`)
+                console.log(`${grayTxt}> Unauthorized from handleShoutOut(), attempting to refresh access token...${resetTxt}`)
+                await refreshToken(chatroom, username in mods && mods[username].isModIn.includes(chatroom) && mods[username].accessToken ? username : channel, false)
+                options.headers.authorization = `Bearer ${username in mods && mods[username].isModIn.includes(chatroom) && mods[username].accessToken ? mods[username].accessToken : lemonyFresh[channel].accessToken}`
+                const finalAttempt = await fetch(endpoint, options)
+                if (finalAttempt.status !== 204) {
+                    const finalAttemptData = await finalAttempt.json()
+                    console.log(`> handleShoutOut() failed a second time:`)
+                    return console.log(finalAttemptData)
+                }
+                return console.log(`${grayTxt}> Shoutout posted successfully!${resetTxt}`)
+            }
+        }
+        console.log(`${grayTxt}> Shoutout posted successfully!${resetTxt}`)
+    }
 }
 
-async function refreshToken(chatroom, replyWanted) {
-    if (settings.debug) { console.log(`${boldTxt}> refreshToken(chatroom: ${chatroom})${resetTxt}`) }
+async function makeAnnouncement(chatroom, commandSuffix, username, message) {
+    if (settings.debug) { console.log(`${boldTxt}> makeAnnouncement(chatroom: ${chatroom}, color: ${[`blue`, `green`, `orange`, `purple`].includes(commandSuffix) ? commandSuffix : `primary`}, username: ${username}, message: ${message})${resetTxt}`) }
+
     const channel = chatroom.substring(1)
-    const refreshToken = lemonyFresh[channel].refreshToken
+    const negativeEmote = getNegativeEmote(channel)
+    if (!message) { return talk(chatroom, `No announcement message provided! ${negativeEmote}`) }
+
+    const color = [`blue`, `green`, `orange`, `purple`].includes(commandSuffix) ? commandSuffix : `primary`
+    const requestBody = {
+        message: message,
+        color: color
+    }
+
+    const token = username in mods && mods[username].isModIn.includes(chatroom) && mods[username].accessToken
+        ? mods[username].accessToken
+        : lemonyFresh[channel].accessToken
+
+    const moderatorId = username in mods && mods[username].isModIn.includes(chatroom) && mods[username].accessToken
+        ? mods[username].id
+        : lemonyFresh[channel].id
+
+    const endpoint = `https://api.twitch.tv/helix/chat/announcements?broadcaster_id=${lemonyFresh[channel].id}&moderator_id=${moderatorId}`
+    const options = {
+        method: 'POST',
+        headers: {
+            authorization: `Bearer ${token}`,
+            "Client-Id": CLIENT_ID,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+    }
+
+    const response = await fetch(endpoint, options)
+    if (response.status !== 204) {
+        const data = await response.json()
+        console.log(data)
+        if (response.status === 401) {
+            // talk(chatroom, `Hold on, I need to refresh ${username in mods && mods[username].isModIn.includes(chatroom) && mods[username].accessToken ? username : channel}'s token...`)
+            console.log(`${grayTxt}> Unauthorized from makeAnnouncement(), attempting to refresh access token...${resetTxt}`)
+            await refreshToken(chatroom, username in mods && mods[username].isModIn.includes(chatroom) && mods[username].accessToken ? username : channel, false)
+            options.headers.authorization = `Bearer ${username in mods && mods[username].isModIn.includes(chatroom) && mods[username].accessToken ? mods[username].accessToken : lemonyFresh[channel].accessToken}`
+            const finalAttempt = await fetch(endpoint, options)
+            if (finalAttempt.status !== 204) {
+                const finalAttemptData = await finalAttempt.json()
+                console.log(`> makeAnnouncement() failed a second time:`)
+                console.log(finalAttemptData)
+            }
+            return
+        }
+    }
+}
+
+async function refreshToken(chatroom, username, replyWanted) {
+    if (settings.debug) { console.log(`${boldTxt}> refreshToken(chatroom: ${chatroom}, username: ${username}, replyWanted: ${replyWanted})${resetTxt}`) }
+
+    const channel = chatroom.substring(1)
+    let refreshToken = username === channel ? lemonyFresh[channel].refreshToken : mods[username].refreshToken
+    if (!refreshToken && username === channel) { refreshToken = lemonyFresh[channel].refreshToken }
+    if (!refreshToken) { return talk(chatroom, `Unauthorized! Please use !access and follow the !authorize instructions :)`) }
 
     const endpoint = `https://id.twitch.tv/oauth2/token`
     const requestBody = `grant_type=refresh_token&refresh_token=${refreshToken}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`
@@ -293,11 +399,18 @@ async function refreshToken(chatroom, replyWanted) {
     const hypeEmote = getHypeEmote(channel)
     const negativeEmote = getNegativeEmote(channel)
     if (`expires_in` in twitchData) {
-        lemonyFresh[channel].accessToken = twitchData.access_token
-        lemonyFresh[channel].refreshToken = twitchData.refresh_token
-        if (replyWanted) { talk(chatroom, `Successfully updated ${channel}'s token! ${hypeEmote}`) }
+        if (username in lemonyFresh) {
+            lemonyFresh[username].accessToken = twitchData.access_token
+            lemonyFresh[username].refreshToken = twitchData.refresh_token
+        }
+        if (username in mods) {
+            mods[username].accessToken = twitchData.access_token
+            mods[username].refreshToken = twitchData.refresh_token
+        }
+        console.log(`${grayTxt}> Token refreshed successfully!${resetTxt}`)
+        if (replyWanted) { talk(chatroom, `Successfully updated ${username}'s token! ${hypeEmote}`) }
     } else {
-        talk(chatroom, `Error refreshing token! ${negativeEmote}`)
+        talk(chatroom, `Error refreshing ${username}'s token! ${negativeEmote}`)
     }
 }
 
@@ -330,6 +443,7 @@ module.exports = {
     getBotToken,
     getTwitchUser,
     handleShoutOut,
+    makeAnnouncement,
     pollEnd,
     pollStart,
     refreshToken,

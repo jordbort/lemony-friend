@@ -9,6 +9,8 @@ const DOMONINTENDO1_ACCESS_TOKEN = process.env.DOMONINTENDO1_ACCESS_TOKEN
 const DOMONINTENDO1_REFRESH_TOKEN = process.env.DOMONINTENDO1_REFRESH_TOKEN
 const PPUYYA_ACCESS_TOKEN = process.env.PPUYYA_ACCESS_TOKEN
 const PPUYYA_REFRESH_TOKEN = process.env.PPUYYA_REFRESH_TOKEN
+const CATJERKY_ACCESS_TOKEN = process.env.CATJERKY_ACCESS_TOKEN
+const CATJERKY_REFRESH_TOKEN = process.env.CATJERKY_REFRESH_TOKEN
 
 const lemonyFresh = {
     channels: [
@@ -23,6 +25,8 @@ const lemonyFresh = {
         id: 70624062,
         accessToken: JPEGSTRIPES_ACCESS_TOKEN,
         refreshToken: JPEGSTRIPES_REFRESH_TOKEN,
+        funTimer: 0,
+        funTimerGuesser: ``,
         pollId: ``,
         subRaidMessage: `jpegstCoin jpegstJPEG jpegstCoin jpegstRAID jpegstCoin`,
         noSubRaidMessage: `HeyGuys TombRaid KAPOW JPEG RAID HeyGuys TombRaid KAPOW`,
@@ -165,6 +169,8 @@ const lemonyFresh = {
         id: 108504232,
         accessToken: SCLARF_ACCESS_TOKEN,
         refreshToken: SCLARF_REFRESH_TOKEN,
+        funTimer: 0,
+        funTimerGuesser: ``,
         pollId: ``,
         subRaidMessage: `sclarfWave sclarfHearts sclarfYay SCLARF RAID sclarfYay sclarfHearts sclarfWave`,
         noSubRaidMessage: `HeyGuys HahaSweat SCLARF RAID HahaSweat HeyGuys`,
@@ -248,6 +254,8 @@ const lemonyFresh = {
         id: 467062147,
         accessToken: E1ECTROMA_ACCESS_TOKEN,
         refreshToken: E1ECTROMA_REFRESH_TOKEN,
+        funTimer: 0,
+        funTimerGuesser: ``,
         pollId: ``,
         subRaidMessage: `e1ectr4Smile e1ectr4Pikadance ELECTROMA RAID e1ectr4Pikadance e1ectr4Smile`,
         noSubRaidMessage: `TombRaid ELECTROMA RAID TombRaid `,
@@ -327,6 +335,8 @@ const lemonyFresh = {
         id: 100792658,
         accessToken: DOMONINTENDO1_ACCESS_TOKEN,
         refreshToken: DOMONINTENDO1_REFRESH_TOKEN,
+        funTimer: 0,
+        funTimerGuesser: ``,
         pollId: ``,
         subRaidMessage: `domoni6ChefHey HEY, DOMOSAPIENS HAVE ARRIVED domoni6ChefHey`,
         noSubRaidMessage: `PogChamp HEY, DOMOSAPIENS HAVE ARRIVED PogChamp`,
@@ -400,6 +410,8 @@ const lemonyFresh = {
         id: 500904880,
         accessToken: PPUYYA_ACCESS_TOKEN,
         refreshToken: PPUYYA_REFRESH_TOKEN,
+        funTimer: 0,
+        funTimerGuesser: ``,
         pollId: ``,
         subRaidMessage: ``,
         noSubRaidMessage: ``,
@@ -423,12 +435,54 @@ const lemonyFresh = {
     }
 }
 
+const mods = {
+    lemony_friend: {
+        id: 893524366,
+        isModIn: ['#jpegstripes', '#e1ectroma'],
+        accessToken: '',
+        refreshToken: '',
+    },
+    catjerky: {
+        id: 61517604,
+        isModIn: ['#jpegstripes', '#domonintendo1'],
+        accessToken: CATJERKY_ACCESS_TOKEN,
+        refreshToken: CATJERKY_REFRESH_TOKEN
+    }
+}
+
 const users = {}
+
+const knownTags = {
+    'badge-info': 'object',
+    badges: 'object',
+    'client-nonce': 'string',
+    color: 'string',
+    'display-name': 'string',
+    emotes: 'null',
+    'first-msg': 'boolean',
+    flags: 'null',
+    id: 'string',
+    mod: 'boolean',
+    'returning-chatter': 'boolean',
+    'room-id': 'string',
+    subscriber: 'boolean',
+    'tmi-sent-ts': 'string',
+    turbo: 'boolean',
+    'user-id': 'string',
+    'user-type': 'null',
+    'emotes-raw': 'null',
+    'badge-info-raw': 'string',
+    'badges-raw': 'string',
+    username: 'string',
+    'message-type': 'string'
+}
 
 const tempCmds = {}
 
 module.exports = {
     lemonyFresh,
+    mods,
     users,
+    knownTags,
     tempCmds
 }
