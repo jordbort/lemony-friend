@@ -41,49 +41,72 @@ function renderObj(obj, objName, indentation = ``) {
     return data.join(``)
 }
 
+function tokenChangeWarning() {
+    const starBorder = `${Array(50).fill(`*`).join(` `)}\n`
+    let msgBlock = starBorder
+    if (lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN) { log += `BOT_ACCESS_TOKEN changed, update to: '${lemonyFresh.botAccessToken}'\n` }
+    if (lemonyFresh.jpegstripes.accessToken !== JPEGSTRIPES_ACCESS_TOKEN) { log += `JPEGSTRIPES_ACCESS_TOKEN changed, update to: '${lemonyFresh.jpegstripes.accessToken}'\n` }
+    if (lemonyFresh.jpegstripes.refreshToken !== JPEGSTRIPES_REFRESH_TOKEN) { log += `JPEGSTRIPES_REFRESH_TOKEN changed, update to: '${lemonyFresh.jpegstripes.refreshToken}'\n` }
+    if (lemonyFresh.sclarf.accessToken !== SCLARF_ACCESS_TOKEN) { log += `SCLARF_ACCESS_TOKEN changed, update to: '${lemonyFresh.sclarf.accessToken}'\n` }
+    if (lemonyFresh.sclarf.refreshToken !== SCLARF_REFRESH_TOKEN) { log += `SCLARF_REFRESH_TOKEN changed, update to: '${lemonyFresh.sclarf.refreshToken}'\n` }
+    if (lemonyFresh.e1ectroma.accessToken !== E1ECTROMA_ACCESS_TOKEN) { log += `E1ECTROMA_ACCESS_TOKEN changed, update to: '${lemonyFresh.e1ectroma.accessToken}'\n` }
+    if (lemonyFresh.e1ectroma.refreshToken !== E1ECTROMA_REFRESH_TOKEN) { log += `E1ECTROMA_REFRESH_TOKEN changed, update to: '${lemonyFresh.e1ectroma.refreshToken}'\n` }
+    if (lemonyFresh.domonintendo1.accessToken !== DOMONINTENDO1_ACCESS_TOKEN) { log += `DOMONINTENDO1_ACCESS_TOKEN changed, update to: '${lemonyFresh.domonintendo1.accessToken}'\n` }
+    if (lemonyFresh.domonintendo1.refreshToken !== DOMONINTENDO1_REFRESH_TOKEN) { log += `DOMONINTENDO1_REFRESH_TOKEN changed, update to: '${lemonyFresh.domonintendo1.refreshToken}'\n` }
+    if (lemonyFresh.ppuyya.accessToken !== PPUYYA_ACCESS_TOKEN) { log += `PPUYYA_ACCESS_TOKEN changed, update to: '${lemonyFresh.ppuyya.accessToken}'\n` }
+    if (lemonyFresh.ppuyya.refreshToken !== PPUYYA_REFRESH_TOKEN) { log += `PPUYYA_REFRESH_TOKEN changed, update to: '${lemonyFresh.ppuyya.refreshToken}'\n` }
+    if (mods.catjerky.accessToken !== CATJERKY_ACCESS_TOKEN) { log += `CATJERKY_ACCESS_TOKEN changed, update to: '${mods.catjerky.accessToken}'\n` }
+    if (mods.catjerky.refreshToken !== CATJERKY_REFRESH_TOKEN) { log += `CATJERKY_REFRESH_TOKEN changed, update to: '${mods.catjerky.refreshToken}'\n` }
+    msgBlock += starBorder
+    return msgBlock
+}
+
 function makeLogs() {
-    const startTime = new Date().toLocaleString(`en-US`, { timeZone: `EST` })
     let log = `🍋️ LEMONY LOGS 🍋️\n`
-    log += `Session started: ${startTime}\n\n`
+    log += `Session started: ${new Date().toLocaleString(`en-US`, { timeZone: `EST` })}\n`
 
-    const anyTokenChange = lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN || lemonyFresh.jpegstripes.accessToken !== JPEGSTRIPES_ACCESS_TOKEN || lemonyFresh.jpegstripes.refreshToken !== JPEGSTRIPES_REFRESH_TOKEN || lemonyFresh.sclarf.accessToken !== SCLARF_ACCESS_TOKEN || lemonyFresh.sclarf.refreshToken !== SCLARF_REFRESH_TOKEN || lemonyFresh.e1ectroma.accessToken !== E1ECTROMA_ACCESS_TOKEN || lemonyFresh.e1ectroma.refreshToken !== E1ECTROMA_REFRESH_TOKEN || lemonyFresh.domonintendo1.accessToken !== DOMONINTENDO1_ACCESS_TOKEN || lemonyFresh.domonintendo1.refreshToken !== DOMONINTENDO1_REFRESH_TOKEN || lemonyFresh.ppuyya.accessToken !== PPUYYA_ACCESS_TOKEN || lemonyFresh.ppuyya.refreshToken !== PPUYYA_REFRESH_TOKEN || mods.catjerky.accessToken !== CATJERKY_ACCESS_TOKEN || mods.catjerky.refreshToken !== CATJERKY_REFRESH_TOKEN
-    if (anyTokenChange) { log += `${Array(50).fill(`*`).join(` `)}\n` }
-    if (lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN) { log += `BOT_ACCESS_TOKEN changed, update to: '${lemonyFresh.botAccessToken}'\n` }
-    if (lemonyFresh.jpegstripes.accessToken !== JPEGSTRIPES_ACCESS_TOKEN) { log += `JPEGSTRIPES_ACCESS_TOKEN changed, update to: '${lemonyFresh.jpegstripes.accessToken}'\n` }
-    if (lemonyFresh.jpegstripes.refreshToken !== JPEGSTRIPES_REFRESH_TOKEN) { log += `JPEGSTRIPES_REFRESH_TOKEN changed, update to: '${lemonyFresh.jpegstripes.refreshToken}'\n` }
-    if (lemonyFresh.sclarf.accessToken !== SCLARF_ACCESS_TOKEN) { log += `SCLARF_ACCESS_TOKEN changed, update to: '${lemonyFresh.sclarf.accessToken}'\n` }
-    if (lemonyFresh.sclarf.refreshToken !== SCLARF_REFRESH_TOKEN) { log += `SCLARF_REFRESH_TOKEN changed, update to: '${lemonyFresh.sclarf.refreshToken}'\n` }
-    if (lemonyFresh.e1ectroma.accessToken !== E1ECTROMA_ACCESS_TOKEN) { log += `E1ECTROMA_ACCESS_TOKEN changed, update to: '${lemonyFresh.e1ectroma.accessToken}'\n` }
-    if (lemonyFresh.e1ectroma.refreshToken !== E1ECTROMA_REFRESH_TOKEN) { log += `E1ECTROMA_REFRESH_TOKEN changed, update to: '${lemonyFresh.e1ectroma.refreshToken}'\n` }
-    if (lemonyFresh.domonintendo1.accessToken !== DOMONINTENDO1_ACCESS_TOKEN) { log += `DOMONINTENDO1_ACCESS_TOKEN changed, update to: '${lemonyFresh.domonintendo1.accessToken}'\n` }
-    if (lemonyFresh.domonintendo1.refreshToken !== DOMONINTENDO1_REFRESH_TOKEN) { log += `DOMONINTENDO1_REFRESH_TOKEN changed, update to: '${lemonyFresh.domonintendo1.refreshToken}'\n` }
-    if (lemonyFresh.ppuyya.accessToken !== PPUYYA_ACCESS_TOKEN) { log += `PPUYYA_ACCESS_TOKEN changed, update to: '${lemonyFresh.ppuyya.accessToken}'\n` }
-    if (lemonyFresh.ppuyya.refreshToken !== PPUYYA_REFRESH_TOKEN) { log += `PPUYYA_REFRESH_TOKEN changed, update to: '${lemonyFresh.ppuyya.refreshToken}'\n` }
-    if (mods.catjerky.accessToken !== CATJERKY_ACCESS_TOKEN) { log += `CATJERKY_ACCESS_TOKEN changed, update to: '${mods.catjerky.accessToken}'\n` }
-    if (mods.catjerky.refreshToken !== CATJERKY_REFRESH_TOKEN) { log += `CATJERKY_REFRESH_TOKEN changed, update to: '${mods.catjerky.refreshToken}'\n` }
-    if (anyTokenChange) { log += `${Array(50).fill(`*`).join(` `)}\n\n` }
+    // If any tokens have changed, print a header and footer
+    const anyTokenChange = lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN
+        // || lemonyFresh.jpegstripes.accessToken !== JPEGSTRIPES_ACCESS_TOKEN
+        || lemonyFresh.jpegstripes.refreshToken !== JPEGSTRIPES_REFRESH_TOKEN
+        // || lemonyFresh.sclarf.accessToken !== SCLARF_ACCESS_TOKEN
+        || lemonyFresh.sclarf.refreshToken !== SCLARF_REFRESH_TOKEN
+        // || lemonyFresh.e1ectroma.accessToken !== E1ECTROMA_ACCESS_TOKEN
+        || lemonyFresh.e1ectroma.refreshToken !== E1ECTROMA_REFRESH_TOKEN
+        // || lemonyFresh.domonintendo1.accessToken !== DOMONINTENDO1_ACCESS_TOKEN
+        || lemonyFresh.domonintendo1.refreshToken !== DOMONINTENDO1_REFRESH_TOKEN
+        // || lemonyFresh.ppuyya.accessToken !== PPUYYA_ACCESS_TOKEN
+        || lemonyFresh.ppuyya.refreshToken !== PPUYYA_REFRESH_TOKEN
+        // || mods.catjerky.accessToken !== CATJERKY_ACCESS_TOKEN
+        || mods.catjerky.refreshToken !== CATJERKY_REFRESH_TOKEN
 
-    log += `${renderObj(lemonyFresh, `lemonyFresh`)}\n\n${renderObj(settings, `settings`)}\n\n${renderObj(timers, `timers`)}\n\n${renderObj(mods, `mods`)}\n\n${renderObj(users, `users`)}\n\n${renderObj(tempCmds, `tempCmds`)}\n`
+    if (anyTokenChange) { log += tokenChangeWarning() }
 
-    if (anyTokenChange) { log += `\n${Array(50).fill(`*`).join(` `)}\n` }
-    if (lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN) { log += `BOT_ACCESS_TOKEN changed, update to: '${lemonyFresh.botAccessToken}'\n` }
-    if (lemonyFresh.jpegstripes.accessToken !== JPEGSTRIPES_ACCESS_TOKEN) { log += `JPEGSTRIPES_ACCESS_TOKEN changed, update to: '${lemonyFresh.jpegstripes.accessToken}'\n` }
-    if (lemonyFresh.jpegstripes.refreshToken !== JPEGSTRIPES_REFRESH_TOKEN) { log += `JPEGSTRIPES_REFRESH_TOKEN changed, update to: '${lemonyFresh.jpegstripes.refreshToken}'\n` }
-    if (lemonyFresh.sclarf.accessToken !== SCLARF_ACCESS_TOKEN) { log += `SCLARF_ACCESS_TOKEN changed, update to: '${lemonyFresh.sclarf.accessToken}'\n` }
-    if (lemonyFresh.sclarf.refreshToken !== SCLARF_REFRESH_TOKEN) { log += `SCLARF_REFRESH_TOKEN changed, update to: '${lemonyFresh.sclarf.refreshToken}'\n` }
-    if (lemonyFresh.e1ectroma.accessToken !== E1ECTROMA_ACCESS_TOKEN) { log += `E1ECTROMA_ACCESS_TOKEN changed, update to: '${lemonyFresh.e1ectroma.accessToken}'\n` }
-    if (lemonyFresh.e1ectroma.refreshToken !== E1ECTROMA_REFRESH_TOKEN) { log += `E1ECTROMA_REFRESH_TOKEN changed, update to: '${lemonyFresh.e1ectroma.refreshToken}'\n` }
-    if (lemonyFresh.domonintendo1.accessToken !== DOMONINTENDO1_ACCESS_TOKEN) { log += `DOMONINTENDO1_ACCESS_TOKEN changed, update to: '${lemonyFresh.domonintendo1.accessToken}'\n` }
-    if (lemonyFresh.domonintendo1.refreshToken !== DOMONINTENDO1_REFRESH_TOKEN) { log += `DOMONINTENDO1_REFRESH_TOKEN changed, update to: '${lemonyFresh.domonintendo1.refreshToken}'\n` }
-    if (lemonyFresh.ppuyya.accessToken !== PPUYYA_ACCESS_TOKEN) { log += `PPUYYA_ACCESS_TOKEN changed, update to: '${lemonyFresh.ppuyya.accessToken}'\n` }
-    if (lemonyFresh.ppuyya.refreshToken !== PPUYYA_REFRESH_TOKEN) { log += `PPUYYA_REFRESH_TOKEN changed, update to: '${lemonyFresh.ppuyya.refreshToken}'\n` }
-    if (mods.catjerky.accessToken !== CATJERKY_ACCESS_TOKEN) { log += `CATJERKY_ACCESS_TOKEN changed, update to: '${mods.catjerky.accessToken}'\n` }
-    if (mods.catjerky.refreshToken !== CATJERKY_REFRESH_TOKEN) { log += `CATJERKY_REFRESH_TOKEN changed, update to: '${mods.catjerky.refreshToken}'\n` }
-    if (anyTokenChange) { log += `${Array(50).fill(`*`).join(` `)}\n` }
+    const objectsToLog = [
+        lemonyFresh, `lemonyFresh`,
+        mods, `mods`,
+        users, `users`,
+        knownTags, 'knownTags',
+        settings, `settings`,
+        timers, `timers`,
+        tempCmds, `tempCmds`
+    ]
+
+    const objectPairs = []
+    for (const [i, obj] of objectsToLog.entries()) {
+        if (i % 2 === 0) { objectPairs.push([obj, objectsToLog[i + 1]]) }
+    }
+
+    log += `\n`
+    for (const [obj, strName] of objectPairs) {
+        log += `${renderObj(obj, strName)}\n\n`
+    }
+
+    if (anyTokenChange) { log += tokenChangeWarning() }
 
     fs.writeFile(`lemony_logs.txt`, log, (err) => {
         if (err) { console.log(`Error writing logs:`, err) }
     })
 }
 
-module.exports = { renderObj, makeLogs }
+module.exports = { makeLogs }
