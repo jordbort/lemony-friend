@@ -17,7 +17,7 @@ const CATJERKY_REFRESH_TOKEN = process.env.CATJERKY_REFRESH_TOKEN
 const { settings, timers } = require(`./config`)
 
 // Import data
-const { lemonyFresh, mods, users, tempCmds } = require(`./data`)
+const { lemonyFresh, mods, users, knownTags, tempCmds } = require(`./data`)
 
 function renderObj(obj, objName, indentation = ``) {
     const tab = `${indentation}\t`

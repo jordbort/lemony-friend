@@ -39,6 +39,7 @@ const {
     lemonyFresh,
     mods,
     users,
+    knownTags,
     tempCmds
 } = require(`./data`)
 
@@ -140,18 +141,12 @@ const {
 } = require(`./getEmotes`)
 
 // Import time lookup
-const {
-    validTimeZones,
-    validLocales,
-    getTime
-} = require(`./time`)
+const { getTime } = require(`./time`)
 
 // Import helper functions
 const {
-    client,
     talk,
     yell,
-    handleUncaughtException,
     applyNicknames,
     resetCooldownTimer,
     toggleDebugMode,
@@ -213,6 +208,16 @@ function onMessageHandler(chatroom, tags, message, self) {
     const toUser = args[0] ? args[0].replace(/^@/, ``) : null
     const target = toUser && toUser.toLowerCase() in users ? toUser.toLowerCase() : null
     const currentTime = Date.now()
+
+    // Add to list of known message tags
+    for (const tag of Object.keys(tags)) {
+        if (!(tag in knownTags)) {
+            const type = typeof tags[tag] === `object` ? tags[tag] === null ? `null` : Array.isArray(tags[tag]) ? `array` : typeof tags[tag] : typeof tags[tag]
+            console.log(`${boldTxt}> New message tag '${tag}' discovered (type: ${type})${resetTxt}`)
+            console.log(tag, tags[tag])
+            knownTags[tag] = type
+        }
+    }
 
     // User attribute change detection
     const colorChanged = username in users && color !== users[username]?.color

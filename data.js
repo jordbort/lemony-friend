@@ -452,11 +452,37 @@ const mods = {
 
 const users = {}
 
+const knownTags = {
+    'badge-info': 'object',
+    badges: 'object',
+    'client-nonce': 'string',
+    color: 'string',
+    'display-name': 'string',
+    emotes: 'null',
+    'first-msg': 'boolean',
+    flags: 'null',
+    id: 'string',
+    mod: 'boolean',
+    'returning-chatter': 'boolean',
+    'room-id': 'string',
+    subscriber: 'boolean',
+    'tmi-sent-ts': 'string',
+    turbo: 'boolean',
+    'user-id': 'string',
+    'user-type': 'null',
+    'emotes-raw': 'null',
+    'badge-info-raw': 'string',
+    'badges-raw': 'string',
+    username: 'string',
+    'message-type': 'string'
+}
+
 const tempCmds = {}
 
 module.exports = {
     lemonyFresh,
     mods,
     users,
+    knownTags,
     tempCmds
 }
