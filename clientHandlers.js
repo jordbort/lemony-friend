@@ -436,7 +436,7 @@ function onMessageHandler(chatroom, tags, message, self) {
             } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
         }
         if (command.match(/^!announce([a-z]*)$/)) {
-            if (timers[command].listening) {
+            if (timers[`!announce`].listening) {
                 resetCooldownTimer(`!announce`)
                 return makeAnnouncement(chatroom, command.split(/^!announce([a-z]*)$/)[1], username, args.join(` `))
             } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
