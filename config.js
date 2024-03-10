@@ -46,15 +46,232 @@ const chatColors = {
 }
 
 // Global settings
-const funNumberCount = 25
-
-const funNumberTotal = 50
-
 const settings = {
-    listening: true,
-    sayOnlineMsg: true,
+    debug: true,
+    timeLocale: `en-US`,
+    timeZone: { timeZone: `America/New_York` },
     firstConnection: true,
-    debug: true
+    sayOnlineMsg: true,
+    funNumberCount: 25,
+    funNumberTotal: 50,
+    funTimerDuration: 1800000,
+    streakThreshold: 3,
+    emoteStreakThreshold: 4,
+    hangmanSignupSeconds: 30,
+    hangmanChances: 6,
+    chantCount: 8,
+    chantEmote: `👏️`
+}
+
+const timers = {
+    'streak': {
+        cooldown: 30000,
+        listening: true
+    },
+    'data': {
+        cooldown: 0,
+        listening: true
+    },
+    'tags': {
+        cooldown: 0,
+        listening: true
+    },
+    'cli': {
+        cooldown: 0,
+        listening: true
+    },
+    'test': {
+        cooldown: 0,
+        listening: true
+    },
+    '!test': {
+        cooldown: 0,
+        listening: true
+    },
+    '!forget': {
+        cooldown: 0,
+        listening: true
+    },
+    '!docs': {
+        cooldown: 0,
+        listening: true
+    },
+    '!commands': {
+        cooldown: 0,
+        listening: true
+    },
+    '!so': {
+        cooldown: 1000,
+        listening: true
+    },
+    '!token': {
+        cooldown: 5000,
+        listening: true
+    },
+    '!validate': {
+        cooldown: 5000,
+        listening: true
+    },
+    '!refresh': {
+        cooldown: 0,
+        listening: true
+    },
+    '!announce': {
+        cooldown: 0,
+        listening: true
+    },
+    '!poll': {
+        cooldown: 0,
+        listening: true
+    },
+    '!endpoll': {
+        cooldown: 0,
+        listening: true
+    },
+    '!cancelpoll': {
+        cooldown: 0,
+        listening: true
+    },
+    '!stoppoll': {
+        cooldown: 0,
+        listening: true
+    },
+    '!access': {
+        cooldown: 0,
+        listening: true
+    },
+    '!authorize': {
+        cooldown: 0,
+        listening: true
+    },
+    '!time': {
+        cooldown: 0,
+        listening: true
+    },
+    '!chant': {
+        cooldown: 0,
+        listening: true
+    },
+    '!hangman': {
+        cooldown: 0,
+        listening: true
+    },
+    '!play': {
+        cooldown: 0,
+        listening: true
+    },
+    '!define': {
+        cooldown: 0,
+        listening: true
+    },
+    '!define': {
+        cooldown: 0,
+        listening: true
+    },
+    '!riddle': {
+        cooldown: 0,
+        listening: true
+    },
+    '!answer': {
+        cooldown: 0,
+        listening: true
+    },
+    '!raid': {
+        cooldown: 0,
+        listening: true
+    },
+    '!rps': {
+        cooldown: 0,
+        listening: true
+    },
+    '!mystats': {
+        cooldown: 0,
+        listening: true
+    },
+    '!subs': {
+        cooldown: 0,
+        listening: true
+    },
+    '!debug': {
+        cooldown: 0,
+        listening: true
+    },
+    '!lastmsg': {
+        cooldown: 0,
+        listening: true
+    },
+    '!msgcount': {
+        cooldown: 0,
+        listening: true
+    },
+    '!yell': {
+        cooldown: 0,
+        listening: true
+    },
+    '!friend': {
+        cooldown: 0,
+        listening: true
+    },
+    '!lemon': {
+        cooldown: 0,
+        listening: true
+    },
+    '!uselemon': {
+        cooldown: 0,
+        listening: true
+    },
+    '!lemonify': {
+        cooldown: 0,
+        listening: true
+    },
+    '!goal': {
+        cooldown: 0,
+        listening: true
+    },
+    '!color': {
+        cooldown: 0,
+        listening: true
+    },
+    '!dadjoke': {
+        cooldown: 0,
+        listening: true
+    },
+    '!pokemon': {
+        cooldown: 0,
+        listening: true
+    },
+    '!lurk': {
+        cooldown: 0,
+        listening: true
+    },
+    'new-chatter': {
+        cooldown: 0,
+        listening: true
+    },
+    'greet': {
+        cooldown: 0,
+        listening: true
+    },
+    'mass-greet': {
+        cooldown: 0,
+        listening: true
+    },
+    'greet-all': {
+        cooldown: 0,
+        listening: true
+    },
+    'say-goodnight': {
+        cooldown: 0,
+        listening: true
+    },
+    'say-youre-welcome': {
+        cooldown: 0,
+        listening: true
+    },
+    'say-thanks': {
+        cooldown: 0,
+        listening: true
+    }
 }
 
 module.exports = {
@@ -83,7 +300,6 @@ module.exports = {
     grayBg,
     orangeBg,
     chatColors,
-    funNumberCount,
-    funNumberTotal,
-    settings
+    settings,
+    timers
 }

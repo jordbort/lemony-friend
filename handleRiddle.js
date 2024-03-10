@@ -7,7 +7,6 @@ const { lemonyFresh, users } = require(`./data`)
 // Import emotes
 const { getHypeEmote } = require(`./getEmotes`)
 
-
 // Import helper functions
 const { talk } = require(`./utils`)
 
