@@ -15,8 +15,11 @@ const { getTwitchChannel } = require(`./handleTwitch`)
 // Import emotes
 const { getLemonEmote } = require(`./getEmotes`)
 
+// Import user data fetches
+const { getRandomUser, getRandomChannelMessage } = require("./getInfo")
+
 // Import helper functions
-const { getRandomUser, getRandomChannelMessage, talk } = require(`./utils`)
+const { talk } = require(`./utils`)
 
 const currencies = [
     {
