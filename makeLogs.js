@@ -63,7 +63,7 @@ function tokenChangeWarning() {
 
 function makeLogs() {
     let log = `🍋️ LEMONY LOGS 🍋️\n`
-    log += `Session started: ${new Date().toLocaleString(`en-US`, { timeZone: `EST` })}\n`
+    log += `Session started: ${settings.startTime}\n`
 
     // If any tokens have changed, print a header and footer
     const anyTokenChange = lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN

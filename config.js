@@ -50,6 +50,7 @@ const settings = {
     debug: true,
     timeLocale: `en-US`,
     timeZone: { timeZone: `America/New_York` },
+    startTime: new Date().toLocaleString(`en-US`, { timeZone: `America/New_York` }),
     firstConnection: true,
     sayOnlineMsg: true,
     funNumberCount: 25,
