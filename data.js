@@ -11,6 +11,8 @@ const PPUYYA_ACCESS_TOKEN = process.env.PPUYYA_ACCESS_TOKEN
 const PPUYYA_REFRESH_TOKEN = process.env.PPUYYA_REFRESH_TOKEN
 const CATJERKY_ACCESS_TOKEN = process.env.CATJERKY_ACCESS_TOKEN
 const CATJERKY_REFRESH_TOKEN = process.env.CATJERKY_REFRESH_TOKEN
+const SKITTLE108_ACCESS_TOKEN = process.env.SKITTLE108_ACCESS_TOKEN
+const SKITTLE108_REFRESH_TOKEN = process.env.SKITTLE108_REFRESH_TOKEN
 
 const lemonyFresh = {
     channels: [
@@ -448,6 +450,12 @@ const mods = {
         isModIn: ['#jpegstripes', '#domonintendo1'],
         accessToken: CATJERKY_ACCESS_TOKEN,
         refreshToken: CATJERKY_REFRESH_TOKEN
+    },
+    skittle108: {
+        id: 208969030,
+        isModIn: ['#sclarf'],
+        accessToken: SKITTLE108_ACCESS_TOKEN,
+        refreshToken: SKITTLE108_REFRESH_TOKEN
     }
 }
 

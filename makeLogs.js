@@ -12,6 +12,8 @@ const PPUYYA_ACCESS_TOKEN = process.env.PPUYYA_ACCESS_TOKEN
 const PPUYYA_REFRESH_TOKEN = process.env.PPUYYA_REFRESH_TOKEN
 const CATJERKY_ACCESS_TOKEN = process.env.CATJERKY_ACCESS_TOKEN
 const CATJERKY_REFRESH_TOKEN = process.env.CATJERKY_REFRESH_TOKEN
+const SKITTLE108_ACCESS_TOKEN = process.env.SKITTLE108_ACCESS_TOKEN
+const SKITTLE108_REFRESH_TOKEN = process.env.SKITTLE108_REFRESH_TOKEN
 
 // Import global settings
 const { settings, timers } = require(`./config`)
@@ -57,6 +59,8 @@ function tokenChangeWarning() {
     if (lemonyFresh.ppuyya.refreshToken !== PPUYYA_REFRESH_TOKEN) { msgBlock += `PPUYYA_REFRESH_TOKEN changed, update to: '${lemonyFresh.ppuyya.refreshToken}'\n` }
     if (mods.catjerky.accessToken !== CATJERKY_ACCESS_TOKEN) { msgBlock += `CATJERKY_ACCESS_TOKEN changed, update to: '${mods.catjerky.accessToken}'\n` }
     if (mods.catjerky.refreshToken !== CATJERKY_REFRESH_TOKEN) { msgBlock += `CATJERKY_REFRESH_TOKEN changed, update to: '${mods.catjerky.refreshToken}'\n` }
+    if (mods.skittle108.accessToken !== SKITTLE108_ACCESS_TOKEN) { msgBlock += `SKITTLE108_ACCESS_TOKEN changed, update to: '${mods.skittle108.accessToken}'\n` }
+    if (mods.skittle108.refreshToken !== SKITTLE108_REFRESH_TOKEN) { msgBlock += `SKITTLE108_REFRESH_TOKEN changed, update to: '${mods.skittle108.refreshToken}'\n` }
     msgBlock += starBorder
     return msgBlock
 }
