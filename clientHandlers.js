@@ -325,7 +325,7 @@ function onMessageHandler(chatroom, tags, message, self) {
         if (command === `cli`) {
             if (timers[command].listening) {
                 resetCooldownTimer(command)
-                return cli(chatroom, args.map(arg => arg.toLowerCase()))
+                return cli(chatroom, args)
             } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
         }
         if (command === `!apply`) { return applyNicknames(chatroom) }
