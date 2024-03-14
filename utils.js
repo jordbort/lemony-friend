@@ -72,7 +72,7 @@ function applyNicknames(chatroom) {
         console.log(`${grayTxt}> unknownUsers: ${unknownUsers.join(`, `)}${resetTxt}`)
         response.push(`${unknownUsers.length} not known yet`)
     }
-    talk(chatroom, `> ${response.join(`, `)}`)
+    talk(chatroom, `/me ${response.join(`, `)}`)
 }
 
 function resetCooldownTimer(command) {

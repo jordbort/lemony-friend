@@ -256,9 +256,9 @@ async function rollFunNumber(chatroom, tags, username, msgArr, funNumber) {
     else if (funNumber === 6 && `undertalebot` in users && Object.keys(users.undertalebot).includes(channel)) {
         while ([BOT_USERNAME, `undertalebot`].includes(randomUser)) { randomUser = getRandomUser() }
         const actions = [
-            `!fight ${users[randomUser].displayName}`,
-            `!act ${users[randomUser].displayName}`,
-            `!mercy ${users[randomUser].displayName}`
+            `!fight ${randomUser}`,
+            `!act ${randomUser}`,
+            `!mercy ${randomUser}`
         ]
         talk(chatroom, actions[Math.floor(Math.random() * actions.length)])
     }
