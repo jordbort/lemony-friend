@@ -198,7 +198,8 @@ const lemonyFresh = {
             `sclarfSleep`,
             `sclarfD8`,
             `sclarfYay`,
-            `sclarfChickenmoley`
+            `sclarfChickenmoley`,
+            `sclarfFlip`
         ],
         bttvEmotes: [
             `(ditto)`,

@@ -329,6 +329,18 @@ function onMessageHandler(chatroom, tags, message, self) {
             } else { console.log(`${grayTxt}> Must wait for '${command}' cooldown${resetTxt}`) }
         }
         if (command === `!apply`) { return applyNicknames(chatroom) }
+        if (command === `!using`) {
+            if (settings.debug) { console.log(`${grayTxt}> using:${resetTxt}`, args) }
+            if (args.length) {
+                const newEmotes = args.filter(emote => !lemonyFresh[channel].emotes.includes(emote))
+                newEmotes.forEach(emote => lemonyFresh[channel].emotes.push(emote))
+                console.log(newEmotes)
+                console.log(lemonyFresh[channel].emotes)
+                talk(chatroom, `Added: ${newEmotes.join(` `)}`)
+            } else {
+                talk(chatroom, `Using: ${lemonyFresh[channel].emotes.join(` `)}`)
+            }
+        }
     }
 
     if (command === `test` && !isNaN(args[0]) && username === `jpegstripes`) {
