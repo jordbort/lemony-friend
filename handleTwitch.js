@@ -16,7 +16,7 @@ const { talk } = require(`./utils`)
 
 async function authorizeToken(chatroom, username, str) {
     if (settings.debug) { console.log(`${boldTxt}> authorizeToken(chatroom: ${chatroom}, username: ${username}, str: ${str})${resetTxt}`) }
-    const authCodePattern = /^http:\/\/localhost:3000\/\?code=([a-z0-9]*)&scope=.*$/
+    const authCodePattern = /localhost:3000\/\?code=([a-z0-9]*)&scope=.*$/
     if (!authCodePattern.test(str)) { return talk(chatroom, `${users[username].displayName}, when using the !authorize command, please paste the whole URL after!`) }
     const authCode = str.split(authCodePattern)[1]
 
