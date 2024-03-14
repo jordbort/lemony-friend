@@ -26,7 +26,7 @@ function renderObj(obj, objName, indentation = ``) {
         const keys = `\n${Object.keys(obj).map((key) => {
             return typeof obj[key] === `string`
                 ? `${tab}${key}: '${obj[key]}'`
-                : typeof obj[key] === `object`
+                : typeof obj[key] === `object` && obj[key] !== null
                     ? Array.isArray(obj[key])
                         ? `${tab}${key}: [${obj[key].length
                             ? obj[key].map((val) => { return typeof val === `string` ? `'${val}'` : val }).join(`, `)
@@ -67,39 +67,34 @@ function makeLogs() {
 
     // If any tokens have changed, print a header and footer
     const anyTokenChange = lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN
-        // || lemonyFresh.jpegstripes.accessToken !== JPEGSTRIPES_ACCESS_TOKEN
+        || lemonyFresh.jpegstripes.accessToken !== JPEGSTRIPES_ACCESS_TOKEN
         || lemonyFresh.jpegstripes.refreshToken !== JPEGSTRIPES_REFRESH_TOKEN
-        // || lemonyFresh.sclarf.accessToken !== SCLARF_ACCESS_TOKEN
+        || lemonyFresh.sclarf.accessToken !== SCLARF_ACCESS_TOKEN
         || lemonyFresh.sclarf.refreshToken !== SCLARF_REFRESH_TOKEN
-        // || lemonyFresh.e1ectroma.accessToken !== E1ECTROMA_ACCESS_TOKEN
+        || lemonyFresh.e1ectroma.accessToken !== E1ECTROMA_ACCESS_TOKEN
         || lemonyFresh.e1ectroma.refreshToken !== E1ECTROMA_REFRESH_TOKEN
-        // || lemonyFresh.domonintendo1.accessToken !== DOMONINTENDO1_ACCESS_TOKEN
+        || lemonyFresh.domonintendo1.accessToken !== DOMONINTENDO1_ACCESS_TOKEN
         || lemonyFresh.domonintendo1.refreshToken !== DOMONINTENDO1_REFRESH_TOKEN
-        // || lemonyFresh.ppuyya.accessToken !== PPUYYA_ACCESS_TOKEN
+        || lemonyFresh.ppuyya.accessToken !== PPUYYA_ACCESS_TOKEN
         || lemonyFresh.ppuyya.refreshToken !== PPUYYA_REFRESH_TOKEN
-        // || mods.catjerky.accessToken !== CATJERKY_ACCESS_TOKEN
+        || mods.catjerky.accessToken !== CATJERKY_ACCESS_TOKEN
         || mods.catjerky.refreshToken !== CATJERKY_REFRESH_TOKEN
 
     if (anyTokenChange) { log += tokenChangeWarning() }
 
     const objectsToLog = [
-        lemonyFresh, `lemonyFresh`,
-        mods, `mods`,
-        users, `users`,
-        knownTags, 'knownTags',
-        settings, `settings`,
-        timers, `timers`,
-        tempCmds, `tempCmds`
+        [lemonyFresh, `lemonyFresh`],
+        [mods, `mods`],
+        [users, `users`],
+        [knownTags, 'knownTags'],
+        [settings, `settings`],
+        [timers, `timers`],
+        [tempCmds, `tempCmds`]
     ]
 
-    const objectPairs = []
-    for (const [i, obj] of objectsToLog.entries()) {
-        if (i % 2 === 0) { objectPairs.push([obj, objectsToLog[i + 1]]) }
-    }
-
     log += `\n`
-    for (const [obj, strName] of objectPairs) {
-        log += `${renderObj(obj, strName)}\n\n`
+    for (const [obj, objName] of objectsToLog) {
+        log += `${renderObj(obj, objName)}\n\n`
     }
 
     if (anyTokenChange) { log += tokenChangeWarning() }
