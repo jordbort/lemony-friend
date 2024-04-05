@@ -100,7 +100,6 @@ function updateChannel(props, args) {
         [/^timers?$|^t$/i]: { name: `timers`, func: updateTimer },
         [/^emotes?$|^e$/i]: { name: `emotes`, func: updateArr },
         [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
-        [/^shoutouts?$|^so$/i]: { name: `shoutouts`, func: updateBool },
         [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
         [/^noSubRaidMessage$|^nsrm$/i]: { name: `noSubRaidMessage`, func: updateStr },
         [/^redeems?$|^r$/i]: { name: `redeems`, func: updateArr },
