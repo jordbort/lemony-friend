@@ -9,6 +9,10 @@ const DOMONINTENDO1_ACCESS_TOKEN = process.env.DOMONINTENDO1_ACCESS_TOKEN
 const DOMONINTENDO1_REFRESH_TOKEN = process.env.DOMONINTENDO1_REFRESH_TOKEN
 const PPUYYA_ACCESS_TOKEN = process.env.PPUYYA_ACCESS_TOKEN
 const PPUYYA_REFRESH_TOKEN = process.env.PPUYYA_REFRESH_TOKEN
+const DIRTYD0INKS_ACCESS_TOKEN = process.env.DIRTYD0INKS_ACCESS_TOKEN
+const DIRTYD0INKS_REFRESH_TOKEN = process.env.DIRTYD0INKS_REFRESH_TOKEN
+const ASTRAL_AN0MALY_ACCESS_TOKEN = process.env.ASTRAL_AN0MALY_ACCESS_TOKEN
+const ASTRAL_AN0MALY_REFRESH_TOKEN = process.env.ASTRAL_AN0MALY_REFRESH_TOKEN
 const CATJERKY_ACCESS_TOKEN = process.env.CATJERKY_ACCESS_TOKEN
 const CATJERKY_REFRESH_TOKEN = process.env.CATJERKY_REFRESH_TOKEN
 const SKITTLE108_ACCESS_TOKEN = process.env.SKITTLE108_ACCESS_TOKEN
@@ -27,9 +31,6 @@ const lemonyFresh = {
         id: 70624062,
         accessToken: JPEGSTRIPES_ACCESS_TOKEN,
         refreshToken: JPEGSTRIPES_REFRESH_TOKEN,
-        funTimer: 0,
-        funTimerGuesser: ``,
-        pollId: ``,
         subRaidMessage: `jpegstCoin jpegstJPEG jpegstCoin jpegstRAID jpegstCoin`,
         noSubRaidMessage: `HeyGuys TombRaid KAPOW JPEG RAID HeyGuys TombRaid KAPOW`,
         emotes: [
@@ -152,28 +153,11 @@ const lemonyFresh = {
             `!where`,
             `!luigi`
         ],
-        hangman: {
-            listening: false,
-            signup: false,
-            answer: ``,
-            spaces: [],
-            players: [],
-            guessedLetters: [],
-            chances: 6,
-            currentPlayer: 0
-        },
-        riddle: {
-            question: ``,
-            answer: ``
-        }
     },
     sclarf: {
         id: 108504232,
         accessToken: SCLARF_ACCESS_TOKEN,
         refreshToken: SCLARF_REFRESH_TOKEN,
-        funTimer: 0,
-        funTimerGuesser: ``,
-        pollId: ``,
         subRaidMessage: `sclarfWave sclarfHearts sclarfYay SCLARF RAID sclarfYay sclarfHearts sclarfWave`,
         noSubRaidMessage: `HeyGuys HahaSweat SCLARF RAID HahaSweat HeyGuys`,
         emotes: [
@@ -237,29 +221,11 @@ const lemonyFresh = {
             `OOOO`,
             `peepoShy`
         ],
-        redeems: [],
-        hangman: {
-            listening: false,
-            signup: false,
-            answer: ``,
-            spaces: [],
-            players: [],
-            guessedLetters: [],
-            chances: 6,
-            currentPlayer: 0
-        },
-        riddle: {
-            question: ``,
-            answer: ``
-        }
     },
     e1ectroma: {
         id: 467062147,
         accessToken: E1ECTROMA_ACCESS_TOKEN,
         refreshToken: E1ECTROMA_REFRESH_TOKEN,
-        funTimer: 0,
-        funTimerGuesser: ``,
-        pollId: ``,
         subRaidMessage: `e1ectr4Smile e1ectr4Pikadance ELECTROMA RAID e1ectr4Pikadance e1ectr4Smile`,
         noSubRaidMessage: `TombRaid ELECTROMA RAID TombRaid `,
         emotes: [
@@ -319,28 +285,11 @@ const lemonyFresh = {
             `!bork`,
             `!maxwell`
         ],
-        hangman: {
-            listening: false,
-            signup: false,
-            answer: ``,
-            spaces: [],
-            players: [],
-            guessedLetters: [],
-            chances: 6,
-            currentPlayer: 0
-        },
-        riddle: {
-            question: ``,
-            answer: ``
-        }
     },
     domonintendo1: {
         id: 100792658,
         accessToken: DOMONINTENDO1_ACCESS_TOKEN,
         refreshToken: DOMONINTENDO1_REFRESH_TOKEN,
-        funTimer: 0,
-        funTimerGuesser: ``,
-        pollId: ``,
         subRaidMessage: `domoni6ChefHey HEY, DOMOSAPIENS HAVE ARRIVED domoni6ChefHey`,
         noSubRaidMessage: `PogChamp HEY, DOMOSAPIENS HAVE ARRIVED PogChamp`,
         emotes: [
@@ -357,13 +306,9 @@ const lemonyFresh = {
         ],
         bttvEmotes: [
             `catJAM`,
-            `ChristmasCatJam`,
-            `ChristmasDonk1`,
-            `ChristmasDonk2`,
-            `ChristmasDonk3`,
-            `ChristmasDonk4`,
-            `ChristmasPartyKirby`,
+            `ChipiChipi`,
             `coffinPLZ`,
+            `COPIUM`,
             `Drake`,
             `gachiHYPER`,
             `GIGACHAD`,
@@ -377,83 +322,61 @@ const lemonyFresh = {
             `monkaX`,
             `NODDERS`,
             `OMEGALUL`,
+            `PartyKirby`,
             `PauseChamp`,
             `peepoGiggles`,
+            `peepoHappy`,
             `pepeD`,
             `pepeDS`,
             `Pepega`,
             `PepeLaugh`,
-            `pepeSanta`,
-            `PepoChristmas`,
             `pepoG`,
+            `pikaHi`,
             `POGGERS`,
             `ricardoFlick`,
             `sadCat`,
             `tenseSmash`,
+            `VegetaPain`,
             `weirdChamp`,
             `WeSmart`
-        ],
-        redeems: [],
-        hangman: {
-            listening: false,
-            signup: false,
-            answer: ``,
-            spaces: [],
-            players: [],
-            guessedLetters: [],
-            chances: 6,
-            currentPlayer: 0
-        },
-        riddle: {
-            question: ``,
-            answer: ``
-        }
+        ]
     },
     ppuyya: {
         id: 500904880,
         accessToken: PPUYYA_ACCESS_TOKEN,
-        refreshToken: PPUYYA_REFRESH_TOKEN,
-        funTimer: 0,
-        funTimerGuesser: ``,
-        pollId: ``,
-        subRaidMessage: ``,
-        noSubRaidMessage: ``,
-        emotes: [],
-        bttvEmotes: [],
-        redeems: [],
-        hangman: {
-            listening: false,
-            signup: false,
-            answer: ``,
-            spaces: [],
-            players: [],
-            guessedLetters: [],
-            chances: 6,
-            currentPlayer: 0
-        },
-        riddle: {
-            question: ``,
-            answer: ``
-        }
+        refreshToken: PPUYYA_REFRESH_TOKEN
+    },
+    dirtyd0inks: {
+        id: 840745958,
+        accessToken: DIRTYD0INKS_ACCESS_TOKEN,
+        refreshToken: DIRTYD0INKS_REFRESH_TOKEN,
+        noSubRaidMessage: `DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance`
+    },
+    astral_an0maly: {
+        id: 144838577,
+        emotes: [`astral332HI`],
+        accessToken: ASTRAL_AN0MALY_ACCESS_TOKEN,
+        refreshToken: ASTRAL_AN0MALY_REFRESH_TOKEN,
+        timers: { '!so': { cooldown: 4, listening: false } }
+    },
+    cosyinpink: {
+        id: 558851202,
+        timers: { '!so': { cooldown: 4, listening: false } }
+    },
+    thetarastark: {
+        id: 520011399,
+        timers: { '!so': { cooldown: 4, listening: false } }
     }
 }
 
 const mods = {
-    lemony_friend: {
-        id: 893524366,
-        isModIn: ['#jpegstripes', '#e1ectroma'],
-        accessToken: '',
-        refreshToken: '',
-    },
     catjerky: {
         id: 61517604,
-        isModIn: ['#jpegstripes', '#domonintendo1'],
         accessToken: CATJERKY_ACCESS_TOKEN,
         refreshToken: CATJERKY_REFRESH_TOKEN
     },
     skittle108: {
         id: 208969030,
-        isModIn: ['#sclarf'],
         accessToken: SKITTLE108_ACCESS_TOKEN,
         refreshToken: SKITTLE108_REFRESH_TOKEN
     }
