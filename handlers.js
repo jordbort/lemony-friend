@@ -67,7 +67,7 @@ module.exports = {
 
         // Log incoming message and capture message tags
         if (!settings.hideNonDevChannel || channel === DEV) {
-            self && settings.highlightBotMsg
+            self && settings.highlightBotMessage
                 ? console.log(`${yellowBg}${settings.logTime
                     ? `[${time}] `
                     : ``}${settings.hideNonDevChannel
