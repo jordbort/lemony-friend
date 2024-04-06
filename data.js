@@ -1,20 +1,35 @@
 const BOT_ACCESS_TOKEN = process.env.BOT_ACCESS_TOKEN
+
 const JPEGSTRIPES_ACCESS_TOKEN = process.env.JPEGSTRIPES_ACCESS_TOKEN
 const JPEGSTRIPES_REFRESH_TOKEN = process.env.JPEGSTRIPES_REFRESH_TOKEN
+
 const SCLARF_ACCESS_TOKEN = process.env.SCLARF_ACCESS_TOKEN
 const SCLARF_REFRESH_TOKEN = process.env.SCLARF_REFRESH_TOKEN
+
 const E1ECTROMA_ACCESS_TOKEN = process.env.E1ECTROMA_ACCESS_TOKEN
 const E1ECTROMA_REFRESH_TOKEN = process.env.E1ECTROMA_REFRESH_TOKEN
+
 const DOMONINTENDO1_ACCESS_TOKEN = process.env.DOMONINTENDO1_ACCESS_TOKEN
 const DOMONINTENDO1_REFRESH_TOKEN = process.env.DOMONINTENDO1_REFRESH_TOKEN
+
 const PPUYYA_ACCESS_TOKEN = process.env.PPUYYA_ACCESS_TOKEN
 const PPUYYA_REFRESH_TOKEN = process.env.PPUYYA_REFRESH_TOKEN
-const DIRTYD0INKS_ACCESS_TOKEN = process.env.DIRTYD0INKS_ACCESS_TOKEN
-const DIRTYD0INKS_REFRESH_TOKEN = process.env.DIRTYD0INKS_REFRESH_TOKEN
+
 const ASTRAL_AN0MALY_ACCESS_TOKEN = process.env.ASTRAL_AN0MALY_ACCESS_TOKEN
 const ASTRAL_AN0MALY_REFRESH_TOKEN = process.env.ASTRAL_AN0MALY_REFRESH_TOKEN
+
+const DIRTYD0INKS_ACCESS_TOKEN = process.env.DIRTYD0INKS_ACCESS_TOKEN
+const DIRTYD0INKS_REFRESH_TOKEN = process.env.DIRTYD0INKS_REFRESH_TOKEN
+
+const COSYINPINK_ACCESS_TOKEN = process.env.COSYINPINK_ACCESS_TOKEN
+const COSYINPINK_REFRESH_TOKEN = process.env.COSYINPINK_REFRESH_TOKEN
+
+const THETARASTARK_ACCESS_TOKEN = process.env.THETARASTARK_ACCESS_TOKEN
+const THETARASTARK_REFRESH_TOKEN = process.env.THETARASTARK_REFRESH_TOKEN
+
 const CATJERKY_ACCESS_TOKEN = process.env.CATJERKY_ACCESS_TOKEN
 const CATJERKY_REFRESH_TOKEN = process.env.CATJERKY_REFRESH_TOKEN
+
 const SKITTLE108_ACCESS_TOKEN = process.env.SKITTLE108_ACCESS_TOKEN
 const SKITTLE108_REFRESH_TOKEN = process.env.SKITTLE108_REFRESH_TOKEN
 
@@ -24,7 +39,11 @@ const lemonyFresh = {
         `#sclarf`,
         `#e1ectroma`,
         `#domonintendo1`,
-        `#ppuyya`
+        `#ppuyya`,
+        `#astral_an0maly`,
+        '#dirtyd0inks',
+        '#cosyinpink',
+        '#thetarastark'
     ],
     botAccessToken: BOT_ACCESS_TOKEN,
     jpegstripes: {
@@ -346,25 +365,55 @@ const lemonyFresh = {
         accessToken: PPUYYA_ACCESS_TOKEN,
         refreshToken: PPUYYA_REFRESH_TOKEN
     },
-    dirtyd0inks: {
-        id: 840745958,
-        accessToken: DIRTYD0INKS_ACCESS_TOKEN,
-        refreshToken: DIRTYD0INKS_REFRESH_TOKEN,
-        noSubRaidMessage: `DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance`
-    },
     astral_an0maly: {
         id: 144838577,
         emotes: [`astral332HI`],
         accessToken: ASTRAL_AN0MALY_ACCESS_TOKEN,
         refreshToken: ASTRAL_AN0MALY_REFRESH_TOKEN,
+        noSubRaidMessage: `CorgiDerp ASS RAID CorgiDerp`,
         timers: { '!so': { cooldown: 4, listening: false } }
+    },
+    dirtyd0inks: {
+        id: 840745958,
+        emotes: [`dirtyd182LOVE`],
+        accessToken: DIRTYD0INKS_ACCESS_TOKEN,
+        refreshToken: DIRTYD0INKS_REFRESH_TOKEN,
+        noSubRaidMessage: `DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance`
     },
     cosyinpink: {
         id: 558851202,
+        emotes: [
+            `cosyin1Hype`,
+            `cosyin1Dance`,
+            `cosyin1Love`,
+            `cosyin1Crying`,
+            `cosyin1Wave`,
+            `cosyin1Cozy`,
+            `cosyin1Evil`,
+            `cosyin1Soft`
+        ],
+        accessToken: COSYINPINK_ACCESS_TOKEN,
+        refreshToken: COSYINPINK_REFRESH_TOKEN,
         timers: { '!so': { cooldown: 4, listening: false } }
     },
     thetarastark: {
         id: 520011399,
+        emotes: [
+            `thetar42KeystoneFlag`,
+            `thetar42Cheer`,
+            `thetar42Fkickline`,
+            `thetar42Andy`,
+            `thetar42POG`,
+            `thetar421st`,
+            `thetar42BongoCatra`,
+            `thetar42Pelican`,
+            `thetar42Beanspelicans`,
+            `thetar42Mdfly`,
+            `thetar42Blep`,
+            `thetar42Sad`
+        ],
+        accessToken: THETARASTARK_ACCESS_TOKEN,
+        refreshToken: THETARASTARK_REFRESH_TOKEN,
         timers: { '!so': { cooldown: 4, listening: false } }
     }
 }
