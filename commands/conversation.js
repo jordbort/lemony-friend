@@ -429,7 +429,7 @@ module.exports = {
         }
 
         const recentChannels = Object.keys(mostRecentMessages).filter(channel => currentTime - mostRecentMessages[channel] < 3600000)
-        if (settings.debug) { console.log(`${grayTxt}> setAway(message: '${message}', userNickname: '${userNickname}', recentChannels:${resetTxt}`, recentChannels, `${grayTxt})${resetTxt}`) }
+        if (settings.debug) { console.log(`${grayTxt}> yell(userNickname: '${userNickname}', recentChannels:${resetTxt}`, recentChannels, `${grayTxt})${resetTxt}`) }
 
         for (const chatroom of recentChannels) {
             bot.say(chatroom, `${userNickname} says: ${message.substring(6)}`)
