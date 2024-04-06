@@ -50,13 +50,10 @@ module.exports = {
 
     'channels': (props) => { console.log(props.bot.channels) },
 
-    'test': (props) => {
-        console.log(isNaN(props.args[0]))
-        if (!isNaN(props.args[0])) { rollFunNumber(props, Number(props.args[0])) }
-    },
+    'test': (props) => { if (!isNaN(props.args[0])) { rollFunNumber(props, Number(props.args[0])) } },
 
     '!broadcast': (props) => {
-        const {bot, message} = props
+        const { bot, message } = props
         for (const chatroom of bot.channels) {
             bot.say(chatroom, `${message.substring(11)}`)
         }
