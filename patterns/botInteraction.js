@@ -64,13 +64,6 @@ function subtractPoints(props, splitMessage) {
     if (settings.debug) { console.log(`${grayTxt}-> New points:${resetTxt}`, users[BOT_USERNAME][channel].points) }
 }
 
-function catchPokemon(props) {
-    const { bot, chatroom, channel } = props
-    if (settings.debug) { console.log(`${grayTxt}> catchPokemon(channel: '${channel}')${resetTxt}`) }
-
-    bot.say(chatroom, `!pokecatch`)
-}
-
 function buyPokeballs(props) {
     const { bot, chatroom, channel } = props
     if (settings.debug) { console.log(`${grayTxt}> buyPokeballs(channel: '${channel}')${resetTxt}`) }
@@ -95,8 +88,6 @@ module.exports = {
     [/^(?!lemony_friend).* gave (\d*)/i]: handleGivenPoints,
     [/lemony_friend gave ([^a-z]\d*)/i]: subtractPoints,
 
-    [/Catch it using !pokecatch \(winners revealed in 90s\)/i]: catchPokemon,
     [/You don't own that ball. Check the extension to see your items/i]: buyPokeballs,
-    [/Purchase successful!/i]: catchPokemon,
     [/has been caught by/i]: acknowledgeCaughtPokemon,
 }
