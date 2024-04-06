@@ -17,14 +17,15 @@ function checkStreak(bot, chatroom, message) {
             if (streakCount >= 2 && settings.debug) { console.log(`${grayTxt}> checkStreak("${message}")`, streakCount, `/ ${settings.streakThreshold} - ${streakUsers.join(`, `)}${resetTxt}`) }
         }
         if (streakCount >= settings.streakThreshold) {
-            resetCooldownTimer(`streak`)
+            resetCooldownTimer(channel, `streak`)
             return setTimeout(() => { bot.say(chatroom, message) }, 1000)
         }
     }
 }
 
 function checkStreamerEmoteStreak(bot, chatroom, emoteOwner) {
-    if (settings.debug) { console.log(`${grayTxt}> checkStreamerEmoteStreak(chatroom: ${chatroom}, emoteOwner: '${emoteOwner}')${resetTxt}`) }
+    const channel = chatroom.substring(1)
+    if (settings.debug) { console.log(`${grayTxt}> checkStreamerEmoteStreak(channel: '${channel}', emoteOwner: '${emoteOwner}')${resetTxt}`) }
 
     const emoteArr = lemonyFresh[emoteOwner].emotes
     const emoteStreakUsers = []
@@ -40,14 +41,14 @@ function checkStreamerEmoteStreak(bot, chatroom, emoteOwner) {
     }
 
     if (emoteStreakUsers.length >= settings.streamerEmoteStreakThreshold) {
-        resetCooldownTimer(`streak`)
+        resetCooldownTimer(channel, `streak`)
         return emoteReply(bot, chatroom, emoteOwner)
     }
 }
 
 function emoteReply(bot, chatroom, emoteOwner) {
-    if (settings.debug) { console.log(`${grayTxt}> emoteReply(chatroom: ${chatroom}, emoteOwner: ${emoteOwner})${resetTxt}`) }
     const channel = chatroom.substring(1)
+    if (settings.debug) { console.log(`${grayTxt}> emoteReply(channel: '${channel}', emoteOwner: '${emoteOwner}')${resetTxt}`) }
 
     const applicableUsers = Object.keys(users).filter(username => emoteOwner in users[username])
     const popularEmotes = lemonyFresh[emoteOwner].emotes.map(emote => {
