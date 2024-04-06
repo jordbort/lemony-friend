@@ -3,18 +3,15 @@ const { sayGoals } = require(`./sayGoals`)
 const { applyNicknames } = require(`../utils`)
 const { rockPaperScissors } = require(`./rps`)
 const { handleLemonify } = require(`./lemonify`)
-const { getTempCmds, handleTempCmd } = require(`./tempCmds`)
+const { handleTempCmd, getTempCmds } = require(`./tempCmds`)
 const { sayCommands, getDocs, getStats } = require(`./help`)
 const { startHangman, joinHangman } = require(`../patterns/hangman`)
 const { getDadJoke, getPokemon, getDefinition } = require(`./external`)
 const { sayGoodnight, handleGreet, chant, handleRaid, setAway, yell } = require(`./conversation`)
-const { getLastMessage, getMessageCount, getColor, getLemons, sayOnlineTime, sayFriends } = require(`./getInfo`)
+const { getLastMessage, getMessageCount, sayOnlineTime, sayFriends, getColor, getLemons } = require(`./getInfo`)
 const { handleShoutOut, getBotToken, validateToken, refreshToken, makeAnnouncement, pollStart, pollEnd, getOAUTHToken, authorizeToken } = require(`./twitch`)
 
 module.exports = {
-    '!docs': getDocs,
-    '!commands': sayCommands,
-    '!apply': applyNicknames,
     '!so': handleShoutOut,
     '!token': getBotToken,
     '!validate': validateToken,
@@ -33,34 +30,38 @@ module.exports = {
 
     '!access': getOAUTHToken,
     '!authorize': authorizeToken,
+
     '!time': getTime,
-    '!chant': chant,
-    '!hangman': startHangman,
-    '!play': joinHangman,
-
-    '!raid': handleRaid,
-    '!rps': rockPaperScissors,
-    '!mystats': getStats,
-    '!lastmsg': getLastMessage,
-    '!msgcount': getMessageCount,
-    '!yell': yell,
-    '!lemonify': handleLemonify,
-    '!greet': handleGreet,
-    '!dadjoke': getDadJoke,
-    '!pokemon': getPokemon,
-
-    '!define': getDefinition,
-    '!definition': getDefinition,
-    '!meaning': getDefinition,
-
-    '!friend': sayFriends,
-    '!friends': sayFriends,
-
-    '!lemon': getLemons,
-    '!lemons': getLemons,
 
     '!goal': sayGoals,
     '!goals': sayGoals,
+
+    '!apply': applyNicknames,
+
+    '!rps': rockPaperScissors,
+
+    '!lemonify': handleLemonify,
+
+    '!tempcmd': handleTempCmd,
+    '!tmpcmd': handleTempCmd,
+
+    '!tempcmds': getTempCmds,
+    '!tmpcmds': getTempCmds,
+
+    '!commands': sayCommands,
+    '!docs': getDocs,
+    '!mystats': getStats,
+
+    '!hangman': startHangman,
+    '!play': joinHangman,
+
+    '!lastmsg': getLastMessage,
+    '!msgcount': getMessageCount,
+
+    '!chant': chant,
+    '!yell': yell,
+    '!greet': handleGreet,
+    '!raid': handleRaid,
 
     '!gn': sayGoodnight,
     '!goodnight': sayGoodnight,
@@ -69,16 +70,23 @@ module.exports = {
     '!color': getColor,
     '!colour': getColor,
 
+    '!lemon': getLemons,
+    '!lemons': getLemons,
+
+    '!friend': sayFriends,
+    '!friends': sayFriends,
+
+    '!online': sayOnlineTime,
+    '!onl': sayOnlineTime,
+
     '!lurk': setAway,
     '!away': setAway,
     '!brb': setAway,
 
-    '!tempcmd': handleTempCmd,
-    '!tmpcmd': handleTempCmd,
+    '!dadjoke': getDadJoke,
+    '!pokemon': getPokemon,
 
-    '!tempcmds': getTempCmds,
-    '!tmpcmds': getTempCmds,
-
-    '!online': sayOnlineTime,
-    '!onl': sayOnlineTime,
+    '!define': getDefinition,
+    '!definition': getDefinition,
+    '!meaning': getDefinition,
 }
