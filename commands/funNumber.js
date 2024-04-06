@@ -219,7 +219,10 @@ function transferMeMoney(props) {
 function useRedemption(props) {
     const { bot, chatroom, channel } = props
     if (settings.debug) { console.log(`${grayTxt}> useRedemption(channel: '${channel}', redeems.length: ${lemonyFresh[channel].redeems.length})${resetTxt}`) }
-    if (lemonyFresh[channel].redeems.length === 0) { return console.log(`${grayTxt}-> No redemptions available${resetTxt}`) }
+    if (lemonyFresh[channel].redeems.length === 0) {
+        if (settings.debug) { console.log(`${grayTxt}-> No redemptions available${resetTxt}`) }
+        return
+    }
 
     const redeem = lemonyFresh[channel].redeems[Math.floor(Math.random() * lemonyFresh[channel].redeems.length)]
     bot.say(chatroom, redeem)
@@ -392,7 +395,7 @@ function getLurker(props) {
 module.exports = {
     rollFunNumber(props, funNumber) {
         const { chatroom, tags, message, username } = props
-        if (settings.debug) { console.log(`${grayTxt}> rollFunNumber(chatroom: ${chatroom}, tags: ${Object.keys(tags).length}, username: '${username}', message: '${message}', funNumber: ${funNumber})${resetTxt}`) }
+        if (settings.debug) { console.log(`${grayTxt}> rollFunNumber(chatroom: '${chatroom}', tags: ${Object.keys(tags).length}, username: '${username}', message: '${message}', funNumber: ${funNumber})${resetTxt}`) }
 
         const outcomes = {
             0: makePyramid,
