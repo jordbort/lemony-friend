@@ -91,99 +91,6 @@ function updateDuration(bot, chatroom, obj, message, name, args) {
     bot.say(chatroom, `/me ${message} must be between 0-120 (currently: ${obj[name]} seconds)`)
 }
 
-function updateChannel(props, args) {
-    const { bot, chatroom, channel, username } = props
-    args.shift()
-    if (settings.debug) { console.log(`${grayTxt}> updateChannel(username, '${username}', channel, '${channel}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
-
-    const options = {
-        [/^timers?$|^t$/i]: { name: `timers`, func: updateTimer },
-        [/^emotes?$|^e$/i]: { name: `emotes`, func: updateArr },
-        [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
-        [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
-        [/^noSubRaidMessage$|^nsrm$/i]: { name: `noSubRaidMessage`, func: updateStr },
-        [/^redeems?$|^r$/i]: { name: `redeems`, func: updateArr },
-        [/^funTimerGuesser$|^ftg$/i]: { name: `funTimerGuesser`, func: updateStr }
-    }
-
-    for (const option in options) {
-        const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
-        if (regex.test(args[0])) {
-            if (settings.debug) { console.log(`${grayTxt}-> Channel "${channel}" option "${args[0]}" matched:${resetTxt}`, regex, options[regex].func) }
-            args.shift()
-            return options[regex].func(bot, chatroom, lemonyFresh[channel], `Channel ${channel} "${options[regex].name}"`, options[regex].name, args)
-        }
-    }
-
-    bot.say(chatroom, `/me Options for channel "${channel}": timers (t), emotes (e), bttvEmotes (bttv), subRaidMessage (srm), noSubRaidMessage (nsrm), redeems (r), funTimerGuesser (ftg)`)
-}
-
-function updateUser(props, args) {
-    const { bot, chatroom, channel, username } = props
-    args.shift()
-    if (settings.debug) { console.log(`${grayTxt}> updateUser(username, '${username}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
-
-    const toUser = getToUser(args[0])
-    if (!(toUser in users)) { return bot.say(chatroom, `/me Please specify one of ${(Object.keys(users).length).toLocaleString(settings.timeLocale)} valid users`) }
-
-    const options = {
-        [/^nickname$|^nn$/i]: { name: `nickname`, func: updateStr },
-        [/^away$|^a$/i]: { name: `away`, func: updateBool },
-        [/^awayMessage$|^am$/i]: { name: `awayMessage`, func: updateStr }
-    }
-
-    for (const option in options) {
-        const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
-        if (regex.test(args[1])) {
-            if (settings.debug) { console.log(`${grayTxt}-> User "${toUser}" option "${args[0]}":${resetTxt}`, regex, options[regex]) }
-            args.shift()
-
-            // User away and awayMessage require channel object
-            const optCheck = args.shift()
-
-            return options[regex].func(bot,
-                chatroom,
-                /^away$|^a$/i.test(optCheck) || /^awayMessage$|^am$/i.test(optCheck)
-                    ? users[toUser][channel]
-                    : users[toUser],
-                /^away$|^a$/i.test(optCheck) || /^awayMessage$|^am$/i.test(optCheck)
-                    ? `User "${toUser}" in ${channel} "${options[regex].name}"`
-                    : `User ${toUser} "${options[regex].name}"`,
-                options[regex].name, args
-            )
-        }
-    }
-
-    bot.say(chatroom, `/me Options for user "${toUser}": nickname (nn), away (a), awayMessage (am)`)
-}
-
-function updateSettings(props, args) {
-    const { bot, chatroom, channel, username } = props
-    args.shift()
-    if (settings.debug) { console.log(`${grayTxt}> updateSettings(username, '${username}', channel, '${channel}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
-
-    const options = {
-        [/^timeZone$|^tz$/i]: { name: `timeZone`, func: updateStr },
-        [/^realRPS$|^rps$/i]: { name: `realRPS`, func: updateBool },
-        [/^funNumberCount$|^fnc$/i]: { name: `funNumberCount`, func: updateNum },
-        [/^funNumberTotal$|^fnt$/i]: { name: `funNumberTotal`, func: updateNum },
-        [/^hangmanChances$|^hc$/i]: { name: `hangmanChances`, func: updateNum },
-        [/^chantCount$|^cc$/i]: { name: `chantCount`, func: updateNum },
-        [/^chantEmote$|^ce$/i]: { name: `chantEmote`, func: updateStr }
-    }
-
-    for (const option in options) {
-        const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
-        if (regex.test(args[0])) {
-            if (settings.debug) { console.log(`${grayTxt}-> Setting "${args[0]}" matched:${resetTxt}`, regex, options[regex].func) }
-            args.shift()
-            return options[regex].func(bot, chatroom, settings, `Setting "${options[regex].name}"`, options[regex].name, args)
-        }
-    }
-
-    bot.say(chatroom, `/me Options for "settings": timeZone (tz), realRPS (rps), funNumberCount (fnc), funNumberTotal (fnt), hangmanChances (hc), chantCount (cc), chantEmote (ce)`)
-}
-
 function updateChannelDev(props, args) {
     const { bot, chatroom, channel, username } = props
     args.shift()
@@ -196,10 +103,11 @@ function updateChannelDev(props, args) {
 
     const options = {
         [/^timers?$|^t$/i]: { name: `timers`, func: updateTimer },
-        [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
-        [/^noSubRaidMessage$|^nsrm$/i]: { name: `noSubRaidMessage`, func: updateStr },
+        [/^rollFunNumber$|^rfn$/i]: { name: `rollFunNumber`, func: updateBool },
         [/^emotes?$|^e$/i]: { name: `emotes`, func: updateArr },
         [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
+        [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
+        [/^noSubRaidMessage$|^nsrm$/i]: { name: `noSubRaidMessage`, func: updateStr },
         [/^redeems?$|^r$/i]: { name: `redeems`, func: updateArr },
         [/^funTimerGuesser$|^ftg$/i]: { name: `funTimerGuesser`, func: updateStr }
     }
@@ -213,7 +121,34 @@ function updateChannelDev(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for channel "${toUser}": timers (t), subRaidMessage (srm), noSubRaidMessage (nsrm), emotes (e), bttvEmotes (bttv), redeems (r), funTimerGuesser (ftg)`)
+    bot.say(chatroom, `/me Options for channel "${toUser}": timers (t), rollFunNumber (rfn), emotes (e), bttvEmotes (bttv), subRaidMessage (srm), noSubRaidMessage (nsrm), redeems (r), funTimerGuesser (ftg)`)
+}
+
+function updateChannel(props, args) {
+    const { bot, chatroom, channel, username } = props
+    args.shift()
+    if (settings.debug) { console.log(`${grayTxt}> updateChannel(username, '${username}', channel, '${channel}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+
+    const options = {
+        [/^timers?$|^t$/i]: { name: `timers`, func: updateTimer },
+        [/^rollFunNumber$|^rfn$/i]: { name: `rollFunNumber`, func: updateBool },
+        [/^emotes?$|^e$/i]: { name: `emotes`, func: updateArr },
+        [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
+        [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
+        [/^noSubRaidMessage$|^nsrm$/i]: { name: `noSubRaidMessage`, func: updateStr },
+        [/^redeems?$|^r$/i]: { name: `redeems`, func: updateArr }
+    }
+
+    for (const option in options) {
+        const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
+        if (regex.test(args[0])) {
+            if (settings.debug) { console.log(`${grayTxt}-> Channel "${channel}" option "${args[0]}" matched:${resetTxt}`, regex, options[regex].func) }
+            args.shift()
+            return options[regex].func(bot, chatroom, lemonyFresh[channel], `Channel ${channel} "${options[regex].name}"`, options[regex].name, args)
+        }
+    }
+
+    bot.say(chatroom, `/me Options for channel "${channel}": timers (t), rollFunNumber (rfn), emotes (e), bttvEmotes (bttv), subRaidMessage (srm), noSubRaidMessage (nsrm), redeems (r)`)
 }
 
 function updateUserDev(props, args) {
@@ -258,6 +193,45 @@ function updateUserDev(props, args) {
     bot.say(chatroom, `/me Options for user "${toUser}": displayName (dn), nickname (nn), lemons (l), hangmanWins (hw), away (a), awayMessage (am)`)
 }
 
+function updateUser(props, args) {
+    const { bot, chatroom, channel, username } = props
+    args.shift()
+    if (settings.debug) { console.log(`${grayTxt}> updateUser(username, '${username}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+
+    const toUser = getToUser(args[0])
+    if (!(toUser in users)) { return bot.say(chatroom, `/me Please specify one of ${(Object.keys(users).length).toLocaleString(settings.timeLocale)} valid users`) }
+
+    const options = {
+        [/^nickname$|^nn$/i]: { name: `nickname`, func: updateStr },
+        [/^away$|^a$/i]: { name: `away`, func: updateBool },
+        [/^awayMessage$|^am$/i]: { name: `awayMessage`, func: updateStr }
+    }
+
+    for (const option in options) {
+        const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
+        if (regex.test(args[1])) {
+            if (settings.debug) { console.log(`${grayTxt}-> User "${toUser}" option "${args[0]}":${resetTxt}`, regex, options[regex]) }
+            args.shift()
+
+            // User away and awayMessage require channel object
+            const optCheck = args.shift()
+
+            return options[regex].func(bot,
+                chatroom,
+                /^away$|^a$/i.test(optCheck) || /^awayMessage$|^am$/i.test(optCheck)
+                    ? users[toUser][channel]
+                    : users[toUser],
+                /^away$|^a$/i.test(optCheck) || /^awayMessage$|^am$/i.test(optCheck)
+                    ? `User "${toUser}" in ${channel} "${options[regex].name}"`
+                    : `User ${toUser} "${options[regex].name}"`,
+                options[regex].name, args
+            )
+        }
+    }
+
+    bot.say(chatroom, `/me Options for user "${toUser}": nickname (nn), away (a), awayMessage (am)`)
+}
+
 function updateSettingsDev(props, args) {
     const { bot, chatroom, channel, username } = props
     args.shift()
@@ -265,7 +239,7 @@ function updateSettingsDev(props, args) {
 
     if (/^baseEmotes$|^be$/i.test(args[0])) {
         args.shift()
-        return updateEmotesDev(bot, chatroom, args)
+        return updateBaseEmotesDev(bot, chatroom, args)
     }
 
     const options = {
@@ -301,8 +275,33 @@ function updateSettingsDev(props, args) {
     bot.say(chatroom, `/me Options for "settings": debug (d), timeLocale (tl), timeZone (tz), joinMessage (jm), highlightBotMessage (hbm), logTime (lt), hideNonDevChannel (hndc), sayJoinMessage (sjm), realRPS (rps), funNumberCount (fnc), funNumberTotal (fnt), streakThreshold (st), streamerEmoteStreakThreshold (sest), hangmanSignupSeconds (hss), hangmanChances (hc), chantCount (cc), chantEmote (ce), baseEmotes (be), botMood (m)`)
 }
 
-function updateEmotesDev(bot, chatroom, args) {
-    if (settings.debug) { console.log(`${grayTxt}> updateEmotesDev(args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+function updateSettings(props, args) {
+    const { bot, chatroom, channel, username } = props
+    args.shift()
+    if (settings.debug) { console.log(`${grayTxt}> updateSettings(username, '${username}', channel, '${channel}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+
+    const options = {
+        [/^timeZone$|^tz$/i]: { name: `timeZone`, func: updateStr },
+        [/^realRPS$|^rps$/i]: { name: `realRPS`, func: updateBool },
+        [/^hangmanChances$|^hc$/i]: { name: `hangmanChances`, func: updateNum },
+        [/^chantCount$|^cc$/i]: { name: `chantCount`, func: updateNum },
+        [/^chantEmote$|^ce$/i]: { name: `chantEmote`, func: updateStr }
+    }
+
+    for (const option in options) {
+        const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
+        if (regex.test(args[0])) {
+            if (settings.debug) { console.log(`${grayTxt}-> Setting "${args[0]}" matched:${resetTxt}`, regex, options[regex].func) }
+            args.shift()
+            return options[regex].func(bot, chatroom, settings, `Setting "${options[regex].name}"`, options[regex].name, args)
+        }
+    }
+
+    bot.say(chatroom, `/me Options for "settings": timeZone (tz), realRPS (rps), hangmanChances (hc), chantCount (cc), chantEmote (ce)`)
+}
+
+function updateBaseEmotesDev(bot, chatroom, args) {
+    if (settings.debug) { console.log(`${grayTxt}> updateBaseEmotesDev(args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
 
     const options = {
         [/^lemonEmotes$|^lem$/i]: { name: `lemonEmotes`, func: updateArr },

@@ -394,8 +394,13 @@ function getLurker(props) {
 
 module.exports = {
     rollFunNumber(props, funNumber) {
-        const { chatroom, tags, message, username } = props
-        if (settings.debug) { console.log(`${grayTxt}> rollFunNumber(chatroom: '${chatroom}', tags: ${Object.keys(tags).length}, username: '${username}', message: '${message}', funNumber: ${funNumber})${resetTxt}`) }
+        const { tags, message, channel, username } = props
+        if (settings.debug) { console.log(`${grayTxt}> rollFunNumber(channel: '${channel}', tags: ${Object.keys(tags).length}, username: '${username}', message: '${message}', funNumber: ${funNumber})${resetTxt}`) }
+
+        if (!lemonyFresh[channel].rollFunNumber) {
+            if (settings.debug) { console.log(`${grayTxt}-> rollFunNumber disabled in ${channel}'s channel${resetTxt}`) }
+            return
+        }
 
         const outcomes = {
             0: makePyramid,

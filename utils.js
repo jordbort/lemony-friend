@@ -1226,6 +1226,7 @@ module.exports = {
         lemonyFresh[channel].emotes = lemonyFresh[channel]?.emotes || []
         lemonyFresh[channel].bttvEmotes = lemonyFresh[channel]?.bttvEmotes || []
         lemonyFresh[channel].redeems = lemonyFresh[channel]?.redeems || []
+        lemonyFresh[channel].rollFunNumber = lemonyFresh[channel]?.rollFunNumber || true
         lemonyFresh[channel].funTimer = 0
         lemonyFresh[channel].funTimerGuesser = ``
         lemonyFresh[channel].pollId = ``
