@@ -1,8 +1,8 @@
-// Import global settings
-const { resetTxt, boldTxt, settings } = require(`./config`)
+const { resetTxt, grayTxt, settings } = require(`../config`)
+const { getLemonEmote, getPositiveEmote } = require(`../utils`)
 
 function lemonify(str) {
-    if (settings.debug) { console.log(`${boldTxt}> lemonify(str: ${str})${resetTxt}`) }
+    if (settings.debug) { console.log(`${grayTxt}> lemonify(str: ${str})${resetTxt}`) }
     const words = str.split(` `)
     const reservedKeywords = [
         `a`,
@@ -180,4 +180,15 @@ function lemonify(str) {
     return lemonifiedString
 }
 
-module.exports = { lemonify }
+module.exports = {
+    lemonify,
+    handleLemonify(props) {
+        const { bot, chatroom, channel, target } = props
+        const lemonEmote = getLemonEmote()
+        const positiveEmote = getPositiveEmote()
+        if (!target) { return bot.say(chatroom, `${lemonEmote}${lemonEmote}${lemonEmote} ${positiveEmote}`) }
+        const channelMsg = target[channel]?.lastMessage || getRandomChannelMessage(target)
+        const lemonMsg = lemonify(channelMsg)
+        bot.say(chatroom, lemonMsg)
+    }
+}

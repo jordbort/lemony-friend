@@ -37,3 +37,74 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!dadjoke` - This command gets a random joke from a [Dad Joke API](https://icanhazdadjoke.com/api).
 - `!pokemon` - This command can be used to get useful information about a Pokémon from a [Pokémon API](https://pokeapi.co/).
 - `!lurk` (or `!away` or `!brb`) - This command marks the user as "away" in the current channel. Use `!lurk <message...>` to set a custom away message. Using `!lurk` (rather than `!away` or `!brb`) does not prompt a reply from lemony_friend, opting for a quieter exit. If a user is mentioned in chat by full username while they are marked as away, lemony_friend will mention that the user is away, along with an optional away message. Upon posting in chat again, lemony_friend marks the user as unaway.
+
+# Command Lemon Interface
+If lemony_friend is present in your Twitch channel, or you are a moderator of a channel where lemony_friend is present, you are able to use the command `cli` to adjust lemony_friend's settings and data.
+
+## `cli channel`
+Use `cli channel` or `cli c` to access settings for the current channel (if you are the channel owner or a moderator of that channel), or your own channel. The current channel has priority, so if you are a moderator of the current channel, but would like to adjust settings for your own channel, you'll have to use this command either in your own channel, or where you are not a moderator but lemony_friend is present.
+
+- `cli channel timers <timer_name> cooldown` or `cli c t <timer_name> cd`
+- `cli channel timers <timer_name> listening` or `cli c t <timer_name> l`
+
+Use this command to adjust the cooldown and "listening" status of timers for bot commands and replies, such as `!so` and `!raid`, etc. Having a cooldown prevents the same command from being responded to multiple times within that time period. Changing the "listening" status of a command or reply type to `false` prevents the bot from acknowledging the message. For example, if you already have a bot in your channel that handles shoutouts, and don't want lemony_friend to give them, you can use `cli channel timer !so listening false` to disable this behavior.
+
+- `cli channel emotes` or `cli c e` (array of strings)
+
+Use this command to update the list of emotes lemony_friend has access to within a channel.
+
+- `cli channel bttvEmotes` or `cli c bttv` (array of strings)
+
+Use this command to update the list of BTTV emotes lemony_friend has access to within a channel.
+
+- `cli channel subRaidMessage` or `cli c srm` (string)
+
+Use this command to update lemony_friend's response to the `!raid` command. The "sub" raid message is intended for raid messages which use emotes that require a subscription to the channel.
+
+- `cli channel noSubRaidMessage` or `cli c nsrm` (string)
+
+Use this command to update lemony_friend's response to the `!raid` command. The "no sub" raid message is intended for raid messages which do not use emotes that require a subscription to the channel (accessible to anyone).
+
+- `cli channel redeems` or `cli c r` (array of strings)
+
+Use this command to update the list of commands other bots might respond to. For example, adding `!buy <item>` could allow lemony_friend to use StreamElements loyalty points randomly to redeem store items.
+
+- `cli channel rollFunNumber` or `cli c rfn` (boolean)
+
+By default, lemony_friend posts a random message in chat after another chatter's every Nth message. Use this command to turn on or off this behavior.
+
+## `cli users`
+Use `cli users` or `cli u` to access settings for a specific user. Using, or not using, an @ when entering the username are both acceptable. In the case of non-English display names, the username must be used, as the display name will not be recognized.
+
+- `cli user <@?username> nickname` or `cli u <@?username> nn` (string)
+
+Use this command to adjust the nickname of a user. This will be used by the bot when addressing the user, or use their display name as a fallback if the nickname is empty.
+
+- `cli user <@?username> away` or `cli u <@?username> a` (boolean)
+
+Use this command to mark a user as known by the bot to be away. The bot will welcome them back upon their first message in chat.
+
+- `cli user <@?username> awayMessage` or `cli u <@?username> am` (string)
+
+Use this command to update a user's away message. This is mentioned by the bot if the user marked as being away is mentioned in chat.
+
+## `cli settings`
+Use `cli settings` or `cli s` to access lemony_friend's settings. These are global (not specific to a certain channel).
+
+- `cli settings timeZone` or `cli s tz` (string)
+
+Use this command to change lemony_friend's default time zone. This is primarily used in response to the `!time` command. A list of valid time zones can be found at <link>
+
+- `cli settings realRPS` or `cli s rps` (boolean)
+
+Use this command to swap between real and fake verions of the `!rps` game. In "real" Rock Paper Scissors, the game is played normally. In "fake" Rock Paper Scissors, the player cannot actually win. This is mostly used for fun, or as a prank.
+
+- `cli settings hangmanChances` or `cli s hc` (number)
+Use this command to change the starting number of chances in Hangman (default 6).
+
+- `cli settings chantCount` or `cli s cc` (number)
+Use this command to change the number of times a message is chanted (default 8).
+
+- `cli settings chantEmote` or `cli s ce` (string)
+Use this command to change or remove the emote/emoji used to separate chants (default 👏).
+

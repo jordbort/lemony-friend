@@ -1,14 +1,14 @@
-// Import global settings
-const { resetTxt, boldTxt, yellowBg } = require(`./config`)
+const { resetTxt, boldTxt, yellowBg, blackBg, greenBg, whiteBg } = require(`../config`)
 
-function printLemon() {
+module.exports = () => {
     const noSq = `  `
-    const bkSq = `\x1b[40m  \x1b[0m`
-    const gnSq = `\x1b[42m  \x1b[0m`
-    const ywSq = `\x1b[43m  \x1b[0m`
-    const whSq = `\x1b[47m  \x1b[0m`
+    const bkSq = `${blackBg}  ${resetTxt}`
+    const gnSq = `${greenBg}  ${resetTxt}`
+    const ywSq = `${yellowBg}  ${resetTxt}`
+    const whSq = `${whiteBg}  ${resetTxt}`
     const lemonyFriendTitleSpacedOutTopTextYayyyy = `${yellowBg}${boldTxt}L e m o n y ${resetTxt}`
     const lemonyFriendTitleSpacedOutBottomTextYay = `${yellowBg}${boldTxt}F r i e n d ${resetTxt}`
+
     console.log(noSq + noSq + noSq + noSq + bkSq)
     console.log(noSq + noSq + noSq + bkSq + gnSq + bkSq)
     console.log(noSq + noSq + noSq + bkSq + gnSq + gnSq + bkSq + noSq + noSq + noSq + noSq + bkSq + bkSq + bkSq + bkSq + bkSq + bkSq + bkSq + bkSq)
@@ -36,5 +36,3 @@ function printLemon() {
     console.log(noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + bkSq + bkSq + bkSq + ywSq + ywSq + ywSq + ywSq + ywSq + bkSq + bkSq + bkSq + bkSq + bkSq)
     console.log(noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + noSq + bkSq + bkSq + bkSq + bkSq + bkSq)
 }
-
-module.exports = { printLemon }

@@ -1,11 +1,5 @@
-// Import global settings
-const { resetTxt, boldTxt, settings } = require(`./config`)
-
-// Import emotes
-const { getPositiveEmote } = require(`./getEmotes`)
-
-// Import helper functions
-const { talk } = require(`./utils`)
+const { resetTxt, grayTxt, settings } = require(`../config`)
+const { getNeutralEmote } = require(`../utils`)
 
 const validTimeZones = {
     'africa/abidjan': 'Africa/Abidjan',
@@ -757,21 +751,20 @@ const validLocales = {
     'zu-za': 'zu-ZA'
 }
 
-function getTime(chatroom, tz = `est`, lang = `en-us`) {
-    if (settings.debug) { console.log(`${boldTxt}> getTime(chatroom: ${chatroom}, tz: ${tz}, lang: ${lang})${resetTxt}`) }
-
-    const zone = tz.toLowerCase() in validTimeZones ? validTimeZones[tz.toLowerCase()] : `EST`
-    const locale = lang.toLowerCase() in validLocales ? validLocales[lang.toLowerCase()] : `en-US`
-
-    const date = new Date().toLocaleDateString(locale, { weekday: "short", year: "numeric", month: "short", day: "numeric", timeZone: zone })
-    const time = new Date().toLocaleTimeString(locale, { timeZone: zone })
-
-    const positiveEmote = getPositiveEmote(chatroom.substring(1))
-    talk(chatroom, `The current time is ${time} ${zone} on ${date}! ${positiveEmote}`)
-}
-
 module.exports = {
-    validTimeZones,
-    validLocales,
-    getTime
+    getTime(props) {
+        const { bot, chatroom, args, currentTime } = props
+        const tz = args[0] || settings.timeZone
+        const lang = args[1] || settings.timeLocale
+        if (settings.debug) { console.log(`${grayTxt}> getTime(chatroom: ${chatroom}, tz: ${tz}, lang: ${lang})${resetTxt}`) }
+
+        const zone = tz.toLowerCase() in validTimeZones ? validTimeZones[tz.toLowerCase()] : settings.timeZone
+        const locale = lang.toLowerCase() in validLocales ? validLocales[lang.toLowerCase()] : settings.timeLocale
+
+        const date = new Date(currentTime).toLocaleDateString(locale, { weekday: "short", year: "numeric", month: "short", day: "numeric", timeZone: zone })
+        const time = new Date(currentTime).toLocaleTimeString(locale, { timeZone: zone })
+
+        const neutralEmote = getNeutralEmote(chatroom.substring(1))
+        bot.say(chatroom, `The current time is ${time} ${zone} on ${date}! ${neutralEmote}`)
+    }
 }
