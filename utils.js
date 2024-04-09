@@ -1178,6 +1178,7 @@ const numbers = [
 ]
 
 module.exports = {
+    numbers,
     getLemonEmote,
     getNeutralEmote,
     getHypeEmote,

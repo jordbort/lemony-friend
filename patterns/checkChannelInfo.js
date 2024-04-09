@@ -9,7 +9,7 @@ module.exports = {
         if (settings.debug) { console.log(`${grayTxt}> checkEmotes(chatroom: '${chatroom}', capturedChannel: '${capturedChannel}', userNickname: '${userNickname}')${resetTxt}`) }
 
         if (capturedChannel in lemonyFresh) {
-            return `emotes` in lemonyFresh[capturedChannel]
+            `emotes` in lemonyFresh[capturedChannel]
                 ? bot.say(chatroom, `I know ${pluralize(lemonyFresh[capturedChannel].emotes.length, `emote`, `emotes`)} in ${capturedChannel}'s channel!`)
                 : bot.say(chatroom, `I don't know how many emotes ${capturedChannel} has!`)
         }
@@ -27,7 +27,7 @@ module.exports = {
         const negativeEmote = getNegativeEmote(channel)
         const dumbEmote = getDumbEmote(channel)
 
-        return otherChannelNickname
+        otherChannelNickname
             ? otherChannel in user
                 ? user[otherChannel].sub
                     ? bot.say(chatroom, `Yes ${userNickname}, you are subbed to ${otherChannelNickname}! ${hypeEmote}`)
@@ -50,7 +50,7 @@ module.exports = {
         const negativeEmote = getNegativeEmote(channel)
         const dumbEmote = getDumbEmote(channel)
 
-        return otherChannelNickname
+        otherChannelNickname
             ? otherChannel in user
                 ? user[otherChannel].mod
                     ? bot.say(chatroom, `Yes ${userNickname}, you are a mod to ${otherChannelNickname}'s chat! ${hypeEmote}`)
@@ -73,7 +73,7 @@ module.exports = {
         const negativeEmote = getNegativeEmote(channel)
         const dumbEmote = getDumbEmote(channel)
 
-        return otherChannelNickname
+        otherChannelNickname
             ? otherChannel in user
                 ? user[otherChannel].vip
                     ? bot.say(chatroom, `Yes ${userNickname}, you are a VIP in ${otherChannelNickname}'s chat! ${hypeEmote}`)
@@ -100,7 +100,7 @@ module.exports = {
         const dumbEmote = getDumbEmote(channel)
 
         if (target) {
-            return otherChannelNickname
+            otherChannelNickname
                 ? otherChannel in target
                     ? target[otherChannel].sub
                         ? bot.say(chatroom, `Yes ${userNickname}, ${targetNickname} is subbed to ${otherChannelNickname}! ${hypeEmote}`)
@@ -130,7 +130,7 @@ module.exports = {
         const dumbEmote = getDumbEmote(channel)
 
         if (target) {
-            return otherChannelNickname
+            otherChannelNickname
                 ? otherChannel in target
                     ? target[otherChannel].mod
                         ? bot.say(chatroom, `Yes ${userNickname}, ${targetNickname} is a mod in ${otherChannelNickname}'s chat! ${hypeEmote}`)
@@ -160,7 +160,7 @@ module.exports = {
         const dumbEmote = getDumbEmote(channel)
 
         if (target) {
-            return otherChannelNickname
+            otherChannelNickname
                 ? otherChannel in target
                     ? target[otherChannel].vip
                         ? bot.say(chatroom, `Yes ${userNickname}, ${targetNickname} is a VIP in ${otherChannelNickname}'s chat! ${hypeEmote}`)
