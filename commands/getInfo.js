@@ -1,7 +1,7 @@
 const { users } = require(`../data`)
 const { resetTxt, grayTxt, chatColors, settings } = require(`../config`)
 
-const { getLemonEmote, getDumbEmote, pluralize, getNeutralEmote, getToUser } = require(`../utils`)
+const { numbers, getLemonEmote, getDumbEmote, pluralize, getNeutralEmote, getToUser, getPositiveEmote, getHypeEmote } = require(`../utils`)
 
 module.exports = {
     sayOnlineTime(props) {
