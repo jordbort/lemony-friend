@@ -53,12 +53,18 @@ module.exports = {
     },
     onWhisperHandler(fromRoom, tags, message, err) {
         if (err) { return console.log(err) }
-        if (settings.debug) { console.log(`${BOT_USERNAME} received a whisper from ${fromRoom}: ${message}`) }
-        // console.log(tags)
-        // this.say(BOT_CHANNEL, `Whisper received`)
-        // No plans to respond to whispers?
+        if (settings.debug) {
+            console.log(`> ${BOT_USERNAME} received a whisper from ${fromRoom}: ${message}`)
+            if (/^tags$/i.test(message)) { console.log(tags) }
+        }
     },
-    onChatHandler(chatroom, tags, message, self) {
+    onMessageHandler(chatroom, tags, message, self) {
+        // Allow /me but not whispers
+        if (![`chat`, `action`].includes(tags[`message-type`])) {
+            if (settings.debug) { console.log(`${grayTxt}> Message is not of type 'chat' or 'action'${resetTxt}`) }
+            return
+        }
+
         const msg = message.replace(/ +/g, ` `)
         const channel = chatroom.substring(1)
         const username = tags.username

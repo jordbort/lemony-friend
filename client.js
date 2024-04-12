@@ -1,5 +1,5 @@
 const { lemonyFresh } = require('./data')
-const { onChatHandler, onJoinedHandler, onPartedHandler, onWhisperHandler, onConnectedHandler } = require(`./handlers`)
+const { onMessageHandler, onJoinedHandler, onPartedHandler, onWhisperHandler, onConnectedHandler } = require(`./handlers`)
 
 // Create bot client
 const tmi = require('tmi.js')
@@ -16,7 +16,7 @@ const opts = {
 const client = new tmi.client(opts)
 
 client.on(`connected`, onConnectedHandler)
-client.on(`chat`, onChatHandler)
+client.on(`message`, onMessageHandler)
 client.on(`join`, onJoinedHandler)
 client.on(`part`, onPartedHandler)
 client.on(`whisper`, onWhisperHandler)
