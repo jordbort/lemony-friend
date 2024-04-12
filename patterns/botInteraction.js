@@ -2,7 +2,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 const { users } = require(`../data`)
 const { resetTxt, grayTxt, settings } = require(`../config`)
 const { getHypeEmote, getUpsetEmote, getGreetingEmote } = require(`../utils`)
-const { buyPokeballs, acknowledgeCaughtPokemon } = require(`./pokemon`)
+const { catchPokemon, buyPokeballs, acknowledgeCaughtPokemon } = require(`./pokemon`)
 
 function handleGivenPoints(props, splitMessage) {
     const { bot, chatroom, message, channel } = props
@@ -74,6 +74,7 @@ module.exports = {
     [/^(?!lemony_friend).* gave (\d*)/i]: handleGivenPoints,
     [/lemony_friend gave ([^a-z]\d*)/i]: subtractPoints,
 
+    [/Catch it using !pokecatch \(winners revealed in 90s\)/i]: catchPokemon,
     [/You don't own that ball. Check the extension to see your items/i]: buyPokeballs,
     [/has been caught by/i]: acknowledgeCaughtPokemon,
 }
