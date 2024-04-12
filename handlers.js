@@ -83,13 +83,14 @@ module.exports = {
 
         // Initialize new user
         if (!(username in users)) { initUser(tags, self) }
-        const user = users[username]
 
         // Add mod/update isModIn list
         if (tags.mod) { updateMod(chatroom, tags, self, username) }
 
         // Initialize user in a new chatroom
-        if (!(channel in user)) { initUserChannel(tags, username, channel) }
+        if (!(channel in users[username])) { initUserChannel(tags, username, channel) }
+
+        const user = users[username]
         user[channel].msgCount++
         user[channel].lastMessage = msg
         self
