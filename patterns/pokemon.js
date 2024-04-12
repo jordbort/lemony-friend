@@ -1,21 +1,9 @@
 const { settings, grayTxt, resetTxt } = require(`../config`)
-const { lemonyFresh } = require(`../data`)
-const { resetCooldownTimer } = require(`../utils`)
 
 module.exports = {
     catchPokemon(props) {
         const { bot, chatroom, channel } = props
         if (settings.debug) { console.log(`${grayTxt}> catchPokemon(channel: '${channel}')${resetTxt}`) }
-
-        if (lemonyFresh[channel].timers[`!pokecatch`].listening) {
-            resetCooldownTimer(channel, `!pokecatch`)
-
-            bot.say(chatroom, `!pokecatch`)
-        } else if (settings.debug) { console.log(`${grayTxt}-> Timer in ${channel} '!pokecatch' is not currently listening${resetTxt}`) }
-    },
-    retryCatchPokemon(props) {
-        const { bot, chatroom, channel } = props
-        if (settings.debug) { console.log(`${grayTxt}> retryCatchPokemon(channel: '${channel}')${resetTxt}`) }
 
         bot.say(chatroom, `!pokecatch`)
     },

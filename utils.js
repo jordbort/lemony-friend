@@ -1235,7 +1235,6 @@ module.exports = {
         lemonyFresh[channel].timers = {
             '!so': { cooldown: 4, listening: true },
             '!raid': { cooldown: 6, listening: true },
-            '!pokecatch': { cooldown: 90, listening: true },
             'streak': { cooldown: 30, listening: true },
             'new-chatter': { cooldown: 0, listening: true },
             'greet': { cooldown: 0, listening: true },

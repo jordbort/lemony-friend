@@ -1,6 +1,6 @@
 const { sayButt } = require(`./sayButt`)
 const { useLemon } = require(`./useLemon`)
-const { retryCatchPokemon } = require(`./pokemon`)
+const { catchPokemon } = require(`./pokemon`)
 const { commandLemonInterface } = require(`./cli`)
 const { checkSelfSub, checkSelfMod, checkSelfVIP, checkEmotes, checkTargetSub, checkTargetMod, checkTargetVIP } = require(`./checkChannelInfo`)
 
@@ -11,7 +11,7 @@ module.exports = {
 
     [/\bbut([a-s|u-z]+)\b/i]: sayButt,
 
-    [/Purchase successful!/i]: retryCatchPokemon,
+    [/Purchase successful!/i]: catchPokemon,
 
     [/how many emotes does (@?[a-z0-9_]+) have/i]: checkEmotes,
 
