@@ -169,7 +169,7 @@ module.exports = {
             resetCooldownTimer(channel, `say-goodnight`)
 
             // In case unknown user is mentioned
-            if (!targetNickname && toUser && !/\b(@?lemony_friend|l+e+m+o+n+|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)\b/i.test(message)) { return bot.say(chatroom, `see ya ${args[0]}`) }
+            if (!targetNickname && toUser && !/\b(@?lemony_friend|l+e+m+o+n+y*|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)\b/i.test(message)) { return bot.say(chatroom, `see ya ${args[0]}`) }
 
             const greetings = [
                 `Bye`,

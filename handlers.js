@@ -209,7 +209,7 @@ module.exports = {
             if (!(`points` in Object(users[BOT_USERNAME][channel])) && [`streamelements`, `thetarashark`].includes(username)) { return this.say(chatroom, `!points`) }
         }
         // Any user mentions bot
-        if (/\b(@?lemony_friend|l+e+m+o+n+|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)\b/i.test(msg)) {
+        if (/\b(@?lemony_friend|l+e+m+o+n+y*|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)\b/i.test(msg)) {
             for (const pattern in botMention) {
                 const regex = new RegExp(pattern.split('/')[1], pattern.split('/')[2])
                 if (regex.test(msg)) {
