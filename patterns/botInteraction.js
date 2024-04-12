@@ -2,6 +2,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 const { users } = require(`../data`)
 const { resetTxt, grayTxt, settings } = require(`../config`)
 const { getHypeEmote, getUpsetEmote, getGreetingEmote } = require(`../utils`)
+const { buyPokeballs, acknowledgeCaughtPokemon } = require(`./pokemon`)
 
 function handleGivenPoints(props, splitMessage) {
     const { bot, chatroom, message, channel } = props
@@ -62,21 +63,6 @@ function subtractPoints(props, splitMessage) {
         : bot.say(chatroom, `!points`)
 
     if (settings.debug) { console.log(`${grayTxt}-> New points:${resetTxt}`, users[BOT_USERNAME][channel].points) }
-}
-
-function buyPokeballs(props) {
-    const { bot, chatroom, channel } = props
-    if (settings.debug) { console.log(`${grayTxt}> buyPokeballs(channel: '${channel}')${resetTxt}`) }
-
-    bot.say(chatroom, `!pokeshop pokeball 10`)
-}
-
-function acknowledgeCaughtPokemon(props) {
-    const { bot, chatroom, channel } = props
-    if (settings.debug) { console.log(`${grayTxt}> acknowledgeCaughtPokemon(channel: '${channel}')${resetTxt}`) }
-
-    const hypeEmote = getHypeEmote(channel)
-    bot.say(chatroom, `${hypeEmote}`)
 }
 
 module.exports = {

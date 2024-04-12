@@ -3,6 +3,7 @@ const { sayGoals } = require(`./sayGoals`)
 const { applyNicknames } = require(`../utils`)
 const { rockPaperScissors } = require(`./rps`)
 const { handleLemonify } = require(`./lemonify`)
+const { catchPokemon } = require(`../patterns/pokemon`)
 const { handleTempCmd, getTempCmds } = require(`./tempCmds`)
 const { sayCommands, getDocs, getStats } = require(`./help`)
 const { startHangman, joinHangman } = require(`../patterns/hangman`)
@@ -32,6 +33,8 @@ module.exports = {
     '!authorize': authorizeToken,
 
     '!time': getTime,
+
+    '!pokecatch': catchPokemon,
 
     '!goal': sayGoals,
     '!goals': sayGoals,

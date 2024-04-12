@@ -1,15 +1,8 @@
-const { settings, grayTxt, resetTxt } = require("../config")
 const { sayButt } = require(`./sayButt`)
 const { useLemon } = require(`./useLemon`)
+const { retryCatchPokemon } = require(`./pokemon`)
 const { commandLemonInterface } = require(`./cli`)
 const { checkSelfSub, checkSelfMod, checkSelfVIP, checkEmotes, checkTargetSub, checkTargetMod, checkTargetVIP } = require(`./checkChannelInfo`)
-
-function catchPokemon(props) {
-    const { bot, chatroom, channel } = props
-    if (settings.debug) { console.log(`${grayTxt}> catchPokemon(channel: '${channel}')${resetTxt}`) }
-
-    bot.say(chatroom, `!pokecatch`)
-}
 
 module.exports = {
     [/^cli ?\b/i]: commandLemonInterface,
@@ -18,8 +11,7 @@ module.exports = {
 
     [/\bbut([a-s|u-z]+)\b/i]: sayButt,
 
-    [/Catch it using !pokecatch \(winners revealed in 90s\)/i]: catchPokemon,
-    [/Purchase successful!/i]: catchPokemon,
+    [/Purchase successful!/i]: retryCatchPokemon,
 
     [/how many emotes does (@?[a-z0-9_]+) have/i]: checkEmotes,
 
