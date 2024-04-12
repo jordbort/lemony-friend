@@ -35,7 +35,12 @@ function solvePuzzle(bot, chatroom, username) {
     const hypeEmote = getHypeEmote(channel)
     hangman.listening = false
     user.hangmanWins++
-    bot.say(chatroom, `Congratulations, the answer was: "${hangman.answer}"! ${user.nickname || user.displayName} has solved ${pluralize(user.hangmanWins, `Hangman game`, `Hangman games`)}! ${hypeEmote}`)
+    if (user.hangmanWins % settings.hangmanLemonThreshold === 0) {
+        user.lemons++
+        bot.say(chatroom, `Congratulations, the answer was: "${hangman.answer}"! ${user.nickname || user.displayName} has solved ${pluralize(user.hangmanWins, `Hangman game`, `Hangman games`)}, and earned a lemon! ${hypeEmote}`)
+    } else {
+        bot.say(chatroom, `Congratulations, the answer was: "${hangman.answer}"! ${user.nickname || user.displayName} has solved ${pluralize(user.hangmanWins, `Hangman game`, `Hangman games`)}! ${hypeEmote}`)
+    }
 }
 
 function hangmanAnnounce(bot, chatroom, userNickname) {

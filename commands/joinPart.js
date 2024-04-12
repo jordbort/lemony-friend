@@ -43,7 +43,7 @@ module.exports = {
 
         const byeEmote = getByeEmote(channel)
         needToPart.forEach(user => {
-            bot.say(`#${user}`, `Bye for now! ${byeEmote}`)
+            if (settings.sayPartMessage) { bot.say(`#${user}`, `Bye for now! ${byeEmote}`) }
             bot.part(`#${user}`)
         })
         needToPart.length

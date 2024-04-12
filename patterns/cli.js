@@ -257,6 +257,7 @@ function updateSettingsDev(props, args) {
         [/^logTime$|^lt$/i]: { name: `logTime`, func: updateBool },
         [/^hideNonDevChannel$|^hndc$/i]: { name: `hideNonDevChannel`, func: updateBool },
         [/^sayJoinMessage$|^sjm$/i]: { name: `sayJoinMessage`, func: updateBool },
+        [/^sayPartMessage$|^spm$/i]: { name: `sayPartMessage`, func: updateBool },
         [/^realRPS$|^rps$/i]: { name: `realRPS`, func: updateBool },
         [/^funNumberCount$|^fnc$/i]: { name: `funNumberCount`, func: updateNum },
         [/^funNumberTotal$|^fnt$/i]: { name: `funNumberTotal`, func: updateNum },
@@ -264,6 +265,7 @@ function updateSettingsDev(props, args) {
         [/^streamerEmoteStreakThreshold$|^sest$/i]: { name: `streamerEmoteStreakThreshold`, func: updateNum },
         [/^hangmanSignupSeconds$|^hss$/i]: { name: `hangmanSignupSeconds`, func: updateNum },
         [/^hangmanChances$|^hc$/i]: { name: `hangmanChances`, func: updateNum },
+        [/^hangmanLemonThreshold$|^hlt$/i]: { name: `hangmanLemonThreshold`, func: updateNum },
         [/^chantCount$|^cc$/i]: { name: `chantCount`, func: updateNum },
         [/^chantEmote$|^ce$/i]: { name: `chantEmote`, func: updateStr },
         [/^botMood$|^m$/i]: { name: `botMood`, func: updateStr },
@@ -278,7 +280,7 @@ function updateSettingsDev(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for "settings": debug (d), timeLocale (tl), timeZone (tz), joinMessage (jm), highlightBotMessage (hbm), logTime (lt), hideNonDevChannel (hndc), sayJoinMessage (sjm), realRPS (rps), funNumberCount (fnc), funNumberTotal (fnt), streakThreshold (st), streamerEmoteStreakThreshold (sest), hangmanSignupSeconds (hss), hangmanChances (hc), chantCount (cc), chantEmote (ce), baseEmotes (be), botMood (m)`)
+    bot.say(chatroom, `/me Options for "settings": debug (d), timeLocale (tl), timeZone (tz), joinMessage (jm), highlightBotMessage (hbm), logTime (lt), hideNonDevChannel (hndc), sayJoinMessage (sjm), sayPartMessage (spm), realRPS (rps), funNumberCount (fnc), funNumberTotal (fnt), streakThreshold (st), streamerEmoteStreakThreshold (sest), hangmanSignupSeconds (hss), hangmanChances (hc), hangmanLemonThreshold (hlt), chantCount (cc), chantEmote (ce), baseEmotes (be), botMood (m)`)
 }
 
 function updateSettings(props, args) {

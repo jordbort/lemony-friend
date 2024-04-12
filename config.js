@@ -58,6 +58,7 @@ const settings = {
     logTime: true,
     hideNonDevChannel: false,
     sayJoinMessage: true,
+    sayPartMessage: true,
     firstConnection: true,
     realRPS: true,
     minWelcomeBackMinutes: 60,
@@ -69,6 +70,7 @@ const settings = {
     streamerEmoteStreakThreshold: 4,
     hangmanSignupSeconds: 30,
     hangmanChances: 6,
+    hangmanLemonThreshold: 3,
     chantCount: 8,
     chantEmote: `👏️`,
     ignoredBots: [
