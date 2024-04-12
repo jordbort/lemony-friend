@@ -59,6 +59,23 @@ module.exports = {
         }
     },
 
+    '!streamon': (props) => {
+        const { bot, chatroom } = props
+        settings.hideNonDevChannel = true
+        settings.highlightBotMessage = false
+        settings.logTime = false
+        settings.debug = false
+        bot.say(chatroom, `/me Settings hideNonDevChannel: ${settings.hideNonDevChannel}, highlightBotMessage: ${settings.highlightBotMessage}, logTime: ${settings.logTime}, debug: ${settings.debug}`)
+    },
+    '!streamoff': (props) => {
+        const { bot, chatroom } = props
+        settings.hideNonDevChannel = false
+        settings.highlightBotMessage = true
+        settings.logTime = true
+        settings.debug = true
+        bot.say(chatroom, `/me Settings hideNonDevChannel: ${settings.hideNonDevChannel}, highlightBotMessage: ${settings.highlightBotMessage}, logTime: ${settings.logTime}, debug: ${settings.debug}`)
+    },
+
     '!subs': getSubs,
     '!join': handleJoin,
     '!part': handlePart
