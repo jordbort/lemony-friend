@@ -77,7 +77,10 @@ const settings = {
         BOT_USERNAME,
         `blerp`,
         `buttsbot`,
+        `commanderroot`,
+        `creatisbot`,
         `fossabot`,
+        `frostytoolsdotcom`,
         `kofistreambot`,
         `moobot`,
         `nightbot`,
@@ -87,6 +90,7 @@ const settings = {
         `sport_scores_bot`,
         `streamelements`,
         `streamlabs`,
+        `tangiabot`,
         `undertalebot`,
         `uwu_twanswator`,
         `wizebot`
