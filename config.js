@@ -77,14 +77,23 @@ const settings = {
         BOT_USERNAME,
         `blerp`,
         `buttsbot`,
+        `commanderroot`,
+        `creatisbot`,
+        `fossabot`,
+        `frostytoolsdotcom`,
+        `kofistreambot`,
         `moobot`,
         `nightbot`,
         `pokemoncommunitygame`,
         `sery_bot`,
         `soundalerts`,
+        `sport_scores_bot`,
         `streamelements`,
         `streamlabs`,
-        `undertalebot`
+        `tangiabot`,
+        `undertalebot`,
+        `uwu_twanswator`,
+        `wizebot`
     ],
     baseEmotes: {
         lemonEmotes: [
