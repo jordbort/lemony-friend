@@ -5,7 +5,6 @@ const COMMON_NICKNAMES = process.env.COMMON_NICKNAMES
 const { resetTxt, grayTxt, settings } = require(`./config`)
 const { lemonyFresh, users, mods, knownTags, tempCmds } = require(`./data`)
 
-
 function getLemonEmote() {
     // const lemonEmotes = [...settings.baseEmotes.lemonEmotes]
     // if (users[BOT_USERNAME]?.e1ectroma?.sub) { lemonEmotes.push(`e1ectr4Lemfresh`) }
@@ -1353,6 +1352,7 @@ module.exports = {
         for (const chatroom of bot.channels) {
             bot.say(chatroom, `Oops, I just crashed! ${emote} ${errMsg} ${location}`)
         }
+        console.log(knownTags, tempCmds, users, mods, lemonyFresh)
     },
     applyNicknames(props) {
         const { bot, chatroom } = props

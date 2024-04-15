@@ -6,7 +6,7 @@ const { resetTxt, grayTxt, settings } = require(`../config`)
 const { getLemonEmote, getNeutralEmote, getPositiveEmote, getGreetingEmote, getByeEmote, pluralize, resetCooldownTimer, getHypeEmote, getUpsetEmote, getNegativeEmote, getDumbEmote } = require(`../utils`)
 
 function handleGreetOne(props) {
-    const { bot, chatroom, channel, userNickname, targetNickname } = props
+    const { bot, chatroom, channel, toUser, userNickname, targetNickname } = props
     if (settings.debug) { console.log(`${grayTxt}> handleGreetOne(chatroom: '${chatroom}', nickname: ${targetNickname || userNickname})${resetTxt}`) }
 
     if (lemonyFresh[channel].timers[`greet`].listening) {
@@ -25,7 +25,7 @@ function handleGreetOne(props) {
         ]
         const greeting = Math.floor(Math.random() * greetings.length)
 
-        let response = `${greetings[greeting]} ${targetNickname || userNickname}`
+        let response = `${greetings[greeting]} ${toUser === BOT_USERNAME ? userNickname : targetNickname || userNickname}`
         const greetingEmote = getGreetingEmote(channel)
 
         // If the greeting is "Howdy"
@@ -169,7 +169,7 @@ module.exports = {
             resetCooldownTimer(channel, `say-goodnight`)
 
             // In case unknown user is mentioned
-            if (!targetNickname && toUser && !/\b(@?lemony_friend|l+e+m+o+n+|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)\b/i.test(message)) { return bot.say(chatroom, `see ya ${args[0]}`) }
+            if (!targetNickname && toUser && !/\b(@?lemony_friend|l+e+m+o+n+y*|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)\b/i.test(message)) { return bot.say(chatroom, `see ya ${args[0]}`) }
 
             const greetings = [
                 `Bye`,
