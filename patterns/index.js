@@ -11,8 +11,6 @@ module.exports = {
 
     [/\bbut([a-s|u-z]+)\b/i]: sayButt,
 
-    [/Purchase successful!/i]: catchPokemon,
-
     [/how many emotes does (@?[a-z0-9_]+) have/i]: checkEmotes,
 
     [/do i (have a )?sub[\w]*( (to|in) )?/i]: checkSelfSub,
@@ -21,17 +19,18 @@ module.exports = {
     [/does (@?[a-z0-9_]+) (have a )?sub[\w]*( (to|in) )?/i]: checkTargetSub,
     [/is (@?[a-z0-9_]+) (a )?sub[\w]*( (to|in) )?/i]: checkTargetSub,
 
-
     [/do i (have )?mod[\w]*( (for|in) )?/i]: checkSelfMod,
     [/am i (a )?mod[\w]*( (for|in) )?/i]: checkSelfMod,
 
     [/does (@?[a-z0-9_]+) (have a )?mod[\w]*( (for|in) )?/i]: checkTargetMod,
     [/is (@?[a-z0-9_]+) (a )?mod[\w]*( (for|in) )?/i]: checkTargetMod,
 
-
     [/do i (have )?vip[\w]*( (to|in) )?/i]: checkSelfVIP,
     [/am i (a )?vip[\w]*( (to|in) )?/i]: checkSelfVIP,
 
     [/does (@?[a-z0-9_]+) (have )?vip[\w]*( (to|in) )?/i]: checkTargetVIP,
     [/is (@?[a-z0-9_]+) (a )?vip[\w]*( (to|in) )?/i]: checkTargetVIP,
+
+    // From PokemonCommunityGame
+    [/Catch it using !pokecatch \(winners revealed in 90s\)/i]: catchPokemon
 }

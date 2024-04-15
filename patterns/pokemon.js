@@ -1,9 +1,15 @@
 const { settings, grayTxt, resetTxt } = require(`../config`)
+const { getHypeEmote } = require(`../utils`)
 
 module.exports = {
     catchPokemon(props) {
-        const { bot, chatroom, channel } = props
-        if (settings.debug) { console.log(`${grayTxt}> catchPokemon(channel: '${channel}')${resetTxt}`) }
+        const { bot, chatroom, channel, username } = props
+        if (settings.debug) { console.log(`${grayTxt}> catchPokemon(channel: '${channel}', username: '${username}')${resetTxt}`) }
+
+        if (username !== `pokemoncommunitygame`) {
+            if (settings.debug) { console.log(`${grayTxt}-> Message not from PokemonCommunityGame, ignoring${resetTxt}`) }
+            return
+        }
 
         bot.say(chatroom, `!pokecatch`)
     },

@@ -74,7 +74,7 @@ module.exports = {
     [/^(?!lemony_friend).* gave (\d*)/i]: handleGivenPoints,
     [/lemony_friend gave ([^a-z]\d*)/i]: subtractPoints,
 
-    [/Catch it using !pokecatch \(winners revealed in 90s\)/i]: catchPokemon,
+    [/Purchase successful!/i]: catchPokemon,
     [/You don't own that ball. Check the extension to see your items/i]: buyPokeballs,
     [/has been caught by/i]: acknowledgeCaughtPokemon,
 }
