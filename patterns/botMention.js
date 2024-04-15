@@ -79,7 +79,7 @@ module.exports = {
     // how're you
     [/\bh+o+w+['"]*r+e+( .* ?)?(y+o+u+|u+)/i]: sayMood,
     // hyd
-    [/\bh+y+d\b/i]: sayMood,
+    [/\bh+y+d+\b/i]: sayMood,
     // how is it going
     [/\bh+o+w+( .* ?)?i+s+( .* ?)?i+t+( .* ?)?g+o+i+n+['"g]*\b/i]: sayMood,
     // how's it going

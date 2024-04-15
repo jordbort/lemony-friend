@@ -378,7 +378,7 @@ const lemonyFresh = {
         emotes: [`dirtyd182LOVE`],
         accessToken: DIRTYD0INKS_ACCESS_TOKEN,
         refreshToken: DIRTYD0INKS_REFRESH_TOKEN,
-        noSubRaidMessage: `DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance DinoDance GoldPLZLETS GET DIRTY! DinoDance`
+        noSubRaidMessage: `DinoDance GoldPLZ LETS GET DIRTY! DinoDance`
     },
     cosyinpink: {
         id: 558851202,
