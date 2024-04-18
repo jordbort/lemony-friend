@@ -33,7 +33,7 @@ function updateArr(bot, chatroom, obj, message, name, args) {
         args.shift()
         const removals = []
         for (const element of args) {
-            if (obj[name].includes(element) && /^[a-z0-9]{4,30}$/i.test(element)) {
+            if (obj[name].includes(element)) {
                 obj[name].splice(obj[name].indexOf(element), 1)
                 removals.push(element)
             }
@@ -43,7 +43,7 @@ function updateArr(bot, chatroom, obj, message, name, args) {
 
     const additions = []
     for (const element of args) {
-        if (!obj[name].includes(element) && /^[a-z0-9]{4,30}$/i.test(element)) {
+        if (!obj[name].includes(element)) {
             obj[name].push(element)
             additions.push(element)
         }
