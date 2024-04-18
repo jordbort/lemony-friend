@@ -104,53 +104,60 @@ function makeLemon(bot, chatroom, user, suffix, target, verb) {
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (verb === `make` && (!suffix || allLemons)) {
+    if (!suffix || allLemons) {
         if (allLemons) {
             if (target) {
                 if (coinFlip) {
                     user.lemons = 0
-                    return bot.say(chatroom, `${userNickname} made all ${user.lemons} of their lemons into little ${targetNickname}s. They marched away!`)
+                    return bot.say(chatroom, `${userNickname} went to ${verb} all ${user.lemons} of their lemons into little ${targetNickname}s. They marched away!`)
                 } else {
-                    return bot.say(chatroom, `${targetNickname} made all of ${userNickname}'s lemons into... lemons. They gave them back!`)
+                    return bot.say(chatroom, `${targetNickname} tried to ${verb} all of ${userNickname}'s lemons into... lemons. They gave them back!`)
                 }
             } else {
                 if (coinFlip) {
                     user.lemons = 0
-                    return bot.say(chatroom, `${userNickname} "made" with their lemons. And now they're all used up?`)
+                    return bot.say(chatroom, `${userNickname} tried to ${verb} with their lemons. And now they're all used up?`)
                 }
                 else {
-                    return bot.say(chatroom, `${userNickname} made their lemons into... more lemons. Nothing changed!`)
+                    return bot.say(chatroom, `${userNickname} went to ${verb} their lemons into... more lemons. Nothing changed!`)
                 }
             }
         } else if (!suffix) {
             if (target) {
                 if (coinFlip) {
                     user.lemons--
-                    return bot.say(chatroom, `${userNickname} made a lemon into a little ${targetNickname}. It said "goodbye"!`)
+                    return bot.say(chatroom, `${userNickname} went to ${verb} a lemon into a little ${targetNickname}. It said "goodbye"!`)
                 } else {
-                    return bot.say(chatroom, `${targetNickname} made a lemon out of ${userNickname}'s lemon. They handed it back!`)
+                    return bot.say(chatroom, `${targetNickname} tried to ${verb} a lemon out of ${userNickname}'s lemon. They handed it back!`)
                 }
             } else {
                 if (coinFlip) {
                     user.lemons--
-                    return bot.say(chatroom, `${userNickname} spent a lemon to "make". And now it's gone?`)
+                    return bot.say(chatroom, `${userNickname} spent one lemon to "${verb}". And now it's gone?`)
                 }
                 else {
-                    return bot.say(chatroom, `${userNickname} made a lemon out of their lemon. It is the perpetual lemon cycle.`)
+                    return bot.say(chatroom, `${userNickname} successfully tried to ${verb} a lemon out of their lemon. It is the perpetual lemon cycle.`)
                 }
             }
         }
-    } else if ([`make`, `bake`, `cook`, `create`, `prepare`, `prep`, `brew`].includes(verb) && suffix) {
+    } else {
         user.lemons--
         const foodPatterns = /^(bar(s?)|cookie(s?)|tart(s?)|pie|hummus|soup|(pound|cup)?cake(s?)|trifle(s?)|muffin(s?)|roll(s?))$/
         const drinkPatterns = /^soda$|^punch$|^juice$|^hooch$|^booze$|^cider$|^water$|^tea$/
         const yummySounds = [
             `Yum`,
             `Yum`,
+            `Yummy`,
+            `Yummy`,
             `Mmm`,
-            `Mmm`,
+            `Mmmmmmm`,
+            `Mmmmmmmmmmm`,
             `Tasty`,
-            `Delicious`
+            `Tasty`,
+            `Tasty`,
+            `Delicious`,
+            `Delicious`,
+            `Exquisite`
         ]
         const yummySound = yummySounds[Math.floor(Math.random() * yummySounds.length)]
         if (foodPatterns.test(suffix)) {
@@ -185,7 +192,7 @@ function makeLemon(bot, chatroom, user, suffix, target, verb) {
             } else {
                 return coinFlip
                     ? bot.say(chatroom, `${userNickname} made ${plural ? `` : `a `}lemon ${suffix}, and consumed ${plural ? `them` : `it`}. ${yummySound}!`)
-                    : bot.say(chatroom, `${userNickname} made ${plural ? `` : `a `}lemon ${suffix}, but ${plural ? `them` : `it`} fell on the floor... ${yummySound}!`)
+                    : bot.say(chatroom, `${userNickname} made ${plural ? `` : `a `}lemon ${suffix}, but ${plural ? `they` : `it`} fell on the floor... ${yummySound}!`)
             }
         }
     }
