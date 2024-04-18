@@ -34,8 +34,8 @@ module.exports = {
 
         if (self) {
             initChannel(channel)
-            // Say join message if first connection
-            if (settings.firstConnection && settings.sayJoinMessage) { sayJoinMessage(this, chatroom) }
+            // Say join message
+            if (settings.sayJoinMessage) { sayJoinMessage(this, chatroom) }
         }
 
         if (!lemonyFresh[channel].viewers.includes(username)) {
