@@ -1325,16 +1325,20 @@ module.exports = {
     // (For debugging/discovery) Add to list of known message tags
     tagsListener(tags) {
         for (const tag of Object.keys(tags)) {
+            const type = typeof tags[tag] === `object`
+                ? tags[tag] === null
+                    ? `null`
+                    : Array.isArray(tags[tag])
+                        ? `array`
+                        : typeof tags[tag] : typeof tags[tag]
             if (!(tag in knownTags)) {
-                const type = typeof tags[tag] === `object`
-                    ? tags[tag] === null
-                        ? `null`
-                        : Array.isArray(tags[tag])
-                            ? `array`
-                            : typeof tags[tag] : typeof tags[tag]
                 if (settings.debug) { console.log(`${grayTxt}> New message tag '${tag}' discovered (type: ${type})${resetTxt}`, tags[tag]) }
-                knownTags[tag] = type
+                knownTags[tag] = {}
+            } else if (knownTags[tag].type !== type && settings.debug) {
+                console.log(`${grayTxt}-> The type of message tag '${tag}' changed? (old type: ${knownTags[tag].type}, new type: ${type})${resetTxt}`)
             }
+            knownTags[tag].type = type
+            knownTags[tag].lastValue = tags[tag]
         }
     },
     getUsername(str) {
