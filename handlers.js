@@ -34,8 +34,8 @@ module.exports = {
 
         if (self) {
             initChannel(channel)
-            // Say join message
-            if (settings.sayJoinMessage) { sayJoinMessage(this, chatroom) }
+            // Say join message if first connection
+            if (settings.firstConnection && settings.sayJoinMessage) { sayJoinMessage(this, chatroom) }
         }
 
         if (!lemonyFresh[channel].viewers.includes(username)) {
@@ -46,7 +46,6 @@ module.exports = {
         if (settings.debug) { console.log(`${grayTxt}${username} parted from ${chatroom}${resetTxt}`) }
         const channel = chatroom.substring(1)
 
-        lemonyFresh[channel].viewers.splice(lemonyFresh[channel].viewers.indexOf(username), 1)
         while (lemonyFresh[channel].viewers.includes(username)) {
             lemonyFresh[channel].viewers.splice(lemonyFresh[channel].viewers.indexOf(username), 1)
         }
