@@ -1343,11 +1343,12 @@ module.exports = {
                         : typeof tags[tag] : typeof tags[tag]
             if (!(tag in knownTags)) {
                 if (settings.debug) { console.log(`${grayTxt}> New message tag '${tag}' discovered (type: ${type})${resetTxt}`, tags[tag]) }
-                knownTags[tag] = {}
-            } else if (knownTags[tag].type !== type && settings.debug) {
-                console.log(`${grayTxt}-> The type of message tag '${tag}' changed? (old type: ${knownTags[tag].type}, new type: ${type})${resetTxt}`)
+                knownTags[tag] = { types: [] }
             }
-            knownTags[tag].type = type
+            if (!knownTags[tag].types.includes(type)) {
+                if (settings.debug && knownTags[tag].types.length > 0) console.log(`${grayTxt}> New type for message tag '${tag}' added: ${type}${resetTxt}`)
+                knownTags[tag].types.push(type)
+            }
             knownTags[tag].lastValue = tags[tag]
         }
     },
