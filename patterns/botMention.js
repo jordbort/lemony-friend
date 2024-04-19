@@ -35,40 +35,40 @@ module.exports = {
     // what's up
     [/\bw+h*[au]+t+['"]*s+( .* ?)?u+p+/i]: handleGreetOne,
     // wassup
-    [/\b(w+h*[au]+)?['"]*(d|s|t)+u+p+\b/i]: handleGreetOne,
+    [/\b((w+h*[au]+)?['"]*(d|s|t)+u+p+)+\b/i]: handleGreetOne,
     // hello
     [/\bh*[aeu]+n*l+(o+|u+r+)\b/i]: handleGreetOne,
     // hi
-    [/\bh+i+\b/i]: handleGreetOne,
+    [/\b(h+i+)+\b/i]: handleGreetOne,
     // heyo
-    [/\bh*[ae]+y+[ao]*\b/i]: handleGreetOne,
+    [/\b(h*[ae]+y+[ao]*)+\b/i]: handleGreetOne,
     // howdy
     [/\b(m+e+|h+)o+w+d+y+/i]: handleGreetOne,
     // yo
-    [/\by+o+\b/i]: handleGreetOne,
+    [/\b(y+o+)+\b/i]: handleGreetOne,
 
     // good night
     [/\bg+o{2,}d+( .* ?)?(n+i+g+h+t+|^n+i+t+e+)/i]: sayGoodnight,
     // gn
-    [/\bg+n+\b/i]: sayGoodnight,
+    [/\b(g+n+)+\b/i]: sayGoodnight,
     // bye (includes good bye)
-    [/\bb+y+e+/i]: sayGoodnight,
+    [/\b(b+y+e+)+/i]: sayGoodnight,
     // goodbye
     [/\bg+o{2,}d+( .* ?)?b+y+e+/i]: sayGoodnight,
 
     // gj
-    [/\bg+j+\b/i]: sayThanks,
+    [/\b(g+j+)+\b/i]: sayThanks,
     // nj
-    [/\bn+j+\b/i]: sayThanks,
+    [/\b(n+j+)+\b/i]: sayThanks,
     // wd
-    [/\bw+d+\b/i]: sayThanks,
+    [/\b(w+d+)+\b/i]: sayThanks,
     // good/nice job/work]
     [/\b(g+o{2,}d+|n+i+c+e+)( .* ?)?(j+o+b+|w+o+r+k+)/i]: sayThanks,
     // well done
     [/\bw+e+l{2,}( .* ?)?d+o+n+e+/i]: sayThanks,
 
     // ty, tysm, tyvm
-    [/\bt+y+[svm]*\b/i]: sayYoureWelcome,
+    [/\b(t+y+[svm]*)+\b/i]: sayYoureWelcome,
     // thank you
     [/\bt+h*a+n+k+( .* ?)?(y+o*u+|y+e+w+|u+)\b/i]: sayYoureWelcome,
     // thanks

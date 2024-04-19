@@ -392,6 +392,46 @@ function getLurker(props) {
     bot.say(chatroom, `Has anyone heard from ${lurker}? ${dumbEmote}`)
 }
 
+function awardLemonToChannelChatters(props) {
+    const { bot, chatroom, channel } = props
+    if (settings.debug) { console.log(`${grayTxt}> awardLemonToChannelChatters(channel: '${channel}')${resetTxt}`) }
+
+    const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
+
+    const recipients = []
+    for (const username in users) {
+        if (channel in users[username]) {
+            users[username].lemons++
+            recipients.push(username)
+        }
+    }
+    if (settings.debug) { console.log(`${grayTxt}-> recipients:${resetTxt}`, recipients) }
+
+    const lemonEmote = getLemonEmote()
+    bot.say(chatroom, `${pluralize(recipients.length, `chatter`, `chatters`)} in ${channelNickname}'s channel just received one (1) lemon! ${lemonEmote}`)
+}
+
+
+function useTwoEmotes(props) {
+    const { bot, chatroom, channel } = props
+    if (settings.debug) { console.log(`${grayTxt}> useTwoEmotes(channel: '${channel}', emotes: ${lemonyFresh[channel].emotes.length})${resetTxt}`) }
+
+    if (lemonyFresh[channel].emotes.length === 0) {
+        if (settings.debug) { console.log(`${grayTxt}-> No known emotes in channel '${channel}'${resetTxt}`) }
+        return
+    }
+
+    if (!users[BOT_USERNAME][channel].sub) {
+        if (settings.debug) { console.log(`${grayTxt}-> ${BOT_USERNAME} is not subscribed to ${channel}, can't use emotes${resetTxt}`) }
+        return
+    }
+
+    const emotes = lemonyFresh[channel].emotes
+    const emoteOne = emotes[Math.floor(Math.random() * emotes.length)]
+    const emoteTwo = emotes[Math.floor(Math.random() * emotes.length)]
+    bot.say(chatroom, `${emoteOne} ${emoteTwo}`)
+}
+
 module.exports = {
     rollFunNumber(props, funNumber) {
         const { tags, message, channel, username } = props
@@ -420,7 +460,9 @@ module.exports = {
             14: restartFunTimer,
             15: restartFunTimer,
             16: getViewers,
-            17: getLurker
+            17: getLurker,
+            18: awardLemonToChannelChatters,
+            19: useTwoEmotes
         }
 
         if (funNumber in outcomes) {

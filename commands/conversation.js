@@ -329,14 +329,14 @@ module.exports = {
         const { bot, chatroom, channel, username, isModOrVIP } = props
         if (settings.debug) { console.log(`${grayTxt}> handleRaid(channel: '${channel}')${resetTxt}`) }
 
+        // VIPs only
+        if (!isModOrVIP) {
+            if (settings.debug) { console.log(`${grayTxt}-> ${username} isn't a VIP or mod, ignoring${resetTxt}`) }
+            return
+        }
+
         if (lemonyFresh[channel].timers[`!raid`].listening) {
             resetCooldownTimer(channel, `!raid`)
-
-            // VIPs only
-            if (!isModOrVIP) {
-                if (settings.debug) { console.log(`${grayTxt}-> ${username} isn't a VIP or mod, ignoring${resetTxt}`) }
-                return
-            }
 
             const subRaidMessage = lemonyFresh[channel].subRaidMessage
             const noSubRaidMessage = lemonyFresh[channel].noSubRaidMessage

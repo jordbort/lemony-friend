@@ -64,7 +64,7 @@ const settings = {
     minWelcomeBackMinutes: 60,
     maxWelcomeBackMinutes: 480,
     funNumberCount: 25,
-    funNumberTotal: 50,
+    funNumberTotal: 60,
     funTimerDuration: 1800000,
     streakThreshold: 3,
     streamerEmoteStreakThreshold: 4,
