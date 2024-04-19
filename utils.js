@@ -1231,7 +1231,17 @@ module.exports = {
         lemonyFresh[channel].funTimerGuesser = ``
         lemonyFresh[channel].pollId = ``
         lemonyFresh[channel].viewers = []
-        lemonyFresh[channel].hangman = { listening: false, signup: false, answer: ``, spaces: [], players: [], guessedLetters: [], chances: settings.hangmanChances, currentPlayer: 0 }
+        lemonyFresh[channel].hangman = {
+            listening: false,
+            signup: false,
+            answer: ``,
+            spaces: [],
+            players: [],
+            guessedLetters: [],
+            chances: settings.hangmanChances,
+            currentPlayer: 0,
+            ...lemonyFresh[channel].hangman
+        }
         lemonyFresh[channel].timers = {
             '!so': { cooldown: 4, listening: true },
             '!raid': { cooldown: 6, listening: true },
@@ -1325,16 +1335,21 @@ module.exports = {
     // (For debugging/discovery) Add to list of known message tags
     tagsListener(tags) {
         for (const tag of Object.keys(tags)) {
+            const type = typeof tags[tag] === `object`
+                ? tags[tag] === null
+                    ? `null`
+                    : Array.isArray(tags[tag])
+                        ? `array`
+                        : typeof tags[tag] : typeof tags[tag]
             if (!(tag in knownTags)) {
-                const type = typeof tags[tag] === `object`
-                    ? tags[tag] === null
-                        ? `null`
-                        : Array.isArray(tags[tag])
-                            ? `array`
-                            : typeof tags[tag] : typeof tags[tag]
                 if (settings.debug) { console.log(`${grayTxt}> New message tag '${tag}' discovered (type: ${type})${resetTxt}`, tags[tag]) }
-                knownTags[tag] = type
+                knownTags[tag] = { types: [] }
             }
+            if (!knownTags[tag].types.includes(type)) {
+                if (settings.debug && knownTags[tag].types.length > 0) console.log(`${grayTxt}> New type for message tag '${tag}' added: ${type}${resetTxt}`)
+                knownTags[tag].types.push(type)
+            }
+            knownTags[tag].lastValue = tags[tag]
         }
     },
     getUsername(str) {
