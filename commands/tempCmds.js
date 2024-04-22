@@ -5,7 +5,7 @@ const { getNeutralEmote, getPositiveEmote, getNegativeEmote } = require(`../util
 module.exports = {
     handleTempCmd(props) {
         const { bot, chatroom, args, channel, userNickname } = props
-        if (settings.debug) { console.log(`${grayTxt}> handleTempCmd(chatroom: ${chatroom}, args: ${args})${resetTxt}`) }
+        if (settings.debug) { console.log(`${grayTxt}> handleTempCmd(chatroom: ${chatroom}, args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
 
         const positiveEmote = getPositiveEmote(channel)
         const neutralEmote = getNeutralEmote(channel)
@@ -32,7 +32,7 @@ module.exports = {
     },
     getTempCmds(props) {
         const { bot, chatroom, args, channel } = props
-        if (settings.debug) { console.log(`${grayTxt}> getTempCmds(chatroom: ${chatroom}, args: ${args})${resetTxt}`) }
+        if (settings.debug) { console.log(`${grayTxt}> getTempCmds(chatroom: ${chatroom}, args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
 
         const negativeEmote = getNegativeEmote(channel)
         const commands = Object.keys(tempCmds).map((key) => `${key} => "${tempCmds[key]}"`)

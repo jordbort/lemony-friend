@@ -120,6 +120,7 @@ module.exports = {
         const args = msg.split(` `)
         const command = args.shift().toLowerCase()
         const toUser = getToUser(args[0])
+        const currentTime = Number(tags[`tmi-sent-ts`])
         const props = {
             bot: this,
             chatroom: chatroom,
@@ -187,7 +188,7 @@ module.exports = {
         \*************/
         // General regex patterns
         for (const pattern in patterns) {
-            const regex = new RegExp(pattern.split('/')[1], pattern.split('/')[2])
+            const regex = new RegExp(pattern.split(`/`)[1], pattern.split(`/`)[2])
             if (regex.test(msg)) {
                 if (settings.debug) { console.log(`${grayTxt}MESSAGE MATCHED REGEX PATTERN:${resetTxt}`, regex, patterns[regex]) }
                 return patterns[regex](props, msg.split(regex))
@@ -197,7 +198,7 @@ module.exports = {
         if ([`streamelements`, `thetarashark`, `pokemoncommunitygame`].includes(username)) {
             if (msg.includes(BOT_USERNAME)) {
                 for (const pattern in botInteraction) {
-                    const regex = new RegExp(pattern.split('/')[1], pattern.split('/')[2])
+                    const regex = new RegExp(pattern.split(`/`)[1], pattern.split(`/`)[2])
                     if (regex.test(msg)) {
                         if (settings.debug) { console.log(`${grayTxt}${username.toUpperCase()} MATCHED REGEX PATTERN:${resetTxt}`, regex, botInteraction[regex]) }
                         return botInteraction[regex](props, msg.split(regex))
@@ -210,7 +211,7 @@ module.exports = {
         // Any user mentions bot
         if (/\b(@?lemony_friend|l+e+m+o+n+y*|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)\b/i.test(msg)) {
             for (const pattern in botMention) {
-                const regex = new RegExp(pattern.split('/')[1], pattern.split('/')[2])
+                const regex = new RegExp(pattern.split(`/`)[1], pattern.split(`/`)[2])
                 if (regex.test(msg)) {
                     if (settings.debug) { console.log(`${grayTxt}BOT MENTION MATCHED REGEX PATTERN:${resetTxt}`, regex, botMention[regex]) }
                     return botMention[regex](props, msg.split(regex))

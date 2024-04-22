@@ -4,7 +4,7 @@ const REDIRECT_URI = process.env.REDIRECT_URI
 
 const { lemonyFresh, mods, users } = require(`../data`)
 const { resetTxt, grayTxt, settings } = require(`../config`)
-const { getNeutralEmote, getHypeEmote, getPositiveEmote, getNegativeEmote, resetCooldownTimer } = require(`../utils`)
+const { getNeutralEmote, getHypeEmote, getPositiveEmote, getNegativeEmote, getGreetingEmote, getDumbEmote, resetCooldownTimer, getToUser, pluralize } = require(`../utils`)
 
 async function getBotToken(props, replyWanted = true) {
     const { bot, chatroom, channel, isLemonyFreshMember } = props
@@ -20,7 +20,7 @@ async function getBotToken(props, replyWanted = true) {
     const negativeEmote = getNegativeEmote(channel)
 
     const url = `https://id.twitch.tv/oauth2/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&grant_type=client_credentials`;
-    const response = await fetch(url, { method: "POST" })
+    const response = await fetch(url, { method: `POST` })
     const twitchData = await response.json()
     if (settings.debug) { console.log(`response:`, response.status, `${grayTxt}${JSON.stringify(twitchData)}${resetTxt}`) }
 
@@ -42,7 +42,7 @@ async function getTwitchUser(props) {
     const options = {
         headers: {
             authorization: `Bearer ${lemonyFresh.botAccessToken}`,
-            "Client-Id": CLIENT_ID
+            'Client-Id': CLIENT_ID
         }
     }
 
@@ -86,9 +86,9 @@ async function refreshToken(props, replyWanted = true) {
     const endpoint = `https://id.twitch.tv/oauth2/token`
     const requestBody = `grant_type=refresh_token&refresh_token=${refreshToken}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`
     const options = {
-        method: 'POST',
+        method: `POST`,
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': `application/x-www-form-urlencoded`
         },
         body: requestBody
     }
@@ -122,7 +122,7 @@ async function getTwitchChannel(bot, chatroom, broadcaster_id) {
     const options = {
         headers: {
             authorization: `Bearer ${lemonyFresh.botAccessToken}`,
-            "Client-Id": CLIENT_ID
+            'Client-Id': CLIENT_ID
         }
     }
 
@@ -158,7 +158,7 @@ module.exports = {
 
         const endpoint = `https://api.twitch.tv/helix/polls?broadcaster_id=${lemonyFresh[channel].id}&id=${lemonyFresh[channel].pollId}&status=${status}`
         const options = {
-            method: 'PATCH',
+            method: `PATCH`,
             headers: {
                 authorization: `Bearer ${lemonyFresh[channel].accessToken}`,
                 'Client-Id': CLIENT_ID
@@ -217,18 +217,18 @@ module.exports = {
         const choices = params.map(choice => { return { title: choice } })
 
         const requestBody = {
-            "broadcaster_id": lemonyFresh[channel].id,
-            "title": title,
-            "choices": choices,
-            "duration": duration
+            'broadcaster_id': lemonyFresh[channel].id,
+            'title': title,
+            'choices': choices,
+            'duration': duration
         }
         const endpoint = `https://api.twitch.tv/helix/polls`
         const options = {
-            method: 'POST',
+            method: `POST`,
             headers: {
                 authorization: `Bearer ${lemonyFresh[channel].accessToken}`,
                 'Client-Id': CLIENT_ID,
-                'Content-Type': 'application/json'
+                'Content-Type': `application/json`
             },
             body: JSON.stringify(requestBody)
         }
@@ -322,10 +322,10 @@ module.exports = {
 
                 const endpoint = `https://api.twitch.tv/helix/chat/shoutouts?from_broadcaster_id=${lemonyFresh[channel].id}&to_broadcaster_id=${twitchUser.id}&moderator_id=${moderatorId}`
                 const options = {
-                    method: 'POST',
+                    method: `POST`,
                     headers: {
                         authorization: `Bearer ${token}`,
-                        "Client-Id": CLIENT_ID
+                        'Client-Id': CLIENT_ID
                     }
                 }
                 const response = await fetch(endpoint, options)
@@ -386,11 +386,11 @@ module.exports = {
 
         const endpoint = `https://api.twitch.tv/helix/chat/announcements?broadcaster_id=${lemonyFresh[channel].id}&moderator_id=${moderatorId}`
         const options = {
-            method: 'POST',
+            method: `POST`,
             headers: {
                 authorization: `Bearer ${token}`,
-                "Client-Id": CLIENT_ID,
-                'Content-Type': 'application/json'
+                'Client-Id': CLIENT_ID,
+                'Content-Type': `application/json`
             },
             body: JSON.stringify(requestBody)
         }
@@ -467,9 +467,9 @@ module.exports = {
         const requestBody = `client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${authCode}&grant_type=authorization_code&redirect_uri=${REDIRECT_URI}`
         const endpoint = `https://id.twitch.tv/oauth2/token`
         const options = {
-            method: 'POST',
+            method: `POST`,
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': `application/x-www-form-urlencoded`
             },
             body: requestBody
         }

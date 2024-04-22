@@ -1367,7 +1367,7 @@ module.exports = {
         for (const chatroom of bot.channels) {
             bot.say(chatroom, `Oops, I just crashed! ${emote} ${errMsg} ${location}`)
         }
-        console.log(knownTags, tempCmds, users, mods, lemonyFresh)
+        console.log(`knownTags:`, knownTags, `tempCmds:`, tempCmds, `users:`, users, `mods:`, mods, `lemonyFresh:`, lemonyFresh)
     },
     applyNicknames(props) {
         const { bot, chatroom } = props
