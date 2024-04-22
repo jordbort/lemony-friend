@@ -27,12 +27,12 @@ function checkStreamerEmoteStreak(bot, chatroom, emoteOwner) {
     const channel = chatroom.substring(1)
     if (settings.debug) { console.log(`${grayTxt}> checkStreamerEmoteStreak(channel: '${channel}', emoteOwner: '${emoteOwner}')${resetTxt}`) }
 
+    // Checking if message includes any of the provided emotes
     const emoteArr = lemonyFresh[emoteOwner].emotes
     const emoteStreakUsers = []
-    // Checking if message includes any of the provided emotes
     for (const user in users) {
         for (const emote of emoteArr) {
-            if (user !== BOT_USERNAME && users[user][emoteOwner]?.lastMessage.includes(emote)) {
+            if (user !== BOT_USERNAME && users[user][channel]?.lastMessage.includes(emote)) {
                 emoteStreakUsers.push(user)
                 if (emoteStreakUsers.length && settings.debug) { console.log(`${grayTxt}-> Found${resetTxt}`, emoteStreakUsers.length, `${grayTxt}out of${resetTxt}`, settings.streamerEmoteStreakThreshold, `${grayTxt}${emoteOwner} emotes: ${emoteStreakUsers.join(`, `)}${resetTxt}`) }
                 break
@@ -50,7 +50,8 @@ function emoteReply(bot, chatroom, emoteOwner) {
     const channel = chatroom.substring(1)
     if (settings.debug) { console.log(`${grayTxt}> emoteReply(channel: '${channel}', emoteOwner: '${emoteOwner}')${resetTxt}`) }
 
-    const applicableUsers = Object.keys(users).filter(username => emoteOwner in users[username])
+    const applicableUsers = Object.keys(users).filter(username => channel in users[username])
+
     const popularEmotes = lemonyFresh[emoteOwner].emotes.map(emote => {
         let usages = 0
         for (const username of applicableUsers) {
@@ -80,7 +81,7 @@ module.exports = {
         if (lemonyFresh[channel].timers.streak.listening) {
             // Listening for a messages containing known emotes from a specific streamer
             const accessibleEmotes = Object.keys(users[BOT_USERNAME])
-                .filter(channel => typeof users[BOT_USERNAME][channel] === `object` && users[BOT_USERNAME][channel].sub) //  && `emotes` in lemonyFresh[channel] // this logic shouldn't be necessary since any channel the bot is in will have been initialized
+                .filter(channel => typeof users[BOT_USERNAME][channel] === `object` && users[BOT_USERNAME][channel].sub)
                 .map(channel => lemonyFresh[channel].emotes)
                 .flat()
             if (accessibleEmotes.some(emote => message.includes(emote))) {
