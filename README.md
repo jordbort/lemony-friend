@@ -18,7 +18,7 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!msgcount` - This command can be used to get a count of all messages sent by a user across all Lemony Fresh channels. Use `!msgcount <user>` to specify another user.
 - `!friend` (or `!friends`) - This command can be used to get a count of all users lemony_friend knows (including itself).
 - `!goal` (or `!goals`) - This command is used followed by a number (of subscribers, dollars, etc.) to return a specific goal at that amount for that channel. This only works in channels with defined stream goals.
-- `!lurk` (or `!away` or `!brb`) - This command marks the user as "away" in the current channel. Use `!lurk <message...>` to set a custom away message. Using `!lurk` (rather than `!away` or `!brb`) does not prompt a reply from lemony_friend, opting for a quieter exit. If a user is mentioned in chat by full username while they are marked as away, lemony_friend will mention that the user is away, along with an optional away message. Upon posting in chat again, lemony_friend marks the user as unaway.
+- `!lurk` (or `!away` or `!brb`) - This command marks the user as "away" in the current channel. Use `!lurk <message...>` to set a custom away message. Using `!lurk` (rather than `!away` or `!brb`) does not prompt a reply from lemony_friend, opting for a quieter exit. If a user is mentioned in chat by username or nickname while they are marked as away, lemony_friend will mention that the user is away, along with an optional away message. Upon posting in chat again, lemony_friend marks the user as unaway. (Note: There is a 60-second grace period after being marked as away where the user can send messages or be mentioned before lemony_friend will respond. This is to minimize unwanted messages and smooth the transition away.)
 - `!apply` - This is an easy way to apply pre-made nicknames to known users.
 - `!online` (or `!onl`) - This command reports the time that the bot was booted up.
 
@@ -29,6 +29,7 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!poll` - This command can only be used by the streamer or a moderator. It is used to create a poll for the channel. The syntax for this command is `!poll <seconds> / Title of the poll / Choice 1 / Choice 2` and so on. Spaces before/after the slashes are not required, but the slashes themselves are. "Seconds" is a number between 15 and 1800 (thirty minutes). There must be at least two (or at most, five) choices.
 - `!stoppoll` - This command can only be used by the streamer or a moderator. It is used to finish the current poll before the timer runs out, and show the results.
 - `!cancelpoll` - This command can only be used by the streamer or a moderator. It is used to get rid of the current poll.
+- `!banuser` or `!banusers` - This command can only be used by the streamer or a moderator. It is used to ban one more users (separated by spaces) from the channel.
 
 ## Fun commands 🍋️
 - `!hangman` - This command initiates a game of Hangman and chooses a random word by using the [Rando API](https://random-word-api.vercel.app/). Join the game using `!play`, even after the game has started.
