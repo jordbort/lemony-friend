@@ -1276,12 +1276,12 @@ module.exports = {
         }
     },
     resetCooldownTimer(channel, timer) {
-        if (settings.debug && lemonyFresh[channel].timers[timer].cooldown) { console.log(`${grayTxt}> resetCooldownTimer(channel: '${channel}', timer: '${timer}', cooldown: ${pluralize(lemonyFresh[channel].timers[timer].cooldown, `second`, `seconds`)})${resetTxt}`) }
+        if (settings.debug) { console.log(`${grayTxt}> resetCooldownTimer(channel: '${channel}', timer: '${timer}', cooldown: ${pluralize(lemonyFresh[channel].timers[timer].cooldown, `second`, `seconds`)})${resetTxt}`) }
         lemonyFresh[channel].timers[timer].listening = false
         clearTimeout(lemonyFresh[channel].timers[timer].timerId)
         lemonyFresh[channel].timers[timer].timerId = Number(setTimeout(() => {
             lemonyFresh[channel].timers[timer].listening = true
-            if (lemonyFresh[channel].timers[timer].cooldown * 1000) { console.log(`${grayTxt}-> Listening for '${timer}' again!${resetTxt}`) }
+            if (settings.debug) { console.log(`${grayTxt}-> Listening for '${timer}' again!${resetTxt}`) }
         }, lemonyFresh[channel].timers[timer].cooldown * 1000))
     },
     sayJoinMessage(bot, chatroom) {
