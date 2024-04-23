@@ -91,6 +91,7 @@ const settings = {
         `streamelements`,
         `streamlabs`,
         `tangiabot`,
+        `thetarashark`,
         `undertalebot`,
         `uwu_twanswator`,
         `wizebot`
