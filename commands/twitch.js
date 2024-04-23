@@ -266,7 +266,7 @@ module.exports = {
     },
     async handleShoutOut(props) {
         const { bot, chatroom, channel, username, toUser, isMod, isModOrVIP } = props
-        if (settings.debug) { console.log(`${grayTxt}> handleShoutOut(chatroom: '${chatroom}', username: '${username}', toUser: '${toUser}', isMod:`, isMod, `, isModOrVIP:`, isModOrVIP, `)${resetTxt}`) }
+        if (settings.debug) { console.log(`${grayTxt}> handleShoutOut(chatroom: '${chatroom}', username: '${username}', toUser: '${toUser}', isMod:${resetTxt}`, isMod, `${grayTxt}, isModOrVIP:`, isModOrVIP, `${grayTxt})${resetTxt}`) }
 
         // VIPs only
         if (!isModOrVIP) {
@@ -505,7 +505,7 @@ module.exports = {
     },
     async banUsers(props) {
         const { bot, chatroom, args, channel, username, isMod } = props
-        if (settings.debug) { console.log(`${grayTxt}> banUsers(channel: ${channel}, username: ${username}, args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+        if (settings.debug) { console.log(`${grayTxt}> banUsers(channel: ${channel}, username: ${username}, isMod:${resetTxt}`, isMod, `${grayTxt}, args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
 
         // Mods only
         if (!isMod) {
