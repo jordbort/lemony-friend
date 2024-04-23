@@ -70,10 +70,10 @@ function updatePhraseArr(bot, chatroom, obj, message, name, args) {
         for (const [i, entry] of obj[name].entries()) {
             if (regex.test(entry)) {
                 obj[name].splice(i, 1)
-                return bot.say(chatroom, `/me ${message}: Removed "${entry}", ${obj[name].length} remaining${obj[name].length ? `: "${obj[name].join(`", "`)}"` : ``}`)
+                return bot.say(chatroom, `/me ${message}: Removed "${entry}" (${obj[name].length} remaining)${obj[name].length ? ` - "${obj[name].join(`", "`)}"` : ``}`)
             }
         }
-        return bot.say(chatroom, `/me ${message}: Could not find "${phrase}", ${pluralize(obj[name].length, `phrase exists`, `phrases exist`)} ${obj[name].length ? `: "${obj[name].join(`", "`)}"` : ``}`)
+        return bot.say(chatroom, `/me ${message}: Could not find "${phrase}" (${pluralize(obj[name].length, `phrase exists`, `phrases exist`)})${obj[name].length ? ` - "${obj[name].join(`", "`)}"` : ``}`)
     }
 
     if (/^clear$|^c$/i.test(args[0])) {
