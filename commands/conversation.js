@@ -391,24 +391,6 @@ module.exports = {
         lemonyFresh[channel].funTimer = 0
         lemonyFresh[channel].funTimerGuesser = ``
     },
-    reportAway(props) {
-        const { bot, chatroom, message, channel, currentTime } = props
-
-        for (const targetName of Object.keys(users)) {
-            const target = users[targetName]
-            const targetNickname = target.nickname || target.displayName
-            const regex = new RegExp(`\\b(@?${targetName}|${targetNickname})\\b`, `i`)
-
-            if (target[channel]?.away && regex.test(message)) {
-                if (settings.debug) { console.log(`${grayTxt}> reportAway(chatroom: '${chatroom}', targetNickname: '${targetNickname}')${resetTxt}`) }
-                const elapsedTime = Math.round((currentTime - target[channel].sentAt) / 60000)
-                const reply = `${targetNickname} has been away for ~${pluralize(elapsedTime, `minute`, `minutes`)}!${target[channel].awayMessage ? ` Their away message: "${target[channel].awayMessage}"` : ``}`
-                return bot.say(chatroom, reply)
-            }
-        }
-        // End of onChatHandler logic
-        if (settings.debug) { console.log(`${grayTxt}MESSAGE DID NOT MATCH REGEX PATTERNS${resetTxt}`) }
-    },
     chant(props) {
         const { bot, chatroom, args } = props
         if (settings.debug) { console.log(`${grayTxt}> chant(chatroom: '${chatroom}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
@@ -458,5 +440,30 @@ module.exports = {
                 ? bot.say(chatroom, `See you later, ${userNickname}! I'll pass along your away message if they mention you! ${byeEmote}`)
                 : bot.say(chatroom, `See you later, ${userNickname}! I'll let people know you're away if they mention you! ${byeEmote}`)
         }
+        // This helps prevent users from being welcomed back in the distant future
+        setTimeout(() => {
+            user[channel].away = false
+            user[channel].awayMessage = ``
+        }, settings.maxWelcomeBackMinutes * 1000)
+    },
+    reportAway(props) {
+        const { bot, chatroom, args, message, channel, username, currentTime } = props
+
+        for (const targetName of Object.keys(users)) {
+            const target = users[targetName]
+            const targetNickname = target.nickname || target.displayName
+            const regex = new RegExp(`\\b(@?${targetName}|${targetNickname})\\b`, `i`)
+
+            if (target[channel]?.away && regex.test(message)) {
+                if (settings.debug) { console.log(`${grayTxt}> reportAway(chatroom: '${chatroom}', targetNickname: '${targetNickname}')${resetTxt}`) }
+                const elapsedTime = Math.round((currentTime - target[channel].sentAt) / 60000)
+                const reply = `${targetNickname} has been away for ~${pluralize(elapsedTime, `minute`, `minutes`)}!${target[channel].awayMessage ? ` Their away message: "${target[channel].awayMessage}"` : ``}`
+                if (elapsedTime > 1) { return bot.say(chatroom, reply) }
+                else if (settings.debug) { console.log(`${grayTxt}-> ${username} has been away for less than one-minute grace period${resetTxt}`) }
+            }
+        }
+
+        // End of onChatHandler logic
+        if (settings.debug) { console.log(`${grayTxt}MESSAGE DID NOT MATCH REGEX PATTERNS${resetTxt}`) }
     }
 }

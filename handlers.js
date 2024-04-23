@@ -98,9 +98,13 @@ module.exports = {
         const user = users[username]
         user[channel].msgCount++
         user[channel].lastMessage = msg
+
+        // Checking time comparisons
+        const currentTime = Number(tags[`tmi-sent-ts`])
+        const minutesSinceLastMsg = (currentTime - user[channel].sentAt) / 60000
         self
             ? user[channel].sentAt = Date.now()
-            : user[channel].sentAt = Number(tags[`tmi-sent-ts`])
+            : user[channel].sentAt = currentTime
 
         // Update lemony_logs.txt
         makeLogs(this.channels)
@@ -115,7 +119,7 @@ module.exports = {
         const args = msg.split(` `)
         const command = args.shift().toLowerCase()
         const toUser = getToUser(args[0])
-        const currentTime = Number(tags[`tmi-sent-ts`])
+
         const props = {
             bot: this,
             chatroom: chatroom,
@@ -136,6 +140,7 @@ module.exports = {
             target: users?.[toUser] || null,
             targetNickname: users?.[toUser]?.nickname || users?.[toUser]?.displayName || null
         }
+
         // These checks happen earlier in case they happened to the bot
         if (subChange) { return handleSubChange(props) }
         if (modChange) { return handleModChange(props) }
@@ -234,16 +239,14 @@ module.exports = {
         // *** FUN NUMBER! ***
         if (user[channel].msgCount % settings.funNumberCount === 0) { return rollFunNumber(props, Math.floor(Math.random() * settings.funNumberTotal)) }
 
-        // In case a user who isn't a bot mentions a user who is away
-        if (!settings.ignoredBots.includes(username)) { reportAway(props) }
-
-        // Checking time comparisons
-        const minutesSinceLastMsg = (currentTime - user[channel].sentAt) / 60000
         if (minutesSinceLastMsg > 1
             && minutesSinceLastMsg >= settings.minWelcomeBackMinutes
             && minutesSinceLastMsg < settings.maxWelcomeBackMinutes
             && ![channel, ...settings.ignoredBots].includes(username)) { return welcomeBack(props) }
 
         if (user[channel].away && minutesSinceLastMsg > 1) { return welcomeBack(props) }
+
+        // In case a user who isn't a bot mentions a user who is away
+        if (!settings.ignoredBots.includes(username)) { reportAway(props) }
     }
 }
