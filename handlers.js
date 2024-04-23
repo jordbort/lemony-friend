@@ -105,11 +105,6 @@ module.exports = {
         // Update lemony_logs.txt
         makeLogs(this.channels)
 
-        // Checking time comparisons
-        const currentTime = Number(tags[`tmi-sent-ts`])
-        const minutesSinceLastMsg = (currentTime - user[channel].sentAt) / 60000
-        if (minutesSinceLastMsg >= settings.minWelcomeBackMinutes && minutesSinceLastMsg < settings.maxWelcomeBackMinutes && ![channel, ...settings.ignoredBots].includes(username)) { return welcomeBack(props) }
-
         // User attribute change detection
         const colorChanged = tags.color !== user.color && user.color !== ``
         const turboChange = tags.turbo !== user.turbo
@@ -149,7 +144,6 @@ module.exports = {
         // Bot stops listening
         if (self) { return }
 
-        if (user[channel].away) { return welcomeBack(props) }
         if (colorChanged) { return handleColorChange(props) }
         if (turboChange) { return handleTurboChange(props) }
 
@@ -242,5 +236,14 @@ module.exports = {
 
         // In case a user who isn't a bot mentions a user who is away
         if (!settings.ignoredBots.includes(username)) { reportAway(props) }
+
+        // Checking time comparisons
+        const minutesSinceLastMsg = (currentTime - user[channel].sentAt) / 60000
+        if (minutesSinceLastMsg > 1
+            && minutesSinceLastMsg >= settings.minWelcomeBackMinutes
+            && minutesSinceLastMsg < settings.maxWelcomeBackMinutes
+            && ![channel, ...settings.ignoredBots].includes(username)) { return welcomeBack(props) }
+
+        if (user[channel].away && minutesSinceLastMsg > 1) { return welcomeBack(props) }
     }
 }

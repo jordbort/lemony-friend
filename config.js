@@ -52,7 +52,7 @@ const settings = {
     debug: true,
     timeLocale: `en-US`,
     timeZone: `America/New_York`,
-    startTime: new Date().toLocaleString(`en-US`, { timeZone: `America/New_York` }),
+    startDate: new Date(),
     joinMessage: ``,
     highlightBotMessage: true,
     logTime: true,
@@ -129,7 +129,10 @@ const settings = {
             `:p`
         ]
     },
-    botMood: `happy`
+    botMood: `happy`,
+    autoBan: [
+        `Cheap Viewers on StreamBoo`
+    ]
 }
 
 module.exports = {

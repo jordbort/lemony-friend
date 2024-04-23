@@ -8,8 +8,24 @@ module.exports = {
         const { bot, chatroom, channel } = props
         if (settings.debug) { console.log(`${grayTxt}> sayOnlineTime(channel: '${channel}')${resetTxt}`) }
 
+        const timeOptions = {
+            hour: `numeric`,
+            minute: `numeric`,
+            second: `numeric`,
+            timeZone: settings.timeZone,
+            timeZoneName: `short`
+        }
+
+        const dateOptions = {
+            weekday: `long`,
+            month: `long`,
+            day: `numeric`,
+            year: `numeric`,
+            timeZone: settings.timeZone
+        }
+
         const neutralEmote = getNeutralEmote(channel)
-        bot.say(chatroom, `I have been online since ${settings.startTime}! ${neutralEmote}`)
+        bot.say(chatroom, `I have been online since ${settings.startDate.toLocaleTimeString(settings.timeLocale, timeOptions)} on ${settings.startDate.toLocaleDateString(settings.timeLocale, dateOptions)}! ${neutralEmote}`)
     },
     getLastMessage(props) {
         const { bot, chatroom, args, channel, username, user, userNickname, toUser, target, targetNickname } = props
