@@ -30,21 +30,21 @@ const orangeBg = `\x1b[48;2;255;164;0m`
 
 // Twitch color names and terminal color references
 const chatColors = {
-    "#0000FF": { name: "blue", terminalColor: blueTxt },
-    "#8A2BE2": { name: "blue-violet", terminalColor: blueTxt },
-    "#5F9EA0": { name: "cadet blue", terminalColor: cyanTxt },
-    "#D2691E": { name: "chocolate", terminalColor: magentaTxt },
-    "#FF7F50": { name: "coral", terminalColor: magentaTxt },
-    "#1E90FF": { name: "dodger blue", terminalColor: cyanTxt },
-    "#B22222": { name: "firebrick", terminalColor: redTxt },
-    "#DAA520": { name: "goldenrod", terminalColor: yellowTxt },
-    "#008000": { name: "green", terminalColor: greenTxt },
-    "#FF69B4": { name: "hot pink", terminalColor: redTxt },
-    "#FF4500": { name: "orange-red", terminalColor: orangeTxt },
-    "#FF0000": { name: "red", terminalColor: redTxt },
-    "#2E8B57": { name: "sea green", terminalColor: greenTxt },
-    "#00FF7F": { name: "spring green", terminalColor: greenTxt },
-    "#ADFF2F": { name: "yellow-green", terminalColor: yellowTxt }
+    '#0000FF': { name: `blue`, terminalColor: blueTxt },
+    '#8A2BE2': { name: `blue-violet`, terminalColor: blueTxt },
+    '#5F9EA0': { name: `cadet blue`, terminalColor: cyanTxt },
+    '#D2691E': { name: `chocolate`, terminalColor: magentaTxt },
+    '#FF7F50': { name: `coral`, terminalColor: magentaTxt },
+    '#1E90FF': { name: `dodger blue`, terminalColor: cyanTxt },
+    '#B22222': { name: `firebrick`, terminalColor: redTxt },
+    '#DAA520': { name: `goldenrod`, terminalColor: yellowTxt },
+    '#008000': { name: `green`, terminalColor: greenTxt },
+    '#FF69B4': { name: `hot pink`, terminalColor: redTxt },
+    '#FF4500': { name: `orange-red`, terminalColor: orangeTxt },
+    '#FF0000': { name: `red`, terminalColor: redTxt },
+    '#2E8B57': { name: `sea green`, terminalColor: greenTxt },
+    '#00FF7F': { name: `spring green`, terminalColor: greenTxt },
+    '#ADFF2F': { name: `yellow-green`, terminalColor: yellowTxt }
 }
 
 // Global settings
