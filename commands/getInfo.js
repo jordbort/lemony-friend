@@ -58,7 +58,7 @@ module.exports = {
                 : bot.say(chatroom, `${userObjNickname}'s chat color is hex code ${userObj.color}`)
     },
     getRandomUser(arrExclude) {
-        if (settings.debug) { console.log(`${grayTxt}> getRandomUser(arrExclude:`, arrExclude, `${grayTxt})${resetTxt}`) }
+        if (settings.debug) { console.log(`${grayTxt}> getRandomUser(arrExclude:${resetTxt}`, arrExclude, `${grayTxt})${resetTxt}`) }
 
         const arr = Object.keys(users)
         for (const name of arrExclude) {
