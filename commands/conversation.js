@@ -4,6 +4,7 @@ const { users, lemonyFresh } = require(`../data`)
 const { resetTxt, grayTxt, settings } = require(`../config`)
 
 const { getLemonEmote, getNeutralEmote, getPositiveEmote, getGreetingEmote, getByeEmote, pluralize, resetCooldownTimer, getHypeEmote, getUpsetEmote, getNegativeEmote, getDumbEmote } = require(`../utils`)
+const { autoBanUser } = require(`./twitch`)
 
 function handleGreetOne(props) {
     const { bot, chatroom, channel, toUser, userNickname, targetNickname } = props
@@ -124,13 +125,23 @@ function handleGreetAll(bot, chatroom, username) {
 
 module.exports = {
     handleGreetOne,
-    handleNewChatter(bot, chatroom, user) {
-        if (settings.debug) { console.log(`${grayTxt}> handleNewChatter(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
-        const channel = chatroom.substring(1)
+    handleNewChatter(bot, chatroom, username, message) {
+        if (settings.debug) { console.log(`${grayTxt}> handleNewChatter(chatroom: ${chatroom}, username: ${username})${resetTxt}`) }
 
+        // Check for automatic ban phrase
+        for (const phrase of settings.autoBan) {
+            const regex = new RegExp(phrase, `i`)
+            if (regex.test(message)) {
+                if (settings.debug) { console.log(`${grayTxt}${username.toUpperCase()} MATCHED AUTO-BAN PATTERN:${resetTxt}`, regex) }
+                return autoBanUser(bot, chatroom, username)
+            }
+        }
+
+        const channel = chatroom.substring(1)
         if (lemonyFresh[channel].timers[`new-chatter`].listening) {
             resetCooldownTimer(channel, `new-chatter`)
 
+            const user = users[username]
             const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
             const greetings = [
                 `Hi ${user.displayName}, welcome to the stream!`,

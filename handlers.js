@@ -176,12 +176,12 @@ module.exports = {
             // if (settings.debug) { console.log(`${grayTxt}DEV COMMAND NOT RECOGNIZED${resetTxt}`) }
         }
 
+        // Check user's first message in a given channel
+        const firstMsg = tags[`first-msg`]
+        if (firstMsg) { return handleNewChatter(this, chatroom, username) }
+
         // User is the funTimerGuesser and making an attempt
         if (lemonyFresh[channel].funTimerGuesser === username && /^\d+$/.test(msg)) { return funTimerGuess(props) }
-
-        // User's first message in a given channel
-        const firstMsg = tags['first-msg']
-        if (firstMsg) { return handleNewChatter(this, chatroom, user) }
 
         /*************\
         /REGEX/ PARSERS

@@ -9,7 +9,7 @@ const { startHangman, joinHangman } = require(`../patterns/hangman`)
 const { getDadJoke, getPokemon, getDefinition } = require(`./external`)
 const { sayGoodnight, handleGreet, chant, handleRaid, setAway, yell } = require(`./conversation`)
 const { getLastMessage, getMessageCount, sayOnlineTime, sayFriends, getColor, getLemons } = require(`./getInfo`)
-const { handleShoutOut, getBotToken, validateToken, refreshToken, makeAnnouncement, pollStart, pollEnd, getOAUTHToken, authorizeToken } = require(`./twitch`)
+const { handleShoutOut, getBotToken, validateToken, refreshToken, makeAnnouncement, pollStart, pollEnd, getOAUTHToken, authorizeToken, banUsers } = require(`./twitch`)
 
 module.exports = {
     '!so': handleShoutOut,
@@ -30,6 +30,9 @@ module.exports = {
 
     '!access': getOAUTHToken,
     '!authorize': authorizeToken,
+
+    '!banuser': banUsers,
+    '!banusers': banUsers,
 
     '!time': getTime,
 

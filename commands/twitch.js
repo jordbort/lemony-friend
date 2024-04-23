@@ -1,3 +1,4 @@
+const BOT_USERNAME = process.env.BOT_USERNAME
 const CLIENT_ID = process.env.CLIENT_ID
 const CLIENT_SECRET = process.env.CLIENT_SECRET
 const REDIRECT_URI = process.env.REDIRECT_URI
@@ -501,5 +502,137 @@ module.exports = {
         if (settings.debug) { console.log(`${grayTxt}> getOAUTHToken(chatroom: '${chatroom}', username: '${username}')${resetTxt}`) }
 
         bot.say(chatroom, `@${user.displayName} Follow this link and instructions, and copy/paste "!authorize <code>" in the chat! ${REDIRECT_URI}`)
+    },
+    async banUsers(props) {
+        const { bot, chatroom, args, channel, username, isMod } = props
+        if (settings.debug) { console.log(`${grayTxt}> banUsers(channel: ${channel}, username: ${username}, args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+
+        // Mods only
+        if (!isMod) {
+            if (settings.debug) { console.log(`${grayTxt}-> ${username} isn't a mod, ignoring${resetTxt}`) }
+            return
+        }
+
+        // Make sure at least one user was listed
+        if (args.length === 0) {
+            if (settings.debug) { console.log(`${grayTxt}-> No users provided to ban${resetTxt}`) }
+            return
+        }
+
+        // Check if streamer or their mod has an access token (mod token will be used unless they don't have one, streamer's used as a fallback)
+        const modHasToken = username in mods && mods[username].isModIn.includes(chatroom) && !!mods[username].accessToken
+        const token = modHasToken
+            ? mods[username].accessToken
+            : lemonyFresh[channel].accessToken
+
+        // Stop if neither the channel nor a mod has an access token
+        if (!token) {
+            if (settings.debug) { console.log(`${grayTxt}-> ${channel} has no access token, can't make announcement${resetTxt}`) }
+            return
+        }
+
+        const moderatorId = modHasToken
+            ? mods[username].id
+            : lemonyFresh[channel].id
+
+        const endpoint = `https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${lemonyFresh[channel].id}&moderator_id=${moderatorId}`
+
+        const positiveEmote = getPositiveEmote(channel)
+        const negativeEmote = getNegativeEmote(channel)
+
+        // Please wait if list will take a moment to process
+        if (args.length >= 5) { bot.say(chatroom, `Please wait while I work on this list of ${args.length.toLocaleString()} usernames...`) }
+
+        // Look up/ban each user one-by-one
+        const banned = []
+        const alreadyBanned = []
+        for (const arg of args) {
+            const userToBan = getToUser(arg)
+            const twitchUser = userToBan in users
+                ? users[userToBan]
+                : await getTwitchUser({ ...props, username: userToBan })
+
+            if (!twitchUser?.id) {
+                if (settings.debug) { console.log(`${grayTxt}-> Error: '${userToBan}' does not have a user ID${resetTxt}`) }
+            } else {
+                const requestBody = {
+                    'data': {
+                        user_id: `${twitchUser.id}`,
+                        reason: `Banned by ${username} via ${BOT_USERNAME}`
+                    }
+                }
+                const options = {
+                    method: `POST`,
+                    headers: {
+                        authorization: `Bearer ${token}`,
+                        'Client-Id': CLIENT_ID,
+                        'Content-Type': `application/json`
+                    },
+                    body: JSON.stringify(requestBody)
+                }
+
+                const response = await fetch(endpoint, options)
+                const twitchData = await response.json()
+                if (settings.debug) { console.log(`response:`, response.status, twitchData) }
+
+                if (response.status === 200) {
+                    banned.push(userToBan)
+                } else if (response.status === 400 && twitchData.message === `The user specified in the user_id field is already banned.`) {
+                    alreadyBanned.push(userToBan)
+                } else {
+                    return bot.say(chatroom, `${twitchData?.message || `Error banning users`} ${negativeEmote}`)
+                }
+            }
+        }
+
+        bot.say(chatroom, `Banned ${pluralize(banned.length, `user`, `users`)}${banned.length
+            ? `: ${banned.join(`, `)} ${positiveEmote}`
+            : `! ${negativeEmote}`
+            } ${alreadyBanned.length ? `Already banned: ${alreadyBanned.join(`, `)}` : ``}`)
+    },
+    async autoBanUser(bot, chatroom, username) {
+        const channel = chatroom.substring(1)
+        if (settings.debug) { console.log(`${grayTxt}> autoBanUser(channel: ${channel}, username: ${username})${resetTxt}`) }
+
+        const greetingEmote = getGreetingEmote(channel)
+
+        // Stop if the channel doesn't have an access token
+        if (!lemonyFresh[channel].accessToken) {
+            if (settings.debug) { console.log(`${grayTxt}-> ${channel} has no access token, can't ban user '${username}'${resetTxt}`) }
+            return bot.say(chatroom, `Hi, ${users[username].displayName}... ${lemonyFresh[channel].bttvEmotes.includes(`modCheck`)
+                ? `modCheck`
+                : `${greetingEmote}`
+                } Any mods in chat?`)
+        }
+
+        const endpoint = `https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${lemonyFresh[channel].id}&moderator_id=${lemonyFresh[channel].id}`
+        const requestBody = {
+            'data': {
+                user_id: `${users[username].id}`,
+                reason: `Auto-banned by ${BOT_USERNAME} for message content`
+            }
+        }
+        const options = {
+            method: `POST`,
+            headers: {
+                authorization: `Bearer ${lemonyFresh[channel].accessToken}`,
+                'Client-Id': CLIENT_ID,
+                'Content-Type': `application/json`
+            },
+            body: JSON.stringify(requestBody)
+        }
+
+        const response = await fetch(endpoint, options)
+        const twitchData = await response.json()
+        if (settings.debug) { console.log(`response:`, response.status, twitchData) }
+
+        if (response.status === 200) {
+            bot.say(chatroom, `Begone, spammer! ${greetingEmote}`)
+        } else {
+            const dumbEmote = getDumbEmote(channel)
+            bot.say(chatroom, `Failed to ban ${users[username].displayName} automatically... ${dumbEmote} Please update your token scope by using !access again!`)
+        }
+
+        // delete users[username]
     }
 }
