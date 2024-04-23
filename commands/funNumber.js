@@ -408,7 +408,7 @@ function awardLemonToChannelChatters(props) {
     if (settings.debug) { console.log(`${grayTxt}-> recipients:${resetTxt}`, recipients) }
 
     const lemonEmote = getLemonEmote()
-    bot.say(chatroom, `${pluralize(recipients.length, `chatter`, `chatters`)} in ${channelNickname}'s channel just received one (1) lemon! ${lemonEmote}`)
+    bot.say(chatroom, `${pluralize(recipients.length, `chatter`, `chatters`)} in ${channelNickname}'s channel just received one lemon each! ${lemonEmote}`)
 }
 
 
