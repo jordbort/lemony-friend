@@ -580,7 +580,7 @@ module.exports = {
                 } else if (response.status === 400 && twitchData.message === `The user specified in the user_id field is already banned.`) {
                     alreadyBanned.push(userToBan)
                 } else {
-                    return bot.say(chatroom, `${twitchData?.message || `Error banning users`} ${negativeEmote}`)
+                    bot.say(chatroom, `Error banning ${userToBan}${twitchData.message ? `: ${twitchData.message}` : ``} ${negativeEmote}`)
                 }
             }
         }
