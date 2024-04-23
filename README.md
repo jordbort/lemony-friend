@@ -103,7 +103,11 @@ Use `cli settings` or `cli s` to access lemony_friend's settings. These are glob
 
 - `cli settings timeZone` or `cli s tz` (string)
 
-Use this command to change lemony_friend's default time zone. This is primarily used in response to the `!time` command. A list of valid time zones can be found at <link>
+Use this command to change lemony_friend's default time zone. This is primarily used in response to the `!time` command. A list of valid time zones can be found [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
+
+- `cli settings autoBan` or `cli s ab` (array of phrases)
+
+Use this command to change lemony_friend's list of phrases from a first-time chatter that will result in an automatic ban. Use `cli settings autoBan add <your phrase>` to add one phrase, `cli settings autoBan delete <banned phrase>` to delete one phrase, or use `cli settings autoBan clear` to empty the entire list. "Add", "delete", and "clear" can also be abbreviated to "a", "d", and "c", respectively. Phrases are implemented in a non-case-sensitive way.
 
 - `cli settings realRPS` or `cli s rps` (boolean)
 
