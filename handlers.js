@@ -109,13 +109,6 @@ module.exports = {
         // Update lemony_logs.txt
         makeLogs(this.channels)
 
-        // User attribute change detection
-        const colorChanged = tags.color !== user.color && user.color !== ``
-        const turboChange = tags.turbo !== user.turbo
-        const subChange = user[channel].sub !== tags.subscriber
-        const modChange = user[channel].mod !== tags.mod
-        const vipChange = user[channel].vip !== (!!tags.vip || !!tags.badges?.vip)
-
         const args = msg.split(` `)
         const command = args.shift().toLowerCase()
         const toUser = getToUser(args[0])
@@ -141,7 +134,13 @@ module.exports = {
             targetNickname: users?.[toUser]?.nickname || users?.[toUser]?.displayName || null
         }
 
-        // These checks happen earlier in case they happened to the bot
+        // User attribute change detection
+        const colorChange = tags.color !== user.color && user.color !== ``
+        const turboChange = tags.turbo !== user.turbo
+        const subChange = user[channel].sub !== tags.subscriber
+        const modChange = user[channel].mod !== tags.mod
+        const vipChange = user[channel].vip !== (!!tags.vip || !!tags.badges?.vip)
+
         if (subChange) { return handleSubChange(props) }
         if (modChange) { return handleModChange(props) }
         if (vipChange) { return handleVIPChange(props) }
@@ -149,7 +148,7 @@ module.exports = {
         // Bot stops listening
         if (self) { return }
 
-        if (colorChanged) { return handleColorChange(props) }
+        if (colorChange) { return handleColorChange(props) }
         if (turboChange) { return handleTurboChange(props) }
 
         /**************\
