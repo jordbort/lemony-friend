@@ -564,7 +564,7 @@ module.exports = {
                 const options = {
                     method: `POST`,
                     headers: {
-                        authorization: `Bearer ${token}`,
+                        authorization: `Bearer ${modHasToken ? mods[username].accessToken : lemonyFresh[channel].accessToken}`,
                         'Client-Id': CLIENT_ID,
                         'Content-Type': `application/json`
                     },
@@ -575,7 +575,22 @@ module.exports = {
                 const twitchData = await response.json()
                 if (settings.debug) { console.log(`response:`, response.status, twitchData) }
 
-                if (response.status === 200) {
+                if (response.status === 401) {
+                    if (settings.debug) { console.log(`${grayTxt}-> Unauthorized from banUsers(), attempting to refresh access token...${resetTxt}`) }
+                    await refreshToken(props, false)
+                    options.headers.authorization = `Bearer ${modHasToken ? mods[username].accessToken : lemonyFresh[channel].accessToken}`
+                    const finalAttempt = await fetch(endpoint, options)
+                    const finalAttemptData = await finalAttempt.json()
+                    if (settings.debug) { console.log(`finalAttempt:`, finalAttempt.status, finalAttemptData) }
+                    if (finalAttempt.status === 400 && finalAttemptData.message === `The user specified in the user_id field is already banned.`) {
+                        alreadyBanned.push(userToBan)
+                    } else if (finalAttempt.status !== 200) {
+                        if (settings.debug) { console.log(`--> banUsers() failed a second time:`) }
+                        return bot.say(chatroom, `Failed to ban user! ${finalAttemptData?.message || `Please update your token scope by using !access again, ${modHasToken ? username : channel}!`} ${negativeEmote}`)
+                    } else {
+                        banned.push(userToBan)
+                    }
+                } else if (response.status === 200) {
                     banned.push(userToBan)
                 } else if (response.status === 400 && twitchData.message === `The user specified in the user_id field is already banned.`) {
                     alreadyBanned.push(userToBan)
@@ -595,6 +610,8 @@ module.exports = {
         if (settings.debug) { console.log(`${grayTxt}> autoBanUser(channel: ${channel}, username: ${username})${resetTxt}`) }
 
         const greetingEmote = getGreetingEmote(channel)
+        const negativeEmote = getNegativeEmote(channel)
+        const dumbEmote = getDumbEmote(channel)
 
         // Stop if the channel doesn't have an access token
         if (!lemonyFresh[channel].accessToken) {
@@ -626,11 +643,22 @@ module.exports = {
         const twitchData = await response.json()
         if (settings.debug) { console.log(`response:`, response.status, twitchData) }
 
-        if (response.status === 200) {
+        if (response.status === 401) {
+            if (settings.debug) { console.log(`${grayTxt}-> Unauthorized from banUsers(), attempting to refresh access token...${resetTxt}`) }
+            await refreshToken({ bot: bot, chatroom: chatroom, channel: channel, username: username, toUser: null }, false)
+            options.headers.authorization = `Bearer ${lemonyFresh[channel].accessToken}`
+            const finalAttempt = await fetch(endpoint, options)
+            const finalAttemptData = await finalAttempt.json()
+            if (settings.debug) { console.log(`finalAttempt:`, finalAttempt.status, finalAttemptData) }
+            if (finalAttempt.status !== 200) {
+                if (settings.debug) { console.log(`--> banUsers() failed a second time:`) }
+                return bot.say(chatroom, `Failed to ban user! ${finalAttemptData?.message || `Please update your token scope by using !access again!`} ${negativeEmote}`)
+            }
+            else { bot.say(chatroom, `Begone, spammer! ${greetingEmote}`) }
+        } else if (response.status === 200) {
             bot.say(chatroom, `Begone, spammer! ${greetingEmote}`)
         } else {
-            const dumbEmote = getDumbEmote(channel)
-            bot.say(chatroom, `Failed to ban ${users[username].displayName} automatically... ${dumbEmote} Please update your token scope by using !access again!`)
+            bot.say(chatroom, `Failed to ban ${users[username].displayName} automatically... ${dumbEmote} ${twitchData?.message || `Please update your token scope by using !access again!`}`)
         }
 
         // delete users[username]
