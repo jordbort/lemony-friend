@@ -63,6 +63,7 @@ function getPositiveEmote(channel) {
     if (users[BOT_USERNAME]?.sclarf?.sub) { positiveEmotes.push(`sclarfDog`, `sclarfHearts`, `sclarfPopbonk`) }
     if (users[BOT_USERNAME]?.e1ectroma?.sub) { positiveEmotes.push(`e1ectr4Pikadance`, `e1ectr4Coop`, `e1ectr4Smile`, `e1ectr4Salute`, `e1ectr4Lemfresh`, `e1ectr4Moses`, `e1ectr4Josie`) }
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { positiveEmotes.push(`domoni6Bingo`, `domoni6Mingo`) }
+    if (users[BOT_USERNAME]?.astral_an0maly?.sub) { positiveEmotes.push(`astral332Pop`) }
     if (users[BOT_USERNAME]?.cosyinpink?.sub) { positiveEmotes.push(`cosyin1Hype`, `cosyin1Love`) }
     if (users[BOT_USERNAME]?.thetarastark?.sub) { positiveEmotes.push(`thetar42Cheer`) }
 
@@ -121,7 +122,7 @@ function getGreetingEmote(channel) {
     if (users[BOT_USERNAME]?.sclarf?.sub) { greetingEmotes.push(`sclarfRave`, `sclarfWobble`, `sclarfBark`, `sclarfSpin`, `sclarfPls`, `sclarfHowdy`, `sclarfDog`, `sclarfAmazed`, `sclarfHearts`, `sclarfDEEP`, `sclarfWave`, `sclarfYay`, `sclarfChickenmoley`) }
     if (users[BOT_USERNAME]?.e1ectroma?.sub) { greetingEmotes.push(`e1ectr4Lfg`, `e1ectr4Pikadance`, `e1ectr4Tromadance`, `e1ectr4Ocha`, `e1ectr4Hello`, `e1ectr4Hi`, `e1ectr4Wazzah`, `e1ectr4Smile`, `e1ectr4Ram`, `e1ectr4Salute`, `e1ectr4Lemfresh`, `e1ectr4Moses`, `e1ectr4Josie`, `e1ectr4Malort`, `e1ectr4Umbreon`) }
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { greetingEmotes.push(`domoni6Bingo`, `domoni6ChefHey`, `domoni6Sneeze`, `domoni6Love`, `domoni6Boom`, `domoni6Mingo`) }
-    if (users[BOT_USERNAME]?.astral_an0maly?.sub) { greetingEmotes.push(`astral332HI`) }
+    if (users[BOT_USERNAME]?.astral_an0maly?.sub) { greetingEmotes.push(`astral332HI`, `astral332Pop`) }
     if (users[BOT_USERNAME]?.dirtyd0inks?.sub) { greetingEmotes.push(`dirtyd182LOVE`) }
     if (users[BOT_USERNAME]?.cosyinpink?.sub) { greetingEmotes.push(`cosyin1Hype`, `cosyin1Dance`, `cosyin1Love`, `cosyin1Wave`, `cosyin1Soft`) }
     if (users[BOT_USERNAME]?.thetarastark?.sub) { greetingEmotes.push(`thetar42KeystoneFlag`, `thetar42Cheer`, `thetar42POG`, `thetar42Pelican`, `thetar42Blep`, `thetar42Sad`) }
@@ -156,7 +157,7 @@ function getDumbEmote(channel) {
     if (channel === `e1ectroma`) { dumbEmotes.push(`dekuHYPE`, `KEKW`, `modCheck`, `pikaO`, `popCat`, `pressF`) }
     if (channel === `domonintendo1`) { dumbEmotes.push(`COPIUM`, `HUHH`, `KEKW`, `modCheck`, `monkaHmm`, `NODDERS`, `PauseChamp`, `pepoG`, `weirdChamp`) }
 
-    if (users[BOT_USERNAME]?.jpegstripes?.sub) { dumbEmotes.push(`jpegstChrome`, `jpegstBroken`, `jpegstBlank`, `jpegstBonk`, `jpegstMegamind`) }
+    if (users[BOT_USERNAME]?.jpegstripes?.sub) { dumbEmotes.push(`jpegstChrome`, `jpegstBroken`, `jpegstBonk`, `jpegstMegamind`) }
     if (users[BOT_USERNAME]?.sclarf?.sub) { dumbEmotes.push(`sclarfSpin`, `sclarfHuh`, `sclarfBlind`, `sclarfSophisticated`, `sclarfLUL`, `sclarfDEEP`, `sclarfChickenmoley`) }
     if (users[BOT_USERNAME]?.e1ectroma?.sub) { dumbEmotes.push(`e1ectr4Bye`, `e1ectr4Laugh`, `e1ectr4Wazzah`, `e1ectr4Malort`) }
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { dumbEmotes.push(`domoni6ChefHey`, `domoni6MeincSus`, `domoni6Sneeze`, `domoni6Dum`, `domoni6Kek`) }
