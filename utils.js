@@ -1379,7 +1379,7 @@ module.exports = {
         ]
         const joinMessage = joinMessages[Math.floor(Math.random() * joinMessages.length)]
 
-        bot.say(channel, `test client` || settings.joinMessage || joinMessage)
+        bot.say(channel, settings.joinMessage || joinMessage)
     },
     // (For debugging/discovery) Add to list of known message tags
     tagsListener(tags) {
