@@ -1,19 +1,19 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
+const { settings } = require(`../config`)
 const { lemonyFresh, users } = require(`../data`)
-const { grayTxt, resetTxt, settings } = require(`../config`)
-const { pluralize, getHypeEmote, getPositiveEmote, getUpsetEmote, getNegativeEmote } = require(`../utils`)
+const { pluralize, getHypeEmote, getPositiveEmote, getUpsetEmote, getNegativeEmote, logMessage } = require(`../utils`)
 
 async function getRandomWord() {
-    if (settings.debug) { console.log(`${grayTxt}> getRandomWord()${resetTxt}`) }
+    logMessage([`> getRandomWord()`])
 
     const response = await fetch(`https://random-word-api.vercel.app/api?words=1`)
     const data = await response.json()
-    if (settings.debug) { console.log(data) }
+    logMessage([data])
     return data[0]
 }
 
 async function hangmanInit(channel, username) {
-    if (settings.debug) { console.log(`${grayTxt}> hangmanInit(channel: '${channel}', username: '${username}')${resetTxt}`) }
+    logMessage([`> hangmanInit(channel: '${channel}', username: '${username}')`])
     const hangman = lemonyFresh[channel].hangman
 
     hangman.listening = true
@@ -27,7 +27,7 @@ async function hangmanInit(channel, username) {
 }
 
 function solvePuzzle(bot, chatroom, username) {
-    if (settings.debug) { console.log(`${grayTxt}> solvePuzzle(chatroom: '${chatroom}', username: '${username}')${resetTxt}`) }
+    logMessage([`> solvePuzzle(chatroom: '${chatroom}', username: '${username}')`])
 
     const channel = chatroom.substring(1)
     const user = users[username]
@@ -44,7 +44,7 @@ function solvePuzzle(bot, chatroom, username) {
 }
 
 function hangmanAnnounce(bot, chatroom, userNickname) {
-    if (settings.debug) { console.log(`${grayTxt}> hangmanAnnounce(chatroom: '${chatroom}', userNickname: '${userNickname}')${resetTxt}`) }
+    logMessage([`> hangmanAnnounce(chatroom: '${chatroom}', userNickname: '${userNickname}')`])
 
     const channel = chatroom.substring(1)
     const hypeEmote = getHypeEmote(channel)
@@ -57,7 +57,7 @@ function hangmanAnnounce(bot, chatroom, userNickname) {
     // After signup period has ended, close signup window, shuffle players, and start game
     setTimeout(() => {
         hangman.signup = false
-        if (settings.debug) { console.log(`${grayTxt}-> ${settings.hangmanSignupSeconds} seconds has elapsed, signup window closed - players: ${hangman.players.join(`, `)}${resetTxt}`) }
+        logMessage([`-> ${settings.hangmanSignupSeconds} seconds has elapsed, signup window closed - players: ${hangman.players.join(`, `)}`])
         hangman.players.sort(() => Math.random() - 0.5)
         const firstPlayer = users[hangman.players[0]].nickname || users[hangman.players[0]].displayName
         bot.say(chatroom,
@@ -76,7 +76,7 @@ function hangmanAnnounce(bot, chatroom, userNickname) {
 module.exports = {
     startHangman(props) {
         const { bot, chatroom, channel, username, userNickname } = props
-        if (settings.debug) { console.log(`${grayTxt}> startHangman(chatroom: '${chatroom}')${resetTxt}`) }
+        logMessage([`> startHangman(chatroom: '${chatroom}')`])
 
         // In case a Hangman game is already in progress in the channel
         const hangman = lemonyFresh[channel].hangman
@@ -97,31 +97,31 @@ module.exports = {
     },
     joinHangman(props) {
         const { bot, chatroom, channel, username, userNickname } = props
-        if (settings.debug) { console.log(`${grayTxt}> joinHangman(chatroom: '${chatroom}', userNickname: '${userNickname}')${resetTxt}`) }
+        logMessage([`> joinHangman(chatroom: '${chatroom}', userNickname: '${userNickname}')`])
 
         const hangman = lemonyFresh[channel].hangman
         if (hangman.listening) {
             if (hangman.signup) {
                 if (hangman.players.includes(username)) {
-                    if (settings.debug) { console.log(`${grayTxt}-> ${username} already in ${channel}'s Hangman players: ${hangman.players.join(`, `)}${resetTxt}`) }
+                    logMessage([`-> ${username} already in ${channel}'s Hangman players: ${hangman.players.join(`, `)}`])
                 } else {
                     hangman.players.push(username)
-                    if (settings.debug) { console.log(`${grayTxt}-> ${username} added to ${channel}'s Hangman players: ${hangman.players.join(`, `)}${resetTxt}`) }
+                    logMessage([`-> ${username} added to ${channel}'s Hangman players: ${hangman.players.join(`, `)}`])
                 }
             } else if (!hangman.players.includes(username)) {
                 hangman.players.push(username)
-                if (settings.debug) { console.log(`${grayTxt}-> ${username} added to ${channel}'s Hangman players: ${hangman.players.join(`, `)}}${resetTxt}`) }
+                logMessage([`-> ${username} added to ${channel}'s Hangman players: ${hangman.players.join(`, `)}}`])
                 const positiveEmote = getPositiveEmote(channel)
                 bot.say(chatroom, `${userNickname}, you can still hop in, you'll go after everyone else! ${positiveEmote}`)
             }
         } else {
-            if (settings.debug) { console.log(`${grayTxt}-> Hangman game is not currently in progress for ${channel}${resetTxt}`) }
+            logMessage([`-> Hangman game is not currently in progress for ${channel}`])
         }
     },
     checkLetter(props) {
         const { bot, chatroom, message, channel, username, userNickname } = props
         const guess = message.toUpperCase()
-        if (settings.debug) { console.log(`${grayTxt}> checkLetter(chatroom: '${chatroom}', username: '${username}', guess: '${guess}')${resetTxt}`) }
+        logMessage([`> checkLetter(chatroom: '${chatroom}', username: '${username}', guess: '${guess}')`])
         const hangman = lemonyFresh[channel].hangman
 
         // Already guessed letter
@@ -179,7 +179,7 @@ module.exports = {
     checkWord(props) {
         const { bot, chatroom, message, channel, username, userNickname } = props
         const guess = message.toLowerCase()
-        if (settings.debug) { console.log(`${grayTxt}> checkWord(chatroom: '${chatroom}', username: '${username}', guess: '${guess}')${resetTxt}`) }
+        logMessage([`> checkWord(chatroom: '${chatroom}', username: '${username}', guess: '${guess}')`])
         const hangman = lemonyFresh[channel].hangman
 
         // Correct guess

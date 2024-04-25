@@ -1,4 +1,4 @@
-const { resetTxt, grayTxt, settings } = require(`../config`)
+const { settings } = require(`../config`)
 const { getNeutralEmote, getHypeEmote } = require(`../utils`)
 
 module.exports = {
@@ -8,7 +8,7 @@ module.exports = {
         if (settings.realRPS) {
             const rps = [`rock`, `paper`, `scissors`]
             const playerChoice = rps.includes(args[0]?.toLowerCase()) ? args[0].toLowerCase() : rps[Math.floor(Math.random() * rps.length)]
-            if (settings.debug) { console.log(`${grayTxt}> rockPaperScissors(chatroom: ${chatroom}, userNickname: ${userNickname}, playerChoice: ${playerChoice})${resetTxt}`) }
+            logMessage([`> rockPaperScissors(chatroom: ${chatroom}, userNickname: ${userNickname}, playerChoice: ${playerChoice})`])
 
             const botChoice = rps[Math.floor(Math.random() * rps.length)]
             let reply = `${userNickname} throws ${playerChoice}! I throw ${botChoice}`
@@ -26,7 +26,7 @@ module.exports = {
             bot.say(chatroom, reply)
         } else {
             const playerChoice = args[0]?.toLowerCase() || `nothing`
-            if (settings.debug) { console.log(`${grayTxt}> fakeRockPaperScissors(chatroom: ${chatroom}, userNickname: ${userNickname}, playerChoice: ${playerChoice})${resetTxt}`) }
+            logMessage([`> fakeRockPaperScissors(chatroom: ${chatroom}, userNickname: ${userNickname}, playerChoice: ${playerChoice})`])
 
             let reply = `${userNickname} throws ${playerChoice}! I throw `
             const neutralEmote = getNeutralEmote(channel)

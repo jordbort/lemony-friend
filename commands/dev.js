@@ -1,15 +1,16 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
+const { settings } = require(`../config`)
 const { lemonyFresh, users, mods } = require(`../data`)
-const { settings, grayTxt, resetTxt } = require(`../config`)
 
-const { rollFunNumber } = require(`./funNumber`)
 const { getSubs } = require(`./help`)
+const { logMessage } = require(`../utils`)
+const { rollFunNumber } = require(`./funNumber`)
 const { handleJoin, handlePart } = require(`./joinPart`)
 
 function checkPoints(props) {
     const { bot, chatroom, args, channel } = props
-    if (settings.debug) { console.log(`${grayTxt}> checkPoints(chatroom: ${chatroom}, args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+    logMessage([`> checkPoints(chatroom: ${chatroom}, args:`, args, `)`])
 
     users[BOT_USERNAME]?.[channel].points || users[BOT_USERNAME]?.[channel].points === 0
         ? bot.say(chatroom, `I have ${users[BOT_USERNAME][channel].points} point${users[BOT_USERNAME][channel].points === 1 ? `` : `s`}!`)

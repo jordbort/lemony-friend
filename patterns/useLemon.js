@@ -1,5 +1,4 @@
-// Import global settings
-const { resetTxt, grayTxt, settings, inverted } = require(`../config`)
+const { logMessage } = require(`../utils`)
 
 function stealLemon(bot, chatroom, user, suffix, target) {
     const allLemons = [`s`, `z`].includes(suffix)
@@ -1012,13 +1011,12 @@ module.exports = {
         const { bot, chatroom, user, userNickname, target, targetNickname } = props
         const verb = splitMessage[1]
         const suffix = splitMessage[2]
-        if (settings.debug) {
-            console.log(`${grayTxt}> useLemon(chatroom: '${chatroom}', userNickname: '${userNickname}'${suffix
-                ? `, suffix: '${suffix}'`
-                : ``}${targetNickname
-                    ? `, targetNickname: '${targetNickname}'`
-                    : ``}, verb: '${verb}')${resetTxt}`)
-        }
+        logMessage([`> useLemon(chatroom: '${chatroom}', userNickname: '${userNickname}'${suffix
+            ? `, suffix: '${suffix}'`
+            : ``}${targetNickname
+                ? `, targetNickname: '${targetNickname}'`
+                : ``}, verb: '${verb}')`
+        ])
 
         // Stop if user doesn't have lemons, or doesn't try to steal from someone who does
         const theftVerbs = [`steal`, `take`, `grab`, `thieve`, `nab`, `pickpocket`, `purloin`, `abscondwith`, `loot`, `pilfer`, `runawaywith`, `runoffwith`, `makeoffwith`]
@@ -1217,23 +1215,10 @@ module.exports = {
             'bet': gambleLemon,
         }
         if (verb in keyVerbs) {
-            if (settings.debug) {
-                console.log(
-                    `${grayTxt}-> Matched:${resetTxt} ${inverted}${verb}${resetTxt} ${grayTxt}lemon${suffix
-                        ? `${resetTxt}${inverted}${suffix}${resetTxt}${grayTxt}`
-                        : ``}:${resetTxt}`,
-                    keyVerbs[verb]
-                )
-            }
+            logMessage([`-> Matched: ${verb} lemon${suffix}:`, `[Function: ${keyVerbs[verb].name}]`])
             return keyVerbs[verb](bot, chatroom, user, suffix, target, verb)
         }
-        if (settings.debug) {
-            console.log(`${grayTxt}-> Couldn't use verb:${resetTxt} ${inverted}${verb}${resetTxt} ${grayTxt}on lemon${suffix
-                ? `${resetTxt}${inverted}${suffix}${resetTxt}${grayTxt}`
-                : ``}:${resetTxt}`,
-                nullVerb
-            )
-        }
+        logMessage([`-> Couldn't use verb: ${verb} on lemon${suffix}:`, `[Function: ${nullVerb.name}]`])
         nullVerb(bot, chatroom, user, suffix, target, verb)
     }
 }

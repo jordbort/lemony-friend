@@ -1,12 +1,11 @@
 const { lemonyFresh, users } = require(`../data`)
-const { resetTxt, grayTxt, chatColors, settings } = require(`../config`)
-
-const { numbers, getLemonEmote, getDumbEmote, pluralize, getNeutralEmote, getToUser, getPositiveEmote, getHypeEmote } = require(`../utils`)
+const { chatColors, settings } = require(`../config`)
+const { numbers, getLemonEmote, getDumbEmote, pluralize, getNeutralEmote, getToUser, getPositiveEmote, getHypeEmote, logMessage } = require(`../utils`)
 
 module.exports = {
     sayOnlineTime(props) {
         const { bot, chatroom, channel } = props
-        if (settings.debug) { console.log(`${grayTxt}> sayOnlineTime(channel: '${channel}')${resetTxt}`) }
+        logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const timeOptions = {
             hour: `numeric`,
@@ -32,7 +31,7 @@ module.exports = {
         const otherChannel = getToUser(args[1])
         const userObj = target || user
         const userObjNickname = targetNickname || userNickname
-        if (settings.debug) { console.log(`${grayTxt}> getLastMessage(chatroom: '${chatroom}', userObj: '${target ? toUser : username}, otherChannel: '${otherChannel}')${resetTxt}`) }
+        logMessage([`> getLastMessage(chatroom: '${chatroom}', userObj: '${target ? toUser : username}, otherChannel: '${otherChannel}')`])
 
         const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
         const otherChannelNickname = otherChannel in lemonyFresh
@@ -48,7 +47,7 @@ module.exports = {
     getMessageCount(props) {
         const { bot, chatroom, username, user, userNickname, toUser, target, targetNickname } = props
         const userObj = target || user
-        if (settings.debug) { console.log(`${grayTxt}> getMessageCount(chatroom: '${chatroom}', userObj: '${target ? toUser : username}')${resetTxt}`) }
+        logMessage([`> getMessageCount(chatroom: '${chatroom}', userObj: '${target ? toUser : username}')`])
 
         let response = `${targetNickname || userNickname} has sent `
         const channels = Object.keys(userObj)
@@ -65,7 +64,7 @@ module.exports = {
         const { bot, chatroom, channel, username, user, userNickname, toUser, target, targetNickname } = props
         const userObj = target || user
         const userObjNickname = targetNickname || userNickname
-        if (settings.debug) { console.log(`${grayTxt}> getColor(chatroom: ${chatroom}, userObj: '${target ? toUser : username})${resetTxt}`) }
+        logMessage([`> getColor(chatroom: ${chatroom}, userObj: '${target ? toUser : username})`])
 
         !userObj.color
             ? bot.say(chatroom, `I can't tell what ${userObjNickname}'s chat color is! ${getDumbEmote(channel)}`)
@@ -74,7 +73,7 @@ module.exports = {
                 : bot.say(chatroom, `${userObjNickname}'s chat color is hex code ${userObj.color}`)
     },
     getRandomUser(arrExclude) {
-        if (settings.debug) { console.log(`${grayTxt}> getRandomUser(arrExclude:${resetTxt}`, arrExclude, `${grayTxt})${resetTxt}`) }
+        logMessage([`> getRandomUser(arrExclude:`, arrExclude, `)`])
 
         const arr = Object.keys(users)
         for (const name of arrExclude) {
@@ -82,20 +81,20 @@ module.exports = {
         }
         const randomUser = arr[Math.floor(Math.random() * arr.length)]
 
-        if (settings.debug) { console.log(`${grayTxt}-> username: ${randomUser}${resetTxt}`) }
+        logMessage([`-> username: ${randomUser}`])
         return randomUser
     },
     getRandomChannelMessage(user) {
-        if (settings.debug) { console.log(`${grayTxt}> getRandomChannelMessage(user: ${user.displayName})${resetTxt}`) }
+        logMessage([`> getRandomChannelMessage(user: ${user.displayName})`])
         const channels = Object.keys(user).filter(channel => typeof user[channel] === `object`)
         const channel = channels[Math.floor(Math.random() * channels.length)]
-        if (settings.debug) { console.log(`${grayTxt}-> channel: ${channel}${resetTxt}`) }
+        logMessage([`-> channel: ${channel}`])
         const randomMessage = user[channel].lastMessage
         return randomMessage
     },
     sayFriends(props) {
         const { bot, chatroom, channel } = props
-        if (settings.debug) { console.log(`${grayTxt}> sayFriends(chatroom: ${chatroom})${resetTxt}`) }
+        logMessage([`> sayFriends(chatroom: ${chatroom})`])
 
         const numUsers = Object.keys(users).length
         const dumbEmote = getDumbEmote(channel)
@@ -118,7 +117,7 @@ module.exports = {
     },
     getLemons(props) {
         const { bot, chatroom, username, user, toUser, target } = props
-        if (settings.debug) { console.log(`${grayTxt}> getLemons(chatroom: '${chatroom}', username: '${username}', toUser: '${toUser}')${resetTxt}`) }
+        logMessage([`> getLemons(chatroom: '${chatroom}', username: '${username}', toUser: '${toUser}')`])
 
         const lemonEmote = getLemonEmote()
         target

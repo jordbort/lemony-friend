@@ -1,11 +1,11 @@
-const { resetTxt, grayTxt, settings, chatColors } = require(`../config`)
-const { getPositiveEmote, getNegativeEmote, getNeutralEmote } = require(`../utils`)
+const { chatColors } = require(`../config`)
+const { getPositiveEmote, getNegativeEmote, getNeutralEmote, logMessage } = require(`../utils`)
 
 module.exports = {
     handleColorChange(props) {
         const { bot, chatroom, tags, channel, user, userNickname } = props
         const newColor = tags.color || ``
-        if (settings.debug) { console.log(`${grayTxt}> handleColorChange(chatroom: '${chatroom}', user: '${userNickname}', newColor: '${newColor}')${resetTxt}`) }
+        logMessage([`> handleColorChange(chatroom: '${chatroom}', user: '${userNickname}', newColor: '${newColor}')`])
 
         user.color = newColor
         const neutralEmote = getNeutralEmote(channel)
@@ -16,7 +16,7 @@ module.exports = {
     handleTurboChange(props) {
         const { bot, chatroom, tags, channel, user, userNickname } = props
         const turboStatus = tags.turbo
-        if (settings.debug) { console.log(`${grayTxt}> handleTurboChange(chatroom: '${chatroom}', user: '${userNickname}', turboStatus: ${turboStatus})${resetTxt}`) }
+        logMessage([`> handleTurboChange(chatroom: '${chatroom}', user: '${userNickname}', turboStatus: ${turboStatus})`])
 
         user.turbo = turboStatus
         const positiveEmote = getPositiveEmote(channel)
@@ -25,7 +25,7 @@ module.exports = {
     handleSubChange(props) {
         const { bot, chatroom, tags, self, channel, user, userNickname } = props
         const subStatus = tags.subscriber
-        if (settings.debug) { console.log(`${grayTxt}> handleSubChange(chatroom: '${chatroom}', userNickname: '${userNickname}', subStatus: ${subStatus})${resetTxt}`) }
+        logMessage([`> handleSubChange(chatroom: '${chatroom}', userNickname: '${userNickname}', subStatus: ${subStatus})`])
 
         user[channel].sub = subStatus
         const positiveEmote = getPositiveEmote(channel)
@@ -43,7 +43,7 @@ module.exports = {
     handleModChange(props) {
         const { bot, chatroom, tags, self, channel, user, userNickname } = props
         const modStatus = tags.mod
-        if (settings.debug) { console.log(`${grayTxt}> handleModChange(chatroom: '${chatroom}', userNickname: '${userNickname}', modStatus: ${modStatus})${resetTxt}`) }
+        logMessage([`> handleModChange(chatroom: '${chatroom}', userNickname: '${userNickname}', modStatus: ${modStatus})`])
 
         user[channel].mod = modStatus
         const positiveEmote = getPositiveEmote(channel)
@@ -58,7 +58,7 @@ module.exports = {
     handleVIPChange(props) {
         const { bot, chatroom, tags, self, channel, user, userNickname } = props
         const vipStatus = !!tags.vip || !!tags.badges?.vip
-        if (settings.debug) { console.log(`${grayTxt}> handleVIPChange(chatroom: '${chatroom}', userNickname: '${userNickname}', vipStatus: ${vipStatus})${resetTxt}`) }
+        logMessage([`> handleVIPChange(chatroom: '${chatroom}', userNickname: '${userNickname}', vipStatus: ${vipStatus})`])
 
         user[channel].vip = vipStatus
         const positiveEmote = getPositiveEmote(channel)

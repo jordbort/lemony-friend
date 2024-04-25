@@ -1,10 +1,10 @@
 const DEV = process.env.DEV
+const { settings } = require(`../config`)
 const { lemonyFresh, users } = require(`../data`)
-const { settings, grayTxt, resetTxt } = require(`../config`)
-const { getLemonEmote, getToUser, pluralize } = require(`../utils`)
+const { getLemonEmote, getToUser, pluralize, logMessage } = require(`../utils`)
 
 function updateBool(bot, chatroom, obj, message, name, args) {
-    if (settings.debug) { console.log(`${grayTxt}> updateBool(chatroom: '${chatroom}', name: '${name}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+    logMessage([`> updateBool(chatroom: '${chatroom}', name: '${name}', args:`, args, `)`])
 
     if (/^true$|^t$/i.test(args[0])) {
         obj[name] = true
@@ -20,7 +20,7 @@ function updateBool(bot, chatroom, obj, message, name, args) {
 }
 
 function updateArr(bot, chatroom, obj, message, name, args) {
-    if (settings.debug) { console.log(`${grayTxt}> updateArr(chatroom: '${chatroom}', name: '${name}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+    logMessage([`> updateArr(chatroom: '${chatroom}', name: '${name}', args:`, args, `)`])
 
     if (!args.length) { return bot.say(chatroom, `/me ${message} (${obj[name].length}): ${obj[name].join(` `)} - Add more, "delete (d)" some, or "clear (c)" all`) }
 
@@ -52,7 +52,7 @@ function updateArr(bot, chatroom, obj, message, name, args) {
 }
 
 function updatePhraseArr(bot, chatroom, obj, message, name, args) {
-    if (settings.debug) { console.log(`${grayTxt}> updatePhraseArr(chatroom: '${chatroom}', name: '${name}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+    logMessage([`> updatePhraseArr(chatroom: '${chatroom}', name: '${name}', args:`, args, `)`])
 
     if (/^add$|^a$/i.test(args[0])) {
         args.shift()
@@ -85,7 +85,7 @@ function updatePhraseArr(bot, chatroom, obj, message, name, args) {
 }
 
 function updateStr(bot, chatroom, obj, message, name, args) {
-    if (settings.debug) { console.log(`${grayTxt}> updateStr(chatroom: '${chatroom}', name: '${name}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+    logMessage([`> updateStr(chatroom: '${chatroom}', name: '${name}', args:`, args, `)`])
 
     if (!args[0]) { return bot.say(chatroom, `/me ${message} is currently: ${obj[name] || `(not set)`} - change it, or use "clear (c)"`) }
 
@@ -103,7 +103,7 @@ function updateStr(bot, chatroom, obj, message, name, args) {
 }
 
 function updateNum(bot, chatroom, obj, message, name, args) {
-    if (settings.debug) { console.log(`${grayTxt}> updateNum(chatroom: '${chatroom}', name: '${name}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+    logMessage([`> updateNum(chatroom: '${chatroom}', name: '${name}', args:`, args, `)`])
 
     if (Number(args[0]) >= 1 && Number(args[0]) <= 100) {
         obj[name] = Math.round(Number(args[0]))
@@ -114,7 +114,7 @@ function updateNum(bot, chatroom, obj, message, name, args) {
 }
 
 function updateDuration(bot, chatroom, obj, message, name, args) {
-    if (settings.debug) { console.log(`${grayTxt}> updateDuration(chatroom: '${chatroom}', name: '${name}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+    logMessage([`> updateDuration(chatroom: '${chatroom}', name: '${name}', args:`, args, `)`])
 
     if (Number(args[0]) >= 0 && Number(args[0]) <= 120) {
         obj[name] = Math.round(Number(args[0]))
@@ -127,7 +127,7 @@ function updateDuration(bot, chatroom, obj, message, name, args) {
 function updateChannelDev(props, args) {
     const { bot, chatroom, channel, username } = props
     args.shift()
-    if (settings.debug) { console.log(`${grayTxt}> updateChannel(username, '${username}', channel, '${channel}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+    logMessage([`> updateChannel(username, '${username}', channel, '${channel}', args:`, args, `)`])
 
     const toUser = getToUser(args.shift())
     if (!(toUser in lemonyFresh)
@@ -148,7 +148,7 @@ function updateChannelDev(props, args) {
     for (const option in options) {
         const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
         if (regex.test(args[0])) {
-            if (settings.debug) { console.log(`${grayTxt}-> Channel ${toUser} option "${args[0]}" matched:${resetTxt}`, regex, options[regex].func) }
+            logMessage([`-> Channel ${toUser} option "${args[0]}" matched:`, regex, options[regex].func])
             args.shift()
             return options[regex].func(bot, chatroom, lemonyFresh[toUser], `Channel ${toUser} "${options[regex].name}"`, options[regex].name, args)
         }
@@ -160,7 +160,7 @@ function updateChannelDev(props, args) {
 function updateChannel(props, args) {
     const { bot, chatroom, channel, username } = props
     args.shift()
-    if (settings.debug) { console.log(`${grayTxt}> updateChannel(username, '${username}', channel, '${channel}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+    logMessage([`> updateChannel(username, '${username}', channel, '${channel}', args:`, args, `)`])
 
     const options = {
         [/^timers?$|^t$/i]: { name: `timers`, func: updateTimer },
@@ -175,7 +175,7 @@ function updateChannel(props, args) {
     for (const option in options) {
         const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
         if (regex.test(args[0])) {
-            if (settings.debug) { console.log(`${grayTxt}-> Channel "${channel}" option "${args[0]}" matched:${resetTxt}`, regex, options[regex].func) }
+            logMessage([`-> Channel "${channel}" option "${args[0]}" matched:`, regex, options[regex].func])
             args.shift()
             return options[regex].func(bot, chatroom, lemonyFresh[channel], `Channel ${channel} "${options[regex].name}"`, options[regex].name, args)
         }
@@ -187,7 +187,7 @@ function updateChannel(props, args) {
 function updateUserDev(props, args) {
     const { bot, chatroom, channel, username } = props
     args.shift()
-    if (settings.debug) { console.log(`${grayTxt}> updateUserDev(username, '${username}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+    logMessage([`> updateUserDev(username, '${username}', args:`, args, `)`])
 
     const toUser = getToUser(args[0])
     if (!(toUser in users)) { return bot.say(chatroom, `/me Please specify one of ${(Object.keys(users).length).toLocaleString(settings.timeLocale)} valid users`) }
@@ -204,7 +204,7 @@ function updateUserDev(props, args) {
     for (const option in options) {
         const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
         if (regex.test(args[1])) {
-            if (settings.debug) { console.log(`${grayTxt}-> Channel ${toUser} option ${args[0]} matched:${resetTxt}`, regex, options[regex]) }
+            logMessage([`-> Channel ${toUser} option ${args[0]} matched:`, regex, options[regex]])
             args.shift()
 
             // User away and awayMessage require channel object
@@ -236,7 +236,7 @@ function updateUserDev(props, args) {
 function updateUser(props, args) {
     const { bot, chatroom, channel, username } = props
     args.shift()
-    if (settings.debug) { console.log(`${grayTxt}> updateUser(username, '${username}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+    logMessage([`> updateUser(username, '${username}', args:`, args, `)`])
 
     const toUser = getToUser(args[0])
     if (!(toUser in users)) { return bot.say(chatroom, `/me Please specify one of ${(Object.keys(users).length).toLocaleString(settings.timeLocale)} valid users`) }
@@ -250,7 +250,7 @@ function updateUser(props, args) {
     for (const option in options) {
         const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
         if (regex.test(args[1])) {
-            if (settings.debug) { console.log(`${grayTxt}-> User "${toUser}" option "${args[0]}":${resetTxt}`, regex, options[regex]) }
+            logMessage([`-> User "${toUser}" option "${args[0]}":`, regex, options[regex]])
             args.shift()
 
             // User away and awayMessage require channel object
@@ -284,7 +284,7 @@ function updateUser(props, args) {
 function updateSettingsDev(props, args) {
     const { bot, chatroom, channel, username } = props
     args.shift()
-    if (settings.debug) { console.log(`${grayTxt}> updateSettingsDev(username, '${username}', channel, '${channel}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+    logMessage([`> updateSettingsDev(username, '${username}', channel, '${channel}', args:`, args, `)`])
 
     if (/^baseEmotes$|^be$/i.test(args[0])) {
         args.shift()
@@ -318,7 +318,7 @@ function updateSettingsDev(props, args) {
     for (const option in options) {
         const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
         if (regex.test(args[0])) {
-            if (settings.debug) { console.log(`${grayTxt}-> Setting "${args[0]}" matched:${resetTxt}`, regex, options[regex].func) }
+            logMessage([`-> Setting "${args[0]}" matched:`, regex, options[regex].func])
             args.shift()
             return options[regex].func(bot, chatroom, settings, `Setting "${options[regex].name}"`, options[regex].name, args)
         }
@@ -331,7 +331,7 @@ function updateSettingsDev(props, args) {
 function updateSettings(props, args) {
     const { bot, chatroom, channel, username } = props
     args.shift()
-    if (settings.debug) { console.log(`${grayTxt}> updateSettings(username, '${username}', channel, '${channel}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+    logMessage([`> updateSettings(username, '${username}', channel, '${channel}', args:`, args, `)`])
 
     const options = {
         [/^timeZone$|^tz$/i]: { name: `timeZone`, func: updateStr },
@@ -345,7 +345,7 @@ function updateSettings(props, args) {
     for (const option in options) {
         const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
         if (regex.test(args[0])) {
-            if (settings.debug) { console.log(`${grayTxt}-> Setting "${args[0]}" matched:${resetTxt}`, regex, options[regex].func) }
+            logMessage([`-> Setting "${args[0]}" matched:`, regex, options[regex].func])
             args.shift()
             return options[regex].func(bot, chatroom, settings, `Setting "${options[regex].name}"`, options[regex].name, args)
         }
@@ -355,7 +355,7 @@ function updateSettings(props, args) {
 }
 
 function updateBaseEmotesDev(bot, chatroom, args) {
-    if (settings.debug) { console.log(`${grayTxt}> updateBaseEmotesDev(args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+    logMessage([`> updateBaseEmotesDev(args:`, args, `)`])
 
     const options = {
         [/^lemonEmotes$|^lem$/i]: { name: `lemonEmotes`, func: updateArr },
@@ -372,7 +372,7 @@ function updateBaseEmotesDev(bot, chatroom, args) {
     for (const option in options) {
         const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
         if (regex.test(args[0])) {
-            if (settings.debug) { console.log(`${grayTxt}-> Emotes option "${args[0]}" matched:${resetTxt}`, regex, options[regex].func) }
+            logMessage([`-> Emotes option "${args[0]}" matched:`, regex, options[regex].func])
             args.shift()
             return options[regex].func(bot, chatroom, settings.baseEmotes, `Setting baseEmotes "${options[regex].name}"`, options[regex].name, args)
         }
@@ -383,7 +383,7 @@ function updateBaseEmotesDev(bot, chatroom, args) {
 
 function updateTimer(bot, chatroom, obj, message, name, args) {
     const channel = chatroom.substring(1)
-    if (settings.debug) { console.log(`${grayTxt}> updateTimer(channel, ${channel}, args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+    logMessage([`> updateTimer(channel, ${channel}, args:`, args, `)`])
 
     const timer = args.shift()
     if (!(timer in obj[name])) { return bot.say(chatroom, `/me Please specify a valid timer: ${Object.keys(obj[name]).join(`, `)}`) }
@@ -397,7 +397,7 @@ function updateTimer(bot, chatroom, obj, message, name, args) {
     for (const option in options) {
         const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
         if (regex.test(setting)) {
-            if (settings.debug) { console.log(`${grayTxt}-> Timer "${timer}" setting "${setting}" matched:${resetTxt}`, regex, options[regex].func) }
+            logMessage([`-> Timer "${timer}" setting "${setting}" matched:`, regex, options[regex].func])
             return options[regex].func(bot, chatroom, obj[name][timer], `${message} ${timer} "${options[regex].name}"`, options[regex].name, args)
         }
     }
@@ -410,7 +410,7 @@ module.exports = {
         const { bot, chatroom, username, isMod, isLemonyFreshMember } = props
         splitMessage.shift()
         const args = splitMessage[0].split(` `)
-        if (settings.debug) { console.log(`${grayTxt}> commandLemonInterface(username, '${username}', isMod, ${isMod}, isLemonyFreshMember, ${isLemonyFreshMember}, args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+        logMessage([`> commandLemonInterface(username, '${username}', isMod, ${isMod}, isLemonyFreshMember, ${isLemonyFreshMember}, args:`, args, `)`])
 
         if (username === DEV) {
             const options = {
@@ -421,7 +421,7 @@ module.exports = {
             for (const option in options) {
                 const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
                 if (regex.test(args[0])) {
-                    if (settings.debug) { console.log(`${grayTxt}-> Dev ${username} matched:${resetTxt}`, regex, options[regex]) }
+                    logMessage([`-> Dev ${username} matched:`, regex, options[regex]])
                     return options[regex](props, args)
                 }
             }
@@ -436,7 +436,7 @@ module.exports = {
             for (const option in options) {
                 const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
                 if (regex.test(args[0])) {
-                    if (settings.debug) { console.log(`${grayTxt}-> Streamer/mod ${username} matched:${resetTxt}`, regex, options[regex]) }
+                    logMessage([`-> Streamer/mod ${username} matched:`, regex, options[regex]])
                     return options[regex](props, args)
                 }
             }
@@ -451,7 +451,7 @@ module.exports = {
             for (const option in options) {
                 const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
                 if (regex.test(args[0])) {
-                    if (settings.debug) { console.log(`${grayTxt}-> Streamer ${username} matched:${resetTxt}`, regex, options[regex]) }
+                    logMessage([`-> Streamer ${username} matched:`, regex, options[regex]])
                     props.channel = username
                     return options[regex](props, args)
                 }

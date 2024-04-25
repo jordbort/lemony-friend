@@ -1,10 +1,10 @@
 const API_KEY = process.env.API_KEY
-const { settings, grayTxt, resetTxt } = require(`../config`)
 const { handleGreetOne, sayGoodnight, sayThanks, sayYoureWelcome, sayMood } = require(`../commands/conversation`)
+const { logMessage } = require("../utils")
 
 async function checkSentiment(props) {
     const { bot, chatroom, message } = props
-    if (settings.debug) { console.log(`${grayTxt}> checkSentiment(chatroom: ${chatroom}, message: ${message})${resetTxt}`) }
+    logMessage([`> checkSentiment(chatroom: ${chatroom}, message: ${message})`])
 
     const sanitizedMsg = message.replace(/[\\{`}%^|]/g, ``)
     const endpoint = `https://api.api-ninjas.com/v1/sentiment?text=${sanitizedMsg}`
@@ -16,7 +16,7 @@ async function checkSentiment(props) {
 
     const response = await fetch(endpoint, options)
     const data = await response.json()
-    if (settings.debug) { console.log(data) }
+    logMessage([data])
 
     'sentiment' in data
         ? data.sentiment.includes(`NEUTRAL`)

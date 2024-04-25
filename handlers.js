@@ -4,32 +4,31 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 const dev = require(`./commands/dev`)
 const commands = require(`./commands`)
 const printLemon = require(`./commands/printLemon`)
-const { makeLogs } = require(`./commands/makeLogs`)
-const { streakListener } = require(`./commands/streaks`)
-const { rollFunNumber } = require(`./commands/funNumber`)
-const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
-const { handleColorChange, handleTurboChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
-
 const patterns = require(`./patterns`)
 const botInteraction = require(`./patterns/botInteraction`)
 const botMention = require(`./patterns/botMention`)
-const { checkWord, checkLetter } = require(`./patterns/hangman`)
 
+const { settings } = require(`./config`)
 const { lemonyFresh, users, tempCmds } = require(`./data`)
-const { resetTxt, whiteTxt, grayTxt, yellowBg, chatColors, settings } = require(`./config`)
-const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, sayJoinMessage } = require(`./utils`)
+
+const { streakListener } = require(`./commands/streaks`)
+const { rollFunNumber } = require(`./commands/funNumber`)
+const { checkWord, checkLetter } = require(`./patterns/hangman`)
+const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
+const { handleColorChange, handleTurboChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
+const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, sayJoinMessage, logMessage } = require(`./utils`)
 
 module.exports = {
     onConnectedHandler(addr, port) {
         settings.firstConnection && printLemon()
         const time = new Date().toLocaleTimeString(settings.timeLocale, { timeZone: settings.timeZone })
         settings.firstConnection
-            ? console.log(`[${time}] 🍋 Connected to ${addr}:${port}`)
-            : console.log(`[${time}] 🍋 Re-connected to ${addr}:${port}`)
+            ? logMessage([`[${time}] 🍋 Connected to ${addr}:${port}`])
+            : logMessage([`[${time}] 🍋 Re-connected to ${addr}:${port}`])
         settings.firstConnection = false
     },
     onJoinedHandler(chatroom, username, self) {
-        if (settings.debug) { console.log(`${grayTxt}${username} joined ${chatroom}${resetTxt}`) }
+        logMessage([`${username} joined ${chatroom}`])
         const channel = chatroom.substring(1)
 
         if (self) {
@@ -43,7 +42,7 @@ module.exports = {
         }
     },
     onPartedHandler(chatroom, username, self) {
-        if (settings.debug) { console.log(`${grayTxt}${username} parted from ${chatroom}${resetTxt}`) }
+        logMessage([`${username} parted from ${chatroom}`])
         const channel = chatroom.substring(1)
 
         while (lemonyFresh[channel].viewers.includes(username)) {
@@ -52,15 +51,13 @@ module.exports = {
     },
     onWhisperHandler(fromRoom, tags, message, err) {
         if (err) { return console.log(err) }
-        if (settings.debug) {
-            console.log(`> ${BOT_USERNAME} received a whisper from ${fromRoom}: ${message}`)
-            if (/^tags$/i.test(message)) { console.log(tags) }
-        }
+        logMessage([`> ${BOT_USERNAME} received a whisper from ${fromRoom}: ${message}`])
+        if (/^tags$/i.test(message)) { console.log(tags) }
     },
     onMessageHandler(chatroom, tags, message, self) {
         // Allow /me but not whispers
         if (![`chat`, `action`].includes(tags[`message-type`])) {
-            if (settings.debug) { console.log(`${grayTxt}> Message is not of type 'chat' or 'action'${resetTxt}`) }
+            logMessage([`> Message is not of type 'chat' or 'action'`])
             return
         }
 
@@ -71,19 +68,7 @@ module.exports = {
         const color = tags.color || ``
 
         // Log incoming message and capture message tags
-        if (!settings.hideNonDevChannel || channel === DEV) {
-            self && settings.highlightBotMessage
-                ? console.log(`${yellowBg}${settings.logTime
-                    ? `[${time}] `
-                    : ``}${settings.hideNonDevChannel
-                        ? ``
-                        : `<${channel}> `}${username}: ${msg}${resetTxt}`)
-                : console.log(`${settings.logTime
-                    ? `[${time}] `
-                    : ``}${settings.hideNonDevChannel
-                        ? ``
-                        : `<${channel}> `}${color in chatColors ? chatColors[color].terminalColor : whiteTxt}${username}: ${msg}${resetTxt}`)
-        }
+        logMessage([msg], time, channel, username, color, self)
         tagsListener(tags)
 
         // Initialize new user
@@ -105,9 +90,6 @@ module.exports = {
         self
             ? user[channel].sentAt = Date.now()
             : user[channel].sentAt = currentTime
-
-        // Update lemony_logs.txt
-        makeLogs(this.channels)
 
         const args = msg.split(` `)
         const command = args.shift().toLowerCase()
@@ -157,21 +139,21 @@ module.exports = {
         if (msg.startsWith(`!`)) {
             for (const cmd in commands) {
                 if (command === cmd) {
-                    if (settings.debug) { console.log(`${grayTxt}MATCHED COMMAND:${resetTxt}`, cmd, commands[command]) }
+                    logMessage([`MATCHED COMMAND:`, cmd, `[Function: ${commands[command].name}]`])
                     return commands[command](props)
                 }
             }
-            if (settings.debug && !/^!([a-z]+)lemon([a-z]*)/.test(command)) { console.log(`${grayTxt}COMMAND NOT RECOGNIZED${resetTxt}`) }
+            if (!/^!([a-z]+)lemon([a-z]*)/.test(command)) { logMessage([`COMMAND NOT RECOGNIZED`]) }
         }
         // Dev commands
         if (username === DEV) {
             for (const cmd in dev) {
                 if (command === cmd) {
-                    if (settings.debug) { console.log(`${grayTxt}MATCHED DEV COMMAND:${resetTxt}`, cmd, dev[command]) }
+                    logMessage([`MATCHED DEV COMMAND:`, cmd, `[Function: ${dev[command].name}]`])
                     return dev[command](props)
                 }
             }
-            // if (settings.debug) { console.log(`${grayTxt}DEV COMMAND NOT RECOGNIZED${resetTxt}`) }
+            // logMessage([`DEV COMMAND NOT RECOGNIZED`])
         }
 
         // Check user's first message in a given channel
@@ -188,21 +170,21 @@ module.exports = {
         for (const pattern in patterns) {
             const regex = new RegExp(pattern.split(`/`)[1], pattern.split(`/`)[2])
             if (regex.test(msg)) {
-                if (settings.debug) { console.log(`${grayTxt}MESSAGE MATCHED REGEX PATTERN:${resetTxt}`, regex, patterns[regex]) }
+                logMessage([`MESSAGE MATCHED REGEX PATTERN:`, regex, `[Function: ${patterns[regex].name}]`])
                 return patterns[regex](props, msg.split(regex))
             }
         }
         // Other bot mentions bot
-        if ([`streamelements`, `thetarastark`, `pokemoncommunitygame`].includes(username)) {
+        if ([`streamelements`, `thetarastark`, `thetarashark`, `pokemoncommunitygame`].includes(username)) {
             if (msg.includes(BOT_USERNAME)) {
                 for (const pattern in botInteraction) {
                     const regex = new RegExp(pattern.split(`/`)[1], pattern.split(`/`)[2])
                     if (regex.test(msg)) {
-                        if (settings.debug) { console.log(`${grayTxt}${username.toUpperCase()} MATCHED REGEX PATTERN:${resetTxt}`, regex, botInteraction[regex]) }
+                        logMessage([`${username.toUpperCase()} MATCHED REGEX PATTERN:`, regex, `[Function: ${botInteraction[regex].name}]`])
                         return botInteraction[regex](props, msg.split(regex))
                     }
                 }
-                if (settings.debug) { console.log(`${grayTxt}${username.toUpperCase()} DID NOT MATCH REGEX PATTERNS${resetTxt}`) }
+                logMessage([`${username.toUpperCase()} DID NOT MATCH REGEX PATTERNS`])
             }
             if (!(`points` in Object(users[BOT_USERNAME][channel])) && [`streamelements`, `thetarashark`].includes(username)) { return this.say(chatroom, `!points`) }
         }
@@ -211,27 +193,27 @@ module.exports = {
             for (const pattern in botMention) {
                 const regex = new RegExp(pattern.split(`/`)[1], pattern.split(`/`)[2])
                 if (regex.test(msg)) {
-                    if (settings.debug) { console.log(`${grayTxt}BOT MENTION MATCHED REGEX PATTERN:${resetTxt}`, regex, botMention[regex]) }
+                    logMessage([`BOT MENTION MATCHED REGEX PATTERN:`, regex, `[Function: ${botMention[regex].name}]`])
                     return botMention[regex](props, msg.split(regex))
                 }
             }
-            if (settings.debug) { console.log(`${grayTxt}BOT MENTION DID NOT MATCH REGEX PATTERNS${resetTxt}`) }
+            logMessage([`BOT MENTION DID NOT MATCH REGEX PATTERNS`])
         }
         // If hangman has started, and it's the current player's turn
         const hangman = lemonyFresh[channel].hangman
         if (hangman.listening && !hangman.signup && username === hangman.players[hangman.currentPlayer]) {
             if (/^[a-z]$/i.test(msg)) { return checkLetter(props) }
             if (/^[a-z]{2,}$/i.test(msg) && msg.length === hangman.answer.length) { return checkWord(props) }
-            if (settings.debug) { console.log(`${grayTxt}NOT A HANGMAN GUESS${resetTxt}`) }
+            logMessage([`NOT A HANGMAN GUESS`])
         }
 
         // Listening for a message to be repeated by at least two other users
         if (lemonyFresh[channel].timers.streak.listening) { streakListener(props) }
-        else if (settings.debug) { console.log(`${grayTxt}> checkStreak must wait for 'streak' cooldown${resetTxt}`) }
+        else { logMessage([`> checkStreak must wait for 'streak' cooldown`]) }
 
         // Check for tempCmd
         if (command in tempCmds) {
-            if (settings.debug) { console.log(`${grayTxt}MATCHED TEMPORARY COMMAND:${resetTxt} ${command} ${grayTxt}${tempCmds[command]}${resetTxt}`) }
+            logMessage([`MATCHED TEMPORARY COMMAND: ${command} ${tempCmds[command]}`])
             return this.say(chatroom, tempCmds[command])
         }
 

@@ -1,5 +1,11 @@
 require(`dotenv`).config()
 
+const fs = require(`fs`)
+
+fs.writeFile(`lemony_logs.txt`, `🍋️ LEMONY LOGS 🍋️\n`, (err) => {
+    if (err) { console.log(`Error writing logs:`, err) }
+})
+
 // Import helper functions
 const { handleUncaughtException } = require("./utils")
 

@@ -1,4 +1,4 @@
-const { resetTxt, grayTxt, settings } = require(`../config`)
+const { settings } = require(`../config`)
 const { getNeutralEmote } = require(`../utils`)
 
 const validTimeZones = {
@@ -756,7 +756,7 @@ module.exports = {
         const { bot, chatroom, args, currentTime } = props
         const tz = args[0] || settings.timeZone
         const lang = args[1] || settings.timeLocale
-        if (settings.debug) { console.log(`${grayTxt}> getTime(chatroom: ${chatroom}, tz: ${tz}, lang: ${lang})${resetTxt}`) }
+        logMessage([`> getTime(chatroom: ${chatroom}, tz: ${tz}, lang: ${lang})`])
 
         const zone = tz.toLowerCase() in validTimeZones ? validTimeZones[tz.toLowerCase()] : settings.timeZone
         const locale = lang.toLowerCase() in validLocales ? validLocales[lang.toLowerCase()] : settings.timeLocale

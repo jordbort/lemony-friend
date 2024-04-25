@@ -1,30 +1,28 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
-const { resetTxt, grayTxt, settings } = require(`../config`)
 const { users } = require(`../data`)
-
-const { getNeutralEmote, getHypeEmote, getPositiveEmote, getNegativeEmote } = require(`../utils`)
+const { getNeutralEmote, getHypeEmote, getPositiveEmote, getNegativeEmote, logMessage } = require(`../utils`)
 
 module.exports = {
     sayCommands(props) {
         const { bot, chatroom, channel } = props
-        if (settings.debug) { console.log(`${grayTxt}> sayCommands(chatroom: ${chatroom})${resetTxt}`) }
+        logMessage([`> sayCommands(chatroom: ${chatroom})`])
 
         const neutralEmote = getNeutralEmote(channel)
         bot.say(chatroom, `Commands: !greet => Say hi to one or more people, !bye => Say goodnight to someone, !hangman => Start a game of Hangman, !rps => Play me in Rock, Paper, Scissors (move optional), !yell => Chat across Lemony Fresh ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh ` : `🍋️`}, !away => (Optionally add an away message), !tempcmd => Make your own command! ${neutralEmote}`)
     },
     getDocs(props) {
         const { bot, chatroom } = props
-        if (settings.debug) { console.log(`${grayTxt}> getDocs(chatroom: ${chatroom})${resetTxt}`) }
+        logMessage([`> getDocs(chatroom: ${chatroom})`])
 
         bot.say(chatroom, `Check out the docs here: https://github.com/jordbort/lemony-friend/blob/main/README.md`)
     },
     getStats(props) {
         const { bot, chatroom, username, user, toUser, target } = props
-        if (settings.debug) { console.log(`${grayTxt}> getStats(chatroom: ${chatroom})${resetTxt}`) }
+        logMessage([`> getStats(chatroom: ${chatroom})`])
 
         const stats = target || user
-        if (settings.debug) { console.log(`${toUser || username}:`, stats) }
+        logMessage([`${toUser || username}:`, stats])
 
         let data = `${toUser || username}: { id: ${stats.id}, displayName: '${stats.displayName}', nickname: '${stats.nickname}', turbo: ${stats.turbo}, color: '${stats.color}', lemons: ${stats.lemons}, hangmanWins: ${stats.hangmanWins}`
         for (const key of Object.keys(stats)) {
@@ -37,7 +35,7 @@ module.exports = {
     },
     getSubs(props) {
         const { bot, chatroom, channel } = props
-        if (settings.debug) { console.log(`${grayTxt}> getSubs(chatroom: ${chatroom})${resetTxt}`) }
+        logMessage([`> getSubs(chatroom: ${chatroom})`])
 
         const subbedChannels = Object.keys(users[BOT_USERNAME]).filter(channel => typeof users[BOT_USERNAME][channel] === `object` && users[BOT_USERNAME][channel].sub)
 

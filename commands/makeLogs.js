@@ -1,4 +1,3 @@
-const fs = require(`fs`)
 const BOT_ACCESS_TOKEN = process.env.BOT_ACCESS_TOKEN
 
 const JPEGSTRIPES_ACCESS_TOKEN = process.env.JPEGSTRIPES_ACCESS_TOKEN
@@ -90,7 +89,7 @@ function tokenChangeWarning() {
 }
 
 function makeLogs(arr) {
-    let log = `🍋️ LEMONY LOGS 🍋️\n`
+    let logs = `🍋️ LEMONY LOGS 🍋️\n`
 
     const dateOptions = {
         weekday: `long`,
@@ -107,9 +106,23 @@ function makeLogs(arr) {
         timeZoneName: `short`
     }
 
-    log += `Session started: ${settings.startDate.toLocaleDateString(`en-US`, dateOptions)} at ${settings.startDate.toLocaleTimeString(`en-US`, timeOptions)}\n`
+    logs += `Session started: ${settings.startDate.toLocaleDateString(`en-US`, dateOptions)} at ${settings.startDate.toLocaleTimeString(`en-US`, timeOptions)}\n`
 
-    // If any tokens have changed, print a header and footer
+    logs += `\nJoined channels: ['${arr.join(`', '`)}']\n\n`
+
+    const objectsToLog = [
+        [lemonyFresh, `lemonyFresh`],
+        [mods, `mods`],
+        [users, `users`],
+        [knownTags, 'knownTags'],
+        [settings, `settings`],
+        [tempCmds, `tempCmds`]
+    ]
+    for (const [obj, objName] of objectsToLog) {
+        logs += `${renderObj(obj, objName)}\n\n`
+    }
+
+    // If any tokens have changed, print a footer
     const anyTokenChange = lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN
         || lemonyFresh.jpegstripes.accessToken !== JPEGSTRIPES_ACCESS_TOKEN
         || lemonyFresh.jpegstripes.refreshToken !== JPEGSTRIPES_REFRESH_TOKEN
@@ -129,27 +142,9 @@ function makeLogs(arr) {
         || mods.catjerky.accessToken !== CATJERKY_ACCESS_TOKEN
         || mods.catjerky.refreshToken !== CATJERKY_REFRESH_TOKEN
 
-    if (anyTokenChange) { log += tokenChangeWarning() }
+    if (anyTokenChange) { logs += tokenChangeWarning() }
 
-    log += `\nJoined channels: ['${arr.join(`', '`)}']\n\n`
-
-    const objectsToLog = [
-        [lemonyFresh, `lemonyFresh`],
-        [mods, `mods`],
-        [users, `users`],
-        [knownTags, 'knownTags'],
-        [settings, `settings`],
-        [tempCmds, `tempCmds`]
-    ]
-    for (const [obj, objName] of objectsToLog) {
-        log += `${renderObj(obj, objName)}\n\n`
-    }
-
-    if (anyTokenChange) { log += tokenChangeWarning() }
-
-    fs.writeFile(`lemony_logs.txt`, log, (err) => {
-        if (err) { console.log(`Error writing logs:`, err) }
-    })
+    return logs
 }
 
 module.exports = { makeLogs }
