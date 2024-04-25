@@ -193,7 +193,7 @@ module.exports = {
             }
         }
         // Other bot mentions bot
-        if ([`streamelements`, `thetarashark`, `pokemoncommunitygame`].includes(username)) {
+        if ([`streamelements`, `thetarastark`, `pokemoncommunitygame`].includes(username)) {
             if (msg.includes(BOT_USERNAME)) {
                 for (const pattern in botInteraction) {
                     const regex = new RegExp(pattern.split(`/`)[1], pattern.split(`/`)[2])
@@ -204,7 +204,7 @@ module.exports = {
                 }
                 if (settings.debug) { console.log(`${grayTxt}${username.toUpperCase()} DID NOT MATCH REGEX PATTERNS${resetTxt}`) }
             }
-            if (!(`points` in Object(users[BOT_USERNAME][channel])) && [`streamelements`, `thetarashark`].includes(username)) { return this.say(chatroom, `!points`) }
+            if (!(`points` in Object(users[BOT_USERNAME][channel])) && [`streamelements`, `thetarastark`].includes(username)) { return this.say(chatroom, `!points`) }
         }
         // Any user mentions bot
         if (/\b(@?lemony_friend|l+e+m+o+n+y*|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)\b/i.test(msg)) {
