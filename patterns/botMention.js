@@ -1,6 +1,6 @@
 const API_KEY = process.env.API_KEY
 const { handleGreetOne, sayGoodnight, sayThanks, sayYoureWelcome, sayMood } = require(`../commands/conversation`)
-const { logMessage } = require("../utils")
+const { logMessage } = require(`../utils`)
 
 async function checkSentiment(props) {
     const { bot, chatroom, message } = props
