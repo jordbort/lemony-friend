@@ -1,5 +1,5 @@
 const { tempCmds } = require(`../data`)
-const { getNeutralEmote, getPositiveEmote, getNegativeEmote } = require(`../utils`)
+const { getNeutralEmote, getPositiveEmote, getNegativeEmote, logMessage } = require(`../utils`)
 
 module.exports = {
     handleTempCmd(props) {

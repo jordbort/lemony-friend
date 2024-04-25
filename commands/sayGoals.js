@@ -1,3 +1,5 @@
+const { logMessage } = require(`../utils`)
+
 module.exports = {
     sayGoals(props) {
         const { bot, chatroom, args, channel } = props

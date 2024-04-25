@@ -1,5 +1,5 @@
 const { settings } = require(`../config`)
-const { getNeutralEmote, getHypeEmote } = require(`../utils`)
+const { getNeutralEmote, getHypeEmote, logMessage } = require(`../utils`)
 
 module.exports = {
     rockPaperScissors(props) {

@@ -1,5 +1,5 @@
 const { settings } = require(`../config`)
-const { getNeutralEmote } = require(`../utils`)
+const { getNeutralEmote, logMessage } = require(`../utils`)
 
 const validTimeZones = {
     'africa/abidjan': 'Africa/Abidjan',
