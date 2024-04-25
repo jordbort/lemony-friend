@@ -3,7 +3,7 @@ const BOT_ID = Number(process.env.BOT_ID)
 const BOT_USERNAME = process.env.BOT_USERNAME
 const COMMON_NICKNAMES = process.env.COMMON_NICKNAMES
 
-const fs = require(`fs`)
+const fs = require(`fs/promises`)
 
 const { makeLogs } = require(`./commands/makeLogs`)
 const { lemonyFresh, users, mods, knownTags, tempCmds } = require(`./data`)
@@ -187,11 +187,10 @@ function pluralize(num, singularForm, pluralForm) {
         : `${Number(num)} ${pluralForm}`
 }
 
-function logMessage(messages, time, channel, username, color, self) {
-    // console.log(`> logMessage(${pluralize(messages.length, `message`, `messages`)}, ${time}, ${channel}, ${username}, ${color}, ${self})`, messages[0])
+async function logMessage(messages, time, channel, username, color, self) {
     const log = messages.join(` `)
     if (username) {
-        fs.appendFile(`lemony_logs.txt`, `[${time}] <${channel}> ${username}: ${log}\n`, (err) => {
+        await fs.appendFile(`lemony_logs.txt`, `[${time}] <${channel}> ${username}: ${log}\n`, (err) => {
             if (err) { console.log(`Error writing logs:`, err) }
         })
         if (!settings.hideNonDevChannel || channel === DEV) {
@@ -209,7 +208,7 @@ function logMessage(messages, time, channel, username, color, self) {
         }
     }
     else {
-        fs.appendFile(`lemony_logs.txt`, `${log}\n`, (err) => {
+        await fs.appendFile(`lemony_logs.txt`, `${log}\n`, (err) => {
             if (err) { console.log(`Error writing logs:`, err) }
         })
         if (settings.debug) { console.log(`${grayTxt}${log}${resetTxt}`) }
@@ -1232,10 +1231,22 @@ module.exports = {
     getDumbEmote,
     pluralize,
     logMessage,
-    dumpMemory(props) {
+    async handleUncaughtException(bot, err, location) {
+        await logMessage([`> handleUncaughtException(err.message: '${err.message}', location: '${location}')`])
+
+        const emote = users[BOT_USERNAME]?.jpegstripes?.sub ? `jpegstBroken` : users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Heat` : users[BOT_USERNAME]?.domonintendo1?.sub ? `domoni6Sneeze` : `>(`
+        for (const chatroom of bot.channels) {
+            bot.say(chatroom, `Oops, I just crashed! ${emote} ${err.message} ${location}`)
+        }
+
+        await logMessage([makeLogs(bot.channels)])
+        await logMessage([err.stack])
+
+    },
+    async dumpMemory(props) {
         const { bot, channel, username } = props
-        logMessage([`> dumpMemory(channel: ${channel}, username: ${username})`, `\n`])
-        logMessage([makeLogs(bot.channels)])
+        await logMessage([`> dumpMemory(channel: ${channel}, username: ${username})`, `\n`])
+        await logMessage([makeLogs(bot.channels)])
     },
     getToUser(str) {
         return str
@@ -1408,16 +1419,6 @@ module.exports = {
                 ? str.replace(/^[@#]/g, ``)
                 : null
             : null
-    },
-    async handleUncaughtException(bot, errMsg, location) {
-        logMessage([`> handleUncaughtException(errMsg: '${errMsg}', location: '${location}')`])
-        console.log(makeLogs(bot.channels))
-
-        const emote = users[BOT_USERNAME]?.jpegstripes?.sub ? `jpegstBroken` : users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Heat` : users[BOT_USERNAME]?.domonintendo1?.sub ? `domoni6Sneeze` : `>(`
-        for (const chatroom of bot.channels) {
-            bot.say(chatroom, `Oops, I just crashed! ${emote} ${errMsg} ${location}`)
-        }
-        // console.log(`knownTags:`, knownTags, `tempCmds:`, tempCmds, `users:`, users, `mods:`, mods, `lemonyFresh:`, lemonyFresh)
     },
     applyNicknames(props) {
         const { bot, chatroom } = props
