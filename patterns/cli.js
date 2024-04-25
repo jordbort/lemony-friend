@@ -148,7 +148,7 @@ function updateChannelDev(props, args) {
     for (const option in options) {
         const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
         if (regex.test(args[0])) {
-            logMessage([`-> Channel ${toUser} option "${args[0]}" matched:`, regex, options[regex].func])
+            logMessage([`-> Channel ${toUser} option "${args[0]}" matched:`, regex, `[Function: ${options[regex].func.name}]`])
             args.shift()
             return options[regex].func(bot, chatroom, lemonyFresh[toUser], `Channel ${toUser} "${options[regex].name}"`, options[regex].name, args)
         }
@@ -175,7 +175,7 @@ function updateChannel(props, args) {
     for (const option in options) {
         const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
         if (regex.test(args[0])) {
-            logMessage([`-> Channel "${channel}" option "${args[0]}" matched:`, regex, options[regex].func])
+            logMessage([`-> Channel "${channel}" option "${args[0]}" matched:`, regex, `[Function: ${options[regex].func.name}]`])
             args.shift()
             return options[regex].func(bot, chatroom, lemonyFresh[channel], `Channel ${channel} "${options[regex].name}"`, options[regex].name, args)
         }
@@ -204,7 +204,7 @@ function updateUserDev(props, args) {
     for (const option in options) {
         const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
         if (regex.test(args[1])) {
-            logMessage([`-> Channel ${toUser} option ${args[0]} matched:`, regex, options[regex]])
+            logMessage([`-> Channel ${toUser} option ${args[0]} matched:`, regex, `[Function: ${options[regex].func.name}]`])
             args.shift()
 
             // User away and awayMessage require channel object
@@ -250,7 +250,7 @@ function updateUser(props, args) {
     for (const option in options) {
         const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
         if (regex.test(args[1])) {
-            logMessage([`-> User "${toUser}" option "${args[0]}":`, regex, options[regex]])
+            logMessage([`-> User "${toUser}" option "${args[0]}":`, regex, `[Function: ${options[regex].func.name}]`])
             args.shift()
 
             // User away and awayMessage require channel object
@@ -318,7 +318,7 @@ function updateSettingsDev(props, args) {
     for (const option in options) {
         const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
         if (regex.test(args[0])) {
-            logMessage([`-> Setting "${args[0]}" matched:`, regex, options[regex].func])
+            logMessage([`-> Setting "${args[0]}" matched:`, regex, `[Function: ${options[regex].func.name}]`])
             args.shift()
             return options[regex].func(bot, chatroom, settings, `Setting "${options[regex].name}"`, options[regex].name, args)
         }
@@ -345,7 +345,7 @@ function updateSettings(props, args) {
     for (const option in options) {
         const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
         if (regex.test(args[0])) {
-            logMessage([`-> Setting "${args[0]}" matched:`, regex, options[regex].func])
+            logMessage([`-> Setting "${args[0]}" matched:`, regex, `[Function: ${options[regex].func.name}]`])
             args.shift()
             return options[regex].func(bot, chatroom, settings, `Setting "${options[regex].name}"`, options[regex].name, args)
         }
@@ -372,7 +372,7 @@ function updateBaseEmotesDev(bot, chatroom, args) {
     for (const option in options) {
         const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
         if (regex.test(args[0])) {
-            logMessage([`-> Emotes option "${args[0]}" matched:`, regex, options[regex].func])
+            logMessage([`-> Emotes option "${args[0]}" matched:`, regex, `[Function: ${options[regex].func.name}]`])
             args.shift()
             return options[regex].func(bot, chatroom, settings.baseEmotes, `Setting baseEmotes "${options[regex].name}"`, options[regex].name, args)
         }
@@ -397,7 +397,7 @@ function updateTimer(bot, chatroom, obj, message, name, args) {
     for (const option in options) {
         const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
         if (regex.test(setting)) {
-            logMessage([`-> Timer "${timer}" setting "${setting}" matched:`, regex, options[regex].func])
+            logMessage([`-> Timer "${timer}" setting "${setting}" matched:`, regex, `[Function: ${options[regex].func.name}]`])
             return options[regex].func(bot, chatroom, obj[name][timer], `${message} ${timer} "${options[regex].name}"`, options[regex].name, args)
         }
     }
@@ -421,7 +421,7 @@ module.exports = {
             for (const option in options) {
                 const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
                 if (regex.test(args[0])) {
-                    logMessage([`-> Dev ${username} matched:`, regex, options[regex]])
+                    logMessage([`-> Dev ${username} matched:`, regex, `[Function: ${options[regex].name}]`])
                     return options[regex](props, args)
                 }
             }
@@ -436,7 +436,7 @@ module.exports = {
             for (const option in options) {
                 const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
                 if (regex.test(args[0])) {
-                    logMessage([`-> Streamer/mod ${username} matched:`, regex, options[regex]])
+                    logMessage([`-> Streamer/mod ${username} matched:`, regex, `[Function: ${options[regex].name}]`])
                     return options[regex](props, args)
                 }
             }
@@ -451,7 +451,7 @@ module.exports = {
             for (const option in options) {
                 const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
                 if (regex.test(args[0])) {
-                    logMessage([`-> Streamer ${username} matched:`, regex, options[regex]])
+                    logMessage([`-> Streamer ${username} matched:`, regex, `[Function: ${options[regex].name}]`])
                     props.channel = username
                     return options[regex](props, args)
                 }
