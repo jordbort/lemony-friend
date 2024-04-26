@@ -1,7 +1,7 @@
 const API_KEY = process.env.API_KEY
 
 const { settings } = require(`../config`)
-const { getNegativeEmote, logMessage } = require(`../utils`)
+const { getNegativeEmote, renderObj, logMessage } = require(`../utils`)
 
 module.exports = {
     async checkSentiment(props) {
@@ -40,7 +40,7 @@ module.exports = {
             }
         })
         const data = await response.json()
-        logMessage([data])
+        logMessage([`HTTP`, response.status, renderObj(data, `data`)])
 
         const negativeEmote = getNegativeEmote(channel)
         data.status === 200
@@ -62,7 +62,7 @@ module.exports = {
 
         const response = await fetch(endpoint, options)
         const data = await response.json()
-        logMessage([data])
+        logMessage([`HTTP`, response.status, renderObj(data, `data`)])
 
         const negativeEmote = getNegativeEmote(channel)
         if ('error' in data) {

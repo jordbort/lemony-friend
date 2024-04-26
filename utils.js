@@ -187,6 +187,28 @@ function pluralize(num, singularForm, pluralForm) {
         : `${Number(num)} ${pluralForm}`
 }
 
+function renderObj(obj, objName, indentation = ``) {
+    const tab = `${indentation}\t`
+    const data = [`${objName}: {`]
+    if (Object.keys(obj).length) {
+        const keys = `\n${Object.keys(obj).map((key) => {
+            return typeof obj[key] === `string`
+                ? `${tab}${key}: '${obj[key]}'`
+                : typeof obj[key] === `object` && obj[key] !== null
+                    ? Array.isArray(obj[key])
+                        ? `${tab}${key}: [${obj[key].length
+                            ? obj[key].map((val) => { return typeof val === `string` ? `'${val}'` : val }).join(`, `)
+                            : ``
+                        }]`
+                        : `${tab}${renderObj(obj[key], key, tab)}`
+                    : `${tab}${key}: ${obj[key]}`
+        }).join(`,\n`)}`
+        data.push(keys)
+    }
+    data.push(`\n${indentation}}`)
+    return data.join(``)
+}
+
 async function logMessage(messages, time, channel, username, color, self) {
     const log = messages.join(` `)
     if (username) {
@@ -1230,6 +1252,7 @@ module.exports = {
     getByeEmote,
     getDumbEmote,
     pluralize,
+    renderObj,
     logMessage,
     async handleUncaughtException(bot, err, location) {
         await logMessage([`> handleUncaughtException(err.message: '${err.message}', location: '${location}')`])
@@ -1400,9 +1423,10 @@ module.exports = {
                     ? `null`
                     : Array.isArray(tags[tag])
                         ? `array`
-                        : typeof tags[tag] : typeof tags[tag]
+                        : typeof tags[tag]
+                : typeof tags[tag]
             if (!(tag in knownTags)) {
-                logMessage([`> New message tag '${tag}' discovered (type: ${type})`, tags[tag]])
+                logMessage([`> New message tag '${tag}' discovered (type: ${type})`, type === `object` ? renderObj(tags[tag], tag) : tags[tag]])
                 knownTags[tag] = { types: [] }
             }
             if (!knownTags[tag].types.includes(type)) {

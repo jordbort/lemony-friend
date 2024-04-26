@@ -4,7 +4,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET
 const REDIRECT_URI = process.env.REDIRECT_URI
 
 const { lemonyFresh, mods, users } = require(`../data`)
-const { getNeutralEmote, getHypeEmote, getPositiveEmote, getNegativeEmote, getGreetingEmote, getDumbEmote, resetCooldownTimer, getToUser, pluralize, logMessage } = require(`../utils`)
+const { getNeutralEmote, getHypeEmote, getPositiveEmote, getNegativeEmote, getGreetingEmote, getDumbEmote, resetCooldownTimer, getToUser, renderObj, pluralize, logMessage } = require(`../utils`)
 
 async function getBotToken(props, replyWanted = true) {
     const { bot, chatroom, channel, isLemonyFreshMember } = props
@@ -22,7 +22,7 @@ async function getBotToken(props, replyWanted = true) {
     const url = `https://id.twitch.tv/oauth2/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&grant_type=client_credentials`;
     const response = await fetch(url, { method: `POST` })
     const twitchData = await response.json()
-    logMessage([`response:`, response.status, `${JSON.stringify(twitchData)}`])
+    logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
 
     if (response.status === 200) {
         lemonyFresh.botAccessToken = twitchData.access_token
@@ -48,7 +48,7 @@ async function getTwitchUser(props) {
 
     const response = await fetch(endpoint, options)
     const twitchData = await response.json()
-    logMessage([`response:`, response.status, twitchData])
+    logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
 
     const negativeEmote = getNegativeEmote(channel)
     if (response.status !== 200) {
@@ -95,7 +95,7 @@ async function refreshToken(props, replyWanted = true) {
 
     const response = await fetch(endpoint, options)
     const twitchData = await response.json()
-    logMessage([`response:`, response.status, twitchData])
+    logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
 
     const hypeEmote = getHypeEmote(channel)
     const negativeEmote = getNegativeEmote(channel)
@@ -128,7 +128,7 @@ async function getTwitchChannel(bot, chatroom, broadcaster_id) {
 
     const response = await fetch(endpoint, options)
     const twitchData = await response.json()
-    logMessage([`response:`, response.status, twitchData])
+    logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
 
     const channel = chatroom.substring(1)
     if (response.status !== 200) { return bot.say(chatroom, `${twitchData?.message || `There was a problem getting the channel info!`} ${getNegativeEmote(channel)}`) }
@@ -167,7 +167,7 @@ module.exports = {
 
         const response = await fetch(endpoint, options)
         const twitchData = await response.json()
-        logMessage([`response:`, response.status, twitchData])
+        logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
 
         if (`error` in twitchData) {
             bot.say(chatroom, `Error ending poll! ${negativeEmote}`)
@@ -235,7 +235,7 @@ module.exports = {
 
         const response = await fetch(endpoint, options)
         const twitchData = await response.json()
-        logMessage([`response:`, response.status, twitchData])
+        logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
 
         const positiveEmote = getPositiveEmote(channel)
         if (response.status === 200) {
@@ -333,8 +333,8 @@ module.exports = {
                 if (response.status === 204) {
                     logMessage([`-> Shoutout posted successfully!`])
                 } else {
-                    const data = await response.json()
-                    logMessage([`response:`, response.status, data])
+                    const twitchData = await response.json()
+                    logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
                     if (response.status === 401) {
                         // bot.say(chatroom, `Hold on, I need to refresh ${modHasToken ? username : channel}'s token...`)
                         logMessage([`-> Unauthorized from handleShoutOut(), attempting to refresh access token...`])
@@ -397,8 +397,8 @@ module.exports = {
 
         const response = await fetch(endpoint, options)
         if (response.status !== 204) {
-            const data = await response.json()
-            logMessage([`response:`, response.status, data])
+            const twitchData = await response.json()
+            logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
             if (response.status === 401) {
                 // bot.say(chatroom, `Hold on, I need to refresh ${modHasToken ? username : channel}'s token...`)
                 logMessage([`-> Unauthorized from makeAnnouncement(), attempting to refresh access token...`])
@@ -440,7 +440,7 @@ module.exports = {
 
         const response = await fetch(endpoint, options)
         const twitchData = await response.json()
-        logMessage([`response:`, response.status, twitchData])
+        logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
 
         const positiveEmote = getPositiveEmote(channel)
         const negativeEmote = getNegativeEmote(channel)
@@ -476,7 +476,7 @@ module.exports = {
 
         const response = await fetch(endpoint, options)
         const twitchData = await response.json()
-        logMessage([`response:`, response.status, twitchData])
+        logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
 
         const hypeEmote = getHypeEmote(channel)
         const negativeEmote = getNegativeEmote(channel)
@@ -572,7 +572,7 @@ module.exports = {
 
                 const response = await fetch(endpoint, options)
                 const twitchData = await response.json()
-                logMessage([`response:`, response.status, twitchData])
+                logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
 
                 if (response.status === 401) {
                     logMessage([`-> Unauthorized from banUsers(), attempting to refresh access token...`])
@@ -640,7 +640,7 @@ module.exports = {
 
         const response = await fetch(endpoint, options)
         const twitchData = await response.json()
-        logMessage([`response:`, response.status, twitchData])
+        logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
 
         if (response.status === 401) {
             logMessage([`-> Unauthorized from banUsers(), attempting to refresh access token...`])
