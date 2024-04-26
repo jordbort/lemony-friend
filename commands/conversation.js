@@ -380,10 +380,12 @@ module.exports = {
         const { bot, chatroom, message, channel, user, userNickname } = props
         logMessage([`> funTimerGuess(chatroom: '${chatroom}', message: ${message}, userNickname: '${userNickname}', number: ${lemonyFresh[channel].funTimer})`])
 
-        if (Number(message) === lemonyFresh[channel].funTimer) {
+        const regex = new RegExp(`\\b${lemonyFresh[channel].funTimer}\\b`)
+
+        if (regex.test(message)) {
             user.lemons++
             const lemonEmote = getLemonEmote(channel)
-            bot.say(chatroom, `That's right ${userNickname}, have a lemon! ${lemonEmote}`)
+            bot.say(chatroom, `That's right ${userNickname}, the number was ${lemonyFresh[channel].funTimer}. Have a lemon! ${lemonEmote}`)
         } else {
             const neutralEmote = getNeutralEmote(channel)
             bot.say(chatroom, `Sorry ${userNickname}, the number was ${lemonyFresh[channel].funTimer}. Next time! ${neutralEmote}`)
