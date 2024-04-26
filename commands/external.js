@@ -4,6 +4,32 @@ const { settings } = require(`../config`)
 const { getNegativeEmote, logMessage } = require(`../utils`)
 
 module.exports = {
+    async checkSentiment(props) {
+        const { bot, chatroom, message } = props
+        logMessage([`> checkSentiment(chatroom: ${chatroom}, message: ${message})`])
+
+        const sanitizedMsg = message.replace(/[\\{`}%^|]/g, ``)
+        const endpoint = `https://api.api-ninjas.com/v1/sentiment?text=${sanitizedMsg}`
+        const options = {
+            headers: {
+                'X-Api-Key': API_KEY
+            }
+        }
+
+        const response = await fetch(endpoint, options)
+        const data = await response.json()
+        logMessage([`HTTP`, response.status, renderObj(data, `data`)])
+
+        'sentiment' in data
+            ? data.sentiment.includes(`NEUTRAL`)
+                ? bot.say(chatroom, `:p`)
+                : data.sentiment.includes(`POSITIVE`)
+                    ? data.sentiment.includes(`WEAK`)
+                        ? bot.say(chatroom, `:)`)
+                        : bot.say(chatroom, `:D`)
+                    : bot.say(chatroom, `:(`)
+            : bot.say(chatroom, `:O`)
+    },
     async getDadJoke(props) {
         const { bot, chatroom, channel } = props
         logMessage([`> getDadJoke(chatroom: ${chatroom})`])

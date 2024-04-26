@@ -1,33 +1,5 @@
-const API_KEY = process.env.API_KEY
+const { checkSentiment } = require(`../commands/external`)
 const { handleGreetOne, sayGoodnight, sayThanks, sayYoureWelcome, sayMood } = require(`../commands/conversation`)
-const { logMessage } = require(`../utils`)
-
-async function checkSentiment(props) {
-    const { bot, chatroom, message } = props
-    logMessage([`> checkSentiment(chatroom: ${chatroom}, message: ${message})`])
-
-    const sanitizedMsg = message.replace(/[\\{`}%^|]/g, ``)
-    const endpoint = `https://api.api-ninjas.com/v1/sentiment?text=${sanitizedMsg}`
-    const options = {
-        headers: {
-            'X-Api-Key': API_KEY
-        }
-    }
-
-    const response = await fetch(endpoint, options)
-    const data = await response.json()
-    logMessage([data])
-
-    'sentiment' in data
-        ? data.sentiment.includes(`NEUTRAL`)
-            ? bot.say(chatroom, `:p`)
-            : data.sentiment.includes(`POSITIVE`)
-                ? data.sentiment.includes(`WEAK`)
-                    ? bot.say(chatroom, `:)`)
-                    : bot.say(chatroom, `:D`)
-                : bot.say(chatroom, `:(`)
-        : bot.say(chatroom, `:O`)
-}
 
 module.exports = {
     // what up
