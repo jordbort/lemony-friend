@@ -22,7 +22,7 @@ async function getBotToken(props, replyWanted = true) {
     const url = `https://id.twitch.tv/oauth2/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&grant_type=client_credentials`;
     const response = await fetch(url, { method: `POST` })
     const twitchData = await response.json()
-    logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
+    logMessage([`getBotToken`, response.status, renderObj(twitchData, `twitchData`)])
 
     if (response.status === 200) {
         lemonyFresh.botAccessToken = twitchData.access_token
@@ -48,7 +48,7 @@ async function getTwitchUser(props) {
 
     const response = await fetch(endpoint, options)
     const twitchData = await response.json()
-    logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
+    logMessage([`getTwitchUser`, response.status, `data` in twitchData ? renderObj(twitchData.data[0], `twitchData.data[0]`) : renderObj(twitchData, `twitchData`)])
 
     const negativeEmote = getNegativeEmote(channel)
     if (response.status !== 200) {
@@ -59,7 +59,7 @@ async function getTwitchUser(props) {
             options.headers.authorization = `Bearer ${lemonyFresh.botAccessToken}`
             const finalAttempt = await fetch(endpoint, options)
             const finalAttemptData = await finalAttempt.json()
-            logMessage([`finalAttempt:`, finalAttempt.status, finalAttemptData])
+            logMessage([`getTwitchUser`, finalAttempt.status, `data` in finalAttemptData ? renderObj(finalAttemptData.data[0], `finalAttemptData.data[0]`) : renderObj(finalAttemptData, `finalAttemptData`)])
             if (finalAttempt.status === 200) {
                 return finalAttemptData.data[0]
             } else {
@@ -95,7 +95,7 @@ async function refreshToken(props, replyWanted = true) {
 
     const response = await fetch(endpoint, options)
     const twitchData = await response.json()
-    logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
+    logMessage([`refreshToken`, response.status, renderObj(twitchData, `twitchData`)])
 
     const hypeEmote = getHypeEmote(channel)
     const negativeEmote = getNegativeEmote(channel)
@@ -128,7 +128,7 @@ async function getTwitchChannel(bot, chatroom, broadcaster_id) {
 
     const response = await fetch(endpoint, options)
     const twitchData = await response.json()
-    logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
+    logMessage([`getTwitchChannel`, response.status, renderObj(twitchData, `twitchData`)])
 
     const channel = chatroom.substring(1)
     if (response.status !== 200) { return bot.say(chatroom, `${twitchData?.message || `There was a problem getting the channel info!`} ${getNegativeEmote(channel)}`) }
@@ -167,7 +167,7 @@ module.exports = {
 
         const response = await fetch(endpoint, options)
         const twitchData = await response.json()
-        logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
+        logMessage([`pollEnd`, response.status, renderObj(twitchData, `twitchData`)])
 
         if (`error` in twitchData) {
             bot.say(chatroom, `Error ending poll! ${negativeEmote}`)
@@ -235,7 +235,7 @@ module.exports = {
 
         const response = await fetch(endpoint, options)
         const twitchData = await response.json()
-        logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
+        logMessage([`pollStart`, response.status, renderObj(twitchData, `twitchData`)])
 
         const positiveEmote = getPositiveEmote(channel)
         if (response.status === 200) {
@@ -250,7 +250,7 @@ module.exports = {
             options.headers.authorization = `Bearer ${lemonyFresh[channel].accessToken}`
             const finalAttempt = await fetch(endpoint, options)
             const finalAttemptData = await finalAttempt.json()
-            logMessage([`finalAttempt:`, finalAttempt.status, finalAttemptData])
+            logMessage([`pollStart`, finalAttempt.status, renderObj(finalAttemptData, `finalAttemptData`)])
             if (finalAttempt.status === 200) {
                 bot.say(chatroom, `Poll created, go vote! ${positiveEmote}`)
                 lemonyFresh[channel].pollId = finalAttemptData.data[0].id
@@ -334,7 +334,7 @@ module.exports = {
                     logMessage([`-> Shoutout posted successfully!`])
                 } else {
                     const twitchData = await response.json()
-                    logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
+                    logMessage([`handleShoutOut`, response.status, renderObj(twitchData, `twitchData`)])
                     if (response.status === 401) {
                         // bot.say(chatroom, `Hold on, I need to refresh ${modHasToken ? username : channel}'s token...`)
                         logMessage([`-> Unauthorized from handleShoutOut(), attempting to refresh access token...`])
@@ -347,7 +347,7 @@ module.exports = {
                         } else {
                             const finalAttemptData = await finalAttempt.json()
                             logMessage([`--> handleShoutOut() failed a second time:`])
-                            logMessage([`finalAttempt:`, finalAttempt.status, finalAttemptData])
+                            logMessage([`handleShoutOut`, finalAttempt.status, renderObj(finalAttemptData, `finalAttemptData`)])
                         }
                     }
                 }
@@ -398,7 +398,7 @@ module.exports = {
         const response = await fetch(endpoint, options)
         if (response.status !== 204) {
             const twitchData = await response.json()
-            logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
+            logMessage([`makeAnnouncement`, response.status, renderObj(twitchData, `twitchData`)])
             if (response.status === 401) {
                 // bot.say(chatroom, `Hold on, I need to refresh ${modHasToken ? username : channel}'s token...`)
                 logMessage([`-> Unauthorized from makeAnnouncement(), attempting to refresh access token...`])
@@ -408,7 +408,7 @@ module.exports = {
                 if (finalAttempt.status !== 204) {
                     const finalAttemptData = await finalAttempt.json()
                     logMessage([`--> makeAnnouncement() failed a second time:`])
-                    logMessage([`finalAttempt:`, finalAttempt.status, finalAttemptData])
+                    logMessage([`makeAnnouncement`, finalAttempt.status, renderObj(finalAttemptData, `finalAttemptData`)])
                     bot.say(chatroom, `Failed to make announcement! ${finalAttemptData.message} from ${modHasToken ? username : channel} ${getNegativeEmote(channel)}`)
                 }
             }
@@ -440,7 +440,7 @@ module.exports = {
 
         const response = await fetch(endpoint, options)
         const twitchData = await response.json()
-        logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
+        logMessage([`validateToken`, response.status, renderObj(twitchData, `twitchData`)])
 
         const positiveEmote = getPositiveEmote(channel)
         const negativeEmote = getNegativeEmote(channel)
@@ -476,7 +476,7 @@ module.exports = {
 
         const response = await fetch(endpoint, options)
         const twitchData = await response.json()
-        logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
+        logMessage([`authorizeToken`, response.status, renderObj(twitchData, `twitchData`)])
 
         const hypeEmote = getHypeEmote(channel)
         const negativeEmote = getNegativeEmote(channel)
@@ -572,7 +572,7 @@ module.exports = {
 
                 const response = await fetch(endpoint, options)
                 const twitchData = await response.json()
-                logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
+                logMessage([`banUsers`, response.status, `data` in twitchData ? renderObj(twitchData.data[0], `twitchData.data[0]`) : renderObj(twitchData, `twitchData`)])
 
                 if (response.status === 401) {
                     logMessage([`-> Unauthorized from banUsers(), attempting to refresh access token...`])
@@ -580,7 +580,7 @@ module.exports = {
                     options.headers.authorization = `Bearer ${modHasToken ? mods[username].accessToken : lemonyFresh[channel].accessToken}`
                     const finalAttempt = await fetch(endpoint, options)
                     const finalAttemptData = await finalAttempt.json()
-                    logMessage([`finalAttempt:`, finalAttempt.status, finalAttemptData])
+                    logMessage([`banUsers`, finalAttempt.status, `data` in finalAttemptData ? renderObj(finalAttemptData.data[0], `finalAttemptData.data[0]`) : renderObj(finalAttemptData, `finalAttemptData`)])
                     if (finalAttempt.status === 400 && finalAttemptData.message === `The user specified in the user_id field is already banned.`) {
                         alreadyBanned.push(userToBan)
                     } else if (finalAttempt.status !== 200) {
@@ -640,7 +640,7 @@ module.exports = {
 
         const response = await fetch(endpoint, options)
         const twitchData = await response.json()
-        logMessage([`HTTP`, response.status, renderObj(twitchData, `twitchData`)])
+        logMessage([`autoBanUser`, response.status, renderObj(twitchData, `twitchData`)])
 
         if (response.status === 401) {
             logMessage([`-> Unauthorized from banUsers(), attempting to refresh access token...`])
@@ -648,7 +648,7 @@ module.exports = {
             options.headers.authorization = `Bearer ${lemonyFresh[channel].accessToken}`
             const finalAttempt = await fetch(endpoint, options)
             const finalAttemptData = await finalAttempt.json()
-            logMessage([`finalAttempt:`, finalAttempt.status, finalAttemptData])
+            logMessage([`autoBanUser`, finalAttempt.status, renderObj(finalAttemptData, `finalAttemptData`)])
             if (finalAttempt.status !== 200) {
                 logMessage([`--> banUsers() failed a second time:`])
                 return bot.say(chatroom, `Failed to ban user! ${finalAttemptData?.message || `Please update your token scope by using !access again!`} ${negativeEmote}`)
