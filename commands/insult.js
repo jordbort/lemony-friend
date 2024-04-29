@@ -176,6 +176,6 @@ module.exports = {
 
         const insult = insults[Math.floor(Math.random() * insults.length)]
 
-        bot.say(chatroom, `(Hey) ${targetNickname || userNickname} ${insult}`)
+        bot.say(chatroom, `Hey ${targetNickname || userNickname} ${insult}`)
     }
 }
