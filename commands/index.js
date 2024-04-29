@@ -2,7 +2,7 @@ const { getTime } = require(`./time`)
 const { sayGoals } = require(`./sayGoals`)
 const { rockPaperScissors } = require(`./rps`)
 const { handleLemonify } = require(`./lemonify`)
-const { applyNicknames, dumpMemory } = require(`../utils`)
+const { applyNicknames } = require(`../utils`)
 const { handleTempCmd, getTempCmds } = require(`./tempCmds`)
 const { sayCommands, getDocs, getStats } = require(`./help`)
 const { startHangman, joinHangman } = require(`../patterns/hangman`)
@@ -13,7 +13,6 @@ const { getLastMessage, getMessageCount, sayOnlineTime, sayFriends, getColor, ge
 const { handleShoutOut, getBotToken, validateToken, refreshToken, makeAnnouncement, pollStart, pollEnd, getOAUTHToken, authorizeToken, banUsers } = require(`./twitch`)
 
 module.exports = {
-    '!dump': dumpMemory,
     '!so': handleShoutOut,
     '!token': getBotToken,
     '!validate': validateToken,

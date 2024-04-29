@@ -4,7 +4,7 @@ const { settings } = require(`../config`)
 const { lemonyFresh, users, mods } = require(`../data`)
 
 const { getSubs } = require(`./help`)
-const { logMessage } = require(`../utils`)
+const { logMessage, dumpMemory } = require(`../utils`)
 const { rollFunNumber } = require(`./funNumber`)
 const { handleJoin, handlePart } = require(`./joinPart`)
 
@@ -18,6 +18,7 @@ function checkPoints(props) {
 }
 
 module.exports = {
+    'dump': dumpMemory,
     '!test': checkPoints,
     'tags': (props) => { console.log(props.tags) },
 
