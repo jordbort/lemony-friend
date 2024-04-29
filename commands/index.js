@@ -5,7 +5,7 @@ const { handleLemonify } = require(`./lemonify`)
 const { applyNicknames } = require(`../utils`)
 const { handleTempCmd, getTempCmds } = require(`./tempCmds`)
 const { sayCommands, getDocs, getStats } = require(`./help`)
-const { startHangman, joinHangman } = require(`../patterns/hangman`)
+const { manageHangman, joinHangman } = require(`../patterns/hangman`)
 const { getDadJoke, getPokemon, getDefinition } = require(`./external`)
 const { insultUser, manageVerbs, manageNouns, manageAdjectives } = require(`./insult`)
 const { sayGoodnight, handleGreet, chant, handleRaid, setAway, yell } = require(`./conversation`)
@@ -56,7 +56,7 @@ module.exports = {
     '!docs': getDocs,
     '!mystats': getStats,
 
-    '!hangman': startHangman,
+    '!hangman': manageHangman,
     '!play': joinHangman,
 
     '!lastmsg': getLastMessage,

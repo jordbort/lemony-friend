@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 const { settings } = require(`../config`)
 const { lemonyFresh, users } = require(`../data`)
-const { pluralize, getHypeEmote, getPositiveEmote, getUpsetEmote, getNegativeEmote, logMessage } = require(`../utils`)
+const { pluralize, getHypeEmote, getPositiveEmote, getUpsetEmote, getNegativeEmote, logMessage, getNeutralEmote } = require(`../utils`)
 
 async function getRandomWord() {
     logMessage([`> getRandomWord()`])
@@ -51,11 +51,10 @@ function hangmanAnnounce(bot, chatroom, userNickname) {
     const positiveEmote = getPositiveEmote(channel)
     const hangman = lemonyFresh[channel].hangman
 
-    hangman.signup = true
     bot.say(chatroom, `${userNickname} has started a game of Hangman! Type !play in the next ${settings.hangmanSignupSeconds} seconds if you'd like to join in, too! ${hypeEmote}`)
 
-    // After signup period has ended, close signup window, shuffle players, and start game
-    setTimeout(() => {
+    // After signup timer ID has expired, close signup window, shuffle players, and start game
+    hangman.signup = Number(setTimeout(() => {
         hangman.signup = false
         logMessage([`-> ${settings.hangmanSignupSeconds} seconds has elapsed, signup window closed - players: ${hangman.players.join(`, `)}`])
         hangman.players.sort(() => Math.random() - 0.5)
@@ -70,17 +69,39 @@ function hangmanAnnounce(bot, chatroom, userNickname) {
         const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
         const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip ? 1000 : 2000
         setTimeout(() => bot.say(chatroom, statusMsg), delay)
-    }, settings.hangmanSignupSeconds * 1000)
+    }, settings.hangmanSignupSeconds * 1000))
 }
 
 module.exports = {
-    startHangman(props) {
-        const { bot, chatroom, channel, username, userNickname } = props
-        logMessage([`> startHangman(chatroom: '${chatroom}')`])
+    manageHangman(props) {
+        const { bot, chatroom, args, channel, username, userNickname, isMod } = props
+        logMessage([`> manageHangman(chatroom: '${chatroom}')`])
 
         // In case a Hangman game is already in progress in the channel
         const hangman = lemonyFresh[channel].hangman
         if (hangman.listening) {
+            // Mod can end the game early
+            const neutralEmote = getNeutralEmote(channel)
+            if (isMod && /^end$/i.test(args[0])) {
+                hangman.listening = false
+                clearTimeout(hangman.signup)
+                hangman.signup = false
+                return bot.say(chatroom, `Hangman ended! The answer was "${hangman.answer}" ${neutralEmote}`)
+            }
+
+            // Mod can skip the current player
+            if (isMod && !hangman.signup && /^skip$/i.test(args[0])) {
+                const skippedPlayer = users[hangman.players[hangman.currentPlayer]].nickname || users[hangman.players[hangman.currentPlayer]].displayName
+                hangman.currentPlayer++
+                if (hangman.currentPlayer === hangman.players.length) { hangman.currentPlayer = 0 }
+                const nextPlayer = users[hangman.players[hangman.currentPlayer]].nickname || users[hangman.players[hangman.currentPlayer]].displayName
+                bot.say(chatroom, `Skipping ${skippedPlayer}! Now it's your turn, ${nextPlayer}! ${neutralEmote}`)
+                const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
+                const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
+                setTimeout(() => bot.say(chatroom, statusMsg), delay)
+                return
+            }
+
             const currentPlayer = hangman.players[hangman.currentPlayer]
             return hangman.signup
                 ? bot.say(chatroom, `A game of Hangman is starting, type !play to join!`)
