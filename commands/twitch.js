@@ -48,7 +48,7 @@ async function getTwitchUser(props) {
 
     const response = await fetch(endpoint, options)
     const twitchData = await response.json()
-    logMessage([`getTwitchUser`, response.status, `data` in twitchData ? renderObj(twitchData.data[0], `twitchData.data[0]`) : renderObj(twitchData, `twitchData`)])
+    logMessage([`getTwitchUser`, response.status, `data` in twitchData ? twitchData.data.length ? renderObj(twitchData.data[0], `twitchData.data[0]`) : `twitchData.data: []` : renderObj(twitchData, `twitchData`)])
 
     const negativeEmote = getNegativeEmote(channel)
     if (response.status !== 200) {
@@ -572,7 +572,7 @@ module.exports = {
 
                 const response = await fetch(endpoint, options)
                 const twitchData = await response.json()
-                logMessage([`banUsers`, response.status, `data` in twitchData ? renderObj(twitchData.data[0], `twitchData.data[0]`) : renderObj(twitchData, `twitchData`)])
+                logMessage([`banUsers`, response.status, `data` in twitchData ? twitchData.data.length ? renderObj(twitchData.data[0], `twitchData.data[0]`) : `twitchData.data: []` : renderObj(twitchData, `twitchData`)])
 
                 if (response.status === 401) {
                     logMessage([`-> Unauthorized from banUsers(), attempting to refresh access token...`])
