@@ -136,15 +136,6 @@ module.exports = {
         /**************\
         !COMMANDS PARSER
         \**************/
-        if (msg.startsWith(`!`)) {
-            for (const cmd in commands) {
-                if (command === cmd) {
-                    logMessage([`MATCHED COMMAND:`, cmd, `[Function: ${commands[command].name}]`])
-                    return commands[command](props)
-                }
-            }
-            if (!/^!([a-z]+)lemon([a-z]*)/.test(command)) { logMessage([`COMMAND NOT RECOGNIZED`]) }
-        }
         // Dev commands
         if (username === DEV) {
             for (const cmd in dev) {
@@ -153,7 +144,15 @@ module.exports = {
                     return dev[command](props)
                 }
             }
-            // logMessage([`DEV COMMAND NOT RECOGNIZED`])
+        }
+        if (msg.startsWith(`!`)) {
+            for (const cmd in commands) {
+                if (command === cmd) {
+                    logMessage([`MATCHED COMMAND:`, cmd, `[Function: ${commands[command].name}]`])
+                    return commands[command](props)
+                }
+            }
+            if (!/^!([a-z]+)lemon([a-z]*)/.test(command)) { logMessage([`COMMAND NOT RECOGNIZED`]) }
         }
 
         // Check user's first message in a given channel
