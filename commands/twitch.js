@@ -59,7 +59,7 @@ async function getTwitchUser(props) {
             options.headers.authorization = `Bearer ${lemonyFresh.botAccessToken}`
             const finalAttempt = await fetch(endpoint, options)
             const finalAttemptData = await finalAttempt.json()
-            logMessage([`getTwitchUser`, finalAttempt.status, `data` in finalAttemptData ? renderObj(finalAttemptData.data[0], `finalAttemptData.data[0]`) : renderObj(finalAttemptData, `finalAttemptData`)])
+            logMessage([`getTwitchUser`, finalAttempt.status, `data` in finalAttemptData ? finalAttemptData.length ? renderObj(finalAttemptData.data[0], `finalAttemptData.data[0]`) : `finalAttemptData.data: []` : renderObj(finalAttemptData, `finalAttemptData`)])
             if (finalAttempt.status === 200) {
                 return finalAttemptData.data[0]
             } else {
@@ -580,7 +580,7 @@ module.exports = {
                     options.headers.authorization = `Bearer ${modHasToken ? mods[username].accessToken : lemonyFresh[channel].accessToken}`
                     const finalAttempt = await fetch(endpoint, options)
                     const finalAttemptData = await finalAttempt.json()
-                    logMessage([`banUsers`, finalAttempt.status, `data` in finalAttemptData ? renderObj(finalAttemptData.data[0], `finalAttemptData.data[0]`) : renderObj(finalAttemptData, `finalAttemptData`)])
+                    logMessage([`banUsers`, finalAttempt.status, `data` in finalAttemptData ? finalAttemptData.length ? renderObj(finalAttemptData.data[0], `finalAttemptData.data[0]`) : `finalAttemptData.data: []` : renderObj(finalAttemptData, `finalAttemptData`)])
                     if (finalAttempt.status === 400 && finalAttemptData.message === `The user specified in the user_id field is already banned.`) {
                         alreadyBanned.push(userToBan)
                     } else if (finalAttempt.status !== 200) {
