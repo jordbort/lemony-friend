@@ -85,6 +85,7 @@ module.exports = {
     '!gn': sayGoodnight,
     '!goodnight': sayGoodnight,
     '!bye': sayGoodnight,
+    '!goodbye': sayGoodnight,
 
     '!color': getColor,
     '!colour': getColor,
