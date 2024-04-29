@@ -32,7 +32,7 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!banuser` or `!banusers` - This command can only be used by the streamer or a moderator. It is used to ban one more users (separated by spaces) from the channel.
 
 ## Fun commands 🍋️
-- `!hangman` - This command initiates a game of Hangman and chooses a random word by using the [Rando API](https://random-word-api.vercel.app/). Join the game using `!play`, even after the game has started.
+- `!hangman` - This command initiates a game of Hangman and chooses a random word by using the [Rando API](https://random-word-api.vercel.app/). Join the game using `!play`, even after the game has started. A moderator can also manage the game by using `!hangman skip` to skip the current player's turn, and `!hangman end` to stop the game and reveal the answer.
 - `!play` - Use this command to join an active game of Hangman.
 - `!rps` - Use this command to challenge lemony_friend to a game of Rock, Paper, Scissors. You may can use `!rps rock` `!rps paper` `!rps scissors` to specify your move, or simply use `!rps` and a move will be chosen at random.
 - `!chant` - Use this command to have lemony_friend chant it in all caps in chat.
@@ -48,7 +48,7 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!tempcmd` (or `!tmpcmd`) - This command is used to create custom commands that will be active until the next time lemony_friend is rebooted. Use `!tempcmd <commandname> <response...>` to create/edit a command name and reply, and `!tempcmd delete <commandname>` to delete a command.
 - `!tempcmds` (or `!tmpcmds`) - This command lists all existing temporary commands.
 - `!greet` - This command can be used to greet one or more users. Use `!greet <user>` to greet another user, `!greet <user1> <user2>...` to greet multiple users, or `!greet all` to greet all known users in the current channel who have chatted in the past hour, other than the user of the command.
-- `!bye` (or `!gn` or `!goodnight`) - This command can be used to say good night to a user leaving chat.
+- `!goodbye` (or `!bye` or `!gn` or `!goodnight`) - This command can be used to say good night to a user leaving chat.
 - `!dadjoke` - This command gets a random joke from a [Dad Joke API](https://icanhazdadjoke.com/api).
 - `!pokemon` - This command can be used to get useful information about a Pokémon from a [Pokémon API](https://pokeapi.co/).
 
