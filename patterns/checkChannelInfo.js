@@ -52,12 +52,12 @@ module.exports = {
         otherChannelNickname
             ? otherChannel in user
                 ? user[otherChannel].mod
-                    ? bot.say(chatroom, `Yes ${userNickname}, you are a mod to ${otherChannelNickname}'s chat! ${hypeEmote}`)
-                    : bot.say(chatroom, `No ${userNickname}, you are not a mod to ${otherChannelNickname}'s chat! ${negativeEmote}`)
+                    ? bot.say(chatroom, `Yes ${userNickname}, you are a mod in ${otherChannelNickname}'s chat! ${hypeEmote}`)
+                    : bot.say(chatroom, `No ${userNickname}, you are not a mod in ${otherChannelNickname}'s chat! ${negativeEmote}`)
                 : bot.say(chatroom, `I don't know whether you are a mod in ${otherChannelNickname}'s chat, ${userNickname}! ${dumbEmote}`)
             : user[channel].mod
-                ? bot.say(chatroom, `Yes ${userNickname}, you are a mod to ${channelNickname}'s chat! ${hypeEmote}`)
-                : bot.say(chatroom, `No ${userNickname}, you are not a mod to ${channelNickname}'s chat! ${negativeEmote}`)
+                ? bot.say(chatroom, `Yes ${userNickname}, you are a mod in ${channelNickname}'s chat! ${hypeEmote}`)
+                : bot.say(chatroom, `No ${userNickname}, you are not a mod in ${channelNickname}'s chat! ${negativeEmote}`)
     },
     checkSelfVIP(props, splitMessage) {
         const { bot, chatroom, channel, user, userNickname } = props
