@@ -35,7 +35,7 @@ module.exports = {
 
         if (/^clear$|^c$/i.test(args[0])) {
             wordBank.verbs.length = 0
-            return bot.say(chatroom, `I know ${wordBank.verbs.length} verbs! ${positiveEmote}`)
+            return bot.say(chatroom, `Now I know ${wordBank.verbs.length} verbs! ${positiveEmote}`)
         }
 
         if (/^delete$|^d$/i.test(args[0])) {
@@ -63,7 +63,7 @@ module.exports = {
 
         if (/^clear$|^c$/i.test(args[0])) {
             wordBank.nouns.length = 0
-            return bot.say(chatroom, `I know ${wordBank.nouns.length} nouns! ${positiveEmote}`)
+            return bot.say(chatroom, `Now I know ${wordBank.nouns.length} nouns! ${positiveEmote}`)
         }
 
         if (/^delete$|^d$/i.test(args[0])) {
@@ -91,7 +91,7 @@ module.exports = {
 
         if (/^clear$|^c$/i.test(args[0])) {
             wordBank.adjectives.length = 0
-            return bot.say(chatroom, `I know ${wordBank.adjectives.length} adjectives! ${positiveEmote}`)
+            return bot.say(chatroom, `Now I know ${wordBank.adjectives.length} adjectives! ${positiveEmote}`)
         }
 
         if (/^delete$|^d$/i.test(args[0])) {
