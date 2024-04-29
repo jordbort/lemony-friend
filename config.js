@@ -137,6 +137,12 @@ const settings = {
     ]
 }
 
+const wordBank = {
+    verbs: [],
+    nouns: [],
+    adjectives: []
+}
+
 module.exports = {
     resetTxt,
     boldTxt,
@@ -163,5 +169,6 @@ module.exports = {
     grayBg,
     orangeBg,
     chatColors,
-    settings
+    settings,
+    wordBank
 }

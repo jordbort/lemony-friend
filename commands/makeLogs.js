@@ -33,7 +33,7 @@ const CATJERKY_REFRESH_TOKEN = process.env.CATJERKY_REFRESH_TOKEN
 const SKITTLE108_ACCESS_TOKEN = process.env.SKITTLE108_ACCESS_TOKEN
 const SKITTLE108_REFRESH_TOKEN = process.env.SKITTLE108_REFRESH_TOKEN
 
-const { settings } = require(`../config`)
+const { settings, wordBank } = require(`../config`)
 const { lemonyFresh, mods, users, knownTags, tempCmds } = require(`../data`)
 
 function renderObj(obj, objName, indentation = ``) {
@@ -116,6 +116,7 @@ function makeLogs(arr) {
         [users, `users`],
         [knownTags, 'knownTags'],
         [settings, `settings`],
+        [wordBank, `wordBank`],
         [tempCmds, `tempCmds`]
     ]
     for (const [obj, objName] of objectsToLog) {
