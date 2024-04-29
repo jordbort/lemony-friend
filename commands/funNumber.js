@@ -81,13 +81,13 @@ const currencies = [
     },
     {
         name: `turkish lira`,
-        abbreviation: ``,
+        abbreviation: `TRY`,
         symbol: `₺`,
         zeroes: `00`
     },
     {
         name: `turkish lira`,
-        abbreviation: ``,
+        abbreviation: `TRY`,
         symbol: `₺`,
         zeroes: `00`
     },
