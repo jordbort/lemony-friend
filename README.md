@@ -35,12 +35,16 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!hangman` - This command initiates a game of Hangman and chooses a random word by using the [Rando API](https://random-word-api.vercel.app/). Join the game using `!play`, even after the game has started.
 - `!play` - Use this command to join an active game of Hangman.
 - `!rps` - Use this command to challenge lemony_friend to a game of Rock, Paper, Scissors. You may can use `!rps rock` `!rps paper` `!rps scissors` to specify your move, or simply use `!rps` and a move will be chosen at random.
-- `!chant` - Use this command to have lemony_friend chant it in all caps in chat. It
+- `!chant` - Use this command to have lemony_friend chant it in all caps in chat.
 - `!yell` - Use this command with a message to send that message across all channels where someone has chatted in the past hour.
 - `!define` (or `!definition` or `!meaning`) - This command can be used followed by a word to look up its definition using an API from [API Ninjas](https://api-ninjas.com/).
 - `!lemon` (or `!lemons`) - This command can be used to check how many lemons the sender (or another user) has.
-- `![use]lemon[append?]` - This command is a wildcard that can be used. [Use] can be any verb (or verb phrase), and [append?] could be an optional suffix, if "lemon" is meant to be a descriptor, possibly to pluralize "lemon" to all "lemons".
+- `![use]lemon[append?]` - This command is a wildcard that can be used. [Use] can be any verb (or verb phrase), and [append?] could be an optional suffix, if "lemon" is meant to be a descriptor, or possibly to pluralize "lemon" to all "lemons".
 - `!lemonify` - This command can be used to transform another user's message into lemons.
+- `!insult` - Use this command to generate a random, Mad Libs-style "insult" directed at yourself or another user. You can add your own verbs, nouns, and adjectives to its word bank by using the respective commands.
+- `!verbs` (or `!verb` or `!v`) - Use this command to add to the list of verbs Lemony Friend knows.
+- `!nouns` (or `!noun` or `!n`) - Use this command to add to the list of nouns Lemony Friend knows.
+- `!adjectives` (or `!adjective` or `!adj` or `!a`) - Use this command to add to the list of adjectives Lemony Friend knows.
 - `!tempcmd` (or `!tmpcmd`) - This command is used to create custom commands that will be active until the next time lemony_friend is rebooted. Use `!tempcmd <commandname> <response...>` to create/edit a command name and reply, and `!tempcmd delete <commandname>` to delete a command.
 - `!tempcmds` (or `!tmpcmds`) - This command lists all existing temporary commands.
 - `!greet` - This command can be used to greet one or more users. Use `!greet <user>` to greet another user, `!greet <user1> <user2>...` to greet multiple users, or `!greet all` to greet all known users in the current channel who have chatted in the past hour, other than the user of the command.
