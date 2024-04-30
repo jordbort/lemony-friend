@@ -367,7 +367,7 @@ const lemonyFresh = {
     },
     astral_an0maly: {
         id: 144838577,
-        emotes: [`astral332HI`],
+        emotes: [`astral332HI`, `astral332Pop`],
         accessToken: ASTRAL_AN0MALY_ACCESS_TOKEN,
         refreshToken: ASTRAL_AN0MALY_REFRESH_TOKEN,
         noSubRaidMessage: `CorgiDerp ASS RAID CorgiDerp`,

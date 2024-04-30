@@ -1,13 +1,14 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
+const { settings } = require(`../config`)
 const { users, lemonyFresh } = require(`../data`)
-const { resetTxt, grayTxt, settings } = require(`../config`)
 
-const { getLemonEmote, getNeutralEmote, getPositiveEmote, getGreetingEmote, getByeEmote, pluralize, resetCooldownTimer, getHypeEmote, getUpsetEmote, getNegativeEmote, getDumbEmote } = require(`../utils`)
+const { getLemonEmote, getNeutralEmote, getPositiveEmote, getGreetingEmote, getByeEmote, pluralize, resetCooldownTimer, getHypeEmote, getUpsetEmote, getNegativeEmote, getDumbEmote, logMessage } = require(`../utils`)
+const { autoBanUser } = require(`./twitch`)
 
 function handleGreetOne(props) {
     const { bot, chatroom, channel, toUser, userNickname, targetNickname } = props
-    if (settings.debug) { console.log(`${grayTxt}> handleGreetOne(chatroom: '${chatroom}', nickname: ${targetNickname || userNickname})${resetTxt}`) }
+    logMessage([`> handleGreetOne(chatroom: '${chatroom}', nickname: ${targetNickname || userNickname})`])
 
     if (lemonyFresh[channel].timers[`greet`].listening) {
         resetCooldownTimer(channel, `greet`)
@@ -57,11 +58,11 @@ function handleGreetOne(props) {
             response += `, ${appends[Math.floor(Math.random() * appends.length)]} ${greetingEmote}`
         }
         bot.say(chatroom, response)
-    } else if (settings.debug) { console.log(`${grayTxt}-> Timer in ${channel} 'greet' is not currently listening${resetTxt}`) }
+    } else { logMessage([`-> Timer in ${channel} 'greet' is not currently listening`]) }
 }
 
 function handleGreetMany(bot, chatroom, arr) {
-    if (settings.debug) { console.log(`${grayTxt}> handleGreetMany(chatroom: ${chatroom}, arr: ${arr})${resetTxt}`) }
+    logMessage([`> handleGreetMany(chatroom: ${chatroom}, arr: ${arr})`])
     const channel = chatroom.substring(1)
 
     if (lemonyFresh[channel].timers[`mass-greet`].listening) {
@@ -84,11 +85,11 @@ function handleGreetMany(bot, chatroom, arr) {
                 : response.push(`${randomGreeting} ${str} ${greetingEmote}`)
         }
         bot.say(chatroom, response.join(` `))
-    } else if (settings.debug) { console.log(`${grayTxt}-> Timer in ${channel} 'massGreet' is not currently listening${resetTxt}`) }
+    } else { logMessage([`-> Timer in ${channel} 'massGreet' is not currently listening`]) }
 }
 
 function handleGreetAll(bot, chatroom, username) {
-    if (settings.debug) { console.log(`${grayTxt}> handleGreetAll(chatroom: ${chatroom}, username: ${username})${resetTxt}`) }
+    logMessage([`> handleGreetAll(chatroom: ${chatroom}, username: ${username})`])
     const channel = chatroom.substring(1)
 
     if (lemonyFresh[channel].timers[`mass-greet`].listening) {
@@ -103,7 +104,7 @@ function handleGreetAll(bot, chatroom, username) {
                 if (lastChattedAtMins < 60) {
                     usersToGreet.push(users[user].nickname || users[user].displayName)
                 } else {
-                    console.log(`${grayTxt}${user} has not chatted in the past 60 minutes, ignoring...${resetTxt}`, lastChattedAtMins)
+                    logMessage([`${user} has not chatted in the past 60 minutes, ignoring...`, lastChattedAtMins])
                 }
             }
         }
@@ -119,18 +120,28 @@ function handleGreetAll(bot, chatroom, username) {
         const greetingEmote = getGreetingEmote(channel)
         const response = usersToGreet.map((user) => `${randomGreeting} ${user} ${greetingEmote}`)
         bot.say(chatroom, response.join(` `))
-    } else if (settings.debug) { console.log(`${grayTxt}-> Timer in ${channel} 'greetAll' is not currently listening${resetTxt}`) }
+    } else { logMessage([`-> Timer in ${channel} 'greetAll' is not currently listening`]) }
 }
 
 module.exports = {
     handleGreetOne,
-    handleNewChatter(bot, chatroom, user) {
-        if (settings.debug) { console.log(`${grayTxt}> handleNewChatter(chatroom: ${chatroom}, user: ${user.displayName})${resetTxt}`) }
-        const channel = chatroom.substring(1)
+    handleNewChatter(bot, chatroom, username, message) {
+        logMessage([`> handleNewChatter(chatroom: ${chatroom}, username: ${username})`])
 
+        // Check for automatic ban phrase
+        for (const phrase of settings.autoBan) {
+            const regex = new RegExp(phrase, `i`)
+            if (regex.test(message)) {
+                logMessage([`${username.toUpperCase()} MATCHED AUTO-BAN PATTERN:`, regex])
+                return autoBanUser(bot, chatroom, username)
+            }
+        }
+
+        const channel = chatroom.substring(1)
         if (lemonyFresh[channel].timers[`new-chatter`].listening) {
             resetCooldownTimer(channel, `new-chatter`)
 
+            const user = users[username]
             const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
             const greetings = [
                 `Hi ${user.displayName}, welcome to the stream!`,
@@ -145,11 +156,11 @@ module.exports = {
 
             const greetingEmote = getGreetingEmote(channel)
             setTimeout(() => bot.say(chatroom, `${greeting} ${greetingEmote}`), 5000)
-        } else if (settings.debug) { console.log(`${grayTxt}-> Timer in ${channel} 'newChatter' is not currently listening${resetTxt}`) }
+        } else { logMessage([`-> Timer in ${channel} 'newChatter' is not currently listening`]) }
     },
     handleGreet(props) {
         const { bot, chatroom, args, channel, username, userNickname, target, targetNickname } = props
-        if (settings.debug) { console.log(`${grayTxt}> handleGreet(chatroom: '${chatroom}', args:${resetTxt}`, args, `${grayTxt}userNickname: ${userNickname}, targetNickname: ${targetNickname})${resetTxt}`) }
+        logMessage([`> handleGreet(chatroom: '${chatroom}', args:`, args, `userNickname: ${userNickname}, targetNickname: ${targetNickname})`])
 
         // If !greet all
         if (/^all$/i.test(args[0])) { handleGreetAll(bot, chatroom, username) }
@@ -163,7 +174,7 @@ module.exports = {
     sayGoodnight(props) {
         const { bot, chatroom, message, args, channel, userNickname, toUser, targetNickname } = props
         const recipient = targetNickname || userNickname
-        if (settings.debug) { console.log(`${grayTxt}> handleGreet(chatroom: ${chatroom}, args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+        logMessage([`> handleGreet(chatroom: ${chatroom}, args:`, args, `)`])
 
         if (lemonyFresh[channel].timers[`say-goodnight`].listening) {
             resetCooldownTimer(channel, `say-goodnight`)
@@ -193,11 +204,11 @@ module.exports = {
             const byeEmote = getByeEmote(channel)
             response += `! ${byeEmote}`
             bot.say(chatroom, response)
-        } else if (settings.debug) { console.log(`${grayTxt}-> Timer in ${channel} 'sayGoodnight' is not currently listening${resetTxt}`) }
+        } else { logMessage([`-> Timer in ${channel} 'sayGoodnight' is not currently listening`]) }
     },
     sayYoureWelcome(props) {
         const { bot, chatroom, channel, user, userNickname } = props
-        if (settings.debug) { console.log(`${grayTxt}> sayYoureWelcome(chatroom: ${chatroom}, userNickname: ${userNickname})${resetTxt}`) }
+        logMessage([`> sayYoureWelcome(chatroom: ${chatroom}, userNickname: ${userNickname})`])
 
         if (lemonyFresh[channel].timers[`say-youre-welcome`].listening) {
             resetCooldownTimer(channel, `say-youre-welcome`)
@@ -223,11 +234,11 @@ module.exports = {
             const positiveEmote = getPositiveEmote(channel)
             response += `! ${positiveEmote}`
             bot.say(chatroom, response)
-        } else if (settings.debug) { console.log(`${grayTxt}-> Timer in ${channel} 'sayYoureWelcome' is not currently listening${resetTxt}`) }
+        } else { logMessage([`-> Timer in ${channel} 'sayYoureWelcome' is not currently listening`]) }
     },
     sayThanks(props) {
         const { bot, chatroom, channel, user, userNickname } = props
-        if (settings.debug) { console.log(`${grayTxt}> sayThanks(chatroom: ${chatroom}, userNickname: ${userNickname})${resetTxt}`) }
+        logMessage([`> sayThanks(chatroom: ${chatroom}, userNickname: ${userNickname})`])
 
         if (lemonyFresh[channel].timers[`say-thanks`].listening) {
             resetCooldownTimer(channel, `say-thanks`)
@@ -259,11 +270,11 @@ module.exports = {
             const positiveEmote = getPositiveEmote(channel)
             response += `! ${positiveEmote}`
             bot.say(chatroom, response)
-        } else if (settings.debug) { console.log(`${grayTxt}-> Timer in ${channel} 'sayThanks' is not currently listening${resetTxt}`) }
+        } else { logMessage([`-> Timer in ${channel} 'sayThanks' is not currently listening`]) }
     },
     sayMood(props) {
         const { bot, chatroom, channel, user, userNickname } = props
-        if (settings.debug) { console.log(`${grayTxt}> sayMood(chatroom: '${chatroom}', userNickname: ${userNickname})${resetTxt}`) }
+        logMessage([`> sayMood(chatroom: '${chatroom}', userNickname: ${userNickname})`])
 
         if (lemonyFresh[channel].timers[`say-mood`].listening) {
             resetCooldownTimer(channel, `say-mood`)
@@ -310,7 +321,7 @@ module.exports = {
             }
 
             if (!(settings.botMood in botMoods)) {
-                if (settings.debug) { console.log(`${grayTxt}-> botMood '${settings.botMood}' not found`) }
+                logMessage([`-> botMood '${settings.botMood}' not found`])
                 return
             }
 
@@ -323,15 +334,15 @@ module.exports = {
 
             reply += ` ${botMoods[settings.botMood].emote}`
             bot.say(chatroom, reply)
-        } else if (settings.debug) { console.log(`${grayTxt}-> Timer in ${channel} 'sayMood' is not currently listening${resetTxt}`) }
+        } else { logMessage([`-> Timer in ${channel} 'sayMood' is not currently listening`]) }
     },
     handleRaid(props) {
         const { bot, chatroom, channel, username, isModOrVIP } = props
-        if (settings.debug) { console.log(`${grayTxt}> handleRaid(channel: '${channel}')${resetTxt}`) }
+        logMessage([`> handleRaid(channel: '${channel}')`])
 
         // VIPs only
         if (!isModOrVIP) {
-            if (settings.debug) { console.log(`${grayTxt}-> ${username} isn't a VIP or mod, ignoring${resetTxt}`) }
+            logMessage([`-> ${username} isn't a VIP or mod, ignoring`])
             return
         }
 
@@ -354,11 +365,11 @@ module.exports = {
                     bot.say(chatroom, `Thanks for sticking around for the raid! If you're subscribed to the channel, you can use the first raid message, otherwise you can use the second raid message! ${appendEmote}`)
                 }, delay * 2)
             }
-        } else if (settings.debug) { console.log(`${grayTxt}-> Timer in ${channel} '!raid' is not currently listening${resetTxt}`) }
+        } else { logMessage([`-> Timer in ${channel} '!raid' is not currently listening`]) }
     },
     welcomeBack(props) {
         const { bot, chatroom, channel, user, userNickname } = props
-        if (settings.debug) { console.log(`${grayTxt}> welcomeBack(chatroom: '${chatroom}', userNickname: '${userNickname}')${resetTxt}`) }
+        logMessage([`> welcomeBack(chatroom: '${chatroom}', userNickname: '${userNickname}')`])
 
         const greetingEmote = getGreetingEmote(channel)
         user[channel].away = false
@@ -367,12 +378,14 @@ module.exports = {
     },
     funTimerGuess(props) {
         const { bot, chatroom, message, channel, user, userNickname } = props
-        if (settings.debug) { console.log(`${grayTxt}> funTimerGuess(chatroom: '${chatroom}', message: ${message}, userNickname: '${userNickname}', number: ${lemonyFresh[channel].funTimer})${resetTxt}`) }
+        logMessage([`> funTimerGuess(chatroom: '${chatroom}', message: ${message}, userNickname: '${userNickname}', number: ${lemonyFresh[channel].funTimer})`])
 
-        if (Number(message) === lemonyFresh[channel].funTimer) {
+        const regex = new RegExp(`\\b${lemonyFresh[channel].funTimer}\\b`)
+
+        if (regex.test(message)) {
             user.lemons++
             const lemonEmote = getLemonEmote(channel)
-            bot.say(chatroom, `That's right ${userNickname}, have a lemon! ${lemonEmote}`)
+            bot.say(chatroom, `That's right ${userNickname}, the number was ${lemonyFresh[channel].funTimer}. Have a lemon! ${lemonEmote}`)
         } else {
             const neutralEmote = getNeutralEmote(channel)
             bot.say(chatroom, `Sorry ${userNickname}, the number was ${lemonyFresh[channel].funTimer}. Next time! ${neutralEmote}`)
@@ -380,27 +393,9 @@ module.exports = {
         lemonyFresh[channel].funTimer = 0
         lemonyFresh[channel].funTimerGuesser = ``
     },
-    reportAway(props) {
-        const { bot, chatroom, message, channel, currentTime } = props
-
-        for (const targetName of Object.keys(users)) {
-            const target = users[targetName]
-            const targetNickname = target.nickname || target.displayName
-            const regex = new RegExp(`\\b(@?${targetName}|${targetNickname})\\b`, `i`)
-
-            if (target[channel]?.away && regex.test(message)) {
-                if (settings.debug) { console.log(`${grayTxt}> reportAway(chatroom: '${chatroom}', targetNickname: '${targetNickname}')${resetTxt}`) }
-                const elapsedTime = Math.round((currentTime - target[channel].sentAt) / 60000)
-                const reply = `${targetNickname} has been away for ~${pluralize(elapsedTime, `minute`, `minutes`)}!${target[channel].awayMessage ? ` Their away message: "${target[channel].awayMessage}"` : ``}`
-                return bot.say(chatroom, reply)
-            }
-        }
-        // End of onChatHandler logic
-        if (settings.debug) { console.log(`${grayTxt}MESSAGE DID NOT MATCH REGEX PATTERNS${resetTxt}`) }
-    },
     chant(props) {
         const { bot, chatroom, args } = props
-        if (settings.debug) { console.log(`${grayTxt}> chant(chatroom: '${chatroom}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+        logMessage([`> chant(chatroom: '${chatroom}', args:`, args, `)`])
 
         const emotes = Object.keys(lemonyFresh)
             .filter(key => typeof lemonyFresh[key] === `object` && `emotes` in lemonyFresh[key])
@@ -429,7 +424,7 @@ module.exports = {
         }
 
         const recentChannels = Object.keys(mostRecentMessages).filter(channel => currentTime - mostRecentMessages[channel] < 3600000)
-        if (settings.debug) { console.log(`${grayTxt}> yell(userNickname: '${userNickname}', recentChannels:${resetTxt}`, recentChannels, `${grayTxt})${resetTxt}`) }
+        logMessage([`> yell(userNickname: '${userNickname}', recentChannels:`, recentChannels, `)`])
 
         for (const chatroom of recentChannels) {
             bot.say(chatroom, `${userNickname} says: ${message.substring(6)}`)
@@ -437,7 +432,7 @@ module.exports = {
     },
     setAway(props) {
         const { bot, chatroom, args, command, channel, username, user, userNickname } = props
-        if (settings.debug) { console.log(`${grayTxt}> setAway(chatroom: '${chatroom}', username: '${username}', args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+        logMessage([`> setAway(chatroom: '${chatroom}', username: '${username}', args:`, args, `)`])
 
         user[channel].away = true
         if (args.length) { user[channel].awayMessage = args.join(` `) }
@@ -447,5 +442,30 @@ module.exports = {
                 ? bot.say(chatroom, `See you later, ${userNickname}! I'll pass along your away message if they mention you! ${byeEmote}`)
                 : bot.say(chatroom, `See you later, ${userNickname}! I'll let people know you're away if they mention you! ${byeEmote}`)
         }
+        // This helps prevent users from being welcomed back in the distant future
+        setTimeout(() => {
+            user[channel].away = false
+            user[channel].awayMessage = ``
+        }, settings.maxWelcomeBackMinutes * 1000)
+    },
+    reportAway(props) {
+        const { bot, chatroom, args, message, channel, username, currentTime } = props
+
+        for (const targetName of Object.keys(users)) {
+            const target = users[targetName]
+            const targetNickname = target.nickname || target.displayName
+            const regex = new RegExp(`\\b(@?${targetName}|${targetNickname})\\b`, `i`)
+
+            if (target[channel]?.away && regex.test(message)) {
+                logMessage([`> reportAway(chatroom: '${chatroom}', targetNickname: '${targetNickname}')`])
+                const elapsedTime = Math.round((currentTime - target[channel].sentAt) / 60000)
+                const reply = `${targetNickname} has been away for ~${pluralize(elapsedTime, `minute`, `minutes`)}!${target[channel].awayMessage ? ` Their away message: "${target[channel].awayMessage}"` : ``}`
+                if (elapsedTime > 1) { return bot.say(chatroom, reply) }
+                else { logMessage([`-> ${username} has been away for less than one-minute grace period`]) }
+            }
+        }
+
+        // End of onChatHandler logic
+        logMessage([`MESSAGE DID NOT MATCH REGEX PATTERNS`])
     }
 }

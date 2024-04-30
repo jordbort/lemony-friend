@@ -1,17 +1,17 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
+const { settings } = require(`../config`)
 const { lemonyFresh, users } = require(`../data`)
-const { resetTxt, settings, grayTxt } = require(`../config`)
 
 const { lemonify } = require(`./lemonify`)
 const { getTwitchChannel } = require(`./twitch`)
 const { getRandomUser, getRandomChannelMessage } = require(`./getInfo`)
-const { getLemonEmote, getNeutralEmote, pluralize, getHypeEmote, getPositiveEmote, getNegativeEmote, getDumbEmote } = require(`../utils`)
+const { getLemonEmote, getNeutralEmote, pluralize, getHypeEmote, getPositiveEmote, getDumbEmote, logMessage } = require(`../utils`)
 
 function makePyramid(props) {
     const { bot, chatroom, message, channel } = props
     const firstWord = message.split(` `)[0]
-    if (settings.debug) { console.log(`${grayTxt}> makePyramid(channel: '${channel}', firstWord: '${firstWord}')${resetTxt}`) }
+    logMessage([`> makePyramid(channel: '${channel}', firstWord: '${firstWord}')`])
 
     const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME
         ? 1000
@@ -81,13 +81,13 @@ const currencies = [
     },
     {
         name: `turkish lira`,
-        abbreviation: ``,
+        abbreviation: `TRY`,
         symbol: `₺`,
         zeroes: `00`
     },
     {
         name: `turkish lira`,
-        abbreviation: ``,
+        abbreviation: `TRY`,
         symbol: `₺`,
         zeroes: `00`
     },
@@ -186,7 +186,7 @@ function giveMeMoney(props) {
     const { bot, chatroom, channel, username } = props
     const msgCount = users[username][channel].msgCount
     const currency = currencies[Math.floor(Math.random() * currencies.length)]
-    if (settings.debug) { console.log(`${grayTxt}> giveMeMoney(msgCount: ${msgCount}, currency: '${currency.abbreviation.toUpperCase()}')${resetTxt}`) }
+    logMessage([`> giveMeMoney(msgCount: ${msgCount}, currency: '${currency.abbreviation.toUpperCase()}')`])
 
     bot.say(chatroom, `Give me ${currency.symbol}${msgCount}${currency.zeroes} ${currency.abbreviation.toUpperCase()}`)
 }
@@ -194,7 +194,7 @@ function transferMeMoney(props) {
     const { bot, chatroom, channel, username } = props
     const msgCount = users[username][channel].msgCount
     const currency = currencies[Math.floor(Math.random() * currencies.length)]
-    if (settings.debug) { console.log(`${grayTxt}> transferMeMoney(msgCount: ${msgCount}, currency: '${currency.abbreviation.toUpperCase()}')${resetTxt}`) }
+    logMessage([`> transferMeMoney(msgCount: ${msgCount}, currency: '${currency.abbreviation.toUpperCase()}')`])
 
     const paymentMethods = [
         `give me`,
@@ -218,9 +218,9 @@ function transferMeMoney(props) {
 
 function useRedemption(props) {
     const { bot, chatroom, channel } = props
-    if (settings.debug) { console.log(`${grayTxt}> useRedemption(channel: '${channel}', redeems.length: ${lemonyFresh[channel].redeems.length})${resetTxt}`) }
+    logMessage([`> useRedemption(channel: '${channel}', redeems.length: ${lemonyFresh[channel].redeems.length})`])
     if (lemonyFresh[channel].redeems.length === 0) {
-        if (settings.debug) { console.log(`${grayTxt}-> No redemptions available${resetTxt}`) }
+        logMessage([`-> No redemptions available`])
         return
     }
 
@@ -231,7 +231,7 @@ function useRedemption(props) {
 function givePoints(props) {
     const { bot, chatroom, channel, username } = props
     const msgCount = users[username][channel].msgCount
-    if (settings.debug) { console.log(`${grayTxt}> givePoints(channel: '${channel}', username: '${username}', msgCount: ${msgCount}, points: ${users[BOT_USERNAME][channel]?.points})${resetTxt}`) }
+    logMessage([`> givePoints(channel: '${channel}', username: '${username}', msgCount: ${msgCount}, points: ${users[BOT_USERNAME][channel]?.points})`])
 
     if (lemonyFresh[channel].viewers.includes(`streamelements`)) {
         const pointsToGive = `points` in Object(users[BOT_USERNAME][channel])
@@ -240,12 +240,12 @@ function givePoints(props) {
                 : `${msgCount * 25}`
             : `${msgCount * 25}`
         bot.say(chatroom, `!give ${username} ${pointsToGive}`)
-    } else if (settings.debug) { console.log(`${grayTxt}-> StreamElements not present in ${channel}'s channel${resetTxt}`) }
+    } else { logMessage([`-> StreamElements not present in ${channel}'s channel`]) }
 }
 
 function lemonifyRandomUser(props) {
     const { bot, chatroom } = props
-    if (settings.debug) { console.log(`${grayTxt}> lemonifyRandomUser()${resetTxt}`) }
+    logMessage([`> lemonifyRandomUser()`])
 
     const randomUser = getRandomUser([BOT_USERNAME])
     const randomMsg = getRandomChannelMessage(users[randomUser])
@@ -255,7 +255,7 @@ function lemonifyRandomUser(props) {
 
 function useUndertaleBot(props) {
     const { bot, chatroom, channel } = props
-    if (settings.debug) { console.log(`${grayTxt}> useUndertaleBot()${resetTxt}`) }
+    logMessage([`> useUndertaleBot()`])
 
     if (lemonyFresh[channel].viewers.includes(`undertalebot`)) {
         const randomUser = getRandomUser(settings.ignoredBots)
@@ -265,26 +265,26 @@ function useUndertaleBot(props) {
             `!mercy ${randomUser}`
         ]
         bot.say(chatroom, actions[Math.floor(Math.random() * actions.length)])
-    } else { console.log(`${grayTxt}-> UndertaleBot not present in ${channel}'s channel${resetTxt}`) }
+    } else { logMessage([`-> UndertaleBot not present in ${channel}'s channel`]) }
 }
 
 function reportChance(props) {
     const { bot, chatroom } = props
-    if (settings.debug) { console.log(`${grayTxt}> reportChance(funNumberCount: ${settings.funNumberCount}, funNumberTotal: ${settings.funNumberTotal})${resetTxt}`) }
+    logMessage([`> reportChance(funNumberCount: ${settings.funNumberCount}, funNumberTotal: ${settings.funNumberTotal})`])
 
     bot.say(chatroom, `This message has a 1/${(settings.funNumberCount * settings.funNumberTotal).toLocaleString()} chance of appearing`)
 }
 
 function sayMessageID(props) {
     const { bot, chatroom, tags } = props
-    if (settings.debug) { console.log(`${grayTxt}> sayMessageID(tags: ${Object.keys(tags)})${resetTxt}`) }
+    logMessage([`> sayMessageID(tags: ${Object.keys(tags)})`])
 
     bot.say(chatroom, `${tags.id}`)
 }
 
 function sayTime(props) {
     const { bot, chatroom, currentTime } = props
-    if (settings.debug) { console.log(`${grayTxt}> sayTime(currentTime: ${currentTime})${resetTxt}`) }
+    logMessage([`> sayTime(currentTime: ${currentTime})`])
 
     bot.say(chatroom, `${currentTime}`)
 }
@@ -294,7 +294,7 @@ async function askAboutGame(props) {
     const broadcaster_id = lemonyFresh[channel].id
     const twitchChannel = await getTwitchChannel(bot, chatroom, broadcaster_id)
     const game = twitchChannel.game_name
-    if (settings.debug) { console.log(`${grayTxt}> askAboutGame(channel: '${channel}', game: '${game}', game_id: '${twitchChannel.game_id}')${resetTxt}`) }
+    logMessage([`> askAboutGame(channel: '${channel}', game: '${game}', game_id: '${twitchChannel.game_id}')`])
 
     const neutralEmote = getNeutralEmote(channel)
     bot.say(
@@ -307,7 +307,7 @@ async function askAboutGame(props) {
 
 function awardLemon(props) {
     const { bot, chatroom, channel, username, userNickname } = props
-    if (settings.debug) { console.log(`${grayTxt}> awardLemon(channel: '${channel}', userNickname: '${userNickname}')${resetTxt}`) }
+    logMessage([`> awardLemon(channel: '${channel}', userNickname: '${userNickname}')`])
 
     users[username].lemons++
     const lemonEmote = getLemonEmote()
@@ -316,10 +316,10 @@ function awardLemon(props) {
 
 function useBTTVEmote(props) {
     const { bot, chatroom, channel } = props
-    if (settings.debug) { console.log(`${grayTxt}> useBTTVEmote(channel: '${channel}', bttvEmotes: ${lemonyFresh[channel].bttvEmotes.length})${resetTxt}`) }
+    logMessage([`> useBTTVEmote(channel: '${channel}', bttvEmotes: ${lemonyFresh[channel].bttvEmotes.length})`])
 
     if (lemonyFresh[channel].bttvEmotes.length === 0) {
-        if (settings.debug) { console.log(`${grayTxt}-> No known BTTV emotes in channel${resetTxt}`) }
+        logMessage([`-> No known BTTV emotes in channel`])
         return
     }
 
@@ -333,7 +333,7 @@ function useBTTVEmote(props) {
 
 function restartFunTimer(props) {
     const { bot, chatroom, channel, username } = props
-    if (settings.debug) { console.log(`${grayTxt}> restartFunTimer(channel: '${channel}', username: '${username}')${resetTxt}`) }
+    logMessage([`> restartFunTimer(channel: '${channel}', username: '${username}')`])
 
     lemonyFresh[channel].funTimerGuesser = ``
     clearTimeout(lemonyFresh[channel].funTimer)
@@ -347,18 +347,17 @@ function restartFunTimer(props) {
         ? bot.say(chatroom, `Forget ${lemonyFresh[channel].funTimer}, now I need ${users[username].displayName} to remember ${timer}`)
         : bot.say(chatroom, `I need ${users[username].displayName} to remember ${timer}`)
 
-    if (settings.debug) {
-        console.log(`${grayTxt}-> Fun Timer has been delayed in ${chatroom} ${lemonyFresh[channel].funTimer
-            ? `again`
-            : `for the first time`}, new value: ${Number(timer)}${resetTxt}`)
-    }
+    logMessage([`-> Fun Timer has been delayed in ${chatroom} ${lemonyFresh[channel].funTimer
+        ? `again`
+        : `for the first time`}, new value: ${Number(timer)}`
+    ])
     lemonyFresh[channel].funTimer = Number(timer)
 }
 
 function getViewers(props) {
     const { bot, chatroom, channel } = props
     const viewers = lemonyFresh[channel].viewers.length
-    if (settings.debug) { console.log(`${grayTxt}> getViewers(channel: '${channel}', viewers: '${viewers}')${resetTxt}`) }
+    logMessage([`> getViewers(channel: '${channel}', viewers: '${viewers}')`])
 
     const hypeEmote = getHypeEmote(channel)
     const positiveEmote = getPositiveEmote(channel)
@@ -374,17 +373,17 @@ function getViewers(props) {
                     ? positiveEmote
                     : hypeEmote}`
         )
-    } else if (settings.debug) { console.log(`${grayTxt}-> ${chatroom} only has ${pluralize(viewers, `viewer`, `viewers`)}${resetTxt}`) }
+    } else { logMessage([`-> ${chatroom} only has ${pluralize(viewers, `viewer`, `viewers`)}`]) }
 }
 
 function getLurker(props) {
     const { bot, chatroom, channel } = props
     const notChatted = lemonyFresh[channel].viewers.filter(username => !(username in users) || !(channel in users[username]))
     const lurker = notChatted[Math.floor(Math.random() * notChatted.length)]
-    if (settings.debug) { console.log(`${grayTxt}> getLurker(channel: '${channel}', lurker: '${lurker}', notChatted.length: ${notChatted.length})${resetTxt}`) }
+    logMessage([`> getLurker(channel: '${channel}', lurker: '${lurker}', notChatted.length: ${notChatted.length})`])
 
     if (!notChatted.length) {
-        if (settings.debug) { console.log(`${grayTxt}-> No lurkers found!${resetTxt}`) }
+        logMessage([`-> No lurkers found!`])
         return
     }
 
@@ -394,7 +393,7 @@ function getLurker(props) {
 
 function awardLemonToChannelChatters(props) {
     const { bot, chatroom, channel } = props
-    if (settings.debug) { console.log(`${grayTxt}> awardLemonToChannelChatters(channel: '${channel}')${resetTxt}`) }
+    logMessage([`> awardLemonToChannelChatters(channel: '${channel}')`])
 
     const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
 
@@ -405,24 +404,24 @@ function awardLemonToChannelChatters(props) {
             recipients.push(username)
         }
     }
-    if (settings.debug) { console.log(`${grayTxt}-> recipients:${resetTxt}`, recipients) }
+    logMessage([`-> recipients:`, recipients])
 
     const lemonEmote = getLemonEmote()
-    bot.say(chatroom, `${pluralize(recipients.length, `chatter`, `chatters`)} in ${channelNickname}'s channel just received one (1) lemon! ${lemonEmote}`)
+    bot.say(chatroom, `${pluralize(recipients.length, `chatter`, `chatters`)} in ${channelNickname}'s channel just received one lemon each! ${lemonEmote}`)
 }
 
 
 function useTwoEmotes(props) {
     const { bot, chatroom, channel } = props
-    if (settings.debug) { console.log(`${grayTxt}> useTwoEmotes(channel: '${channel}', emotes: ${lemonyFresh[channel].emotes.length})${resetTxt}`) }
+    logMessage([`> useTwoEmotes(channel: '${channel}', emotes: ${lemonyFresh[channel].emotes.length})`])
 
     if (lemonyFresh[channel].emotes.length === 0) {
-        if (settings.debug) { console.log(`${grayTxt}-> No known emotes in channel '${channel}'${resetTxt}`) }
+        logMessage([`-> No known emotes in channel '${channel}'`])
         return
     }
 
     if (!users[BOT_USERNAME][channel].sub) {
-        if (settings.debug) { console.log(`${grayTxt}-> ${BOT_USERNAME} is not subscribed to ${channel}, can't use emotes${resetTxt}`) }
+        logMessage([`-> ${BOT_USERNAME} is not subscribed to ${channel}, can't use emotes`])
         return
     }
 
@@ -435,10 +434,10 @@ function useTwoEmotes(props) {
 module.exports = {
     rollFunNumber(props, funNumber) {
         const { tags, message, channel, username } = props
-        if (settings.debug) { console.log(`${grayTxt}> rollFunNumber(channel: '${channel}', tags: ${Object.keys(tags).length}, username: '${username}', message: '${message}', funNumber: ${funNumber})${resetTxt}`) }
+        logMessage([`> rollFunNumber(channel: '${channel}', tags: ${Object.keys(tags).length}, username: '${username}', message: '${message}', funNumber: ${funNumber})`])
 
         if (!lemonyFresh[channel].rollFunNumber) {
-            if (settings.debug) { console.log(`${grayTxt}-> rollFunNumber disabled in ${channel}'s channel${resetTxt}`) }
+            logMessage([`-> rollFunNumber disabled in ${channel}'s channel`])
             return
         }
 
@@ -466,9 +465,9 @@ module.exports = {
         }
 
         if (funNumber in outcomes) {
-            if (settings.debug) { console.log(`${grayTxt}-> Fun number${resetTxt}`, funNumber, `${grayTxt}matched:${resetTxt}`, outcomes[funNumber]) }
+            logMessage([`-> Fun number`, funNumber, `matched:`, `[Function: ${outcomes[funNumber].name}]`])
             return outcomes[funNumber](props)
         }
-        if (settings.debug) { console.log(`${grayTxt}-> Fun number${resetTxt}`, funNumber, `${grayTxt}is unused${resetTxt}`) }
+        logMessage([`-> Fun number`, funNumber, `is unused`])
     }
 }

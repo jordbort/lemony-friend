@@ -18,7 +18,7 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!msgcount` - This command can be used to get a count of all messages sent by a user across all Lemony Fresh channels. Use `!msgcount <user>` to specify another user.
 - `!friend` (or `!friends`) - This command can be used to get a count of all users lemony_friend knows (including itself).
 - `!goal` (or `!goals`) - This command is used followed by a number (of subscribers, dollars, etc.) to return a specific goal at that amount for that channel. This only works in channels with defined stream goals.
-- `!lurk` (or `!away` or `!brb`) - This command marks the user as "away" in the current channel. Use `!lurk <message...>` to set a custom away message. Using `!lurk` (rather than `!away` or `!brb`) does not prompt a reply from lemony_friend, opting for a quieter exit. If a user is mentioned in chat by full username while they are marked as away, lemony_friend will mention that the user is away, along with an optional away message. Upon posting in chat again, lemony_friend marks the user as unaway.
+- `!lurk` (or `!away` or `!brb`) - This command marks the user as "away" in the current channel. Use `!lurk <message...>` to set a custom away message. Using `!lurk` (rather than `!away` or `!brb`) does not prompt a reply from lemony_friend, opting for a quieter exit. If a user is mentioned in chat by username or nickname while they are marked as away, lemony_friend will mention that the user is away, along with an optional away message. Upon posting in chat again, lemony_friend marks the user as unaway. (Note: There is a 60-second grace period after being marked as away where the user can send messages or be mentioned before lemony_friend will respond. This is to minimize unwanted messages and smooth the transition away.)
 - `!apply` - This is an easy way to apply pre-made nicknames to known users.
 - `!online` (or `!onl`) - This command reports the time that the bot was booted up.
 
@@ -29,21 +29,26 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!poll` - This command can only be used by the streamer or a moderator. It is used to create a poll for the channel. The syntax for this command is `!poll <seconds> / Title of the poll / Choice 1 / Choice 2` and so on. Spaces before/after the slashes are not required, but the slashes themselves are. "Seconds" is a number between 15 and 1800 (thirty minutes). There must be at least two (or at most, five) choices.
 - `!stoppoll` - This command can only be used by the streamer or a moderator. It is used to finish the current poll before the timer runs out, and show the results.
 - `!cancelpoll` - This command can only be used by the streamer or a moderator. It is used to get rid of the current poll.
+- `!banuser` or `!banusers` - This command can only be used by the streamer or a moderator. It is used to ban one more users (separated by spaces) from the channel.
 
 ## Fun commands 🍋️
-- `!hangman` - This command initiates a game of Hangman and chooses a random word by using the [Rando API](https://random-word-api.vercel.app/). Join the game using `!play`, even after the game has started.
+- `!hangman` - This command initiates a game of Hangman and chooses a random word by using the [Rando API](https://random-word-api.vercel.app/). Join the game using `!play`, even after the game has started. A moderator can also manage the game by using `!hangman skip` to skip the current player's turn, and `!hangman end` to stop the game and reveal the answer.
 - `!play` - Use this command to join an active game of Hangman.
 - `!rps` - Use this command to challenge lemony_friend to a game of Rock, Paper, Scissors. You may can use `!rps rock` `!rps paper` `!rps scissors` to specify your move, or simply use `!rps` and a move will be chosen at random.
-- `!chant` - Use this command to have lemony_friend chant it in all caps in chat. It
+- `!chant` - Use this command to have lemony_friend chant it in all caps in chat.
 - `!yell` - Use this command with a message to send that message across all channels where someone has chatted in the past hour.
 - `!define` (or `!definition` or `!meaning`) - This command can be used followed by a word to look up its definition using an API from [API Ninjas](https://api-ninjas.com/).
 - `!lemon` (or `!lemons`) - This command can be used to check how many lemons the sender (or another user) has.
-- `![use]lemon[append?]` - This command is a wildcard that can be used. [Use] can be any verb (or verb phrase), and [append?] could be an optional suffix, if "lemon" is meant to be a descriptor, possibly to pluralize "lemon" to all "lemons".
+- `![use]lemon[append?]` - This command is a wildcard that can be used. [Use] can be any verb (or verb phrase), and [append?] could be an optional suffix, if "lemon" is meant to be a descriptor, or possibly to pluralize "lemon" to all "lemons".
 - `!lemonify` - This command can be used to transform another user's message into lemons.
+- `!insult` - Use this command to generate a random, Mad Libs-style "insult" directed at yourself or another user. You can add your own verbs, nouns, and adjectives to its word bank by using the respective commands.
+- `!verbs` (or `!verb` or `!v`) - Use this command to add to the list of verbs Lemony Friend knows.
+- `!nouns` (or `!noun` or `!n`) - Use this command to add to the list of nouns Lemony Friend knows.
+- `!adjectives` (or `!adjective` or `!adj` or `!a`) - Use this command to add to the list of adjectives Lemony Friend knows.
 - `!tempcmd` (or `!tmpcmd`) - This command is used to create custom commands that will be active until the next time lemony_friend is rebooted. Use `!tempcmd <commandname> <response...>` to create/edit a command name and reply, and `!tempcmd delete <commandname>` to delete a command.
 - `!tempcmds` (or `!tmpcmds`) - This command lists all existing temporary commands.
 - `!greet` - This command can be used to greet one or more users. Use `!greet <user>` to greet another user, `!greet <user1> <user2>...` to greet multiple users, or `!greet all` to greet all known users in the current channel who have chatted in the past hour, other than the user of the command.
-- `!bye` (or `!gn` or `!goodnight`) - This command can be used to say good night to a user leaving chat.
+- `!goodbye` (or `!bye` or `!gn` or `!goodnight`) - This command can be used to say good night to a user leaving chat.
 - `!dadjoke` - This command gets a random joke from a [Dad Joke API](https://icanhazdadjoke.com/api).
 - `!pokemon` - This command can be used to get useful information about a Pokémon from a [Pokémon API](https://pokeapi.co/).
 
@@ -102,7 +107,11 @@ Use `cli settings` or `cli s` to access lemony_friend's settings. These are glob
 
 - `cli settings timeZone` or `cli s tz` (string)
 
-Use this command to change lemony_friend's default time zone. This is primarily used in response to the `!time` command. A list of valid time zones can be found at <link>
+Use this command to change lemony_friend's default time zone. This is primarily used in response to the `!time` command. A list of valid time zones can be found [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
+
+- `cli settings autoBan` or `cli s ab` (array of phrases)
+
+Use this command to change lemony_friend's list of phrases from a first-time chatter that will result in an automatic ban. Use `cli settings autoBan add <your phrase>` to add one phrase, `cli settings autoBan delete <banned phrase>` to delete one phrase, or use `cli settings autoBan clear` to empty the entire list. "Add", "delete", and "clear" can also be abbreviated to "a", "d", and "c", respectively. Phrases are implemented in a non-case-sensitive way.
 
 - `cli settings realRPS` or `cli s rps` (boolean)
 
