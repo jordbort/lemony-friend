@@ -1,8 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 const { users } = require(`../data`)
-const { resetTxt, grayTxt, settings } = require(`../config`)
-const { getHypeEmote, getUpsetEmote, getGreetingEmote } = require(`../utils`)
 const { catchPokemon, buyPokeballs, acknowledgeCaughtPokemon } = require(`./pokemon`)
+const { getHypeEmote, getUpsetEmote, getGreetingEmote, logMessage } = require(`../utils`)
 
 function handleGivenPoints(props, splitMessage) {
     const { bot, chatroom, message, channel } = props
@@ -10,7 +9,7 @@ function handleGivenPoints(props, splitMessage) {
     const pointsNum = Number(splitMessage[1])
     const givingUser = message.split(` `)[0].toLowerCase()
     const nickname = users[givingUser].nickname || users[givingUser].displayName
-    if (settings.debug) { console.log(`${grayTxt}> handleGivenPoints(channel: '${channel}', givingUser: '${givingUser}', pointsNum: ${pointsNum}, current points: ${users[BOT_USERNAME][channel]?.points})${resetTxt}`) }
+    logMessage([`> handleGivenPoints(channel: '${channel}', givingUser: '${givingUser}', pointsNum: ${pointsNum}, current points: ${users[BOT_USERNAME][channel]?.points})`])
 
     bot.say(chatroom, `Thank you for the points, ${nickname}! ${getGreetingEmote(channel)}`)
 
@@ -22,14 +21,14 @@ function handleGivenPoints(props, splitMessage) {
         setTimeout(() => bot.say(chatroom, `!points`), delay)
     }
 
-    if (settings.debug) { console.log(`${grayTxt}-> New points:${resetTxt}`, `points` in users[BOT_USERNAME][channel] ? users[BOT_USERNAME][channel].points : `(waiting for reply...)`) }
+    logMessage([`-> New points:`, `points` in users[BOT_USERNAME][channel] ? users[BOT_USERNAME][channel].points : `(waiting for reply...)`])
 }
 
 function handleSetPoints(props, splitMessage) {
     const { bot, chatroom, channel } = props
 
     const pointsNum = Number(splitMessage[1])
-    if (settings.debug) { console.log(`${grayTxt}> handleSetPoints(channel: '${channel}', pointsNum: ${pointsNum}, current points: ${users[BOT_USERNAME][channel]?.points})${resetTxt}`) }
+    logMessage([`> handleSetPoints(channel: '${channel}', pointsNum: ${pointsNum}, current points: ${users[BOT_USERNAME][channel]?.points})`])
 
     const hypeEmote = getHypeEmote(channel)
     const upsetEmote = getUpsetEmote(channel)
@@ -39,13 +38,13 @@ function handleSetPoints(props, splitMessage) {
     }
     users[BOT_USERNAME][channel].points = pointsNum
 
-    if (settings.debug) { console.log(`${grayTxt}-> New points:${resetTxt}`, users[BOT_USERNAME][channel].points) }
+    logMessage([`-> New points:`, users[BOT_USERNAME][channel].points])
 }
 
 function handleLoseAllPoints(props) {
     const { bot, chatroom, channel } = props
     users[BOT_USERNAME][channel].points = 0
-    if (settings.debug) { console.log(`${grayTxt}> handleLoseAllPoints(channel: '${channel}', current points: ${users[BOT_USERNAME][channel].points})${resetTxt}`) }
+    logMessage([`> handleLoseAllPoints(channel: '${channel}', current points: ${users[BOT_USERNAME][channel].points})`])
 
     const upsetEmote = getUpsetEmote(channel)
     bot.say(chatroom, `${upsetEmote}`)
@@ -55,14 +54,14 @@ function subtractPoints(props, splitMessage) {
     const { bot, chatroom, channel } = props
     const pointsNum = Number(splitMessage[1])
 
-    if (settings.debug) { console.log(`${grayTxt}> subtractPoints(channel: '${channel}', pointsNum: ${pointsNum}, current points: ${users[BOT_USERNAME][channel]?.points})${resetTxt}`) }
+    logMessage([`> subtractPoints(channel: '${channel}', pointsNum: ${pointsNum}, current points: ${users[BOT_USERNAME][channel]?.points})`])
 
     // Check points if undefined
     !isNaN(users[BOT_USERNAME][channel].points)
         ? users[BOT_USERNAME][channel].points -= pointsNum
         : bot.say(chatroom, `!points`)
 
-    if (settings.debug) { console.log(`${grayTxt}-> New points:${resetTxt}`, users[BOT_USERNAME][channel].points) }
+    logMessage([`-> New points:`, users[BOT_USERNAME][channel].points])
 }
 
 module.exports = {

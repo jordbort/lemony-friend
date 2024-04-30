@@ -1,12 +1,11 @@
 const { users, lemonyFresh } = require(`../data`)
-const { resetTxt, grayTxt, settings } = require(`../config`)
-const { getHypeEmote, getNegativeEmote, getDumbEmote, getToUser, pluralize } = require(`../utils`)
+const { getHypeEmote, getNegativeEmote, getDumbEmote, getToUser, pluralize, logMessage } = require(`../utils`)
 
 module.exports = {
     checkEmotes(props, splitMessage) {
         const { bot, chatroom, userNickname } = props
         const capturedChannel = getToUser(splitMessage[1])
-        if (settings.debug) { console.log(`${grayTxt}> checkEmotes(chatroom: '${chatroom}', capturedChannel: '${capturedChannel}', userNickname: '${userNickname}')${resetTxt}`) }
+        logMessage([`> checkEmotes(chatroom: '${chatroom}', capturedChannel: '${capturedChannel}', userNickname: '${userNickname}')`])
 
         if (capturedChannel in lemonyFresh) {
             `emotes` in lemonyFresh[capturedChannel]
@@ -21,7 +20,7 @@ module.exports = {
         const otherChannelNickname = otherChannel in lemonyFresh
             ? users[otherChannel]?.nickname || users[otherChannel]?.displayName || otherChannel
             : null
-        if (settings.debug) { console.log(`${grayTxt}> checkSelfSub(chatroom: '${chatroom}', otherChannel: '${otherChannel}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}')${resetTxt}`) }
+        logMessage([`> checkSelfSub(chatroom: '${chatroom}', otherChannel: '${otherChannel}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}')`])
 
         const hypeEmote = getHypeEmote(channel)
         const negativeEmote = getNegativeEmote(channel)
@@ -44,7 +43,7 @@ module.exports = {
         const otherChannelNickname = otherChannel in lemonyFresh
             ? users[otherChannel]?.nickname || users[otherChannel]?.displayName || otherChannel
             : null
-        if (settings.debug) { console.log(`${grayTxt}> checkSelfMod(chatroom: '${chatroom}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}')${resetTxt}`) }
+        logMessage([`> checkSelfMod(chatroom: '${chatroom}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}')`])
 
         const hypeEmote = getHypeEmote(channel)
         const negativeEmote = getNegativeEmote(channel)
@@ -53,12 +52,12 @@ module.exports = {
         otherChannelNickname
             ? otherChannel in user
                 ? user[otherChannel].mod
-                    ? bot.say(chatroom, `Yes ${userNickname}, you are a mod to ${otherChannelNickname}'s chat! ${hypeEmote}`)
-                    : bot.say(chatroom, `No ${userNickname}, you are not a mod to ${otherChannelNickname}'s chat! ${negativeEmote}`)
+                    ? bot.say(chatroom, `Yes ${userNickname}, you are a mod in ${otherChannelNickname}'s chat! ${hypeEmote}`)
+                    : bot.say(chatroom, `No ${userNickname}, you are not a mod in ${otherChannelNickname}'s chat! ${negativeEmote}`)
                 : bot.say(chatroom, `I don't know whether you are a mod in ${otherChannelNickname}'s chat, ${userNickname}! ${dumbEmote}`)
             : user[channel].mod
-                ? bot.say(chatroom, `Yes ${userNickname}, you are a mod to ${channelNickname}'s chat! ${hypeEmote}`)
-                : bot.say(chatroom, `No ${userNickname}, you are not a mod to ${channelNickname}'s chat! ${negativeEmote}`)
+                ? bot.say(chatroom, `Yes ${userNickname}, you are a mod in ${channelNickname}'s chat! ${hypeEmote}`)
+                : bot.say(chatroom, `No ${userNickname}, you are not a mod in ${channelNickname}'s chat! ${negativeEmote}`)
     },
     checkSelfVIP(props, splitMessage) {
         const { bot, chatroom, channel, user, userNickname } = props
@@ -67,7 +66,7 @@ module.exports = {
         const otherChannelNickname = otherChannel in lemonyFresh
             ? users[otherChannel]?.nickname || users[otherChannel]?.displayName || otherChannel
             : null
-        if (settings.debug) { console.log(`${grayTxt}> checkSelfVIP(chatroom: '${chatroom}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}')${resetTxt}`) }
+        logMessage([`> checkSelfVIP(chatroom: '${chatroom}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}')`])
 
         const hypeEmote = getHypeEmote(channel)
         const negativeEmote = getNegativeEmote(channel)
@@ -93,7 +92,7 @@ module.exports = {
         const otherChannelNickname = otherChannel in lemonyFresh
             ? users[otherChannel]?.nickname || users[otherChannel]?.displayName || otherChannel
             : null
-        if (settings.debug) { console.log(`${grayTxt}> checkTargetSub(chatroom: '${chatroom}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}', targetNickname: '${targetNickname}')${resetTxt}`) }
+        logMessage([`> checkTargetSub(chatroom: '${chatroom}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}', targetNickname: '${targetNickname}')`])
 
         const hypeEmote = getHypeEmote(channel)
         const negativeEmote = getNegativeEmote(channel)
@@ -123,7 +122,7 @@ module.exports = {
         const otherChannelNickname = otherChannel in lemonyFresh
             ? users[otherChannel]?.nickname || users[otherChannel]?.displayName || otherChannel
             : null
-        if (settings.debug) { console.log(`${grayTxt}> checkTargetMod(chatroom: '${chatroom}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}', targetNickname: '${targetNickname}')${resetTxt}`) }
+        logMessage([`> checkTargetMod(chatroom: '${chatroom}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}', targetNickname: '${targetNickname}')`])
 
         const hypeEmote = getHypeEmote(channel)
         const negativeEmote = getNegativeEmote(channel)
@@ -153,7 +152,7 @@ module.exports = {
         const otherChannelNickname = otherChannel in lemonyFresh
             ? users[otherChannel]?.nickname || users[otherChannel]?.displayName || otherChannel
             : null
-        if (settings.debug) { console.log(`${grayTxt}> checkTargetVIP(chatroom: '${chatroom}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}', targetNickname: '${targetNickname}')${resetTxt}`) }
+        logMessage([`> checkTargetVIP(chatroom: '${chatroom}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}', targetNickname: '${targetNickname}')`])
 
         const hypeEmote = getHypeEmote(channel)
         const negativeEmote = getNegativeEmote(channel)

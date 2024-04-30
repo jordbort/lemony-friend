@@ -1,21 +1,26 @@
+const DEV = process.env.DEV
 const BOT_ID = Number(process.env.BOT_ID)
 const BOT_USERNAME = process.env.BOT_USERNAME
 const COMMON_NICKNAMES = process.env.COMMON_NICKNAMES
 
-const { resetTxt, grayTxt, settings } = require(`./config`)
+const fs = require(`fs/promises`)
+
+const { makeLogs } = require(`./commands/makeLogs`)
 const { lemonyFresh, users, mods, knownTags, tempCmds } = require(`./data`)
+const { settings, resetTxt, grayTxt, whiteTxt, yellowBg, chatColors } = require(`./config`)
 
 function getLemonEmote() {
     // const lemonEmotes = [...settings.baseEmotes.lemonEmotes]
     // if (users[BOT_USERNAME]?.e1ectroma?.sub) { lemonEmotes.push(`e1ectr4Lemfresh`) }
 
     // const lemonEmote = lemonEmotes[Math.floor(Math.random() * lemonEmotes.length)]
-    // if (settings.debug) { console.log(`${boldTxt}> getLemonEmote(channel: '${channel}') => '${lemonEmote}'), choices:${resetTxt}`, lemonEmotes.length) }
+    // logMessage([`> getLemonEmote() => '${lemonEmote}'), choices:`, lemonEmotes.length])
     // return lemonEmote
     return users[BOT_USERNAME]?.e1ectroma?.sub
         ? `e1ectr4Lemfresh`
         : `🍋`
 }
+
 function getNeutralEmote(channel) {
     const neutralEmotes = [...settings.baseEmotes.neutralEmotes]
 
@@ -27,9 +32,10 @@ function getNeutralEmote(channel) {
     if (users[BOT_USERNAME]?.thetarastark?.sub) { neutralEmotes.push(`thetar42Pelican`) }
 
     const neutralEmote = neutralEmotes[Math.floor(Math.random() * neutralEmotes.length)]
-    // if (settings.debug) { console.log(`${boldTxt}> getNeutralEmote(channel: '${channel}') => '${neutralEmote}'), choices:${resetTxt}`, neutralEmotes.length) }
+    // logMessage([`> getNeutralEmote(channel: '${channel}') => '${neutralEmote}'), choices:`, neutralEmotes.length])
     return neutralEmote
 }
+
 function getHypeEmote(channel) {
     const hypeEmotes = [...settings.baseEmotes.hypeEmotes]
 
@@ -47,9 +53,10 @@ function getHypeEmote(channel) {
     if (users[BOT_USERNAME]?.thetarastark?.sub) { hypeEmotes.push(`thetar42Cheer`, `thetar42POG`) }
 
     const hypeEmote = hypeEmotes[Math.floor(Math.random() * hypeEmotes.length)]
-    // if (settings.debug) { console.log(`${boldTxt}> getHypeEmote(channel: '${channel}') => '${hypeEmote}'), choices:${resetTxt}`, hypeEmotes.length) }
+    // logMessage([`> getHypeEmote(channel: '${channel}') => '${hypeEmote}'), choices:`, hypeEmotes.length])
     return hypeEmote
 }
+
 function getPositiveEmote(channel) {
     const positiveEmotes = [...settings.baseEmotes.positiveEmotes]
 
@@ -63,13 +70,15 @@ function getPositiveEmote(channel) {
     if (users[BOT_USERNAME]?.sclarf?.sub) { positiveEmotes.push(`sclarfDog`, `sclarfHearts`, `sclarfPopbonk`) }
     if (users[BOT_USERNAME]?.e1ectroma?.sub) { positiveEmotes.push(`e1ectr4Pikadance`, `e1ectr4Coop`, `e1ectr4Smile`, `e1ectr4Salute`, `e1ectr4Lemfresh`, `e1ectr4Moses`, `e1ectr4Josie`) }
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { positiveEmotes.push(`domoni6Bingo`, `domoni6Mingo`) }
+    if (users[BOT_USERNAME]?.astral_an0maly?.sub) { positiveEmotes.push(`astral332Pop`) }
     if (users[BOT_USERNAME]?.cosyinpink?.sub) { positiveEmotes.push(`cosyin1Hype`, `cosyin1Love`) }
     if (users[BOT_USERNAME]?.thetarastark?.sub) { positiveEmotes.push(`thetar42Cheer`) }
 
     const positiveEmote = positiveEmotes[Math.floor(Math.random() * positiveEmotes.length)]
-    // if (settings.debug) { console.log(`${boldTxt}> getPositiveEmote(channel: '${channel}') => '${positiveEmote}'), choices:${resetTxt}`, positiveEmotes.length) }
+    // logMessage([`> getPositiveEmote(channel: '${channel}') => '${positiveEmote}'), choices:`, positiveEmotes.length])
     return positiveEmote
 }
+
 function getUpsetEmote(channel) {
     const upsetEmotes = [...settings.baseEmotes.upsetEmotes]
 
@@ -86,9 +95,10 @@ function getUpsetEmote(channel) {
     if (users[BOT_USERNAME]?.thetarastark?.sub) { upsetEmotes.push(`thetar42Fkickline`) }
 
     const upsetEmote = upsetEmotes[Math.floor(Math.random() * upsetEmotes.length)]
-    // if (settings.debug) { console.log(`${boldTxt}> getUpsetEmote(channel: '${channel}') => '${sadEmote}'), choices:${resetTxt}`, upsetEmotes.length) }
+    // logMessage([`> getUpsetEmote(channel: '${channel}') => '${sadEmote}'), choices:`, upsetEmotes.length])
     return upsetEmote
 }
+
 function getNegativeEmote(channel) {
     const negativeEmotes = [...settings.baseEmotes.negativeEmotes]
 
@@ -105,9 +115,10 @@ function getNegativeEmote(channel) {
     if (users[BOT_USERNAME]?.thetarastark?.sub) { negativeEmotes.push(`thetar42Fkickline`) }
 
     const negativeEmote = negativeEmotes[Math.floor(Math.random() * negativeEmotes.length)]
-    // if (settings.debug) { console.log(`${boldTxt}> getNegativeEmote(channel: '${channel}') => '${negativeEmote}'), choices:${resetTxt}`, negativeEmotes.length) }
+    // logMessage([`> getNegativeEmote(channel: '${channel}') => '${negativeEmote}'), choices:`, negativeEmotes.length])
     return negativeEmote
 }
+
 function getGreetingEmote(channel) {
     const greetingEmotes = [...settings.baseEmotes.greetingEmotes]
 
@@ -121,15 +132,16 @@ function getGreetingEmote(channel) {
     if (users[BOT_USERNAME]?.sclarf?.sub) { greetingEmotes.push(`sclarfRave`, `sclarfWobble`, `sclarfBark`, `sclarfSpin`, `sclarfPls`, `sclarfHowdy`, `sclarfDog`, `sclarfAmazed`, `sclarfHearts`, `sclarfDEEP`, `sclarfWave`, `sclarfYay`, `sclarfChickenmoley`) }
     if (users[BOT_USERNAME]?.e1ectroma?.sub) { greetingEmotes.push(`e1ectr4Lfg`, `e1ectr4Pikadance`, `e1ectr4Tromadance`, `e1ectr4Ocha`, `e1ectr4Hello`, `e1ectr4Hi`, `e1ectr4Wazzah`, `e1ectr4Smile`, `e1ectr4Ram`, `e1ectr4Salute`, `e1ectr4Lemfresh`, `e1ectr4Moses`, `e1ectr4Josie`, `e1ectr4Malort`, `e1ectr4Umbreon`) }
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { greetingEmotes.push(`domoni6Bingo`, `domoni6ChefHey`, `domoni6Sneeze`, `domoni6Love`, `domoni6Boom`, `domoni6Mingo`) }
-    if (users[BOT_USERNAME]?.astral_an0maly?.sub) { greetingEmotes.push(`astral332HI`) }
+    if (users[BOT_USERNAME]?.astral_an0maly?.sub) { greetingEmotes.push(`astral332HI`, `astral332Pop`) }
     if (users[BOT_USERNAME]?.dirtyd0inks?.sub) { greetingEmotes.push(`dirtyd182LOVE`) }
     if (users[BOT_USERNAME]?.cosyinpink?.sub) { greetingEmotes.push(`cosyin1Hype`, `cosyin1Dance`, `cosyin1Love`, `cosyin1Wave`, `cosyin1Soft`) }
     if (users[BOT_USERNAME]?.thetarastark?.sub) { greetingEmotes.push(`thetar42KeystoneFlag`, `thetar42Cheer`, `thetar42POG`, `thetar42Pelican`, `thetar42Blep`, `thetar42Sad`) }
 
     const greetingEmote = greetingEmotes[Math.floor(Math.random() * greetingEmotes.length)]
-    // if (settings.debug) { console.log(`${boldTxt}> getgreetingEmote(channel: '${channel}') => '${greetingEmote}'), choices:${resetTxt}`, greetingEmotes.length) }
+    // logMessage([`> getgreetingEmote(channel: '${channel}') => '${greetingEmote}'), choices:`, greetingEmotes.length])
     return greetingEmote
 }
+
 function getByeEmote(channel) {
     const byeEmotes = [...settings.baseEmotes.byeEmotes]
 
@@ -145,9 +157,10 @@ function getByeEmote(channel) {
     if (users[BOT_USERNAME]?.cosyinpink?.sub) { byeEmotes.push(`cosyin1Love`, `cosyin1Wave`, `cosyin1Cozy`) }
 
     const byeEmote = byeEmotes[Math.floor(Math.random() * byeEmotes.length)]
-    // if (settings.debug) { console.log(`${boldTxt}> getbyeEmote(channel: '${channel}') => '${byeEmote}'), choices:${resetTxt}`, byeEmotes.length) }
+    // logMessage([`> getbyeEmote(channel: '${channel}') => '${byeEmote}'), choices:`, byeEmotes.length])
     return byeEmote
 }
+
 function getDumbEmote(channel) {
     const dumbEmotes = [...settings.baseEmotes.dumbEmotes]
 
@@ -156,7 +169,7 @@ function getDumbEmote(channel) {
     if (channel === `e1ectroma`) { dumbEmotes.push(`dekuHYPE`, `KEKW`, `modCheck`, `pikaO`, `popCat`, `pressF`) }
     if (channel === `domonintendo1`) { dumbEmotes.push(`COPIUM`, `HUHH`, `KEKW`, `modCheck`, `monkaHmm`, `NODDERS`, `PauseChamp`, `pepoG`, `weirdChamp`) }
 
-    if (users[BOT_USERNAME]?.jpegstripes?.sub) { dumbEmotes.push(`jpegstChrome`, `jpegstBroken`, `jpegstBlank`, `jpegstBonk`, `jpegstMegamind`) }
+    if (users[BOT_USERNAME]?.jpegstripes?.sub) { dumbEmotes.push(`jpegstChrome`, `jpegstBroken`, `jpegstBonk`, `jpegstMegamind`) }
     if (users[BOT_USERNAME]?.sclarf?.sub) { dumbEmotes.push(`sclarfSpin`, `sclarfHuh`, `sclarfBlind`, `sclarfSophisticated`, `sclarfLUL`, `sclarfDEEP`, `sclarfChickenmoley`) }
     if (users[BOT_USERNAME]?.e1ectroma?.sub) { dumbEmotes.push(`e1ectr4Bye`, `e1ectr4Laugh`, `e1ectr4Wazzah`, `e1ectr4Malort`) }
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { dumbEmotes.push(`domoni6ChefHey`, `domoni6MeincSus`, `domoni6Sneeze`, `domoni6Dum`, `domoni6Kek`) }
@@ -164,13 +177,64 @@ function getDumbEmote(channel) {
     if (users[BOT_USERNAME]?.thetarastark?.sub) { dumbEmotes.push(`thetar42Blep`, `thetar42Sad`) }
 
     const dumbEmote = dumbEmotes[Math.floor(Math.random() * dumbEmotes.length)]
-    // if (settings.debug) { console.log(`${boldTxt}> getDumbEmote(channel: '${channel}') => '${dumbEmote}'), choices:${resetTxt}`, dumbEmotes.length) }
+    // logMessage([`> getDumbEmote(channel: '${channel}') => '${dumbEmote}'), choices:`, dumbEmotes.length])
     return dumbEmote
 }
+
 function pluralize(num, singularForm, pluralForm) {
     return Number(num) === 1
         ? `${Number(num)} ${singularForm}`
         : `${Number(num)} ${pluralForm}`
+}
+
+function renderObj(obj, objName, indentation = ``) {
+    const tab = `${indentation}\t`
+    const data = [`${objName}: {`]
+    if (Object.keys(obj).length) {
+        const keys = `\n${Object.keys(obj).map((key) => {
+            return typeof obj[key] === `string`
+                ? `${tab}${key}: '${obj[key]}'`
+                : typeof obj[key] === `object` && obj[key] !== null
+                    ? Array.isArray(obj[key])
+                        ? `${tab}${key}: [${obj[key].length
+                            ? obj[key].map((val) => { return typeof val === `string` ? `'${val}'` : val }).join(`, `)
+                            : ``
+                        }]`
+                        : `${tab}${renderObj(obj[key], key, tab)}`
+                    : `${tab}${key}: ${obj[key]}`
+        }).join(`,\n`)}`
+        data.push(keys)
+    }
+    data.push(`\n${indentation}}`)
+    return data.join(``)
+}
+
+async function logMessage(messages, time, channel, username, color, self) {
+    const log = messages.join(` `)
+    if (username) {
+        await fs.appendFile(`lemony_logs.txt`, `[${time}] <${channel}> ${username}: ${log}\n`, (err) => {
+            if (err) { console.log(`Error writing logs:`, err) }
+        })
+        if (!settings.hideNonDevChannel || channel === DEV) {
+            self && settings.highlightBotMessage
+                ? console.log(`${yellowBg}${settings.logTime
+                    ? `[${time}] `
+                    : ``}${settings.hideNonDevChannel
+                        ? ``
+                        : `<${channel}> `}${username}: ${log}${resetTxt}`)
+                : console.log(`${settings.logTime
+                    ? `[${time}] `
+                    : ``}${settings.hideNonDevChannel
+                        ? ``
+                        : `<${channel}> `}${color in chatColors ? chatColors[color].terminalColor : whiteTxt}${username}: ${log}${resetTxt}`)
+        }
+    }
+    else {
+        await fs.appendFile(`lemony_logs.txt`, `${log}\n`, (err) => {
+            if (err) { console.log(`Error writing logs:`, err) }
+        })
+        if (settings.debug) { console.log(`${grayTxt}${log}${resetTxt}`) }
+    }
 }
 
 const numbers = [
@@ -1188,6 +1252,25 @@ module.exports = {
     getByeEmote,
     getDumbEmote,
     pluralize,
+    renderObj,
+    logMessage,
+    async handleUncaughtException(bot, err, location) {
+        await logMessage([`> handleUncaughtException(err.message: '${err.message}', location: '${location}')`])
+
+        const emote = users[BOT_USERNAME]?.jpegstripes?.sub ? `jpegstBroken` : users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Heat` : users[BOT_USERNAME]?.domonintendo1?.sub ? `domoni6Sneeze` : `>(`
+        for (const chatroom of bot.channels) {
+            bot.say(chatroom, `Oops, I just crashed! ${emote} ${err.message} ${location}`)
+        }
+
+        await logMessage([makeLogs(bot.channels)])
+        await logMessage([err.stack])
+
+    },
+    async dumpMemory(props) {
+        const { bot, channel, username } = props
+        await logMessage([`> dumpMemory(channel: ${channel}, username: ${username})`, `\n`])
+        await logMessage([makeLogs(bot.channels)])
+    },
     getToUser(str) {
         return str
             ? str.replace(/^[@#]/g, ``).toLowerCase()
@@ -1195,7 +1278,7 @@ module.exports = {
     },
     initUser(tags, self) {
         const username = tags.username
-        if (settings.debug) { console.log(`${grayTxt}> initUser(tags.username: '${tags.username}')${resetTxt}`) }
+        logMessage([`> initUser(tags.username: '${tags.username}')`])
         users[username] = {
             id: self ? BOT_ID : Number(tags[`user-id`]),
             displayName: tags[`display-name`],
@@ -1207,7 +1290,7 @@ module.exports = {
         }
     },
     initUserChannel(tags, username, channel) {
-        if (settings.debug) { console.log(`${grayTxt}> initUserChannel(username: '${username}', channel: '${channel}')${resetTxt}`) }
+        logMessage([`> initUserChannel(username: '${username}', channel: '${channel}')`])
         users[username][channel] = {
             sub: tags.subscriber,
             mod: tags.mod,
@@ -1218,7 +1301,7 @@ module.exports = {
         }
     },
     initChannel(channel) {
-        if (settings.debug) { console.log(`${grayTxt}> initChannel(channel: '${channel}')${resetTxt}`) }
+        logMessage([`> initChannel(channel: '${channel}')`])
         lemonyFresh[channel].accessToken = lemonyFresh[channel]?.accessToken || mods[channel]?.accessToken || ``
         lemonyFresh[channel].refreshToken = lemonyFresh[channel]?.refreshToken || mods[channel]?.refreshToken || ``
         lemonyFresh[channel].subRaidMessage = lemonyFresh[channel]?.subRaidMessage || ``
@@ -1258,7 +1341,7 @@ module.exports = {
     },
     updateMod(chatroom, tags, self, username) {
         if (!(username in mods)) {
-            if (settings.debug) { console.log(`${grayTxt}> initMod: '${username}'${resetTxt}`) }
+            logMessage([`> initMod: '${username}'`])
             mods[username] = {
                 id: self ? BOT_ID : Number(tags[`user-id`]),
                 accessToken: ``,
@@ -1271,21 +1354,21 @@ module.exports = {
         }
         mods[username].isModIn = mods[username].isModIn || []
         if (!mods[username].isModIn.includes(chatroom)) {
-            if (settings.debug) { console.log(`${grayTxt}> updateMod ${username}: '${chatroom}'${resetTxt}`) }
+            logMessage([`> updateMod ${username}: '${chatroom}'`])
             mods[username].isModIn.push(chatroom)
         }
     },
     resetCooldownTimer(channel, timer) {
-        if (settings.debug && lemonyFresh[channel].timers[timer].cooldown) { console.log(`${grayTxt}> resetCooldownTimer(channel: '${channel}', timer: '${timer}', cooldown: ${pluralize(lemonyFresh[channel].timers[timer].cooldown, `second`, `seconds`)})${resetTxt}`) }
+        logMessage([`> resetCooldownTimer(channel: '${channel}', timer: '${timer}', cooldown: ${pluralize(lemonyFresh[channel].timers[timer].cooldown, `second`, `seconds`)})`])
         lemonyFresh[channel].timers[timer].listening = false
         clearTimeout(lemonyFresh[channel].timers[timer].timerId)
         lemonyFresh[channel].timers[timer].timerId = Number(setTimeout(() => {
             lemonyFresh[channel].timers[timer].listening = true
-            if (lemonyFresh[channel].timers[timer].cooldown * 1000) { console.log(`${grayTxt}-> Listening for '${timer}' again!${resetTxt}`) }
+            logMessage([`-> Listening for '${timer}' again!`])
         }, lemonyFresh[channel].timers[timer].cooldown * 1000))
     },
     sayJoinMessage(bot, chatroom) {
-        if (settings.debug) { console.log(`${grayTxt}> sayJoinMessage(chatroom: '${chatroom}'${settings.joinMessage ? `, '${settings.joinMessage}'` : ``})${resetTxt}`) }
+        logMessage([`> sayJoinMessage(chatroom: '${chatroom}'${settings.joinMessage ? `, '${settings.joinMessage}'` : ``})`])
 
         const channel = chatroom.substring(1)
         const lemonEmote = getLemonEmote()
@@ -1340,13 +1423,14 @@ module.exports = {
                     ? `null`
                     : Array.isArray(tags[tag])
                         ? `array`
-                        : typeof tags[tag] : typeof tags[tag]
+                        : typeof tags[tag]
+                : typeof tags[tag]
             if (!(tag in knownTags)) {
-                if (settings.debug) { console.log(`${grayTxt}> New message tag '${tag}' discovered (type: ${type})${resetTxt}`, tags[tag]) }
+                logMessage([`> New message tag '${tag}' discovered (type: ${type})`, type === `object` ? renderObj(tags[tag], tag) : tags[tag]])
                 knownTags[tag] = { types: [] }
             }
             if (!knownTags[tag].types.includes(type)) {
-                if (settings.debug && knownTags[tag].types.length > 0) console.log(`${grayTxt}> New type for message tag '${tag}' added: ${type}${resetTxt}`)
+                if (knownTags[tag].types.length > 0) logMessage([`> New type for message tag '${tag}' added: ${type}`])
                 knownTags[tag].types.push(type)
             }
             knownTags[tag].lastValue = tags[tag]
@@ -1360,18 +1444,9 @@ module.exports = {
                 : null
             : null
     },
-    async handleUncaughtException(bot, errMsg, location) {
-        if (settings.debug) { console.log(`${grayTxt}> handleUncaughtException(errMsg: '${errMsg}', location: '${location}')${resetTxt}`) }
-
-        const emote = users[BOT_USERNAME]?.jpegstripes?.sub ? `jpegstBroken` : users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Heat` : users[BOT_USERNAME]?.domonintendo1?.sub ? `domoni6Sneeze` : `>(`
-        for (const chatroom of bot.channels) {
-            bot.say(chatroom, `Oops, I just crashed! ${emote} ${errMsg} ${location}`)
-        }
-        console.log(knownTags, tempCmds, users, mods, lemonyFresh)
-    },
     applyNicknames(props) {
         const { bot, chatroom } = props
-        if (settings.debug) { console.log(`${grayTxt}> applyNicknames(chatroom: '${chatroom}')${resetTxt}`) }
+        logMessage([`> applyNicknames(chatroom: '${chatroom}')`])
         const nicknames = COMMON_NICKNAMES.split(`,`)
 
         const updatedUsers = []
@@ -1391,15 +1466,15 @@ module.exports = {
 
         const response = []
         if (updatedUsers.length) {
-            console.log(`${grayTxt}-> updatedUsers: ${updatedUsers.join(`, `)}${resetTxt}`)
+            logMessage([`-> updatedUsers: ${updatedUsers.join(`, `)}`])
             response.push(`${updatedUsers.length} updated`)
         }
         if (skippedUsers.length) {
-            console.log(`${grayTxt}-> skippedUsers: ${skippedUsers.join(`, `)}${resetTxt}`)
+            logMessage([`-> skippedUsers: ${skippedUsers.join(`, `)}`])
             response.push(`${skippedUsers.length} skipped`)
         }
         if (unknownUsers.length) {
-            console.log(`${grayTxt}-> unknownUsers: ${unknownUsers.join(`, `)}${resetTxt}`)
+            logMessage([`-> unknownUsers: ${unknownUsers.join(`, `)}`])
             response.push(`${unknownUsers.length} not known yet`)
         }
         bot.say(chatroom, `/me ${response.join(`, `)}`)

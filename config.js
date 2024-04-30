@@ -30,21 +30,21 @@ const orangeBg = `\x1b[48;2;255;164;0m`
 
 // Twitch color names and terminal color references
 const chatColors = {
-    "#0000FF": { name: "blue", terminalColor: blueTxt },
-    "#8A2BE2": { name: "blue-violet", terminalColor: blueTxt },
-    "#5F9EA0": { name: "cadet blue", terminalColor: cyanTxt },
-    "#D2691E": { name: "chocolate", terminalColor: magentaTxt },
-    "#FF7F50": { name: "coral", terminalColor: magentaTxt },
-    "#1E90FF": { name: "dodger blue", terminalColor: cyanTxt },
-    "#B22222": { name: "firebrick", terminalColor: redTxt },
-    "#DAA520": { name: "goldenrod", terminalColor: yellowTxt },
-    "#008000": { name: "green", terminalColor: greenTxt },
-    "#FF69B4": { name: "hot pink", terminalColor: redTxt },
-    "#FF4500": { name: "orange-red", terminalColor: orangeTxt },
-    "#FF0000": { name: "red", terminalColor: redTxt },
-    "#2E8B57": { name: "sea green", terminalColor: greenTxt },
-    "#00FF7F": { name: "spring green", terminalColor: greenTxt },
-    "#ADFF2F": { name: "yellow-green", terminalColor: yellowTxt }
+    '#0000FF': { name: `blue`, terminalColor: blueTxt },
+    '#8A2BE2': { name: `blue-violet`, terminalColor: blueTxt },
+    '#5F9EA0': { name: `cadet blue`, terminalColor: cyanTxt },
+    '#D2691E': { name: `chocolate`, terminalColor: magentaTxt },
+    '#FF7F50': { name: `coral`, terminalColor: magentaTxt },
+    '#1E90FF': { name: `dodger blue`, terminalColor: cyanTxt },
+    '#B22222': { name: `firebrick`, terminalColor: redTxt },
+    '#DAA520': { name: `goldenrod`, terminalColor: yellowTxt },
+    '#008000': { name: `green`, terminalColor: greenTxt },
+    '#FF69B4': { name: `hot pink`, terminalColor: redTxt },
+    '#FF4500': { name: `orange-red`, terminalColor: orangeTxt },
+    '#FF0000': { name: `red`, terminalColor: redTxt },
+    '#2E8B57': { name: `sea green`, terminalColor: greenTxt },
+    '#00FF7F': { name: `spring green`, terminalColor: greenTxt },
+    '#ADFF2F': { name: `yellow-green`, terminalColor: yellowTxt }
 }
 
 // Global settings
@@ -52,7 +52,7 @@ const settings = {
     debug: true,
     timeLocale: `en-US`,
     timeZone: `America/New_York`,
-    startTime: new Date().toLocaleString(`en-US`, { timeZone: `America/New_York` }),
+    startDate: new Date(),
     joinMessage: ``,
     highlightBotMessage: true,
     logTime: true,
@@ -91,6 +91,7 @@ const settings = {
         `streamelements`,
         `streamlabs`,
         `tangiabot`,
+        `thetarashark`,
         `undertalebot`,
         `uwu_twanswator`,
         `wizebot`
@@ -129,7 +130,17 @@ const settings = {
             `:p`
         ]
     },
-    botMood: `happy`
+    botMood: `happy`,
+    autoBan: [
+        `Cheap Viewers on StreamBoo`,
+        `I want to offer promotion of your channel`
+    ]
+}
+
+const wordBank = {
+    verbs: [],
+    nouns: [],
+    adjectives: []
 }
 
 module.exports = {
@@ -158,5 +169,6 @@ module.exports = {
     grayBg,
     orangeBg,
     chatColors,
-    settings
+    settings,
+    wordBank
 }

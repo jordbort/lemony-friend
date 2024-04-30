@@ -1,13 +1,12 @@
-const { settings, grayTxt, resetTxt } = require(`../config`)
-const { getHypeEmote } = require(`../utils`)
+const { getHypeEmote, logMessage } = require(`../utils`)
 
 module.exports = {
     catchPokemon(props) {
         const { bot, chatroom, channel, username } = props
-        if (settings.debug) { console.log(`${grayTxt}> catchPokemon(channel: '${channel}', username: '${username}')${resetTxt}`) }
+        logMessage([`> catchPokemon(channel: '${channel}', username: '${username}')`])
 
         if (username !== `pokemoncommunitygame`) {
-            if (settings.debug) { console.log(`${grayTxt}-> Message not from PokemonCommunityGame, ignoring${resetTxt}`) }
+            logMessage([`-> Message not from PokemonCommunityGame, ignoring`])
             return
         }
 
@@ -15,13 +14,13 @@ module.exports = {
     },
     buyPokeballs(props) {
         const { bot, chatroom, channel } = props
-        if (settings.debug) { console.log(`${grayTxt}> buyPokeballs(channel: '${channel}')${resetTxt}`) }
+        logMessage([`> buyPokeballs(channel: '${channel}')`])
 
         bot.say(chatroom, `!pokeshop pokeball 10`)
     },
     acknowledgeCaughtPokemon(props) {
         const { bot, chatroom, channel } = props
-        if (settings.debug) { console.log(`${grayTxt}> acknowledgeCaughtPokemon(channel: '${channel}')${resetTxt}`) }
+        logMessage([`> acknowledgeCaughtPokemon(channel: '${channel}')`])
 
         const hypeEmote = getHypeEmote(channel)
         bot.say(chatroom, `${hypeEmote}`)

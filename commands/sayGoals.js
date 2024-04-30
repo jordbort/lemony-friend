@@ -1,9 +1,10 @@
-const { resetTxt, grayTxt, settings } = require(`../config`)
+const { logMessage } = require(`../utils`)
 
 module.exports = {
     sayGoals(props) {
         const { bot, chatroom, args, channel } = props
-        if (settings.debug) { console.log(`${grayTxt}> sayGoals(chatroom: ${chatroom}, args: ${args})${resetTxt}`) }
+        logMessage([`> sayGoals(chatroom: ${chatroom}, args:`, args, `)`])
+
         if (chatroom === `#sclarf`) {
             const subs = Number(args[0])
             const sclarfGoals = {
@@ -37,6 +38,6 @@ module.exports = {
                 700: `sclarf will go see trom!`
             }
             if (!isNaN(subs) && subs in sclarfGoals) { bot.say(chatroom, `At ${subs} subs, ${sclarfGoals[subs]}`) }
-        } else if (settings.debug) { console.log(`${grayTxt}${channel} has no goals${resetTxt}`) }
+        } else { logMessage([`${channel} has no goals`]) }
     }
 }

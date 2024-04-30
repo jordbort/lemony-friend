@@ -1,12 +1,12 @@
-const { settings, grayTxt, resetTxt } = require(`../config`)
+const { settings } = require(`../config`)
 const { lemonyFresh } = require(`../data`)
 const { getTwitchUser } = require(`./twitch`)
-const { getUsername, getByeEmote } = require(`../utils`)
+const { getUsername, getByeEmote, logMessage } = require(`../utils`)
 
 module.exports = {
     async handleJoin(props) {
         const { bot, chatroom, args, channel } = props
-        if (settings.debug) { console.log(`${grayTxt}> handleJoin(chatroom: ${chatroom}, args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+        logMessage([`> handleJoin(chatroom: ${chatroom}, args:`, args, `)`])
 
         const validUsers = args.map(arg => getUsername(arg)).filter(user => user)
         const alreadyJoined = validUsers.filter(channel => bot.channels.includes(`#${channel}`))
@@ -18,7 +18,7 @@ module.exports = {
             props.username = channel
             const twitchUser = await getTwitchUser(props)
             if (!twitchUser?.id) {
-                if (settings.debug) { console.log(`${grayTxt}-> Error: '${channel}' does not have a user ID${resetTxt}`) }
+                logMessage([`-> Error: '${channel}' does not have a user ID`])
             } else {
                 successfullyJoined.push(channel)
                 lemonyFresh[channel] = { ...lemonyFresh[channel], id: Number(twitchUser.id) }
@@ -34,7 +34,7 @@ module.exports = {
     },
     handlePart(props) {
         const { bot, chatroom, args, channel } = props
-        if (settings.debug) { console.log(`${grayTxt}> handlePart(chatroom: ${chatroom}, args:${resetTxt}`, args, `${grayTxt})${resetTxt}`) }
+        logMessage([`> handlePart(chatroom: ${chatroom}, args:`, args, `)`])
 
         // lemonyFresh.channels are not allowed to be parted
         const validUsers = args.map(arg => getUsername(arg)).filter(user => user && !lemonyFresh.channels.includes(`#${user}`))

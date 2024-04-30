@@ -1,8 +1,7 @@
-const { resetTxt, grayTxt, settings } = require(`../config`)
-const { getLemonEmote, getPositiveEmote } = require(`../utils`)
+const { getLemonEmote, getPositiveEmote, logMessage } = require(`../utils`)
 
 function lemonify(str) {
-    if (settings.debug) { console.log(`${grayTxt}> lemonify(str: ${str})${resetTxt}`) }
+    logMessage([`> lemonify(str: ${str})`])
     const words = str.split(` `)
     const reservedKeywords = [
         `a`,

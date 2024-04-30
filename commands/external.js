@@ -1,13 +1,38 @@
 const API_KEY = process.env.API_KEY
 
-const { resetTxt, grayTxt, settings } = require(`../config`)
-
-const { getNegativeEmote } = require(`../utils`)
+const { settings } = require(`../config`)
+const { getNegativeEmote, renderObj, logMessage } = require(`../utils`)
 
 module.exports = {
+    async checkSentiment(props) {
+        const { bot, chatroom, message } = props
+        logMessage([`> checkSentiment(chatroom: ${chatroom}, message: ${message})`])
+
+        const sanitizedMsg = message.replace(/[\\{`}%^|]/g, ``)
+        const endpoint = `https://api.api-ninjas.com/v1/sentiment?text=${sanitizedMsg}`
+        const options = {
+            headers: {
+                'X-Api-Key': API_KEY
+            }
+        }
+
+        const response = await fetch(endpoint, options)
+        const data = await response.json()
+        logMessage([`HTTP`, response.status, renderObj(data, `data`)])
+
+        'sentiment' in data
+            ? data.sentiment.includes(`NEUTRAL`)
+                ? bot.say(chatroom, `:p`)
+                : data.sentiment.includes(`POSITIVE`)
+                    ? data.sentiment.includes(`WEAK`)
+                        ? bot.say(chatroom, `:)`)
+                        : bot.say(chatroom, `:D`)
+                    : bot.say(chatroom, `:(`)
+            : bot.say(chatroom, `:O`)
+    },
     async getDadJoke(props) {
         const { bot, chatroom, channel } = props
-        if (settings.debug) { console.log(`${grayTxt}> getDadJoke(chatroom: ${chatroom})${resetTxt}`) }
+        logMessage([`> getDadJoke(chatroom: ${chatroom})`])
 
         const response = await fetch("https://icanhazdadjoke.com/", {
             headers: {
@@ -15,7 +40,7 @@ module.exports = {
             }
         })
         const data = await response.json()
-        if (settings.debug) { console.log(data) }
+        logMessage([`HTTP`, response.status, renderObj(data, `data`)])
 
         const negativeEmote = getNegativeEmote(channel)
         data.status === 200
@@ -24,7 +49,7 @@ module.exports = {
     },
     async getDefinition(props) {
         const { bot, chatroom, args, channel } = props
-        if (settings.debug) { console.log(`${grayTxt}> getDefinition(chatroom: ${chatroom}, args:`, args, `)${resetTxt}`) }
+        logMessage([`> getDefinition(chatroom: ${chatroom}, args:`, args, `)`])
         const str = args.join(` `)
         if (!str) { return bot.say(chatroom, `Please give me a word to define! :)`) }
 
@@ -37,7 +62,7 @@ module.exports = {
 
         const response = await fetch(endpoint, options)
         const data = await response.json()
-        if (settings.debug) { console.log(data) }
+        logMessage([`HTTP`, response.status, renderObj(data, `data`)])
 
         const negativeEmote = getNegativeEmote(channel)
         if ('error' in data) {
@@ -55,10 +80,10 @@ module.exports = {
     async getPokemon(props) {
         const { bot, chatroom, args, channel } = props
         const pokemon = args[0]?.toLowerCase()
-        if (settings.debug) { console.log(`${grayTxt}> getPokemon(chatroom: ${chatroom}, pokemon: ${pokemon})${resetTxt}`) }
+        logMessage([`> getPokemon(chatroom: ${chatroom}, pokemon: ${pokemon})`])
 
         if (!pokemon) {
-            if (settings.debug) { console.log(`${grayTxt}-> No Pokemon provided${resetTxt}`) }
+            logMessage([`-> No Pokemon provided`])
             return
         }
 
@@ -139,9 +164,9 @@ module.exports = {
         // if it TAKES double damage AND half damage FROM a type, remove from BOTH arrays
         const nullify = []
         for (const type of doubleDamageFrom) {
-            if (settings.debug) { console.log(`Looking at:`, doubleDamageFrom.indexOf(type), type) }
+            logMessage([`Looking at:`, doubleDamageFrom.indexOf(type), type])
             if (halfDamageFrom.includes(type)) {
-                if (settings.debug) { console.log(`Found in both:`, type) }
+                logMessage([`Found in both:`, type])
                 nullify.push(type)
             }
         }
@@ -153,11 +178,11 @@ module.exports = {
         // Cleaning up immunities
         for (const type of immuneFrom) {
             if (halfDamageFrom.includes(type)) {
-                if (settings.debug) { console.log(`"Immunity from" found in halfDamageFrom:`, type) }
+                logMessage([`"Immunity from" found in halfDamageFrom:`, type])
                 halfDamageFrom.splice(halfDamageFrom.indexOf(type), 1)
             }
             if (doubleDamageFrom.includes(type)) {
-                if (settings.debug) { console.log(`"Immunity from" found in doubleDamageFrom:`, type) }
+                logMessage([`"Immunity from" found in doubleDamageFrom:`, type])
                 doubleDamageFrom.splice(doubleDamageFrom.indexOf(type), 1)
             }
         }
