@@ -170,7 +170,8 @@ const lemonyFresh = {
             `!gay`,
             `!turbomaxwaste`,
             `!where`,
-            `!luigi`
+            `!luigi`,
+            `!water`
         ],
     },
     sclarf: {
@@ -370,6 +371,7 @@ const lemonyFresh = {
         emotes: [`astral332HI`, `astral332Pop`],
         accessToken: ASTRAL_AN0MALY_ACCESS_TOKEN,
         refreshToken: ASTRAL_AN0MALY_REFRESH_TOKEN,
+        subRaidMessage: `astral332Pop ASS RAID astral332Pop`,
         noSubRaidMessage: `CorgiDerp ASS RAID CorgiDerp`,
         timers: { '!so': { cooldown: 4, listening: false } }
     },
@@ -378,7 +380,7 @@ const lemonyFresh = {
         emotes: [`dirtyd182LOVE`],
         accessToken: DIRTYD0INKS_ACCESS_TOKEN,
         refreshToken: DIRTYD0INKS_REFRESH_TOKEN,
-        noSubRaidMessage: `DinoDance GoldPLZ LETS GET DIRTY! DinoDance`
+        noSubRaidMessage: `DinoDance GoldPLZ LETS GET DIRTY! GoldPLZ DinoDance`
     },
     cosyinpink: {
         id: 558851202,
