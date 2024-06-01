@@ -644,7 +644,7 @@ module.exports = {
 
         if (response.status === 401) {
             logMessage([`-> Unauthorized from banUsers(), attempting to refresh access token...`])
-            await refreshToken({ bot: bot, chatroom: chatroom, channel: channel, username: username, toUser: null }, false)
+            await refreshToken({ bot: bot, chatroom: chatroom, channel: channel, username: channel, toUser: null }, false)
             options.headers.authorization = `Bearer ${lemonyFresh[channel].accessToken}`
             const finalAttempt = await fetch(endpoint, options)
             const finalAttemptData = await finalAttempt.json()
