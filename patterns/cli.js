@@ -22,7 +22,7 @@ function updateBool(bot, chatroom, obj, message, name, args) {
 function updateArr(bot, chatroom, obj, message, name, args) {
     logMessage([`> updateArr(chatroom: '${chatroom}', name: '${name}', args:`, args, `)`])
 
-    if (!args.length) { return bot.say(chatroom, `/me ${message} (${obj[name].length}): ${obj[name].join(` `)} - Add more, "delete (d)" some, or "clear (c)" all`) }
+    if (!args.length) { return bot.say(chatroom, `/me ${message} (${pluralize(obj[name].length, `item`, `items`)}): ${obj[name].join(` `)} - Add more, "delete (d)" some, or "clear (c)" all`) }
 
     if (/^clear$|^c$/i.test(args[0])) {
         obj[name].length = 0
@@ -38,7 +38,7 @@ function updateArr(bot, chatroom, obj, message, name, args) {
                 removals.push(element)
             }
         }
-        return bot.say(chatroom, `/me ${message} length ${obj[name].length}, removed ${removals.length}${removals.length ? `: ${removals.join(` `)}` : ``}`)
+        return bot.say(chatroom, `/me ${message} (${pluralize(obj[name].length, `item`, `items`)}), removed ${removals.length}${removals.length ? `: ${removals.join(` `)}` : ``}`)
     }
 
     const additions = []
@@ -48,7 +48,7 @@ function updateArr(bot, chatroom, obj, message, name, args) {
             additions.push(element)
         }
     }
-    bot.say(chatroom, `/me ${message} length ${obj[name].length}, added ${additions.length}${additions.length ? `: ${additions.join(` `)}` : ``}`)
+    bot.say(chatroom, `/me ${message} (${pluralize(obj[name].length, `item`, `items`)}), added ${additions.length}${additions.length ? `: ${additions.join(` `)}` : ``}`)
 }
 
 function updatePhraseArr(bot, chatroom, obj, message, name, args) {
