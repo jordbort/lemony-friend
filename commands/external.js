@@ -70,10 +70,17 @@ module.exports = {
         } else if (!data.valid || !data.definition) {
             bot.say(chatroom, `I don't think "${data.word}" is a word! ${negativeEmote}`)
         } else {
-            let definition = `Definition of "${data.word}":`
-            const splitDefinition = data.definition.split(`. `)
-            if (splitDefinition.includes(`1`)) { definition += ` 1) ${splitDefinition[splitDefinition.indexOf(`1`) + 1]}.` }
-            if (splitDefinition.includes(`2`)) { definition += ` 2) ${splitDefinition[splitDefinition.indexOf(`2`) + 1]}.` }
+            let definition = `Definition of "${data.word}": `
+            const regex = /\n/g
+            const splitDefinition = data.definition.replace(regex, ``).split(`. `).filter(el => el !== `\n`)
+
+            if (!splitDefinition.includes(`1`)) {
+                definition += splitDefinition[0]
+            } else {
+                if (splitDefinition.includes(`1`)) { definition += `1) ${splitDefinition[splitDefinition.indexOf(`1`) + 1]}. ` }
+                if (splitDefinition.includes(`2`)) { definition += `2) ${splitDefinition[splitDefinition.indexOf(`2`) + 1]}. ` }
+                if (splitDefinition.includes(`3`)) { definition += `3) ${splitDefinition[splitDefinition.indexOf(`3`) + 1]}. ` }
+            }
             bot.say(chatroom, definition)
         }
     },
