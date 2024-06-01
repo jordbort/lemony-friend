@@ -2,23 +2,6 @@ const { checkSentiment } = require(`../commands/external`)
 const { handleGreetOne, sayGoodnight, sayThanks, sayYoureWelcome, sayMood } = require(`../commands/conversation`)
 
 module.exports = {
-    // what up
-    [/\bw+h*[au]+t+\b.*\bu+p+/i]: handleGreetOne,
-    // what's up
-    [/\bw+h*[au]+t+['"]*s+\b.*\bu+p+/i]: handleGreetOne,
-    // wassup
-    [/\b((w+h*[au]+)?['"]*(d|s|t)+u+p+)+\b/i]: handleGreetOne,
-    // hello
-    [/\bh*[aeu]+n*l+(o+|u+r+)\b/i]: handleGreetOne,
-    // hi
-    [/\b(h+i+)+\b/i]: handleGreetOne,
-    // heyo
-    [/\b(h*[ae]+y+[ao]*)+\b/i]: handleGreetOne,
-    // howdy
-    [/\b(m+e+|h+)o+w+d+y+/i]: handleGreetOne,
-    // yo
-    [/\b(y+o+)+\b/i]: handleGreetOne,
-
     // good night
     [/\bg+o{2,}d+\b.*\b(n+i+g+h+t+|^n+i+t+e+)/i]: sayGoodnight,
     // gn
@@ -58,6 +41,23 @@ module.exports = {
     [/\bh+o+w+\b.*\bi+s+\b.*\bi+t+\b.*\bg+o+i+n+['"g]*\b/i]: sayMood,
     // how's it going
     [/\bh+o+w+['"]*s+\b.*\bi+t+\b.*\bg+o+i+n+['"g]*\b/i]: sayMood,
+
+    // what up
+    [/\bw+h*[au]+t+\b.*\bu+p+/i]: handleGreetOne,
+    // what's up
+    [/\bw+h*[au]+t+['"]*s+\b.*\bu+p+/i]: handleGreetOne,
+    // wassup
+    [/\b((w+h*[au]+)?['"]*(d|s|t)+u+p+)+\b/i]: handleGreetOne,
+    // hello
+    [/\bh*[aeu]+n*l+(o+|u+r+)\b/i]: handleGreetOne,
+    // hi
+    [/\b(h+i+)+\b/i]: handleGreetOne,
+    // heyo
+    [/\b(h*[ae]+y+[ao]*)+\b/i]: handleGreetOne,
+    // howdy
+    [/\b(m+e+|h+)o+w+d+y+/i]: handleGreetOne,
+    // yo
+    [/\b(y+o+)+\b/i]: handleGreetOne,
 
     // Contains "you" or "u"
     [/\b(you|u)['"]*r*e*\b/i]: checkSentiment
