@@ -35,6 +35,36 @@ function stealLemon(bot, chatroom, user, suffix, target) {
         }
     }
 }
+function createLemon(bot, chatroom, user, suffix, target) {
+    const coinFlip = Math.floor(Math.random() * 2)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName || null
+
+    const randomChance = Math.floor(Math.random() * 20)
+    if (randomChance) {
+        if (target) {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} tried to create a lemon for ${targetNickname}, but it didn't work!`)
+                : bot.say(chatroom, `${userNickname} tried to generate a lemon for ${targetNickname}, but it didn't work!`)
+        } else {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} tried to make a lemon out of thin air, but it didn't work!`)
+                : bot.say(chatroom, `${userNickname} tried to manifest a lemon, but it didn't work!`)
+        }
+    } else {
+        if (target) {
+            target.lemons++
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} somehow managed to create a lemon for ${targetNickname}!`)
+                : bot.say(chatroom, `${userNickname} somehow managed to generate a lemon for ${targetNickname}!`)
+        } else {
+            user.lemons++
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} somehow managed to create a lemon out of thin air!`)
+                : bot.say(chatroom, `${userNickname} somehow managed to manifest a lemon!`)
+        }
+    }
+}
 function giveLemon(bot, chatroom, user, suffix, target) {
     const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
@@ -80,8 +110,8 @@ function eatLemon(bot, chatroom, user, suffix, target) {
                 : bot.say(chatroom, `${userNickname} fed all their lemons to ${targetNickname}!`)
         } else {
             return coinFlip
-                ? bot.say(chatroom, `${userNickname} ate all their lemons. Ack, sour!`)
-                : bot.say(chatroom, `${userNickname} ate all their lemons. Eww, bitter!`)
+                ? bot.say(chatroom, `${userNickname} ate all their lemons and became powerful.`)
+                : bot.say(chatroom, `${userNickname} ate all their lemons to gain their strength.`)
         }
     } else {
         user.lemons--
@@ -221,8 +251,38 @@ function throwLemon(bot, chatroom, user, suffix, target) {
                 : bot.say(chatroom, `${userNickname} threw a lemon at the back of ${targetNickname}'s head! Ouch!`)
         } else {
             return coinFlip
-                ? bot.say(chatroom, `${userNickname} threw away a lemon!`)
-                : bot.say(chatroom, `${userNickname} yeeted away a lemon! Goodbye!`)
+                ? bot.say(chatroom, `${userNickname} threw a lemon as far as they could!`)
+                : bot.say(chatroom, `${userNickname} yeeted a lemon! Goodbye!`)
+        }
+    }
+}
+function discardLemon(bot, chatroom, user, suffix, target) {
+    const coinFlip = Math.floor(Math.random() * 2)
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName || null
+
+    if (allLemons) {
+        user.lemons = 0
+        if (target) {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} made ${targetNickname} watch them toss all their lemons into the trash!`)
+                : bot.say(chatroom, `${userNickname} made all their lemons magically disappear - ${targetNickname} looks amazed.`)
+        } else {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} tossed all their lemons in to a garbage can!`)
+                : bot.say(chatroom, `${userNickname} said "Ctrl+A, Delete" to all their lemons.`)
+        }
+    } else {
+        user.lemons--
+        if (target) {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} made ${targetNickname} watch them dispose of a lemon.`)
+                : bot.say(chatroom, `${userNickname} threw away a lemon like it meant nothing to them - ${targetNickname} looks on.`)
+        } else {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} tossed a lemon into the trash!`)
+                : bot.say(chatroom, `${userNickname} discarded a lemon.`)
         }
     }
 }
@@ -236,8 +296,8 @@ function smashLemon(bot, chatroom, user, suffix, target) {
         user.lemons = 0
         if (target) {
             return coinFlip
-                ? bot.say(chatroom, `${targetNickname} destroyed all ${userNickname}'s lemons!`)
-                : bot.say(chatroom, `${targetNickname} pulverized all their${userNickname}'s lemons!`)
+                ? bot.say(chatroom, `${targetNickname} destroyed all of ${userNickname}'s lemons!`)
+                : bot.say(chatroom, `${targetNickname} pulverized all of ${userNickname}'s lemons!`)
         } else {
             return coinFlip
                 ? bot.say(chatroom, `${userNickname} destroyed all their lemons!`)
@@ -253,6 +313,36 @@ function smashLemon(bot, chatroom, user, suffix, target) {
             return coinFlip
                 ? bot.say(chatroom, `${userNickname} obliterated a lemon!`)
                 : bot.say(chatroom, `${userNickname} busted a lemon!`)
+        }
+    }
+}
+function flattenLemon(bot, chatroom, user, suffix, target) {
+    const coinFlip = Math.floor(Math.random() * 2)
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName || null
+
+    if (allLemons) {
+        user.lemons = 0
+        if (target) {
+            return coinFlip
+                ? bot.say(chatroom, `${targetNickname} flattened all of ${userNickname}'s lemons!`)
+                : bot.say(chatroom, `${targetNickname} smooshed all of ${userNickname}'s lemons!`)
+        } else {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} steamrolled all their lemons!`)
+                : bot.say(chatroom, `${userNickname} flattened all their lemons with a rolling pin!`)
+        }
+    } else {
+        user.lemons--
+        if (target) {
+            return coinFlip
+                ? bot.say(chatroom, `${targetNickname} sat on ${userNickname}'s lemon!`)
+                : bot.say(chatroom, `${targetNickname} squashed ${userNickname}'s lemon!`)
+        } else {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} flattened a lemon!`)
+                : bot.say(chatroom, `${userNickname} smooshed a lemon!`)
         }
     }
 }
@@ -1009,8 +1099,8 @@ function nullVerb(bot, chatroom, user, suffix, target, verb) {
 module.exports = {
     useLemon(props, splitMessage) {
         const { bot, chatroom, user, userNickname, target, targetNickname } = props
-        const verb = splitMessage[1]
-        const suffix = splitMessage[2]
+        const verb = splitMessage[1].toLowerCase()
+        const suffix = splitMessage[2].toLowerCase()
         logMessage([`> useLemon(chatroom: '${chatroom}', userNickname: '${userNickname}'${suffix
             ? `, suffix: '${suffix}'`
             : ``}${targetNickname
@@ -1018,10 +1108,12 @@ module.exports = {
                 : ``}, verb: '${verb}')`
         ])
 
-        // Stop if user doesn't have lemons, or doesn't try to steal from someone who does
+        // Stop if user doesn't have lemons, or doesn't try to steal from someone who does, or doesn't try and create one
         const theftVerbs = [`steal`, `take`, `grab`, `thieve`, `nab`, `pickpocket`, `purloin`, `abscondwith`, `loot`, `pilfer`, `runawaywith`, `runoffwith`, `makeoffwith`]
-        if ((user.lemons === 0 && !theftVerbs.includes(verb))
-            || (user.lemons === 0 && theftVerbs.includes(verb) && !targetNickname)) {
+        const creationVerbs = [`create`, `manufacture`, `generate`, `manifest`, `find`, `givemea`, `build`, `conceive`, `construct`, `devise`, `discover`, `forge`, `form`, `invent`, `produce`, `setup`, `spawn`, `actualize`, `beget`, `compose`, `concoct`, `constitute`, `contrive`, `effect`, `erect`, `fabricate`, `fashion`, `formulate`, `imagine`, `institute`, `procreate`]
+        if (user.lemons === 0
+            && (!theftVerbs.includes(verb) || (theftVerbs.includes(verb) && !targetNickname))
+            && !creationVerbs.includes(verb)) {
             return bot.say(chatroom, `${userNickname} has no lemons!`)
         }
 
@@ -1041,6 +1133,8 @@ module.exports = {
             'makeoffwith': stealLemon,
 
             'give': giveLemon,
+            'giveaway': giveLemon,
+            'giveup': giveLemon,
             'bestow': giveLemon,
             'offer': giveLemon,
 
@@ -1060,21 +1154,107 @@ module.exports = {
             'brew': makeLemon,
 
             'throw': throwLemon,
-            'throwaway': throwLemon,
             'yeet': throwLemon,
             'toss': throwLemon,
             'chunk': throwLemon,
 
+            'discard': discardLemon,
+            'delete': discardLemon,
+            'getridof': discardLemon,
+            'throwout': discardLemon,
+            'throwaway': discardLemon,
+            'abandon': discardLemon,
+            'cancel': discardLemon,
+            'disposeof': discardLemon,
+            'ditch': discardLemon,
+            'dump': discardLemon,
+            'eliminate': discardLemon,
+            'jettison': discardLemon,
+            'reject': discardLemon,
+            'remove': discardLemon,
+            'renounce': discardLemon,
+            'repeal': discardLemon,
+            'scrap': discardLemon,
+            'shed': discardLemon,
+            'abdicate': discardLemon,
+            'abjure': discardLemon,
+            'bye': discardLemon,
+            'goodbye': discardLemon,
+            'adios': discardLemon,
+            'banish': discardLemon,
+            'chuck': discardLemon,
+            'desert': discardLemon,
+            'dispossess': discardLemon,
+            'divorce': discardLemon,
+            'eject': discardLemon,
+            'expel': discardLemon,
+            'forsake': discardLemon,
+            'junk': discardLemon,
+            'oust': discardLemon,
+            'repudiate': discardLemon,
+            'castaside': discardLemon,
+            'doawaywith': discardLemon,
+            'donewith': discardLemon,
+            'partwith': discardLemon,
+            'shakeoff': discardLemon,
+            'sweepaway': discardLemon,
+            'throwoverboard': discardLemon,
+            'overboard': discardLemon,
+            'tossaside': discardLemon,
+            'tossaway': discardLemon,
+            'writeoff': discardLemon,
+
+            'create': createLemon,
+            'manufacture': createLemon,
+            'generate': createLemon,
+            'manifest': createLemon,
+            'find': createLemon,
+            'givemea': createLemon,
+            'build': createLemon,
+            'conceive': createLemon,
+            'construct': createLemon,
+            'devise': createLemon,
+            'discover': createLemon,
+            'forge': createLemon,
+            'form': createLemon,
+            'invent': createLemon,
+            'produce': createLemon,
+            'setup': createLemon,
+            'spawn': createLemon,
+            'actualize': createLemon,
+            'beget': createLemon,
+            'compose': createLemon,
+            'concoct': createLemon,
+            'constitute': createLemon,
+            'contrive': createLemon,
+            'effect': createLemon,
+            'erect': createLemon,
+            'fabricate': createLemon,
+            'fashion': createLemon,
+            'formulate': createLemon,
+            'imagine': createLemon,
+            'institute': createLemon,
+            'procreate': createLemon,
+
+            'squish': flattenLemon,
+            'squash': flattenLemon,
+            'flatten': flattenLemon,
+            'crush': flattenLemon,
+            'siton': flattenLemon,
+            'steamroll': flattenLemon,
+            'bulldoze': flattenLemon,
+            'raze': flattenLemon,
+            'smoosh': flattenLemon,
+            'compress': flattenLemon,
+            'deflate': flattenLemon,
+
             'smash': smashLemon,
-            'crush': smashLemon,
             'slam': smashLemon,
             'destroy': smashLemon,
             'explode': smashLemon,
             'bust': smashLemon,
             'burst': smashLemon,
             'crunch': smashLemon,
-            'squish': smashLemon,
-            'smoosh': smashLemon,
             'blowup': smashLemon,
             'obliterate': smashLemon,
             'pulverize': smashLemon,
@@ -1218,7 +1398,7 @@ module.exports = {
             logMessage([`-> Matched: ${verb} lemon${suffix}:`, `[Function: ${keyVerbs[verb].name}]`])
             return keyVerbs[verb](bot, chatroom, user, suffix, target, verb)
         }
-        logMessage([`-> Couldn't use verb: ${verb} on lemon${suffix}:`, `[Function: ${nullVerb.name}]`])
+        logMessage([`-> Couldn't use verb: ${verb} on lemon${suffix}: `, `[Function: ${nullVerb.name}]`])
         nullVerb(bot, chatroom, user, suffix, target, verb)
     }
 }
