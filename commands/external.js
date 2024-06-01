@@ -18,7 +18,7 @@ module.exports = {
 
         const response = await fetch(endpoint, options)
         const data = await response.json()
-        logMessage([`HTTP`, response.status, renderObj(data, `data`)])
+        logMessage([`checkSentiment`, response.status, renderObj(data, `data`)])
 
         'sentiment' in data
             ? data.sentiment.includes(`NEUTRAL`)
@@ -34,13 +34,13 @@ module.exports = {
         const { bot, chatroom, channel } = props
         logMessage([`> getDadJoke(chatroom: ${chatroom})`])
 
-        const response = await fetch("https://icanhazdadjoke.com/", {
+        const response = await fetch(`https://icanhazdadjoke.com/`, {
             headers: {
-                "Accept": "application/json",
+                accept: `application/json`,
             }
         })
         const data = await response.json()
-        logMessage([`HTTP`, response.status, renderObj(data, `data`)])
+        logMessage([`getDadJoke`, response.status, renderObj(data, `data`)])
 
         const negativeEmote = getNegativeEmote(channel)
         data.status === 200
@@ -62,7 +62,7 @@ module.exports = {
 
         const response = await fetch(endpoint, options)
         const data = await response.json()
-        logMessage([`HTTP`, response.status, renderObj(data, `data`)])
+        logMessage([`getDefinition`, response.status, renderObj(data, `data`)])
 
         const negativeEmote = getNegativeEmote(channel)
         if ('error' in data) {
