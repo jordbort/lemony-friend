@@ -3,9 +3,9 @@ const { handleGreetOne, sayGoodnight, sayThanks, sayYoureWelcome, sayMood } = re
 
 module.exports = {
     // what up
-    [/\bw+h*[au]+t+( .* ?)?u+p+/i]: handleGreetOne,
+    [/\bw+h*[au]+t+\b.*\bu+p+/i]: handleGreetOne,
     // what's up
-    [/\bw+h*[au]+t+['"]*s+( .* ?)?u+p+/i]: handleGreetOne,
+    [/\bw+h*[au]+t+['"]*s+\b.*\bu+p+/i]: handleGreetOne,
     // wassup
     [/\b((w+h*[au]+)?['"]*(d|s|t)+u+p+)+\b/i]: handleGreetOne,
     // hello
@@ -20,13 +20,13 @@ module.exports = {
     [/\b(y+o+)+\b/i]: handleGreetOne,
 
     // good night
-    [/\bg+o{2,}d+( .* ?)?(n+i+g+h+t+|^n+i+t+e+)/i]: sayGoodnight,
+    [/\bg+o{2,}d+\b.*\b(n+i+g+h+t+|^n+i+t+e+)/i]: sayGoodnight,
     // gn
     [/\b(g+n+)+\b/i]: sayGoodnight,
     // bye (includes good bye)
     [/\b(b+y+e+)+/i]: sayGoodnight,
     // goodbye
-    [/\bg+o{2,}d+( .* ?)?b+y+e+/i]: sayGoodnight,
+    [/\bg+o{2,}d+\b.*\bb+y+e+/i]: sayGoodnight,
 
     // gj
     [/\b(g+j+)+\b/i]: sayThanks,
@@ -34,28 +34,30 @@ module.exports = {
     [/\b(n+j+)+\b/i]: sayThanks,
     // wd
     [/\b(w+d+)+\b/i]: sayThanks,
-    // good/nice job/work]
-    [/\b(g+o{2,}d+|n+i+c+e+)( .* ?)?(j+o+b+|w+o+r+k+)/i]: sayThanks,
+    // good/nice job/work
+    [/\b(g+o{2,}d+|n+i+c+e+)\b.*\b(j+o+b+|w+o+r+k+)/i]: sayThanks,
     // well done
-    [/\bw+e+l{2,}( .* ?)?d+o+n+e+/i]: sayThanks,
+    [/\bw+e+l{2,}\b.*\bd+o+n+e+/i]: sayThanks,
+    // congrat(ulation)s
+    [/c+o+n+g+r+a+t+(u+l+a+t+i+o+n+)?s+/i]: sayThanks,
 
     // ty, tysm, tyvm
     [/\b(t+y+[svm]*)+\b/i]: sayYoureWelcome,
     // thank you
-    [/\bt+h*a+n+k+( .* ?)?(y+o*u+|y+e+w+|u+)\b/i]: sayYoureWelcome,
+    [/\bt+h*a+n+k+\b.*\b(y+o*u+|y+e+w+|u+)\b/i]: sayYoureWelcome,
     // thanks
     [/\bt+h*a+n+k+/i]: sayYoureWelcome,
 
     // how are you
-    [/\bh+o+w+( .* ?)?(a+r+e+|r+)( .* ?)?(y+o+u+|u+)/i]: sayMood,
+    [/\bh+o+w+\b.*\b˝(a+r+e+|r+)\b.*\b(y+o+u+|u+)/i]: sayMood,
     // how're you
-    [/\bh+o+w+['"]*r+e+( .* ?)?(y+o+u+|u+)/i]: sayMood,
+    [/\bh+o+w+['"]*r+e+\b.*\b(y+o+u+|u+)/i]: sayMood,
     // hyd
     [/\bh+y+d+\b/i]: sayMood,
     // how is it going
-    [/\bh+o+w+( .* ?)?i+s+( .* ?)?i+t+( .* ?)?g+o+i+n+['"g]*\b/i]: sayMood,
+    [/\bh+o+w+\b.*\bi+s+\b.*\bi+t+\b.*\bg+o+i+n+['"g]*\b/i]: sayMood,
     // how's it going
-    [/\bh+o+w+['"]*s+( .* ?)?i+t+( .* ?)?g+o+i+n+['"g]*\b/i]: sayMood,
+    [/\bh+o+w+['"]*s+\b.*\bi+t+\b.*\bg+o+i+n+['"g]*\b/i]: sayMood,
 
     // Contains "you" or "u"
     [/\b(you|u)['"]*r*e*\b/i]: checkSentiment
