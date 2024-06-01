@@ -7,6 +7,17 @@ module.exports = {
         const { bot, chatroom, channel } = props
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
+        const newFeatures = [
+            `New uses for lemons`,
+            `Updated streamer channel info`,
+            `Ignored Bots now updatable via CLI`,
+            `Updated bot mentions and priority`,
+            `Welcomes back after two hours instead of one`,
+            `Investigating loss of Turbo/other debuging`,
+            `PokemonCommunityGame purchases and shiny acknowledgement`,
+            `Bug fixes (nicknames, fun timer guesses, empty definition)`
+        ]
+
         const timeOptions = {
             hour: `numeric`,
             minute: `numeric`,
@@ -24,7 +35,7 @@ module.exports = {
         }
 
         const neutralEmote = getNeutralEmote(channel)
-        bot.say(chatroom, `I have been online since ${settings.startDate.toLocaleTimeString(settings.timeLocale, timeOptions)} on ${settings.startDate.toLocaleDateString(settings.timeLocale, dateOptions)}! ${neutralEmote}`)
+        bot.say(chatroom, `I've been online since ${settings.startDate.toLocaleDateString(settings.timeLocale, dateOptions)} at ${settings.startDate.toLocaleTimeString(settings.timeLocale, timeOptions)}! ${neutralEmote}${newFeatures.length ? ` Updates: ${newFeatures.join(`, `)}` : ``}`)
     },
     getLastMessage(props) {
         const { bot, chatroom, args, channel, username, user, userNickname, toUser, target, targetNickname } = props
@@ -73,7 +84,7 @@ module.exports = {
                 : bot.say(chatroom, `${userObjNickname}'s chat color is hex code ${userObj.color}`)
     },
     getRandomUser(arrExclude) {
-        logMessage([`> getRandomUser(arrExclude:`, arrExclude, `)`])
+        logMessage([`> getRandomUser(arrExclude:`, arrExclude.join(`, `), `)`])
 
         const arr = Object.keys(users)
         for (const name of arrExclude) {
