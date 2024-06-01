@@ -134,7 +134,8 @@ const settings = {
     botMood: `happy`,
     autoBan: [
         `Cheap Viewers on StreamBoo`,
-        `I want to offer promotion of your channel`
+        `I want to offer promotion of your channel`,
+        `Best viewers on`
     ]
 }
 
