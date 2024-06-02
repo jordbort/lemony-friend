@@ -179,7 +179,7 @@ const lemonyFresh = {
         accessToken: SCLARF_ACCESS_TOKEN,
         refreshToken: SCLARF_REFRESH_TOKEN,
         subRaidMessage: `sclarfWave sclarfHearts sclarfYay SCLARF RAID sclarfYay sclarfHearts sclarfWave`,
-        noSubRaidMessage: `HeyGuys HahaSweat SCLARF RAID HahaSweat HeyGuys`,
+        noSubRaidMessage: `HeyGuys CoolCat SCLARF RAID CoolCat HeyGuys`,
         emotes: [
             `sclarfRave`,
             `sclarfWobble`,
