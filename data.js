@@ -401,18 +401,25 @@ const lemonyFresh = {
     thetarastark: {
         id: 520011399,
         emotes: [
-            `thetar42KeystoneFlag`,
-            `thetar42Cheer`,
-            `thetar42Fkickline`,
             `thetar42Andy`,
             `thetar42POG`,
+            `thetar42GG`,
+            `thetar42Fkickline`,
+            `thetar42KeystonePride`,
             `thetar421st`,
+            `thetar42Hoagie`,
+            `thetar42Leave`,
+            `thetar42Spin`,
+            `thetar42Laser`,
             `thetar42BongoCatra`,
             `thetar42Pelican`,
             `thetar42Beanspelicans`,
             `thetar42Mdfly`,
             `thetar42Blep`,
-            `thetar42Sad`
+            `thetar42Sad`,
+            `thetar42Glare`,
+            `thetar42KeystoneFlag`,
+            `thetar42Cheer`
         ],
         bttvEmotes: [
             'Dance',
