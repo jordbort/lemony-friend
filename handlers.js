@@ -15,7 +15,7 @@ const { streakListener } = require(`./commands/streaks`)
 const { rollFunNumber } = require(`./commands/funNumber`)
 const { checkWord, checkLetter } = require(`./patterns/hangman`)
 const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
-const { handleColorChange, handleTurboChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
+const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
 const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, sayJoinMessage, logMessage } = require(`./utils`)
 
 module.exports = {
@@ -118,7 +118,6 @@ module.exports = {
 
         // User attribute change detection
         const colorChange = tags.color !== user.color && user.color !== ``
-        const turboChange = tags.turbo !== user.turbo
         const subChange = user[channel].sub !== tags.subscriber
         const modChange = user[channel].mod !== tags.mod
         const vipChange = user[channel].vip !== (!!tags.vip || !!tags.badges?.vip)
@@ -131,7 +130,6 @@ module.exports = {
         if (self) { return }
 
         if (colorChange) { return handleColorChange(props) }
-        if (turboChange) { return handleTurboChange(props) }
 
         /**************\
         !COMMANDS PARSER

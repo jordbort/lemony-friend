@@ -8,14 +8,7 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `New uses for lemons`,
-            `Updated streamer channel info`,
-            `Ignored Bots now updatable via CLI`,
-            `Updated bot mentions and priority`,
-            `Welcomes back after two hours instead of one`,
-            `Investigating loss of Turbo/other debuging`,
-            `PokemonCommunityGame purchases and shiny acknowledgement`,
-            `Bug fixes (nicknames, fun timer guesses, empty definition)`
+            `Removed Turbo from user data`,
         ]
 
         const timeOptions = {

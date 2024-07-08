@@ -24,7 +24,7 @@ module.exports = {
         const stats = target || user
         logMessage([`${toUser || username}:`, stats])
 
-        let data = `${toUser || username}: { id: ${stats.id}, displayName: '${stats.displayName}', nickname: '${stats.nickname}', turbo: ${stats.turbo}, color: '${stats.color}', lemons: ${stats.lemons}, hangmanWins: ${stats.hangmanWins}`
+        let data = `${toUser || username}: { id: ${stats.id}, displayName: '${stats.displayName}', nickname: '${stats.nickname}', color: '${stats.color}', lemons: ${stats.lemons}, hangmanWins: ${stats.hangmanWins}`
         for (const key of Object.keys(stats)) {
             if (typeof stats[key] === `object`) {
                 data += `, ${key}: { sub: ${stats[key]?.sub}, mod: ${stats[key].mod}, vip: ${stats[key].vip}, msgCount: ${stats[key].msgCount}, away: ${stats[key].away ? `${stats[key].away}, awayMessage: '${stats[key].awayMessage}'` : `${stats[key].away}`}, lastMessage: '${stats[key].lastMessage}', sentAt: ${stats[key].sentAt} }`

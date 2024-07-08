@@ -1283,7 +1283,6 @@ module.exports = {
             id: self ? BOT_ID : Number(tags[`user-id`]),
             displayName: tags[`display-name`],
             nickname: '',
-            turbo: !!tags.turbo,
             color: tags.color || ``,
             lemons: 0,
             hangmanWins: 0

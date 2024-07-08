@@ -1,5 +1,5 @@
 const { chatColors } = require(`../config`)
-const { getPositiveEmote, getNegativeEmote, getNeutralEmote, getDumbEmote, logMessage } = require(`../utils`)
+const { getPositiveEmote, getNegativeEmote, getNeutralEmote, logMessage } = require(`../utils`)
 
 module.exports = {
     handleColorChange(props) {
@@ -12,22 +12,6 @@ module.exports = {
         newColor in chatColors
             ? bot.say(chatroom, `${userNickname} is ${chatColors[newColor].name} now! ${neutralEmote}`)
             : bot.say(chatroom, `Acknowledging ${userNickname}'s color change ${neutralEmote}`)
-    },
-    handleTurboChange(props) {
-        const { bot, chatroom, tags, channel, user, userNickname } = props
-        const turboStatus = tags.turbo
-        logMessage([`> handleTurboChange(chatroom: '${chatroom}', user: '${userNickname}', turboStatus: ${turboStatus})`])
-
-        user.turbo = turboStatus
-        const positiveEmote = getPositiveEmote(channel)
-        const dumbEmote = getDumbEmote(channel)
-        if (turboStatus) { bot.say(chatroom, `Wow, ${userNickname} got Turbo? ${positiveEmote}`) }
-        // for debugging why this might change to false
-        else {
-            logMessage([`-> TURBO BECAME FALSE? Status: ${turboStatus} - tags:`, tags])
-            console.log(tags)
-            bot.say(chatroom, `Ask jpeg why it looks like ${userNickname}'s Turbo status is ${turboStatus} now ${dumbEmote}`)
-        }
     },
     handleSubChange(props) {
         const { bot, chatroom, tags, self, channel, user, userNickname } = props
