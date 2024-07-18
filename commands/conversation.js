@@ -432,7 +432,7 @@ module.exports = {
     },
     setAway(props) {
         const { bot, chatroom, args, command, channel, username, user, userNickname } = props
-        logMessage([`> setAway(chatroom: '${chatroom}', username: '${username}', args:`, args, `)`])
+        logMessage([`> setAway(chatroom: '${chatroom}', username: '${username}', args:`, `'${args.join(`, `)}'`, `)`])
 
         user[channel].away = true
         if (args.length) { user[channel].awayMessage = args.join(` `) }
