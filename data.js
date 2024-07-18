@@ -247,7 +247,7 @@ const lemonyFresh = {
         accessToken: E1ECTROMA_ACCESS_TOKEN,
         refreshToken: E1ECTROMA_REFRESH_TOKEN,
         subRaidMessage: `e1ectr4Smile e1ectr4Pikadance ELECTROMA RAID e1ectr4Pikadance e1ectr4Smile`,
-        noSubRaidMessage: `TombRaid ELECTROMA RAID TombRaid `,
+        noSubRaidMessage: `TombRaid ELECTROMA RAID TombRaid`,
         emotes: [
             `e1ectr4Lfg`,
             `e1ectr4Pikadance`,
