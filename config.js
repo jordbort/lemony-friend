@@ -70,7 +70,7 @@ const settings = {
     streamerEmoteStreakThreshold: 4,
     hangmanSignupSeconds: 30,
     hangmanChances: 6,
-    hangmanLemonThreshold: 3,
+    hangmanLemonThreshold: 2,
     chantCount: 8,
     chantEmote: `👏️`,
     ignoredBots: [
@@ -135,9 +135,9 @@ const settings = {
     },
     botMood: `happy`,
     autoBan: [
-        `Cheap Viewers on StreamBoo`,
-        `I want to offer promotion of your channel`,
-        `Best viewers on`
+        `Best viewers on`,
+        `Cheap viewers on`,
+        `I want to offer promotion of your channel`
     ]
 }
 
