@@ -1477,5 +1477,18 @@ module.exports = {
             response.push(`${unknownUsers.length} not known yet`)
         }
         bot.say(chatroom, `/me ${response.join(`, `)}`)
+    },
+    findUserByNickname(str) {
+        const nicknames = Object.fromEntries(
+            Object.entries(users)
+                .filter(arr => arr[1].nickname)
+                .map(arr => {
+                    return [[arr[1].nickname.toLowerCase()], arr[0]]
+                })
+        )
+        logMessage([`> findUserByNickname(str: '${str}', result: ${str.toLowerCase() in nicknames ? `'${nicknames[str.toLowerCase()]}'` : null})`])
+        return str.toLowerCase() in nicknames
+            ? nicknames[str.toLowerCase()]
+            : null
     }
 }
