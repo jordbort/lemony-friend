@@ -1,5 +1,5 @@
 const { users, lemonyFresh } = require(`../data`)
-const { getHypeEmote, getNegativeEmote, getDumbEmote, getToUser, pluralize, logMessage } = require(`../utils`)
+const { getHypeEmote, getNegativeEmote, getDumbEmote, getToUser, pluralize, logMessage, findUserByNickname } = require(`../utils`)
 
 module.exports = {
     checkEmotes(props, splitMessage) {
@@ -15,11 +15,15 @@ module.exports = {
     },
     checkSelfSub(props, splitMessage) {
         const { bot, chatroom, channel, user, userNickname } = props
-        const otherChannel = getToUser(splitMessage[splitMessage.length - 1].split(` `)[0].replace(/'s/g, ``))
         const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
+
+        const otherChannel = getToUser(splitMessage[splitMessage.length - 1].split(` `)[0].replace(/'s|\?/g, ``))
+        const possibleNickname = findUserByNickname(otherChannel)
         const otherChannelNickname = otherChannel in lemonyFresh
             ? users[otherChannel]?.nickname || users[otherChannel]?.displayName || otherChannel
-            : null
+            : possibleNickname in lemonyFresh
+                ? users[possibleNickname]?.nickname || users[possibleNickname]?.displayName || possibleNickname
+                : null
         logMessage([`> checkSelfSub(chatroom: '${chatroom}', otherChannel: '${otherChannel}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}')`])
 
         const hypeEmote = getHypeEmote(channel)
@@ -38,11 +42,15 @@ module.exports = {
     },
     checkSelfMod(props, splitMessage) {
         const { bot, chatroom, channel, user, userNickname } = props
-        const otherChannel = getToUser(splitMessage[splitMessage.length - 1].split(` `)[0].replace(/'s/g, ``))
         const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
+
+        const otherChannel = getToUser(splitMessage[splitMessage.length - 1].split(` `)[0].replace(/'s|\?/g, ``))
+        const possibleNickname = findUserByNickname(otherChannel)
         const otherChannelNickname = otherChannel in lemonyFresh
             ? users[otherChannel]?.nickname || users[otherChannel]?.displayName || otherChannel
-            : null
+            : possibleNickname in lemonyFresh
+                ? users[possibleNickname]?.nickname || users[possibleNickname]?.displayName || possibleNickname
+                : null
         logMessage([`> checkSelfMod(chatroom: '${chatroom}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}')`])
 
         const hypeEmote = getHypeEmote(channel)
@@ -61,11 +69,15 @@ module.exports = {
     },
     checkSelfVIP(props, splitMessage) {
         const { bot, chatroom, channel, user, userNickname } = props
-        const otherChannel = getToUser(splitMessage[splitMessage.length - 1].split(` `)[0].replace(/'s/g, ``))
         const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
+
+        const otherChannel = getToUser(splitMessage[splitMessage.length - 1].split(` `)[0].replace(/'s|\?/g, ``))
+        const possibleNickname = findUserByNickname(otherChannel)
         const otherChannelNickname = otherChannel in lemonyFresh
             ? users[otherChannel]?.nickname || users[otherChannel]?.displayName || otherChannel
-            : null
+            : possibleNickname in lemonyFresh
+                ? users[possibleNickname]?.nickname || users[possibleNickname]?.displayName || possibleNickname
+                : null
         logMessage([`> checkSelfVIP(chatroom: '${chatroom}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}')`])
 
         const hypeEmote = getHypeEmote(channel)
@@ -87,11 +99,15 @@ module.exports = {
         const targetUser = getToUser(splitMessage[1])
         const target = users[targetUser] || null
         const targetNickname = target?.nickname || target?.displayName || null
-        const otherChannel = getToUser(splitMessage[splitMessage.length - 1].split(` `)[0].replace(/'s/g, ``))
+        const otherChannel = getToUser(splitMessage[splitMessage.length - 1].split(` `)[0].replace(/'s|\?/g, ``))
         const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
+
+        const possibleNickname = findUserByNickname(otherChannel)
         const otherChannelNickname = otherChannel in lemonyFresh
             ? users[otherChannel]?.nickname || users[otherChannel]?.displayName || otherChannel
-            : null
+            : possibleNickname in lemonyFresh
+                ? users[possibleNickname]?.nickname || users[possibleNickname]?.displayName || possibleNickname
+                : null
         logMessage([`> checkTargetSub(chatroom: '${chatroom}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}', targetNickname: '${targetNickname}')`])
 
         const hypeEmote = getHypeEmote(channel)
@@ -117,11 +133,15 @@ module.exports = {
         const targetUser = getToUser(splitMessage[1])
         const target = users[targetUser] || null
         const targetNickname = target?.nickname || target?.displayName || null
-        const otherChannel = getToUser(splitMessage[splitMessage.length - 1].split(` `)[0].replace(/'s/g, ``))
+        const otherChannel = getToUser(splitMessage[splitMessage.length - 1].split(` `)[0].replace(/'s|\?/g, ``))
         const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
+
+        const possibleNickname = findUserByNickname(otherChannel)
         const otherChannelNickname = otherChannel in lemonyFresh
             ? users[otherChannel]?.nickname || users[otherChannel]?.displayName || otherChannel
-            : null
+            : possibleNickname in lemonyFresh
+                ? users[possibleNickname]?.nickname || users[possibleNickname]?.displayName || possibleNickname
+                : null
         logMessage([`> checkTargetMod(chatroom: '${chatroom}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}', targetNickname: '${targetNickname}')`])
 
         const hypeEmote = getHypeEmote(channel)
@@ -147,11 +167,15 @@ module.exports = {
         const targetUser = getToUser(splitMessage[1])
         const target = users[targetUser] || null
         const targetNickname = target?.nickname || target?.displayName || null
-        const otherChannel = getToUser(splitMessage[splitMessage.length - 1].split(` `)[0].replace(/'s/g, ``))
+        const otherChannel = getToUser(splitMessage[splitMessage.length - 1].split(` `)[0].replace(/'s|\?/g, ``))
         const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
+
+        const possibleNickname = findUserByNickname(otherChannel)
         const otherChannelNickname = otherChannel in lemonyFresh
             ? users[otherChannel]?.nickname || users[otherChannel]?.displayName || otherChannel
-            : null
+            : possibleNickname in lemonyFresh
+                ? users[possibleNickname]?.nickname || users[possibleNickname]?.displayName || possibleNickname
+                : null
         logMessage([`> checkTargetVIP(chatroom: '${chatroom}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}', targetNickname: '${targetNickname}')`])
 
         const hypeEmote = getHypeEmote(channel)
