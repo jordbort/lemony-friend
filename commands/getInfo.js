@@ -9,6 +9,8 @@ module.exports = {
 
         const newFeatures = [
             `Removed Turbo from user data`,
+            `Fixed lemonify bug`,
+            `Updated autoban phrases`
         ]
 
         const timeOptions = {
