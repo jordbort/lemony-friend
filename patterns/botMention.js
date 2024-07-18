@@ -24,13 +24,6 @@ module.exports = {
     // congrat(ulation)s
     [/c+o+n+g+r+a+t+(u+l+a+t+i+o+n+)?s+/i]: sayThanks,
 
-    // ty, tysm, tyvm
-    [/\b(t+y+[svm]*)+\b/i]: sayYoureWelcome,
-    // thank you
-    [/\bt+h*a+n+k+\b.*\b(y+o*u+|y+e+w+|u+)\b/i]: sayYoureWelcome,
-    // thanks
-    [/\bt+h*a+n+k+/i]: sayYoureWelcome,
-
     // how are you
     [/\bh+o+w+\b.*\b˝(a+r+e+|r+)\b.*\b(y+o+u+|u+)/i]: sayMood,
     // how're you
@@ -41,6 +34,13 @@ module.exports = {
     [/\bh+o+w+\b.*\bi+s+\b.*\bi+t+\b.*\bg+o+i+n+['"g]*\b/i]: sayMood,
     // how's it going
     [/\bh+o+w+['"]*s+\b.*\bi+t+\b.*\bg+o+i+n+['"g]*\b/i]: sayMood,
+
+    // ty, tysm, tyvm
+    [/\b(t+y+[svm]*)+\b/i]: sayYoureWelcome,
+    // thank you
+    [/\bt+h*a+n+k+\b.*\b(y+o*u+|y+e+w+|u+)\b/i]: sayYoureWelcome,
+    // thanks
+    [/\bt+h*a+n+k+/i]: sayYoureWelcome,
 
     // what up
     [/\bw+h*[au]+t+\b.*\bu+p+/i]: handleGreetOne,
