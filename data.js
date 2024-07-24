@@ -21,8 +21,8 @@ const ASTRAL_AN0MALY_REFRESH_TOKEN = process.env.ASTRAL_AN0MALY_REFRESH_TOKEN
 const DIRTYD0INKS_ACCESS_TOKEN = process.env.DIRTYD0INKS_ACCESS_TOKEN
 const DIRTYD0INKS_REFRESH_TOKEN = process.env.DIRTYD0INKS_REFRESH_TOKEN
 
-const COSYINPINK_ACCESS_TOKEN = process.env.COSYINPINK_ACCESS_TOKEN
-const COSYINPINK_REFRESH_TOKEN = process.env.COSYINPINK_REFRESH_TOKEN
+const ARTYINPINK_ACCESS_TOKEN = process.env.ARTYINPINK_ACCESS_TOKEN
+const ARTYINPINK_REFRESH_TOKEN = process.env.ARTYINPINK_REFRESH_TOKEN
 
 const THETARASTARK_ACCESS_TOKEN = process.env.THETARASTARK_ACCESS_TOKEN
 const THETARASTARK_REFRESH_TOKEN = process.env.THETARASTARK_REFRESH_TOKEN
@@ -42,7 +42,7 @@ const lemonyFresh = {
         `#ppuyya`,
         `#astral_an0maly`,
         '#dirtyd0inks',
-        '#cosyinpink',
+        '#artyinpink',
         '#thetarastark'
     ],
     botAccessToken: BOT_ACCESS_TOKEN,
@@ -382,7 +382,7 @@ const lemonyFresh = {
         refreshToken: DIRTYD0INKS_REFRESH_TOKEN,
         noSubRaidMessage: `DinoDance GoldPLZ LETS GET DIRTY! GoldPLZ DinoDance`
     },
-    cosyinpink: {
+    artyinpink: {
         id: 558851202,
         emotes: [
             `cosyin1Hype`,
@@ -394,8 +394,8 @@ const lemonyFresh = {
             `cosyin1Evil`,
             `cosyin1Soft`
         ],
-        accessToken: COSYINPINK_ACCESS_TOKEN,
-        refreshToken: COSYINPINK_REFRESH_TOKEN,
+        accessToken: ARTYINPINK_ACCESS_TOKEN,
+        refreshToken: ARTYINPINK_REFRESH_TOKEN,
         timers: { '!so': { cooldown: 4, listening: false } }
     },
     thetarastark: {
