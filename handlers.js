@@ -15,7 +15,7 @@ const { streakListener } = require(`./commands/streaks`)
 const { rollFunNumber } = require(`./commands/funNumber`)
 const { checkWord, checkLetter } = require(`./patterns/hangman`)
 const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
-const { handleColorChange, handleTurboChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
+const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
 const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, sayJoinMessage, logMessage } = require(`./utils`)
 
 module.exports = {
@@ -118,7 +118,6 @@ module.exports = {
 
         // User attribute change detection
         const colorChange = tags.color !== user.color && user.color !== ``
-        const turboChange = tags.turbo !== user.turbo
         const subChange = user[channel].sub !== tags.subscriber
         const modChange = user[channel].mod !== tags.mod
         const vipChange = user[channel].vip !== (!!tags.vip || !!tags.badges?.vip)
@@ -131,7 +130,6 @@ module.exports = {
         if (self) { return }
 
         if (colorChange) { return handleColorChange(props) }
-        if (turboChange) { return handleTurboChange(props) }
 
         /**************\
         !COMMANDS PARSER
@@ -160,7 +158,7 @@ module.exports = {
         if (firstMsg) { return handleNewChatter(this, chatroom, username, message) }
 
         // User is the funTimerGuesser and making an attempt
-        if (lemonyFresh[channel].funTimerGuesser === username && /\d+/.test(msg)) { return funTimerGuess(props) }
+        if (lemonyFresh[channel].funTimerGuesser === username && /\b\d+\b/.test(msg)) { return funTimerGuess(props) }
 
         /*************\
         /REGEX/ PARSERS
@@ -174,7 +172,7 @@ module.exports = {
             }
         }
         // Other bot mentions bot
-        if ([`streamelements`, `thetarastark`, `thetarashark`, `pokemoncommunitygame`].includes(username)) {
+        if ([`streamelements`, `pokemoncommunitygame`].includes(username)) {
             if (msg.includes(BOT_USERNAME)) {
                 for (const pattern in botInteraction) {
                     const regex = new RegExp(pattern.split(`/`)[1], pattern.split(`/`)[2])
@@ -185,7 +183,7 @@ module.exports = {
                 }
                 logMessage([`${username.toUpperCase()} DID NOT MATCH REGEX PATTERNS`])
             }
-            if (!(`points` in Object(users[BOT_USERNAME][channel])) && [`streamelements`, `thetarashark`].includes(username)) { return this.say(chatroom, `!points`) }
+            if (!(`points` in Object(users[BOT_USERNAME][channel])) && username === `streamelements`) { return this.say(chatroom, `!points`) }
         }
         // Any user mentions bot
         if (/\b(@?lemony_friend|l+e+m+o+n+y*|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)\b/i.test(msg)) {

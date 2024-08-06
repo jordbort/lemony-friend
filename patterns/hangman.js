@@ -8,7 +8,7 @@ async function getRandomWord() {
 
     const response = await fetch(`https://random-word-api.vercel.app/api?words=1`)
     const data = await response.json()
-    logMessage([data])
+    logMessage([`-> Random word:`, data])
     return data[0]
 }
 
@@ -94,8 +94,7 @@ module.exports = {
                 const skippedPlayer = users[hangman.players[hangman.currentPlayer]].nickname || users[hangman.players[hangman.currentPlayer]].displayName
                 hangman.currentPlayer++
                 if (hangman.currentPlayer === hangman.players.length) { hangman.currentPlayer = 0 }
-                const nextPlayer = users[hangman.players[hangman.currentPlayer]].nickname || users[hangman.players[hangman.currentPlayer]].displayName
-                bot.say(chatroom, `Skipping ${skippedPlayer}! Now it's your turn, ${nextPlayer}! ${neutralEmote}`)
+                bot.say(chatroom, `Skipping ${skippedPlayer}! Now it's your turn, ${users[hangman.players[hangman.currentPlayer]].displayName}! ${neutralEmote}`)
                 const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
                 const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
                 setTimeout(() => bot.say(chatroom, statusMsg), delay)
@@ -108,7 +107,7 @@ module.exports = {
                 : bot.say(chatroom,
                     `A game of Hangman is already in progress! It's currently ${username === currentPlayer
                         ? `your`
-                        : `${users[currentPlayer].nickname || users[currentPlayer].displayName}'s`
+                        : `${users[currentPlayer].displayName}'s`
                     } turn.`
                 )
         }
@@ -169,7 +168,6 @@ module.exports = {
         // Set up for next round
         hangman.currentPlayer++
         if (hangman.currentPlayer === hangman.players.length) { hangman.currentPlayer = 0 }
-        const nextPlayer = users[hangman.players[hangman.currentPlayer]].nickname || users[hangman.players[hangman.currentPlayer]].displayName
         const hypeEmote = getHypeEmote(channel)
         const negativeEmote = getNegativeEmote(channel)
 
@@ -180,7 +178,7 @@ module.exports = {
             }
             // If no spaces left, puzzle has been solved
             if (!hangman.spaces.includes(`_`)) { return solvePuzzle(bot, chatroom, username) }
-            bot.say(chatroom, `Good job ${userNickname}, ${guess} was in the word! ${hypeEmote} Now it's your turn, ${nextPlayer}!`)
+            bot.say(chatroom, `Good job ${userNickname}, ${guess} was in the word! ${hypeEmote} Now it's your turn, ${users[hangman.players[hangman.currentPlayer]].displayName}!`)
         } else {
             // Wrong answer, check for game over
             hangman.chances--
@@ -189,7 +187,7 @@ module.exports = {
                 const upsetEmote = getUpsetEmote(channel)
                 return bot.say(chatroom, `Sorry ${userNickname}, ${guess} wasn't in the word! The answer was "${hangman.answer}". Game over! ${upsetEmote}`)
             }
-            bot.say(chatroom, `Sorry ${userNickname}, ${guess} wasn't in the word! ${pluralize(hangman.chances, `chance left...`, `chances left!`)} ${negativeEmote} Now it's your turn, ${nextPlayer}!`)
+            bot.say(chatroom, `Sorry ${userNickname}, ${guess} wasn't in the word! ${pluralize(hangman.chances, `chance left...`, `chances left!`)} ${negativeEmote} Now it's your turn, ${users[hangman.players[hangman.currentPlayer]].displayName}!`)
         }
 
         // Next round
@@ -220,8 +218,7 @@ module.exports = {
         const negativeEmote = getNegativeEmote(channel)
 
         // Next round
-        const nextPlayer = users[hangman.players[hangman.currentPlayer]].nickname || users[hangman.players[hangman.currentPlayer]].displayName
-        bot.say(chatroom, `Sorry ${userNickname}, "${guess}" wasn't the answer! ${pluralize(hangman.chances, `chance left...`, `chances left!`)} ${negativeEmote} Now it's your turn, ${nextPlayer}!`)
+        bot.say(chatroom, `Sorry ${userNickname}, "${guess}" wasn't the answer! ${pluralize(hangman.chances, `chance left...`, `chances left!`)} ${negativeEmote} Now it's your turn, ${users[hangman.players[hangman.currentPlayer]].displayName}!`)
         const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
         const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME ? 1000 : 2000
         setTimeout(() => bot.say(chatroom, statusMsg), delay)

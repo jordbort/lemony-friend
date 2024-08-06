@@ -96,13 +96,13 @@ function makeLogs(arr) {
         month: `long`,
         day: `numeric`,
         year: `numeric`,
-        timeZone: `America/New_York`
+        timeZone: settings.timeZone
     }
     const timeOptions = {
         hour: `numeric`,
         minute: `numeric`,
         second: `numeric`,
-        timeZone: `America/New_York`,
+        timeZone: settings.timeZone,
         timeZoneName: `short`
     }
 

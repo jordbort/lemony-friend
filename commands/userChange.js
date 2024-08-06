@@ -13,15 +13,6 @@ module.exports = {
             ? bot.say(chatroom, `${userNickname} is ${chatColors[newColor].name} now! ${neutralEmote}`)
             : bot.say(chatroom, `Acknowledging ${userNickname}'s color change ${neutralEmote}`)
     },
-    handleTurboChange(props) {
-        const { bot, chatroom, tags, channel, user, userNickname } = props
-        const turboStatus = tags.turbo
-        logMessage([`> handleTurboChange(chatroom: '${chatroom}', user: '${userNickname}', turboStatus: ${turboStatus})`])
-
-        user.turbo = turboStatus
-        const positiveEmote = getPositiveEmote(channel)
-        if (turboStatus) { bot.say(chatroom, `Wow, ${userNickname} got Turbo? ${positiveEmote}`) }
-    },
     handleSubChange(props) {
         const { bot, chatroom, tags, self, channel, user, userNickname } = props
         const subStatus = tags.subscriber

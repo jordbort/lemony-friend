@@ -170,7 +170,8 @@ const lemonyFresh = {
             `!gay`,
             `!turbomaxwaste`,
             `!where`,
-            `!luigi`
+            `!luigi`,
+            `!water`
         ],
     },
     sclarf: {
@@ -178,7 +179,7 @@ const lemonyFresh = {
         accessToken: SCLARF_ACCESS_TOKEN,
         refreshToken: SCLARF_REFRESH_TOKEN,
         subRaidMessage: `sclarfWave sclarfHearts sclarfYay SCLARF RAID sclarfYay sclarfHearts sclarfWave`,
-        noSubRaidMessage: `HeyGuys HahaSweat SCLARF RAID HahaSweat HeyGuys`,
+        noSubRaidMessage: `HeyGuys CoolCat SCLARF RAID CoolCat HeyGuys`,
         emotes: [
             `sclarfRave`,
             `sclarfWobble`,
@@ -246,7 +247,7 @@ const lemonyFresh = {
         accessToken: E1ECTROMA_ACCESS_TOKEN,
         refreshToken: E1ECTROMA_REFRESH_TOKEN,
         subRaidMessage: `e1ectr4Smile e1ectr4Pikadance ELECTROMA RAID e1ectr4Pikadance e1ectr4Smile`,
-        noSubRaidMessage: `TombRaid ELECTROMA RAID TombRaid `,
+        noSubRaidMessage: `TombRaid ELECTROMA RAID TombRaid`,
         emotes: [
             `e1ectr4Lfg`,
             `e1ectr4Pikadance`,
@@ -370,6 +371,7 @@ const lemonyFresh = {
         emotes: [`astral332HI`, `astral332Pop`],
         accessToken: ASTRAL_AN0MALY_ACCESS_TOKEN,
         refreshToken: ASTRAL_AN0MALY_REFRESH_TOKEN,
+        subRaidMessage: `astral332Pop ASS RAID astral332Pop`,
         noSubRaidMessage: `CorgiDerp ASS RAID CorgiDerp`,
         timers: { '!so': { cooldown: 4, listening: false } }
     },
@@ -378,7 +380,7 @@ const lemonyFresh = {
         emotes: [`dirtyd182LOVE`],
         accessToken: DIRTYD0INKS_ACCESS_TOKEN,
         refreshToken: DIRTYD0INKS_REFRESH_TOKEN,
-        noSubRaidMessage: `DinoDance GoldPLZ LETS GET DIRTY! DinoDance`
+        noSubRaidMessage: `DinoDance GoldPLZ LETS GET DIRTY! GoldPLZ DinoDance`
     },
     cosyinpink: {
         id: 558851202,
@@ -399,18 +401,25 @@ const lemonyFresh = {
     thetarastark: {
         id: 520011399,
         emotes: [
-            `thetar42KeystoneFlag`,
-            `thetar42Cheer`,
-            `thetar42Fkickline`,
             `thetar42Andy`,
             `thetar42POG`,
+            `thetar42GG`,
+            `thetar42Fkickline`,
+            `thetar42KeystonePride`,
             `thetar421st`,
+            `thetar42Hoagie`,
+            `thetar42Leave`,
+            `thetar42Spin`,
+            `thetar42Laser`,
             `thetar42BongoCatra`,
             `thetar42Pelican`,
             `thetar42Beanspelicans`,
             `thetar42Mdfly`,
             `thetar42Blep`,
-            `thetar42Sad`
+            `thetar42Sad`,
+            `thetar42Glare`,
+            `thetar42KeystoneFlag`,
+            `thetar42Cheer`
         ],
         bttvEmotes: [
             'Dance',

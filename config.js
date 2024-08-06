@@ -61,8 +61,8 @@ const settings = {
     sayPartMessage: true,
     firstConnection: true,
     realRPS: true,
-    minWelcomeBackMinutes: 60,
-    maxWelcomeBackMinutes: 480,
+    minWelcomeBackMinutes: 120,
+    maxWelcomeBackMinutes: 640,
     funNumberCount: 25,
     funNumberTotal: 60,
     funTimerDuration: 1800000,
@@ -70,7 +70,7 @@ const settings = {
     streamerEmoteStreakThreshold: 4,
     hangmanSignupSeconds: 30,
     hangmanChances: 6,
-    hangmanLemonThreshold: 3,
+    hangmanLemonThreshold: 2,
     chantCount: 8,
     chantEmote: `👏️`,
     ignoredBots: [
@@ -84,8 +84,11 @@ const settings = {
         `kofistreambot`,
         `moobot`,
         `nightbot`,
+        `ouvertbot`,
         `pokemoncommunitygame`,
+        `rpgcommunitybot`,
         `sery_bot`,
+        `songlistbot`,
         `soundalerts`,
         `sport_scores_bot`,
         `streamelements`,
@@ -132,7 +135,8 @@ const settings = {
     },
     botMood: `happy`,
     autoBan: [
-        `Cheap Viewers on StreamBoo`,
+        `Best viewers on`,
+        `Cheap viewers on`,
         `I want to offer promotion of your channel`
     ]
 }

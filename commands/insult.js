@@ -51,7 +51,7 @@ module.exports = {
         }
 
         for (const word of args) { wordBank.verbs.push(word.toLowerCase()) }
-        bot.say(chatroom, `Added ${pluralize(args.length, `verb`, `verbs`)}! Now I know: ${wordBank.verbs.join(`, `)} ${positiveEmote}`)
+        bot.say(chatroom, `Added ${pluralize(args.length, `verb`, `verbs`)}: ${args.join(`, `)} ${positiveEmote}`)
     },
     manageNouns(props) {
         const { bot, chatroom, args, channel, userNickname } = props
@@ -79,7 +79,7 @@ module.exports = {
         }
 
         for (const word of args) { wordBank.nouns.push(word.toLowerCase()) }
-        bot.say(chatroom, `Added ${pluralize(args.length, `noun`, `nouns`)}! Now I know: ${wordBank.nouns.join(`, `)} ${positiveEmote}`)
+        bot.say(chatroom, `Added ${pluralize(args.length, `noun`, `nouns`)}: ${args.join(`, `)} ${positiveEmote}`)
     },
     manageAdjectives(props) {
         const { bot, chatroom, args, channel, userNickname } = props
@@ -107,7 +107,7 @@ module.exports = {
         }
 
         for (const word of args) { wordBank.adjectives.push(word.toLowerCase()) }
-        bot.say(chatroom, `Added ${pluralize(args.length, `adjective`, `adjectives`)}! Now I know: ${wordBank.adjectives.join(`, `)} ${positiveEmote}`)
+        bot.say(chatroom, `Added ${pluralize(args.length, `adjective`, `adjectives`)}: ${args.join(`, `)} ${positiveEmote}`)
     },
     insultUser(props) {
         const { bot, chatroom, username, userNickname, toUser, targetNickname } = props

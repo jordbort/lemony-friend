@@ -22,7 +22,7 @@ function updateBool(bot, chatroom, obj, message, name, args) {
 function updateArr(bot, chatroom, obj, message, name, args) {
     logMessage([`> updateArr(chatroom: '${chatroom}', name: '${name}', args:`, args, `)`])
 
-    if (!args.length) { return bot.say(chatroom, `/me ${message} (${obj[name].length}): ${obj[name].join(` `)} - Add more, "delete (d)" some, or "clear (c)" all`) }
+    if (!args.length) { return bot.say(chatroom, `/me ${message} (${pluralize(obj[name].length, `item`, `items`)}): ${obj[name].join(` `)} - Add more, "delete (d)" some, or "clear (c)" all`) }
 
     if (/^clear$|^c$/i.test(args[0])) {
         obj[name].length = 0
@@ -38,7 +38,7 @@ function updateArr(bot, chatroom, obj, message, name, args) {
                 removals.push(element)
             }
         }
-        return bot.say(chatroom, `/me ${message} length ${obj[name].length}, removed ${removals.length}${removals.length ? `: ${removals.join(` `)}` : ``}`)
+        return bot.say(chatroom, `/me ${message} (${pluralize(obj[name].length, `item`, `items`)}), removed ${removals.length}${removals.length ? `: ${removals.join(` `)}` : ``}`)
     }
 
     const additions = []
@@ -48,7 +48,7 @@ function updateArr(bot, chatroom, obj, message, name, args) {
             additions.push(element)
         }
     }
-    bot.say(chatroom, `/me ${message} length ${obj[name].length}, added ${additions.length}${additions.length ? `: ${additions.join(` `)}` : ``}`)
+    bot.say(chatroom, `/me ${message} (${pluralize(obj[name].length, `item`, `items`)}), added ${additions.length}${additions.length ? `: ${additions.join(` `)}` : ``}`)
 }
 
 function updatePhraseArr(bot, chatroom, obj, message, name, args) {
@@ -295,13 +295,14 @@ function updateSettingsDev(props, args) {
         [/^debug$|^d$/i]: { name: `debug`, func: updateBool },
         [/^timeLocale$|^tl$/i]: { name: `timeLocale`, func: updateStr },
         [/^timeZone$|^tz$/i]: { name: `timeZone`, func: updateStr },
-        [/^joinMessage$|^jm$/i]: { name: `joinMessage`, func: updateStr },
+        // [/^joinMessage$|^jm$/i]: { name: `joinMessage`, func: updateStr },
         // [/^highlightBotMessage$|^hbm$/i]: { name: `highlightBotMessage`, func: updateBool },
         // [/^logTime$|^lt$/i]: { name: `logTime`, func: updateBool },
         // [/^hideNonDevChannel$|^hndc$/i]: { name: `hideNonDevChannel`, func: updateBool },
         [/^autoBan$|^ab$/i]: { name: `autoBan`, func: updatePhraseArr },
-        [/^sayJoinMessage$|^sjm$/i]: { name: `sayJoinMessage`, func: updateBool },
-        [/^sayPartMessage$|^spm$/i]: { name: `sayPartMessage`, func: updateBool },
+        [/^ignoredBots$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
+        // [/^sayJoinMessage$|^sjm$/i]: { name: `sayJoinMessage`, func: updateBool },
+        // [/^sayPartMessage$|^spm$/i]: { name: `sayPartMessage`, func: updateBool },
         [/^realRPS$|^rps$/i]: { name: `realRPS`, func: updateBool },
         [/^funNumberCount$|^fnc$/i]: { name: `funNumberCount`, func: updateNum },
         [/^funNumberTotal$|^fnt$/i]: { name: `funNumberTotal`, func: updateNum },
@@ -324,8 +325,8 @@ function updateSettingsDev(props, args) {
         }
     }
 
-    // bot.say(chatroom, `/me Options for "settings": debug (d), timeLocale (tl), timeZone (tz), joinMessage (jm), highlightBotMessage (hbm), logTime (lt), hideNonDevChannel (hndc), autoBan (ab), sayJoinMessage (sjm), sayPartMessage (spm), realRPS (rps), funNumberCount (fnc), funNumberTotal (fnt), streakThreshold (st), streamerEmoteStreakThreshold (sest), hangmanSignupSeconds (hss), hangmanChances (hc), hangmanLemonThreshold (hlt), chantCount (cc), chantEmote (ce), baseEmotes (be), botMood (m)`)
-    bot.say(chatroom, `/me Options for "settings": debug (d), timeLocale (tl), timeZone (tz), joinMessage (jm), autoBan (ab), sayJoinMessage (sjm), sayPartMessage (spm), realRPS (rps), funNumberCount (fnc), funNumberTotal (fnt), streakThreshold (st), streamerEmoteStreakThreshold (sest), hangmanSignupSeconds (hss), hangmanChances (hc), hangmanLemonThreshold (hlt), chantCount (cc), chantEmote (ce), baseEmotes (be), botMood (m)`)
+    // bot.say(chatroom, `/me Options for "settings": debug (d), timeLocale (tl), timeZone (tz), joinMessage (jm), highlightBotMessage (hbm), logTime (lt), hideNonDevChannel (hndc), autoBan (ab), ignoredBots (ib), sayJoinMessage (sjm), sayPartMessage (spm), realRPS (rps), funNumberCount (fnc), funNumberTotal (fnt), streakThreshold (st), streamerEmoteStreakThreshold (sest), hangmanSignupSeconds (hss), hangmanChances (hc), hangmanLemonThreshold (hlt), chantCount (cc), chantEmote (ce), baseEmotes (be), botMood (m)`)
+    bot.say(chatroom, `/me Options for "settings": debug (d), timeLocale (tl), timeZone (tz), autoBan (ab), ignoredBots (ib), realRPS (rps), funNumberCount (fnc), funNumberTotal (fnt), streakThreshold (st), streamerEmoteStreakThreshold (sest), hangmanSignupSeconds (hss), hangmanChances (hc), hangmanLemonThreshold (hlt), chantCount (cc), chantEmote (ce), baseEmotes (be), botMood (m)`)
 }
 
 function updateSettings(props, args) {
@@ -336,6 +337,7 @@ function updateSettings(props, args) {
     const options = {
         [/^timeZone$|^tz$/i]: { name: `timeZone`, func: updateStr },
         [/^autoBan$|^ab$/i]: { name: `autoBan`, func: updatePhraseArr },
+        [/^ignoredBots$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
         [/^realRPS$|^rps$/i]: { name: `realRPS`, func: updateBool },
         [/^hangmanChances$|^hc$/i]: { name: `hangmanChances`, func: updateNum },
         [/^chantCount$|^cc$/i]: { name: `chantCount`, func: updateNum },
@@ -351,7 +353,7 @@ function updateSettings(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for "settings": timeZone (tz), autoBan (ab), realRPS (rps), hangmanChances (hc), chantCount (cc), chantEmote (ce)`)
+    bot.say(chatroom, `/me Options for "settings": timeZone (tz), autoBan (ab), ignoredBots (ib), realRPS (rps), hangmanChances (hc), chantCount (cc), chantEmote (ce)`)
 }
 
 function updateBaseEmotesDev(bot, chatroom, args) {
