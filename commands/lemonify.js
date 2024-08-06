@@ -1,3 +1,4 @@
+const { getRandomChannelMessage } = require(`./getInfo`)
 const { getLemonEmote, getPositiveEmote, logMessage } = require(`../utils`)
 
 function lemonify(str) {

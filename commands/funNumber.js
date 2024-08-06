@@ -234,6 +234,8 @@ function givePoints(props) {
     logMessage([`> givePoints(channel: '${channel}', username: '${username}', msgCount: ${msgCount}, points: ${users[BOT_USERNAME][channel]?.points})`])
 
     if (lemonyFresh[channel].viewers.includes(`streamelements`)) {
+        if (users[BOT_USERNAME][channel]?.points <= 0) { return bot.say(chatroom, `!points`) }
+
         const pointsToGive = `points` in Object(users[BOT_USERNAME][channel])
             ? msgCount * 25 >= users[BOT_USERNAME][channel].points
                 ? `all`
@@ -323,12 +325,12 @@ function useBTTVEmote(props) {
         return
     }
 
-    const curseChance = [`c! `, ``, ``]
-    const cursed = curseChance[Math.floor(Math.random() * curseChance.length)]
+    const shakingCurseChance = [`c! s! `, ``, ``, ``]
+    const shakingCurse = shakingCurseChance[Math.floor(Math.random() * shakingCurseChance.length)]
 
     const emotes = lemonyFresh[channel].bttvEmotes
     const emote = emotes[Math.floor(Math.random() * emotes.length)]
-    bot.say(chatroom, `w! h! ${cursed}${emote}`)
+    bot.say(chatroom, `w! h! ${shakingCurse}${emote}`)
 }
 
 function restartFunTimer(props) {
@@ -404,7 +406,7 @@ function awardLemonToChannelChatters(props) {
             recipients.push(username)
         }
     }
-    logMessage([`-> recipients:`, recipients])
+    logMessage([`-> recipients:`, recipients.join(`, `)])
 
     const lemonEmote = getLemonEmote()
     bot.say(chatroom, `${pluralize(recipients.length, `chatter`, `chatters`)} in ${channelNickname}'s channel just received one lemon each! ${lemonEmote}`)

@@ -72,7 +72,7 @@ function getPositiveEmote(channel) {
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { positiveEmotes.push(`domoni6Bingo`, `domoni6Mingo`) }
     if (users[BOT_USERNAME]?.astral_an0maly?.sub) { positiveEmotes.push(`astral332Pop`) }
     if (users[BOT_USERNAME]?.cosyinpink?.sub) { positiveEmotes.push(`cosyin1Hype`, `cosyin1Love`) }
-    if (users[BOT_USERNAME]?.thetarastark?.sub) { positiveEmotes.push(`thetar42Cheer`) }
+    if (users[BOT_USERNAME]?.thetarastark?.sub) { positiveEmotes.push(`thetar42Hoagie`, `thetar42Cheer`) }
 
     const positiveEmote = positiveEmotes[Math.floor(Math.random() * positiveEmotes.length)]
     // logMessage([`> getPositiveEmote(channel: '${channel}') => '${positiveEmote}'), choices:`, positiveEmotes.length])
@@ -92,7 +92,7 @@ function getUpsetEmote(channel) {
     if (users[BOT_USERNAME]?.e1ectroma?.sub) { upsetEmotes.push(`e1ectr4Devil`, `e1ectr4Heat`) }
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { upsetEmotes.push(`domoni6Sneeze`, `domoni6Dum`) }
     if (users[BOT_USERNAME]?.cosyinpink?.sub) { upsetEmotes.push(`cosyin1Crying`) }
-    if (users[BOT_USERNAME]?.thetarastark?.sub) { upsetEmotes.push(`thetar42Fkickline`) }
+    if (users[BOT_USERNAME]?.thetarastark?.sub) { upsetEmotes.push(`thetar42Fkickline`, `thetar42Leave`) }
 
     const upsetEmote = upsetEmotes[Math.floor(Math.random() * upsetEmotes.length)]
     // logMessage([`> getUpsetEmote(channel: '${channel}') => '${sadEmote}'), choices:`, upsetEmotes.length])
@@ -112,7 +112,7 @@ function getNegativeEmote(channel) {
     if (users[BOT_USERNAME]?.e1ectroma?.sub) { negativeEmotes.push(`e1ectr4Devil`, `e1ectr4Heat`) }
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { negativeEmotes.push(`domoni6Sneeze`, `domoni6Dum`) }
     if (users[BOT_USERNAME]?.cosyinpink?.sub) { negativeEmotes.push(`cosyin1Crying`) }
-    if (users[BOT_USERNAME]?.thetarastark?.sub) { negativeEmotes.push(`thetar42Fkickline`) }
+    if (users[BOT_USERNAME]?.thetarastark?.sub) { negativeEmotes.push(`thetar42Fkickline`, `thetar42Leave`) }
 
     const negativeEmote = negativeEmotes[Math.floor(Math.random() * negativeEmotes.length)]
     // logMessage([`> getNegativeEmote(channel: '${channel}') => '${negativeEmote}'), choices:`, negativeEmotes.length])
@@ -135,7 +135,7 @@ function getGreetingEmote(channel) {
     if (users[BOT_USERNAME]?.astral_an0maly?.sub) { greetingEmotes.push(`astral332HI`, `astral332Pop`) }
     if (users[BOT_USERNAME]?.dirtyd0inks?.sub) { greetingEmotes.push(`dirtyd182LOVE`) }
     if (users[BOT_USERNAME]?.cosyinpink?.sub) { greetingEmotes.push(`cosyin1Hype`, `cosyin1Dance`, `cosyin1Love`, `cosyin1Wave`, `cosyin1Soft`) }
-    if (users[BOT_USERNAME]?.thetarastark?.sub) { greetingEmotes.push(`thetar42KeystoneFlag`, `thetar42Cheer`, `thetar42POG`, `thetar42Pelican`, `thetar42Blep`, `thetar42Sad`) }
+    if (users[BOT_USERNAME]?.thetarastark?.sub) { greetingEmotes.push(`thetar42KeystonePride`, `thetar42Hoagie`, `thetar42Cheer`, `thetar42POG`, `thetar42Pelican`, `thetar42Blep`, `thetar42Sad`, `thetar42Spin`, `thetar42Laser`, `thetar42Glare`) }
 
     const greetingEmote = greetingEmotes[Math.floor(Math.random() * greetingEmotes.length)]
     // logMessage([`> getgreetingEmote(channel: '${channel}') => '${greetingEmote}'), choices:`, greetingEmotes.length])
@@ -174,7 +174,7 @@ function getDumbEmote(channel) {
     if (users[BOT_USERNAME]?.e1ectroma?.sub) { dumbEmotes.push(`e1ectr4Bye`, `e1ectr4Laugh`, `e1ectr4Wazzah`, `e1ectr4Malort`) }
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { dumbEmotes.push(`domoni6ChefHey`, `domoni6MeincSus`, `domoni6Sneeze`, `domoni6Dum`, `domoni6Kek`) }
     if (users[BOT_USERNAME]?.cosyinpink?.sub) { dumbEmotes.push(`cosyin1Dance`) }
-    if (users[BOT_USERNAME]?.thetarastark?.sub) { dumbEmotes.push(`thetar42Blep`, `thetar42Sad`) }
+    if (users[BOT_USERNAME]?.thetarastark?.sub) { dumbEmotes.push(`thetar42Blep`, `thetar42Sad`, `thetar42Laser`, `thetar42Glare`) }
 
     const dumbEmote = dumbEmotes[Math.floor(Math.random() * dumbEmotes.length)]
     // logMessage([`> getDumbEmote(channel: '${channel}') => '${dumbEmote}'), choices:`, dumbEmotes.length])
@@ -1283,7 +1283,6 @@ module.exports = {
             id: self ? BOT_ID : Number(tags[`user-id`]),
             displayName: tags[`display-name`],
             nickname: '',
-            turbo: !!tags.turbo,
             color: tags.color || ``,
             lemons: 0,
             hangmanWins: 0
@@ -1478,5 +1477,18 @@ module.exports = {
             response.push(`${unknownUsers.length} not known yet`)
         }
         bot.say(chatroom, `/me ${response.join(`, `)}`)
+    },
+    findUserByNickname(str) {
+        const nicknames = Object.fromEntries(
+            Object.entries(users)
+                .filter(arr => arr[1].nickname)
+                .map(arr => {
+                    return [[arr[1].nickname.toLowerCase()], arr[0]]
+                })
+        )
+        logMessage([`> findUserByNickname(str: '${str}', result: ${str.toLowerCase() in nicknames ? `'${nicknames[str.toLowerCase()]}'` : null})`])
+        return str.toLowerCase() in nicknames
+            ? nicknames[str.toLowerCase()]
+            : null
     }
 }

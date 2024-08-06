@@ -7,6 +7,14 @@ module.exports = {
         const { bot, chatroom, channel } = props
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
+        const newFeatures = [
+            `Removed noun/verb/adjective list when submitting`,
+            `Improved nickname use detection`,
+            `Removed Turbo from user data`,
+            `Fixed lemonify bug`,
+            `Updated autoban phrases`
+        ]
+
         const timeOptions = {
             hour: `numeric`,
             minute: `numeric`,
@@ -24,7 +32,7 @@ module.exports = {
         }
 
         const neutralEmote = getNeutralEmote(channel)
-        bot.say(chatroom, `I have been online since ${settings.startDate.toLocaleTimeString(settings.timeLocale, timeOptions)} on ${settings.startDate.toLocaleDateString(settings.timeLocale, dateOptions)}! ${neutralEmote}`)
+        bot.say(chatroom, `I've been online since ${settings.startDate.toLocaleDateString(settings.timeLocale, dateOptions)} at ${settings.startDate.toLocaleTimeString(settings.timeLocale, timeOptions)}! ${neutralEmote}${newFeatures.length ? ` Updates: ${newFeatures.join(`, `)}` : ``}`)
     },
     getLastMessage(props) {
         const { bot, chatroom, args, channel, username, user, userNickname, toUser, target, targetNickname } = props
@@ -73,7 +81,7 @@ module.exports = {
                 : bot.say(chatroom, `${userObjNickname}'s chat color is hex code ${userObj.color}`)
     },
     getRandomUser(arrExclude) {
-        logMessage([`> getRandomUser(arrExclude:`, arrExclude, `)`])
+        logMessage([`> getRandomUser(arrExclude:`, arrExclude.join(`, `), `)`])
 
         const arr = Object.keys(users)
         for (const name of arrExclude) {
