@@ -1384,8 +1384,8 @@ module.exports = {
 
         const joinMessages = [
             `Let's see how long before I crash ${dumbEmote}`,
-            `* Lemony_friend blocks the way! ${positiveEmote}`,
-            `Hi ${channel}, I'm lemony_friend! ${greetingEmote} ${lemonEmote}`,
+            `* ${BOT_USERNAME.substring(0, 1).toUpperCase() + BOT_USERNAME.substring(1)} blocks the way! ${positiveEmote}`,
+            `Hi ${channel}, I'm ${BOT_USERNAME}! ${greetingEmote} ${lemonEmote}`,
             `(Windows XP startup sound plays)`,
             `I'm onl`,
             `I have ${numUsers <= 999
@@ -1407,7 +1407,7 @@ module.exports = {
             `Let's play Hangman! ${positiveEmote}`,
             `I know ${pluralize(lemonyFresh[channel].emotes.length, `emote`, `emotes`)} in ${channel}'s channel! ${lemonyFresh[channel].emotes[0] || neutralEmote}`,
             `It has been ${Date.now().toLocaleString(`en-US`)} milliseconds since January 1, 1970, 12:00:00 AM UTC ${lemonEmote}`,
-            `lemony_friend has entered the chat ${lemonEmote}`,
+            `${BOT_USERNAME} has entered the chat ${lemonEmote}`,
             `${BOT_USERNAME in users
                 ? `I have ${pluralize(users[BOT_USERNAME].lemons, `lemon`, `lemons`)}! ${lemonEmote}`
                 : `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${numbers[randNum + 1] || `one thousand`} lemons... ${lemonEmote}`}`
