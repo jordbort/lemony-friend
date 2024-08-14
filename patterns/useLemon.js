@@ -1156,6 +1156,38 @@ function viewLemon(bot, chatroom, user, suffix, target) {
         }
     }
 }
+function bounceLemon(bot, chatroom, user, suffix, target) {
+    const coinFlip = Math.floor(Math.random() * 2)
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName || null
+
+    if (allLemons) {
+        if (target) {
+            if (coinFlip) {
+                user.lemons = 0
+                return bot.say(chatroom, `${userNickname} threw all their lemons on the ground, and ${targetNickname} watched them explode on impact.`)
+            } else { return bot.say(chatroom, `${targetNickname} watched ${userNickname} bounce each of their lemons off the ground and catch them.`) }
+        } else {
+            if (coinFlip) {
+                user.lemons = 0
+                return bot.say(chatroom, `${userNickname} threw all their lemons on the ground, and they burst open.`)
+            } else { return bot.say(chatroom, `${userNickname} bounced each of their lemons off the ground and caught them!`) }
+        }
+    } else {
+        if (target) {
+            if (coinFlip) {
+                user.lemons--
+                return bot.say(chatroom, `${userNickname} threw a lemon at the ground, and ${targetNickname} watched it burst.`)
+            } else { return bot.say(chatroom, `${userNickname} dribbled a lemon like a basketball! ${targetNickname} is playing defense.`) }
+        } else {
+            if (coinFlip) {
+                user.lemons--
+                return bot.say(chatroom, `${userNickname} threw a lemon at the ground, and it busted open.`)
+            } else { return bot.say(chatroom, `${userNickname} dribbled a lemon like a basketball!`) }
+        }
+    }
+}
 function nullVerb(bot, chatroom, user, suffix, target, verb) {
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
@@ -1516,6 +1548,12 @@ module.exports = {
             'watch': viewLemon,
             'see': viewLemon,
             'observe': viewLemon,
+
+            'bounce': bounceLemon,
+            'dribble': bounceLemon,
+            'basketball': bounceLemon,
+            'playbasketball': bounceLemon,
+            'playbasketballwith': bounceLemon,
         }
         if (verb in keyVerbs) {
             logMessage([`-> Matched: ${verb} lemon${suffix}:`, `[Function: ${keyVerbs[verb].name}]`])
