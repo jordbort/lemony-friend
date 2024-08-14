@@ -1307,6 +1307,7 @@ module.exports = {
         lemonyFresh[channel].noSubRaidMessage = lemonyFresh[channel]?.noSubRaidMessage || ``
         lemonyFresh[channel].emotes = lemonyFresh[channel]?.emotes || []
         lemonyFresh[channel].bttvEmotes = lemonyFresh[channel]?.bttvEmotes || []
+        lemonyFresh[channel].funnyCommands = lemonyFresh[channel]?.funnyCommands || []
         lemonyFresh[channel].redeems = lemonyFresh[channel]?.redeems || []
         lemonyFresh[channel].rollFunNumber = lemonyFresh[channel]?.rollFunNumber || true
         lemonyFresh[channel].funTimer = 0
