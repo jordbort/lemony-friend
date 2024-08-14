@@ -207,7 +207,7 @@ module.exports = {
         if (isNaN(duration)
             || duration < 15
             || duration > 1800) {
-            return bot.say(chatroom, `Error: Duration should be a number between 15 and 1800. Try: !poll <seconds> / Title of poll / First choice / Second choice ...`)
+            return bot.say(chatroom, `Error: Duration should be a number between 15 and 1800, followed by a slash. Try: !poll <seconds> / Title of poll / First choice / Second choice ...`)
         }
 
         // Get title and choices

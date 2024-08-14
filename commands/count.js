@@ -57,7 +57,7 @@ module.exports = {
 
             lemonyFresh[channel].count.value += num
 
-            bot.say(chatroom, `${num} has been ${num < 0 ? `subtracted from` : `added to`} ${counter || `the count`}! ${positiveEmote} New value is: ${lemonyFresh[channel].count.value} `)
+            bot.say(chatroom, `${Math.abs(num)} has been ${num < 0 ? `subtracted from` : `added to`} ${counter || `the count`}! ${positiveEmote} New value is: ${lemonyFresh[channel].count.value} `)
         }
     }
 }
