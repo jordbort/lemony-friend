@@ -504,7 +504,7 @@ module.exports = {
     },
     async banUsers(props) {
         const { bot, chatroom, args, channel, username, isMod } = props
-        logMessage([`> banUsers(channel: ${channel}, username: ${username}, isMod:`, isMod, `, args:`, args, `)`])
+        logMessage([`> banUsers(channel: ${channel}, username: ${username}, isMod:`, isMod, `, args:`, `'${args.join(`', '`)}'`, `)`])
 
         // Mods only
         if (!isMod) {
