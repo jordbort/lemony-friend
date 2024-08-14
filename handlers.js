@@ -204,15 +204,15 @@ module.exports = {
             logMessage([`NOT A HANGMAN GUESS`])
         }
 
-        // Listening for a message to be repeated by at least two other users
-        if (lemonyFresh[channel].timers.streak.listening) { streakListener(props) }
-        else { logMessage([`> checkStreak must wait for 'streak' cooldown`]) }
-
         // Check for tempCmd
         if (command in tempCmds) {
             logMessage([`MATCHED TEMPORARY COMMAND: ${command} ${tempCmds[command]}`])
             return this.say(chatroom, tempCmds[command])
         }
+
+        // Listening for a message to be repeated by at least two other users
+        if (lemonyFresh[channel].timers.streak.listening) { streakListener(props) }
+        else { logMessage([`> checkStreak must wait for 'streak' cooldown`]) }
 
         // *** FUN NUMBER! ***
         if (user[channel].msgCount % settings.funNumberCount === 0) { return rollFunNumber(props, Math.floor(Math.random() * settings.funNumberTotal)) }
