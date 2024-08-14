@@ -4,7 +4,7 @@ const { lemonyFresh, users } = require(`../data`)
 const { getLemonEmote, getToUser, pluralize, logMessage } = require(`../utils`)
 
 function updateBool(bot, chatroom, obj, message, name, args) {
-    logMessage([`> updateBool(chatroom: '${chatroom}', name: '${name}', args:`, args, `)`])
+    logMessage([`> updateBool(chatroom: '${chatroom}', name: '${name}', args:`, args.join(`, `), `)`])
 
     if (/^true$|^t$/i.test(args[0])) {
         obj[name] = true
@@ -20,7 +20,7 @@ function updateBool(bot, chatroom, obj, message, name, args) {
 }
 
 function updateArr(bot, chatroom, obj, message, name, args) {
-    logMessage([`> updateArr(chatroom: '${chatroom}', name: '${name}', args:`, args, `)`])
+    logMessage([`> updateArr(chatroom: '${chatroom}', name: '${name}', args:`, args.join(`, `), `)`])
 
     if (!args.length) { return bot.say(chatroom, `/me ${message} (${pluralize(obj[name].length, `item`, `items`)}): ${obj[name].join(` `)} - Add more, "delete (d)" some, or "clear (c)" all`) }
 
@@ -52,7 +52,7 @@ function updateArr(bot, chatroom, obj, message, name, args) {
 }
 
 function updatePhraseArr(bot, chatroom, obj, message, name, args) {
-    logMessage([`> updatePhraseArr(chatroom: '${chatroom}', name: '${name}', args:`, args, `)`])
+    logMessage([`> updatePhraseArr(chatroom: '${chatroom}', name: '${name}', args:`, args.join(`, `), `)`])
 
     if (/^add$|^a$/i.test(args[0])) {
         args.shift()
@@ -85,7 +85,7 @@ function updatePhraseArr(bot, chatroom, obj, message, name, args) {
 }
 
 function updateStr(bot, chatroom, obj, message, name, args) {
-    logMessage([`> updateStr(chatroom: '${chatroom}', name: '${name}', args:`, args, `)`])
+    logMessage([`> updateStr(chatroom: '${chatroom}', name: '${name}', args:`, args.join(`, `), `)`])
 
     if (!args[0]) { return bot.say(chatroom, `/me ${message} is currently: ${obj[name] || `(not set)`} - change it, or use "clear (c)"`) }
 
@@ -103,7 +103,7 @@ function updateStr(bot, chatroom, obj, message, name, args) {
 }
 
 function updateNum(bot, chatroom, obj, message, name, args) {
-    logMessage([`> updateNum(chatroom: '${chatroom}', name: '${name}', args:`, args, `)`])
+    logMessage([`> updateNum(chatroom: '${chatroom}', name: '${name}', args:`, args.join(`, `), `)`])
 
     if (Number(args[0]) >= 1 && Number(args[0]) <= 100) {
         obj[name] = Math.round(Number(args[0]))
@@ -114,7 +114,7 @@ function updateNum(bot, chatroom, obj, message, name, args) {
 }
 
 function updateDuration(bot, chatroom, obj, message, name, args) {
-    logMessage([`> updateDuration(chatroom: '${chatroom}', name: '${name}', args:`, args, `)`])
+    logMessage([`> updateDuration(chatroom: '${chatroom}', name: '${name}', args:`, args.join(`, `), `)`])
 
     if (Number(args[0]) >= 0 && Number(args[0]) <= 120) {
         obj[name] = Math.round(Number(args[0]))
@@ -127,7 +127,7 @@ function updateDuration(bot, chatroom, obj, message, name, args) {
 function updateChannelDev(props, args) {
     const { bot, chatroom, channel, username } = props
     args.shift()
-    logMessage([`> updateChannel(username, '${username}', channel, '${channel}', args:`, args, `)`])
+    logMessage([`> updateChannel(username, '${username}', channel, '${channel}', args:`, args.join(`, `), `)`])
 
     const toUser = getToUser(args.shift())
     if (!(toUser in lemonyFresh)
@@ -161,7 +161,7 @@ function updateChannelDev(props, args) {
 function updateChannel(props, args) {
     const { bot, chatroom, channel, username } = props
     args.shift()
-    logMessage([`> updateChannel(username, '${username}', channel, '${channel}', args:`, args, `)`])
+    logMessage([`> updateChannel(username, '${username}', channel, '${channel}', args:`, args.join(`, `), `)`])
 
     const options = {
         [/^timers?$|^t$/i]: { name: `timers`, func: updateTimer },
@@ -188,7 +188,7 @@ function updateChannel(props, args) {
 function updateUserDev(props, args) {
     const { bot, chatroom, channel, username } = props
     args.shift()
-    logMessage([`> updateUserDev(username, '${username}', args:`, args, `)`])
+    logMessage([`> updateUserDev(username, '${username}', args:`, args.join(`, `), `)`])
 
     const toUser = getToUser(args[0])
     if (!(toUser in users)) { return bot.say(chatroom, `/me Please specify one of ${(Object.keys(users).length).toLocaleString(settings.timeLocale)} valid users`) }
@@ -237,7 +237,7 @@ function updateUserDev(props, args) {
 function updateUser(props, args) {
     const { bot, chatroom, channel, username } = props
     args.shift()
-    logMessage([`> updateUser(username, '${username}', args:`, args, `)`])
+    logMessage([`> updateUser(username, '${username}', args:`, args.join(`, `), `)`])
 
     const toUser = getToUser(args[0])
     if (!(toUser in users)) { return bot.say(chatroom, `/me Please specify one of ${(Object.keys(users).length).toLocaleString(settings.timeLocale)} valid users`) }
@@ -285,7 +285,7 @@ function updateUser(props, args) {
 function updateSettingsDev(props, args) {
     const { bot, chatroom, channel, username } = props
     args.shift()
-    logMessage([`> updateSettingsDev(username, '${username}', channel, '${channel}', args:`, args, `)`])
+    logMessage([`> updateSettingsDev(username, '${username}', channel, '${channel}', args:`, args.join(`, `), `)`])
 
     if (/^baseEmotes$|^be$/i.test(args[0])) {
         args.shift()
@@ -333,7 +333,7 @@ function updateSettingsDev(props, args) {
 function updateSettings(props, args) {
     const { bot, chatroom, channel, username } = props
     args.shift()
-    logMessage([`> updateSettings(username, '${username}', channel, '${channel}', args:`, args, `)`])
+    logMessage([`> updateSettings(username, '${username}', channel, '${channel}', args:`, args.join(`, `), `)`])
 
     const options = {
         [/^timeZone$|^tz$/i]: { name: `timeZone`, func: updateStr },
@@ -358,7 +358,7 @@ function updateSettings(props, args) {
 }
 
 function updateBaseEmotesDev(bot, chatroom, args) {
-    logMessage([`> updateBaseEmotesDev(args:`, args, `)`])
+    logMessage([`> updateBaseEmotesDev(args:`, args.join(`, `), `)`])
 
     const options = {
         [/^lemonEmotes$|^lem$/i]: { name: `lemonEmotes`, func: updateArr },
@@ -386,7 +386,7 @@ function updateBaseEmotesDev(bot, chatroom, args) {
 
 function updateTimer(bot, chatroom, obj, message, name, args) {
     const channel = chatroom.substring(1)
-    logMessage([`> updateTimer(channel, ${channel}, args:`, args, `)`])
+    logMessage([`> updateTimer(channel, ${channel}, args:`, args.join(`, `), `)`])
 
     const timer = args.shift()
     if (!(timer in obj[name])) { return bot.say(chatroom, `/me Please specify a valid timer: ${Object.keys(obj[name]).join(`, `)}`) }
@@ -413,7 +413,7 @@ module.exports = {
         const { bot, chatroom, username, isMod, isLemonyFreshMember } = props
         splitMessage.shift()
         const args = splitMessage[0].split(` `)
-        logMessage([`> commandLemonInterface(username, '${username}', isMod, ${isMod}, isLemonyFreshMember, ${isLemonyFreshMember}, args:`, args, `)`])
+        logMessage([`> commandLemonInterface(username, '${username}', isMod, ${isMod}, isLemonyFreshMember, ${isLemonyFreshMember}, args:`, args.join(`, `), `)`])
 
         if (username === DEV) {
             const options = {
