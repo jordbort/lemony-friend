@@ -9,6 +9,7 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!authorize` - This command can only be used by a streamer or moderator. It should be followed by the code created following the authorization prompts. If it is done successfully, an access token and refresh token are generated for the streamer.
 - `!validate` - This command can only be used by a streamer or moderator. This command checks the lifespan of the user or channel's Twitch API access token. If it is invalid, it can be refreshed by using the `!refresh` command. If the user doesn't have an access token or valid refresh token, they must use the `!access` command to get a new OAuth token. This shouldn't be necessary to use, as lemony_friend automatically refreshes access tokens if they're found to be invalid, but could be helpful in troubleshooting.
 - `!refresh` - This command can be used to generate a renewed access token for the user or streamer manually, as long there is a valid refresh token. This shouldn't be necessary to use, because commands that require the access token are programmed to attempt to refresh the access token once if the request doesn't go through successfully the first time.
+- `!token` - This command can be used to refresh the bot's app access token manually. The main time this needs to be done is when the bot isn't able to access the Twitch API, such as when looking up a user's info. This shouldn't be necessary to use, as lemony_friend will attempt to refresh its token once manually if it fails the first time.
 
 ## Commands for lemony_friend info 🍋️
 - `!time` - This command can be used to get the current time, optionally in a provided time zone and locale. For example, you can use `!time Australia/Sydney` to get the time in Sydney, and `!time Asia/Seoul ko-KR` to get the current time in Seoul in the Korean date and time format. By default, this command falls back on whichever time zone and locale are specified in Lemony Friend's settings.
@@ -20,7 +21,7 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!goal` (or `!goals`) - This command is used followed by a number (of subscribers, dollars, etc.) to return a specific goal at that amount for that channel. This only works in channels with defined stream goals.
 - `!lurk` (or `!away` or `!brb`) - This command marks the user as "away" in the current channel. Use `!lurk <message...>` to set a custom away message. Using `!lurk` (rather than `!away` or `!brb`) does not prompt a reply from lemony_friend, opting for a quieter exit. If a user is mentioned in chat by username or nickname while they are marked as away, lemony_friend will mention that the user is away, along with an optional away message. Upon posting in chat again, lemony_friend marks the user as unaway. (Note: There is a 60-second grace period after being marked as away where the user can send messages or be mentioned before lemony_friend will respond. This is to minimize unwanted messages and smooth the transition away.)
 - `!apply` - This is an easy way to apply pre-made nicknames to known users.
-- `!online` (or `!onl`) - This command reports the time that the bot was booted up.
+- `!online` (or `!onl`) - This command reports the time that the bot was booted up, as well as what updates have been made since the last reset.
 
 ## Mod/VIP commands 🍋️
 - `!so` - This command gives a shoutout to another user by looking them up using the [Twitch API](https://dev.twitch.tv/docs/api/). If the streamer or mod using the command has given lemony_friend access to their account with `!access`, it will also attempt to give the Twitch-powered `/shoutout` to the user as well. The latter has a cooldown built into Twitch, so it will not post successfully if too many are done in succession.
@@ -37,8 +38,10 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!rps` - Use this command to challenge lemony_friend to a game of Rock, Paper, Scissors. You may can use `!rps rock` `!rps paper` `!rps scissors` to specify your move, or simply use `!rps` and a move will be chosen at random.
 - `!chant` - Use this command to have lemony_friend chant it in all caps in chat.
 - `!yell` - Use this command with a message to send that message across all channels where someone has chatted in the past hour.
+- `!count` - Use this command to check the counter. Each channel lemony_friend is in has a counter set to zero by default. The counter can be added to or subtracted from by using a number (`!count 1` or `!count +` to add one, `!count -1` or `!count -` to subtract one, or any other number). There are also keywords that can be used to adjust the counter. Use `!count set 5` to change the counter directly to five, for example. Use `!count name deaths` to set the custom name of the counter, in case you'd like it to be less generic-sounding. Use `!count reset` to set the counter back to zero, and remove its custom name.
 - `!define` (or `!definition` or `!meaning`) - This command can be used followed by a word to look up its definition using an API from [API Ninjas](https://api-ninjas.com/).
 - `!lemon` (or `!lemons`) - This command can be used to check how many lemons the sender (or another user) has.
+- `!lemonboard` (or `!lemonrank`) - This command can be used to check who the top three users are that have the most lemons.
 - `![use]lemon[append?]` - This command is a wildcard that can be used. [Use] can be any verb (or verb phrase), and [append?] could be an optional suffix, if "lemon" is meant to be a descriptor, or possibly to pluralize "lemon" to all "lemons".
 - `!lemonify` - This command can be used to transform another user's message into lemons.
 - `!insult` - Use this command to generate a random, Mad Libs-style "insult" directed at yourself or another user. You can add your own verbs, nouns, and adjectives to its word bank by using the respective commands.
@@ -105,13 +108,13 @@ Use this command to update a user's away message. This is mentioned by the bot i
 ### `cli settings`
 Use `cli settings` or `cli s` to access lemony_friend's settings. These are global (not specific to a certain channel).
 
-- `cli settings timeZone` or `cli s tz` (string)
-
-Use this command to change lemony_friend's default time zone. This is primarily used in response to the `!time` command. A list of valid time zones can be found [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
-
 - `cli settings autoBan` or `cli s ab` (array of phrases)
 
 Use this command to change lemony_friend's list of phrases from a first-time chatter that will result in an automatic ban. Use `cli settings autoBan add <your phrase>` to add one phrase, `cli settings autoBan delete <banned phrase>` to delete one phrase, or use `cli settings autoBan clear` to empty the entire list. "Add", "delete", and "clear" can also be abbreviated to "a", "d", and "c", respectively. Phrases are implemented in a non-case-sensitive way.
+
+- `cli settings ignoredBots` or `cli s ib` (array of strings)
+
+Use this command to update the list of usernames lemony_friend will ignore in certain situations. These include welcoming back the user if they haven't spoken in a while, being informed a user is marked as "away" when mentioning them, and being targeted with UndertaleBot, as well as other fun number responses.
 
 - `cli settings realRPS` or `cli s rps` (boolean)
 
