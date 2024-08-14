@@ -1248,6 +1248,36 @@ function juggleLemon(bot, chatroom, user, suffix, target) {
         }
     }
 }
+function touchLemon(bot, chatroom, user, suffix, target) {
+    const coinFlip = Math.floor(Math.random() * 2)
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName || null
+
+    if (allLemons) {
+        if (target) {
+            if (target.lemons === 0) { return bot.say(chatroom, `${targetNickname} does not have any lemons!`) }
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} brushed their hand over ${targetNickname}'s lemons!`)
+                : bot.say(chatroom, `${userNickname} idly fidgeted with ${targetNickname}'s lemons.`)
+        } else {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} fiddled with their lemons.`)
+                : bot.say(chatroom, `${userNickname} played with their lemons.`)
+        }
+    } else {
+        if (target) {
+            if (target.lemons === 0) { return bot.say(chatroom, `${targetNickname} does not have any lemons!`) }
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} poked one of ${targetNickname}'s lemons.`)
+                : bot.say(chatroom, `${userNickname} picked at one of ${targetNickname}'s lemons.`)
+        } else {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} fidgeted with their lemon.`)
+                : bot.say(chatroom, `${userNickname} idly played with a lemon.`)
+        }
+    }
+}
 function nullVerb(bot, chatroom, user, suffix, target, verb) {
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
@@ -1293,9 +1323,11 @@ module.exports = {
         const theftVerbs = [`steal`, `take`, `grab`, `thieve`, `nab`, `pickpocket`, `purloin`, `abscondwith`, `loot`, `pilfer`, `runawaywith`, `runoffwith`, `makeoffwith`]
         const creationVerbs = [`create`, `manufacture`, `generate`, `manifest`, `find`, `givemea`, `build`, `conceive`, `construct`, `devise`, `discover`, `forge`, `form`, `invent`, `produce`, `setup`, `spawn`, `actualize`, `beget`, `compose`, `concoct`, `constitute`, `contrive`, `effect`, `erect`, `fabricate`, `fashion`, `formulate`, `imagine`, `institute`, `procreate`]
         const cleanVerbs = [`clean`, `cleanup`, `cleanse`, `bathe`, `disinfect`, `rinse`, `soak`, `wash`, `washup`, `douse`, `drench`, `hose`, `shower`, `wet`]
+        const touchVerbs = [`touch`, `feel`, `fiddle`, `fiddlewith`, `play`, `playwith`, `fidget`, `fidgetwith`, `tinker`, `tinkerwith`, `mess`, `messwith`, `toy`, `toywith`, `trifle`, `triflewith`, `grope`, `brush`, `finger`, `paw`, `thumb`]
         if (user.lemons === 0
             && (!theftVerbs.includes(verb) || (theftVerbs.includes(verb) && !targetNickname))
             && (!cleanVerbs.includes(verb) || (cleanVerbs.includes(verb) && !targetNickname))
+            && (!touchVerbs.includes(verb) || (touchVerbs.includes(verb) && !targetNickname))
             && !creationVerbs.includes(verb)) {
             return bot.say(chatroom, `${userNickname} has no lemons!`)
         }
@@ -1616,6 +1648,28 @@ module.exports = {
             'playbasketballwith': bounceLemon,
 
             'juggle': juggleLemon,
+
+            'touch': touchLemon,
+            'feel': touchLemon,
+            'fiddle': touchLemon,
+            'fiddlewith': touchLemon,
+            'play': touchLemon,
+            'playwith': touchLemon,
+            'fidget': touchLemon,
+            'fidgetwith': touchLemon,
+            'tinker': touchLemon,
+            'tinkerwith': touchLemon,
+            'mess': touchLemon,
+            'messwith': touchLemon,
+            'toy': touchLemon,
+            'toywith': touchLemon,
+            'trifle': touchLemon,
+            'triflewith': touchLemon,
+            'grope': touchLemon,
+            'brush': touchLemon,
+            'finger': touchLemon,
+            'paw': touchLemon,
+            'thumb': touchLemon,
         }
         if (verb in keyVerbs) {
             logMessage([`-> Matched: ${verb} lemon${suffix}:`, `[Function: ${keyVerbs[verb].name}]`])
