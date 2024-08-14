@@ -1127,6 +1127,35 @@ function drinkLemon(bot, chatroom, user, suffix, target) {
         }
     }
 }
+function viewLemon(bot, chatroom, user, suffix, target) {
+    const singular = user.lemons === 1
+    const coinFlip = Math.floor(Math.random() * 2)
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName || null
+
+    if (allLemons) {
+        if (target) {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} looks at their ${singular ? `` : `${user.lemons} `}lemon${singular ? `` : `s`} with ${targetNickname}!`)
+                : bot.say(chatroom, `${userNickname} observes their ${singular ? `` : `${user.lemons} `}lemon${singular ? `` : `s`} alongside ${targetNickname}!`)
+        } else {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} stares at their ${singular ? `` : `${user.lemons} `}lemon${singular ? `` : `s`}.`)
+                : bot.say(chatroom, `${userNickname} looks very closely at their ${singular ? `` : `${user.lemons} `}lemon${singular ? `` : `s`}.`)
+        }
+    } else {
+        if (target) {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} and ${targetNickname} look at a lemon.`)
+                : bot.say(chatroom, `${userNickname} looks at ${targetNickname}'s lemon.`)
+        } else {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} holds up their lemon and examines it.`)
+                : bot.say(chatroom, `${userNickname} stares unblinkingly at their lemon.`)
+        }
+    }
+}
 function nullVerb(bot, chatroom, user, suffix, target, verb) {
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
@@ -1480,6 +1509,13 @@ module.exports = {
             'quaff': drinkLemon,
             'sip': drinkLemon,
             'imbibe': drinkLemon,
+
+            'view': viewLemon,
+            'lookat': viewLemon,
+            'stareat': viewLemon,
+            'watch': viewLemon,
+            'see': viewLemon,
+            'observe': viewLemon,
         }
         if (verb in keyVerbs) {
             logMessage([`-> Matched: ${verb} lemon${suffix}:`, `[Function: ${keyVerbs[verb].name}]`])
