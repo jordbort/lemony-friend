@@ -1,4 +1,4 @@
-const { logMessage } = require(`../utils`)
+const { logMessage, pluralize } = require(`../utils`)
 
 function stealLemon(bot, chatroom, user, suffix, target) {
     const allLemons = [`s`, `z`].includes(suffix)
@@ -1188,6 +1188,66 @@ function bounceLemon(bot, chatroom, user, suffix, target) {
         }
     }
 }
+function juggleLemon(bot, chatroom, user, suffix, target) {
+    const coinFlip = Math.floor(Math.random() * 2)
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName || null
+
+    if (allLemons) {
+        if (target) {
+            if (user.lemons < 3) { return bot.say(chatroom, `${userNickname} tried to juggle their lemons, but ${pluralize(user.lemons, `lemon isn't`, `lemons aren't`)} enough to juggle with. ${targetNickname} is disappointed.`) }
+            if (coinFlip) {
+                bot.say(chatroom, `${userNickname} juggled their lemons, but dropped all ${user.lemons} of them on the floor! ${targetNickname} says, "Embarrassing!"`)
+                user.lemons = 0
+                return
+            } else {
+                return bot.say(chatroom, `${userNickname} juggled all ${user.lemons} of their lemons! ${targetNickname} says, "${user.lemons > 14
+                    ? `Astounding`
+                    : user.lemons > 10
+                        ? `Incredible`
+                        : user.lemons > 8
+                            ? `Amazing`
+                            : user.lemons > 6
+                                ? `Awesome`
+                                : user.lemons > 4
+                                    ? `Cool`
+                                    : `Wow`
+                    }!"`)
+            }
+        } else {
+            if (user.lemons < 3) { return bot.say(chatroom, `${userNickname} tried to juggle their lemons, but ${pluralize(user.lemons, `lemon isn't`, `lemons aren't`)} enough to juggle with.`) }
+            if (coinFlip) {
+                bot.say(chatroom, `${userNickname} juggled their lemons, but dropped all ${user.lemons} of them on the floor! Embarrassing!`)
+                user.lemons = 0
+                return
+            } else {
+                return bot.say(chatroom, `${userNickname} juggled all ${user.lemons} of their lemons! ${user.lemons > 14
+                    ? `Astounding`
+                    : user.lemons > 10
+                        ? `Incredible`
+                        : user.lemons > 8
+                            ? `Amazing`
+                            : user.lemons > 6
+                                ? `Awesome`
+                                : user.lemons > 4
+                                    ? `Cool`
+                                    : `Wow`
+                    }!`)
+            }
+        }
+    } else {
+        if (target) {
+            return coinFlip
+                ? bot.say(chatroom, `${targetNickname} watched ${userNickname} try to juggle one lemon.`)
+                : bot.say(chatroom, `${targetNickname} watched ${userNickname} try to juggle one lemon. It wasn't very interesting.`)
+        } else {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} tried to juggle one lemon.`)
+                : bot.say(chatroom, `${userNickname} tried to juggle just one lemon, but it wasn't enough.`)
+        }
+    }
+}
 function nullVerb(bot, chatroom, user, suffix, target, verb) {
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
@@ -1554,6 +1614,8 @@ module.exports = {
             'basketball': bounceLemon,
             'playbasketball': bounceLemon,
             'playbasketballwith': bounceLemon,
+
+            'juggle': juggleLemon,
         }
         if (verb in keyVerbs) {
             logMessage([`-> Matched: ${verb} lemon${suffix}:`, `[Function: ${keyVerbs[verb].name}]`])
