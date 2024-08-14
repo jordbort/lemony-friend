@@ -563,7 +563,7 @@ function investLemon(bot, chatroom, user, suffix, target) {
     const targetNickname = target?.nickname || target?.displayName || null
 
     if (allLemons) {
-        const randLemons = Math.floor(Math.random() * 3) + 1
+        const randLemons = Math.ceil(Math.random() * user.lemons * 2)
         user.lemons = 0
         if (target) {
             const sharedLemons = Math.ceil(randLemons / 2)
@@ -583,7 +583,7 @@ function investLemon(bot, chatroom, user, suffix, target) {
             }
         }
     } else {
-        const randLemons = Math.ceil(Math.random() * 2)
+        const randLemons = Math.ceil(Math.random() * 3)
         user.lemons--
         if (target) {
             if (coinFlip) {
