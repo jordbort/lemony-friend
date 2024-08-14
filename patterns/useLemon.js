@@ -1354,6 +1354,7 @@ module.exports = {
             'offer': giveLemon,
 
             'eat': eatLemon,
+            'consume': eatLemon,
             'devour': eatLemon,
             'munch': eatLemon,
             'chomp': eatLemon,
@@ -1462,6 +1463,7 @@ module.exports = {
             'smoosh': flattenLemon,
             'compress': flattenLemon,
             'deflate': flattenLemon,
+            'stepon': flattenLemon,
 
             'smash': smashLemon,
             'slam': smashLemon,
@@ -1490,6 +1492,7 @@ module.exports = {
             'shave': zestLemon,
 
             'peel': peelLemon,
+            'undress': peelLemon,
 
             'wear': wearLemon,
             'puton': wearLemon,
@@ -1599,6 +1602,15 @@ module.exports = {
             'makefunof': scoldLemon,
             'mock': scoldLemon,
             'gangupon': scoldLemon,
+            'tease': scoldLemon,
+            'pointat': scoldLemon,
+            'laughat': scoldLemon,
+            'deride': scoldLemon,
+            'insult': scoldLemon,
+            'scoff': scoldLemon,
+            'scoffat': scoldLemon,
+            'scorn': scoldLemon,
+            'taunt': scoldLemon,
 
             'smell': smellLemon,
             'sniff': smellLemon,
