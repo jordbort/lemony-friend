@@ -1097,6 +1097,36 @@ function cleanLemon(bot, chatroom, user, suffix, target) {
         }
     }
 }
+function drinkLemon(bot, chatroom, user, suffix, target) {
+    const coinFlip = Math.floor(Math.random() * 2)
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName || null
+
+    if (allLemons) {
+        user.lemons = 0
+        if (target) {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} tried to swallow all their lemons whole while ${targetNickname} watched.`)
+                : bot.say(chatroom, `${userNickname} juiced all their lemons for ${targetNickname} to drink!`)
+        } else {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} put all their lemons in a bowl and slurped them up.`)
+                : bot.say(chatroom, `${userNickname} blended all their lemons up and sucked it through a straw.`)
+        }
+    } else {
+        user.lemons--
+        if (target) {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} cracked open an ice-cold lemon with ${targetNickname}.`)
+                : bot.say(chatroom, `${userNickname} juiced a whole lemon for ${targetNickname} to drink!`)
+        } else {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} stuck a straw into a lemon and drank it.`)
+                : bot.say(chatroom, `${userNickname} cracked open an ice-cold lemon and drank it.`)
+        }
+    }
+}
 function nullVerb(bot, chatroom, user, suffix, target, verb) {
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
@@ -1440,6 +1470,16 @@ module.exports = {
             'hose': cleanLemon,
             'shower': cleanLemon,
             'wet': cleanLemon,
+
+            'drink': drinkLemon,
+            'slurp': drinkLemon,
+            'suck': drinkLemon,
+            'gulp': drinkLemon,
+            'guzzle': drinkLemon,
+            'inhale': drinkLemon,
+            'quaff': drinkLemon,
+            'sip': drinkLemon,
+            'imbibe': drinkLemon,
         }
         if (verb in keyVerbs) {
             logMessage([`-> Matched: ${verb} lemon${suffix}:`, `[Function: ${keyVerbs[verb].name}]`])
