@@ -1,4 +1,5 @@
 const { getTime } = require(`./time`)
+const { useCount } = require(`./count`)
 const { sayGoals } = require(`./sayGoals`)
 const { rockPaperScissors } = require(`./rps`)
 const { handleLemonify } = require(`./lemonify`)
@@ -34,6 +35,8 @@ module.exports = {
 
     '!banuser': banUsers,
     '!banusers': banUsers,
+
+    '!count': useCount,
 
     '!time': getTime,
 
