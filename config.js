@@ -95,6 +95,7 @@ const settings = {
         `streamlabs`,
         `tangiabot`,
         `thetarashark`,
+        `ttsmonster`,
         `undertalebot`,
         `uwu_twanswator`,
         `wizebot`
@@ -137,7 +138,8 @@ const settings = {
     autoBan: [
         `Best viewers on`,
         `Cheap viewers on`,
-        `I want to offer promotion of your channel`
+        `I want to offer promotion of your channel`,
+        `onlyfans`
     ]
 }
 
