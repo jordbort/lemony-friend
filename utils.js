@@ -1315,6 +1315,11 @@ module.exports = {
         lemonyFresh[channel].funTimerGuesser = ``
         lemonyFresh[channel].pollId = ``
         lemonyFresh[channel].viewers = []
+        lemonyFresh[channel].count = {
+            name: ``,
+            value: 0,
+            ...lemonyFresh[channel].count
+        }
         lemonyFresh[channel].hangman = {
             listening: false,
             signup: false,
@@ -1329,6 +1334,7 @@ module.exports = {
         lemonyFresh[channel].timers = {
             '!so': { cooldown: 4, listening: true },
             '!raid': { cooldown: 6, listening: true },
+            '!count': { cooldown: 0, listening: true },
             'streak': { cooldown: 30, listening: true },
             'new-chatter': { cooldown: 0, listening: true },
             'greet': { cooldown: 0, listening: true },
