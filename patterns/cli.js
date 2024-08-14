@@ -336,7 +336,6 @@ function updateSettings(props, args) {
     logMessage([`> updateSettings(username, '${username}', channel, '${channel}', args:`, args.join(`, `), `)`])
 
     const options = {
-        [/^timeZone$|^tz$/i]: { name: `timeZone`, func: updateStr },
         [/^autoBan$|^ab$/i]: { name: `autoBan`, func: updatePhraseArr },
         [/^ignoredBots$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
         [/^realRPS$|^rps$/i]: { name: `realRPS`, func: updateBool },
@@ -354,7 +353,7 @@ function updateSettings(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for "settings": timeZone (tz), autoBan (ab), ignoredBots (ib), realRPS (rps), hangmanChances (hc), chantCount (cc), chantEmote (ce)`)
+    bot.say(chatroom, `/me Options for "settings": autoBan (ab), ignoredBots (ib), realRPS (rps), hangmanChances (hc), chantCount (cc), chantEmote (ce)`)
 }
 
 function updateBaseEmotesDev(bot, chatroom, args) {
