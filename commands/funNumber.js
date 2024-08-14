@@ -337,6 +337,11 @@ function restartFunTimer(props) {
     const { bot, chatroom, channel, username } = props
     logMessage([`> restartFunTimer(channel: '${channel}', username: '${username}')`])
 
+    if (settings.ignoredBots.includes(username)) {
+        logMessage([`-> ${username} is a bot, ignoring`])
+        return
+    }
+
     lemonyFresh[channel].funTimerGuesser = ``
     clearTimeout(lemonyFresh[channel].funTimer)
 
@@ -381,12 +386,20 @@ function getViewers(props) {
 function getLurker(props) {
     const { bot, chatroom, channel } = props
     const notChatted = lemonyFresh[channel].viewers.filter(username => !(username in users) || !(channel in users[username]))
-    const lurker = notChatted[Math.floor(Math.random() * notChatted.length)]
+    let lurker = notChatted[Math.floor(Math.random() * notChatted.length)]
     logMessage([`> getLurker(channel: '${channel}', lurker: '${lurker}', notChatted.length: ${notChatted.length})`])
 
     if (!notChatted.length) {
         logMessage([`-> No lurkers found!`])
         return
+    }
+
+    if (lurker === channel) {
+        if (notChatted.length === 1) { return logMessage([`-> ${lurker} can't be the only lurker in ${channel}`]) }
+        while (lurker === channel) {
+            logMessage([`-> Reshuffling lurker from ${lurker}...`])
+            lurker = notChatted[Math.floor(Math.random() * notChatted.length)]
+        }
     }
 
     const dumbEmote = getDumbEmote(channel)
@@ -411,7 +424,6 @@ function awardLemonToChannelChatters(props) {
     const lemonEmote = getLemonEmote()
     bot.say(chatroom, `${pluralize(recipients.length, `chatter`, `chatters`)} in ${channelNickname}'s channel just received one lemon each! ${lemonEmote}`)
 }
-
 
 function useTwoEmotes(props) {
     const { bot, chatroom, channel } = props
