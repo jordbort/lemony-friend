@@ -1067,6 +1067,36 @@ function gambleLemon(bot, chatroom, user, suffix) {
         }
     }
 }
+function cleanLemon(bot, chatroom, user, suffix, target) {
+    const coinFlip = Math.floor(Math.random() * 2)
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName || null
+
+    if (allLemons) {
+        if (target) {
+            if (target.lemons === 0) { return bot.say(chatroom, `${targetNickname} does not have any lemons!`) }
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} and ${targetNickname} made all their lemons squeaky clean!`)
+                : bot.say(chatroom, `${userNickname} washed off all of ${targetNickname}'s lemons, and made them sparkle!`)
+        } else {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} lathered up all their lemons and rinsed them off.`)
+                : bot.say(chatroom, `${userNickname} gave all their lemons a nice hosing off!`)
+        }
+    } else {
+        if (target) {
+            if (target.lemons === 0) { return bot.say(chatroom, `${targetNickname} does not have any lemons!`) }
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname} and ${targetNickname} polished a lemon to a sparking sheen!`)
+                : bot.say(chatroom, `${userNickname} hosed off ${targetNickname}'s lemon.`)
+        } else {
+            return coinFlip
+                ? bot.say(chatroom, `${userNickname}'s lemon has been cleansed.`)
+                : bot.say(chatroom, `${userNickname} rinsed off their lemon with a hose.`)
+        }
+    }
+}
 function nullVerb(bot, chatroom, user, suffix, target, verb) {
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
@@ -1111,8 +1141,10 @@ module.exports = {
         // Stop if user doesn't have lemons, or doesn't try to steal from someone who does, or doesn't try and create one
         const theftVerbs = [`steal`, `take`, `grab`, `thieve`, `nab`, `pickpocket`, `purloin`, `abscondwith`, `loot`, `pilfer`, `runawaywith`, `runoffwith`, `makeoffwith`]
         const creationVerbs = [`create`, `manufacture`, `generate`, `manifest`, `find`, `givemea`, `build`, `conceive`, `construct`, `devise`, `discover`, `forge`, `form`, `invent`, `produce`, `setup`, `spawn`, `actualize`, `beget`, `compose`, `concoct`, `constitute`, `contrive`, `effect`, `erect`, `fabricate`, `fashion`, `formulate`, `imagine`, `institute`, `procreate`]
+        const cleanVerbs = [`clean`, `cleanup`, `cleanse`, `bathe`, `disinfect`, `rinse`, `soak`, `wash`, `washup`, `douse`, `drench`, `hose`, `shower`, `wet`]
         if (user.lemons === 0
             && (!theftVerbs.includes(verb) || (theftVerbs.includes(verb) && !targetNickname))
+            && (!cleanVerbs.includes(verb) || (cleanVerbs.includes(verb) && !targetNickname))
             && !creationVerbs.includes(verb)) {
             return bot.say(chatroom, `${userNickname} has no lemons!`)
         }
@@ -1393,6 +1425,21 @@ module.exports = {
             'gamble': gambleLemon,
             'roulette': gambleLemon,
             'bet': gambleLemon,
+
+            'clean': cleanLemon,
+            'cleanup': cleanLemon,
+            'cleanse': cleanLemon,
+            'bathe': cleanLemon,
+            'disinfect': cleanLemon,
+            'rinse': cleanLemon,
+            'soak': cleanLemon,
+            'wash': cleanLemon,
+            'washup': cleanLemon,
+            'douse': cleanLemon,
+            'drench': cleanLemon,
+            'hose': cleanLemon,
+            'shower': cleanLemon,
+            'wet': cleanLemon,
         }
         if (verb in keyVerbs) {
             logMessage([`-> Matched: ${verb} lemon${suffix}:`, `[Function: ${keyVerbs[verb].name}]`])
