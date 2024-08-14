@@ -141,6 +141,7 @@ function updateChannelDev(props, args) {
         [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
         [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
         [/^noSubRaidMessage$|^nsrm$/i]: { name: `noSubRaidMessage`, func: updateStr },
+        [/^funnyCommands?$|^fc$/i]: { name: `funnyCommands`, func: updateArr },
         [/^redeems?$|^r$/i]: { name: `redeems`, func: updateArr },
         [/^funTimerGuesser$|^ftg$/i]: { name: `funTimerGuesser`, func: updateStr }
     }
@@ -154,7 +155,7 @@ function updateChannelDev(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for channel "${toUser}": timers (t), rollFunNumber (rfn), emotes (e), bttvEmotes (bttv), subRaidMessage (srm), noSubRaidMessage (nsrm), redeems (r), funTimerGuesser (ftg)`)
+    bot.say(chatroom, `/me Options for channel "${toUser}": timers (t), rollFunNumber (rfn), emotes (e), bttvEmotes (bttv), subRaidMessage (srm), noSubRaidMessage (nsrm), funnyCommands (fc), redeems (r), funTimerGuesser (ftg)`)
 }
 
 function updateChannel(props, args) {
