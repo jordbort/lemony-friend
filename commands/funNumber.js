@@ -433,6 +433,58 @@ function useTwoEmotes(props) {
     bot.say(chatroom, `${emoteOne} ${emoteTwo}`)
 }
 
+function useFunnyCommand(props) {
+    const { bot, message, chatroom, channel, username } = props
+    logMessage([`> useFunnyCommand(channel: '${channel}'`])
+
+    const arrFunnyCommands = lemonyFresh[channel].funnyCommands
+
+    if (!arrFunnyCommands.length) {
+        logMessage([`-> No funny commands`])
+        return
+    }
+
+    if (channel === `jpegstripes`) {
+        const arrStaleHangmanAnswers = Object.keys(lemonyFresh)
+            .filter(chan => typeof lemonyFresh[chan] === `object` && !Array.isArray(lemonyFresh[chan]))
+            .filter(chan => lemonyFresh[chan].hangman?.answer && !lemonyFresh[chan].hangman?.listening)
+            .map(chan => lemonyFresh[chan].hangman.answer.split(``))
+
+        if (arrStaleHangmanAnswers.length) {
+            const guess = arrStaleHangmanAnswers[Math.floor(Math.random() * arrStaleHangmanAnswers.length)]
+            guess.length = 4
+            arrFunnyCommands.push(`!fourdle ${guess.join(` `)}`)
+        }
+
+        arrFunnyCommands.push(
+            `!duel ${username}`,
+            `!fightbot ${username}`,
+            `!gamer ${username}`,
+            `!reverse ${message}`,
+            `!editme ${message}`,
+            `My name is ${BOT_USERNAME} jpegstHeyGuys`
+        )
+    }
+
+    if (channel === `e1ectroma`) {
+        arrFunnyCommands.push(`!duel ${username}`)
+    }
+
+    if (channel === `domonintendo1`) {
+        arrFunnyCommands.push(
+            `!timeout ${username}`,
+            `!bog ${username}`,
+            `!bong ${username}`,
+            `!zeroth ${username}`,
+            `!duel ${username}`
+        )
+    }
+
+    const response = arrFunnyCommands[Math.floor(Math.random() * arrFunnyCommands.length)]
+
+    bot.say(chatroom, response)
+}
+
 module.exports = {
     rollFunNumber(props, funNumber) {
         const { tags, message, channel, username } = props
@@ -463,7 +515,8 @@ module.exports = {
             16: getViewers,
             17: getLurker,
             18: awardLemonToChannelChatters,
-            19: useTwoEmotes
+            19: useTwoEmotes,
+            20: useFunnyCommand
         }
 
         if (funNumber in outcomes) {
