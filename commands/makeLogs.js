@@ -21,8 +21,8 @@ const ASTRAL_AN0MALY_REFRESH_TOKEN = process.env.ASTRAL_AN0MALY_REFRESH_TOKEN
 const DIRTYD0INKS_ACCESS_TOKEN = process.env.DIRTYD0INKS_ACCESS_TOKEN
 const DIRTYD0INKS_REFRESH_TOKEN = process.env.DIRTYD0INKS_REFRESH_TOKEN
 
-const COSYINPINK_ACCESS_TOKEN = process.env.COSYINPINK_ACCESS_TOKEN
-const COSYINPINK_REFRESH_TOKEN = process.env.COSYINPINK_REFRESH_TOKEN
+const ARTYINPINK_ACCESS_TOKEN = process.env.ARTYINPINK_ACCESS_TOKEN
+const ARTYINPINK_REFRESH_TOKEN = process.env.ARTYINPINK_REFRESH_TOKEN
 
 const THETARASTARK_ACCESS_TOKEN = process.env.THETARASTARK_ACCESS_TOKEN
 const THETARASTARK_REFRESH_TOKEN = process.env.THETARASTARK_REFRESH_TOKEN
@@ -76,8 +76,8 @@ function tokenChangeWarning() {
     if (lemonyFresh.astral_an0maly.refreshToken !== ASTRAL_AN0MALY_REFRESH_TOKEN) { msgBlock += `ASTRAL_AN0MALY_REFRESH_TOKEN changed, update to: '${lemonyFresh.astral_an0maly.refreshToken}'\n` }
     if (lemonyFresh.dirtyd0inks.accessToken !== DIRTYD0INKS_ACCESS_TOKEN) { msgBlock += `DIRTYD0INKS_ACCESS_TOKEN changed, update to: '${lemonyFresh.dirtyd0inks.accessToken}'\n` }
     if (lemonyFresh.dirtyd0inks.refreshToken !== DIRTYD0INKS_REFRESH_TOKEN) { msgBlock += `DIRTYD0INKS_REFRESH_TOKEN changed, update to: '${lemonyFresh.dirtyd0inks.refreshToken}'\n` }
-    if (lemonyFresh.cosyinpink.accessToken !== COSYINPINK_ACCESS_TOKEN) { msgBlock += `COSYINPINK_ACCESS_TOKEN changed, update to: '${lemonyFresh.cosyinpink.accessToken}'\n` }
-    if (lemonyFresh.cosyinpink.refreshToken !== COSYINPINK_REFRESH_TOKEN) { msgBlock += `COSYINPINK_REFRESH_TOKEN changed, update to: '${lemonyFresh.cosyinpink.refreshToken}'\n` }
+    if (lemonyFresh.artyinpink.accessToken !== ARTYINPINK_ACCESS_TOKEN) { msgBlock += `ARTYINPINK_ACCESS_TOKEN changed, update to: '${lemonyFresh.artyinpink.accessToken}'\n` }
+    if (lemonyFresh.artyinpink.refreshToken !== ARTYINPINK_REFRESH_TOKEN) { msgBlock += `ARTYINPINK_REFRESH_TOKEN changed, update to: '${lemonyFresh.artyinpink.refreshToken}'\n` }
     if (lemonyFresh.thetarastark.accessToken !== THETARASTARK_ACCESS_TOKEN) { msgBlock += `THETARASTARK_ACCESS_TOKEN changed, update to: '${lemonyFresh.thetarastark.accessToken}'\n` }
     if (lemonyFresh.thetarastark.refreshToken !== THETARASTARK_REFRESH_TOKEN) { msgBlock += `THETARASTARK_REFRESH_TOKEN changed, update to: '${lemonyFresh.thetarastark.refreshToken}'\n` }
     if (mods.catjerky.accessToken !== CATJERKY_ACCESS_TOKEN) { msgBlock += `CATJERKY_ACCESS_TOKEN changed, update to: '${mods.catjerky.accessToken}'\n` }

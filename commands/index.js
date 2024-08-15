@@ -1,7 +1,9 @@
 const { getTime } = require(`./time`)
+const { useCount } = require(`./count`)
 const { sayGoals } = require(`./sayGoals`)
 const { rockPaperScissors } = require(`./rps`)
 const { handleLemonify } = require(`./lemonify`)
+const { lemonTopThree } = require(`./lemonRank`)
 const { applyNicknames } = require(`../utils`)
 const { handleTempCmd, getTempCmds } = require(`./tempCmds`)
 const { sayCommands, getDocs, getStats } = require(`./help`)
@@ -34,6 +36,8 @@ module.exports = {
 
     '!banuser': banUsers,
     '!banusers': banUsers,
+
+    '!count': useCount,
 
     '!time': getTime,
 
@@ -92,6 +96,9 @@ module.exports = {
 
     '!lemon': getLemons,
     '!lemons': getLemons,
+
+    '!lemonboard': lemonTopThree,
+    '!lemonrank': lemonTopThree,
 
     '!friend': sayFriends,
     '!friends': sayFriends,
