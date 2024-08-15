@@ -171,11 +171,13 @@ module.exports = {
             `get ${addVerbSuffix(verb1, `ed`)} by ${getIndefiniteArticle(adjective1)} ${noun1}, you ${noun2}!`,
             `you're ${getIndefiniteArticle(adjective1)}, ${adjective2} ${noun1} ${addVerbSuffix(verb1, `er`)}!`,
             `you're ${getIndefiniteArticle(adjective1)} ${noun1} ${addVerbSuffix(verb1, `ing`)} ${noun2}. And you're ${adjective2}!`,
+            `you're not just ${getIndefiniteArticle(adjective1)} ${noun1} ${addVerbSuffix(verb1, `er`)}, but ${getIndefiniteArticle(adjective2)} ${noun2} too!`,
+            `try ${addVerbSuffix(verb1, `ing`)} ${getIndefiniteArticle(adjective1)} ${noun1}, you ${adjective2} ${noun2}-${addVerbSuffix(verb2), `er`}!`,
             `go get ${addVerbSuffix(verb1, `ed`)} by a ${[`hundred`, `hundred`, `hundred`, `thousand`, `thousand`, `thousand`, `million`, `million`, `billion`, `billion`, `trillion`][Math.floor(Math.random() * 7)]} ${adjective1} ${makePlural(noun1)}!`
         ]
 
         const insult = insults[Math.floor(Math.random() * insults.length)]
 
-        bot.say(chatroom, `Hey ${targetNickname || userNickname} ${insult}`)
+        bot.say(chatroom, `Hey ${targetNickname || toUser || userNickname} ${insult}`)
     }
 }

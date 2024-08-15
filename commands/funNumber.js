@@ -337,6 +337,11 @@ function restartFunTimer(props) {
     const { bot, chatroom, channel, username } = props
     logMessage([`> restartFunTimer(channel: '${channel}', username: '${username}')`])
 
+    if (settings.ignoredBots.includes(username)) {
+        logMessage([`-> ${username} is a bot, ignoring`])
+        return
+    }
+
     lemonyFresh[channel].funTimerGuesser = ``
     clearTimeout(lemonyFresh[channel].funTimer)
 
@@ -381,12 +386,20 @@ function getViewers(props) {
 function getLurker(props) {
     const { bot, chatroom, channel } = props
     const notChatted = lemonyFresh[channel].viewers.filter(username => !(username in users) || !(channel in users[username]))
-    const lurker = notChatted[Math.floor(Math.random() * notChatted.length)]
+    let lurker = notChatted[Math.floor(Math.random() * notChatted.length)]
     logMessage([`> getLurker(channel: '${channel}', lurker: '${lurker}', notChatted.length: ${notChatted.length})`])
 
     if (!notChatted.length) {
         logMessage([`-> No lurkers found!`])
         return
+    }
+
+    if (lurker === channel) {
+        if (notChatted.length === 1) { return logMessage([`-> ${lurker} can't be the only lurker in ${channel}`]) }
+        while (lurker === channel) {
+            logMessage([`-> Reshuffling lurker from ${lurker}...`])
+            lurker = notChatted[Math.floor(Math.random() * notChatted.length)]
+        }
     }
 
     const dumbEmote = getDumbEmote(channel)
@@ -412,7 +425,6 @@ function awardLemonToChannelChatters(props) {
     bot.say(chatroom, `${pluralize(recipients.length, `chatter`, `chatters`)} in ${channelNickname}'s channel just received one lemon each! ${lemonEmote}`)
 }
 
-
 function useTwoEmotes(props) {
     const { bot, chatroom, channel } = props
     logMessage([`> useTwoEmotes(channel: '${channel}', emotes: ${lemonyFresh[channel].emotes.length})`])
@@ -431,6 +443,58 @@ function useTwoEmotes(props) {
     const emoteOne = emotes[Math.floor(Math.random() * emotes.length)]
     const emoteTwo = emotes[Math.floor(Math.random() * emotes.length)]
     bot.say(chatroom, `${emoteOne} ${emoteTwo}`)
+}
+
+function useFunnyCommand(props) {
+    const { bot, message, chatroom, channel, username } = props
+    logMessage([`> useFunnyCommand(channel: '${channel}'`])
+
+    const arrFunnyCommands = lemonyFresh[channel].funnyCommands
+
+    if (!arrFunnyCommands.length) {
+        logMessage([`-> No funny commands`])
+        return
+    }
+
+    if (channel === `jpegstripes`) {
+        const arrStaleHangmanAnswers = Object.keys(lemonyFresh)
+            .filter(chan => typeof lemonyFresh[chan] === `object` && !Array.isArray(lemonyFresh[chan]))
+            .filter(chan => lemonyFresh[chan].hangman?.answer && !lemonyFresh[chan].hangman?.listening)
+            .map(chan => lemonyFresh[chan].hangman.answer.split(``))
+
+        if (arrStaleHangmanAnswers.length) {
+            const guess = arrStaleHangmanAnswers[Math.floor(Math.random() * arrStaleHangmanAnswers.length)]
+            guess.length = 4
+            arrFunnyCommands.push(`!fourdle ${guess.join(` `)}`)
+        }
+
+        arrFunnyCommands.push(
+            `!duel ${username}`,
+            `!fightbot ${username}`,
+            `!gamer ${username}`,
+            `!reverse ${message}`,
+            `!editme ${message}`,
+            `My name is ${BOT_USERNAME} jpegstHeyGuys`
+        )
+    }
+
+    if (channel === `e1ectroma`) {
+        arrFunnyCommands.push(`!duel ${username}`)
+    }
+
+    if (channel === `domonintendo1`) {
+        arrFunnyCommands.push(
+            `!timeout ${username}`,
+            `!bog ${username}`,
+            `!bong ${username}`,
+            `!zeroth ${username}`,
+            `!duel ${username}`
+        )
+    }
+
+    const response = arrFunnyCommands[Math.floor(Math.random() * arrFunnyCommands.length)]
+
+    bot.say(chatroom, response)
 }
 
 module.exports = {
@@ -463,7 +527,8 @@ module.exports = {
             16: getViewers,
             17: getLurker,
             18: awardLemonToChannelChatters,
-            19: useTwoEmotes
+            19: useTwoEmotes,
+            20: useFunnyCommand
         }
 
         if (funNumber in outcomes) {

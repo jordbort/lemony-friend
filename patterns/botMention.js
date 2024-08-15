@@ -9,7 +9,7 @@ module.exports = {
     // bye (includes good bye)
     [/\b(b+y+e+)+/i]: sayGoodnight,
     // goodbye
-    [/\bg+o{2,}d+\b.*\bb+y+e+/i]: sayGoodnight,
+    [/g+o{2,}d+ ?b+y+e+/i]: sayGoodnight,
 
     // gj
     [/\b(g+j+)+\b/i]: sayThanks,
@@ -25,9 +25,11 @@ module.exports = {
     [/c+o+n+g+r+a+t+(u+l+a+t+i+o+n+)?s+/i]: sayThanks,
 
     // how are you
-    [/\bh+o+w+\b.*\b˝(a+r+e+|r+)\b.*\b(y+o+u+|u+)/i]: sayMood,
+    [/\bh+o+w+\b.*\b(a+r+e+|r+)\b.*\b(y+o+u+|u+)/i]: sayMood,
     // how're you
     [/\bh+o+w+['"]*r+e+\b.*\b(y+o+u+|u+)/i]: sayMood,
+    // hru
+    [/\bh+r+u+\b/i]: sayMood,
     // hyd
     [/\bh+y+d+\b/i]: sayMood,
     // how is it going
