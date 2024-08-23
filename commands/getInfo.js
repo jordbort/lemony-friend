@@ -8,11 +8,11 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Removed noun/verb/adjective list when submitting`,
-            `Improved nickname use detection`,
-            `Removed Turbo from user data`,
-            `Fixed lemonify bug`,
-            `Updated autoban phrases`
+            `Implemented system for applying nicknames and starting lemons`,
+            `Updated emotes`,
+            `Updated count naming system`,
+            `Adjusted CLI settings`,
+            `Corrected logging typos`
         ]
 
         const timeOptions = {
