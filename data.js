@@ -470,6 +470,9 @@ const lemonyFresh = {
             `HUHH`,
             `HYPERS`,
             `KEKW`,
+            `marioD`,
+            `marioFinger`,
+            `Mariok`,
             `modCheck`,
             `monkaHmm`,
             `monkaTOS`,
@@ -490,6 +493,8 @@ const lemonyFresh = {
             `POGGERS`,
             `ricardoFlick`,
             `sadCat`,
+            `SunshineDance`,
+            `tabsMario`,
             `tenseSmash`,
             `VegetaPain`,
             `weirdChamp`,
@@ -515,12 +520,15 @@ const lemonyFresh = {
     },
     astral_an0maly: {
         id: 144838577,
-        emotes: [`astral332HI`, `astral332Pop`],
+        emotes: [
+            `astral332Pop`,
+            `astral332Pophi`,
+            `astral332Pophype`
+        ],
         accessToken: ASTRAL_AN0MALY_ACCESS_TOKEN,
         refreshToken: ASTRAL_AN0MALY_REFRESH_TOKEN,
-        subRaidMessage: `astral332Pop ASS RAID astral332Pop`,
-        noSubRaidMessage: `CorgiDerp ASS RAID CorgiDerp`,
-        timers: { '!so': { cooldown: 4, listening: false } }
+        subRaidMessage: `astral332Pophype astral332Pophi astral332Pop ASS RAID astral332Pop astral332Pophi astral332Pophype`,
+        noSubRaidMessage: `CorgiDerp ASS RAID CorgiDerp`
     },
     dirtyd0inks: {
         id: 840745958,
