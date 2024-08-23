@@ -124,6 +124,12 @@ function updateDuration(bot, chatroom, obj, message, name, args) {
     bot.say(chatroom, `/me ${message} must be between 0-120 (currently: ${obj[name]} seconds)`)
 }
 
+function deleteUser(bot, chatroom, obj, message, name, args) {
+    logMessage([`> deleteUser(chatroom: '${chatroom}', name: '${name}', args:`, args.join(`, `), `)`])
+    delete users[name]
+    bot.say(chatroom, `/me User "${name}" has been deleted`)
+}
+
 function updateChannelDev(props, args) {
     const { bot, chatroom, channel, username } = props
     args.shift()
@@ -199,7 +205,8 @@ function updateUserDev(props, args) {
         [/^lemons?$|^l$/i]: { name: `lemons`, func: updateNum },
         [/^hangmanWins?$|^hw$/i]: { name: `hangmanWins`, func: updateNum },
         [/^away$|^a$/i]: { name: `away`, func: updateBool },
-        [/^awayMessage$|^am$/i]: { name: `awayMessage`, func: updateStr }
+        [/^awayMessage$|^am$/i]: { name: `awayMessage`, func: updateStr },
+        [/^delete$|^d$/i]: { name: `${toUser}`, func: deleteUser }
     }
 
     for (const option in options) {
@@ -231,7 +238,7 @@ function updateUserDev(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for user "${toUser}": displayName (dn), nickname (nn), lemons (l), hangmanWins (hw), away (a), awayMessage (am)`)
+    bot.say(chatroom, `/me Options for user "${toUser}": displayName (dn), nickname (nn), lemons (l), hangmanWins (hw), away (a), awayMessage (am), delete (d)`)
 }
 
 function updateUser(props, args) {
