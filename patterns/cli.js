@@ -176,7 +176,6 @@ function updateChannel(props, args) {
         [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
         [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
         [/^noSubRaidMessage$|^nsrm$/i]: { name: `noSubRaidMessage`, func: updateStr },
-        [/^redeems?$|^r$/i]: { name: `redeems`, func: updateArr }
     }
 
     for (const option in options) {
@@ -188,7 +187,7 @@ function updateChannel(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for channel "${channel}": timers (t), rollFunNumber (rfn), emotes (e), bttvEmotes (bttv), subRaidMessage (srm), noSubRaidMessage (nsrm), redeems (r)`)
+    bot.say(chatroom, `/me Options for channel "${channel}": timers (t), rollFunNumber (rfn), emotes (e), bttvEmotes (bttv), subRaidMessage (srm), noSubRaidMessage (nsrm)`)
 }
 
 function updateUserDev(props, args) {
@@ -345,9 +344,7 @@ function updateSettings(props, args) {
     const options = {
         [/^autoBan$|^ab$/i]: { name: `autoBan`, func: updatePhraseArr },
         [/^ignoredBots$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
-        [/^realRPS$|^rps$/i]: { name: `realRPS`, func: updateBool },
         [/^hangmanChances$|^hc$/i]: { name: `hangmanChances`, func: updateNum },
-        [/^chantCount$|^cc$/i]: { name: `chantCount`, func: updateNum },
         [/^chantEmote$|^ce$/i]: { name: `chantEmote`, func: updateStr }
     }
 
@@ -360,7 +357,7 @@ function updateSettings(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for "settings": autoBan (ab), ignoredBots (ib), realRPS (rps), hangmanChances (hc), chantCount (cc), chantEmote (ce)`)
+    bot.say(chatroom, `/me Options for "settings": autoBan (ab), ignoredBots (ib), hangmanChances (hc), chantEmote (ce)`)
 }
 
 function updateBaseEmotesDev(bot, chatroom, args) {
