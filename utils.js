@@ -2,6 +2,7 @@ const DEV = process.env.DEV
 const BOT_ID = Number(process.env.BOT_ID)
 const BOT_USERNAME = process.env.BOT_USERNAME
 const COMMON_NICKNAMES = process.env.COMMON_NICKNAMES
+const STARTING_LEMONS = process.env.STARTING_LEMONS
 
 const fs = require(`fs/promises`)
 
@@ -1289,6 +1290,18 @@ module.exports = {
             lemons: 0,
             hangmanWins: 0
         }
+
+        // Restore lemons
+        const commonNicknames = COMMON_NICKNAMES.split(`,`)
+        const objNicknames = {}
+        for (const [i, e] of commonNicknames.entries()) { if (i % 2 === 0) { objNicknames[e] = commonNicknames[i + 1] } }
+        if (username in objNicknames) { users[username].nickname = objNicknames[username] }
+
+        // Apply nickname
+        const startingLemons = STARTING_LEMONS.split(`,`)
+        const objLemons = {}
+        for (const [i, e] of startingLemons.entries()) { if (i % 2 === 0) { objLemons[e] = Number(startingLemons[i + 1]) } }
+        if (username in objLemons) { users[username].lemons += objLemons[username] }
     },
     initUserChannel(tags, username, channel) {
         logMessage([`> initUserChannel(username: '${username}', channel: '${channel}')`])
