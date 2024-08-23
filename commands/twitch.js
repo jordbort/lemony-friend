@@ -643,14 +643,14 @@ module.exports = {
 
         if (response.status === 401) {
             logMessage([`autoBanUser`, response.status, renderObj(twitchData, `twitchData`)])
-            logMessage([`-> Unauthorized from banUsers(), attempting to refresh access token...`])
+            logMessage([`-> Unauthorized from autoBanUser(), attempting to refresh access token...`])
             await refreshToken({ bot: bot, chatroom: chatroom, channel: channel, username: channel, toUser: null }, false)
             options.headers.authorization = `Bearer ${lemonyFresh[channel].accessToken}`
             const finalAttempt = await fetch(endpoint, options)
             const finalAttemptData = await finalAttempt.json()
             if (finalAttempt.status !== 200) {
                 logMessage([`autoBanUser`, finalAttempt.status, renderObj(finalAttemptData, `finalAttemptData`)])
-                logMessage([`--> banUsers() failed a second time:`])
+                logMessage([`--> autoBanUser() failed a second time:`])
                 return bot.say(chatroom, `Failed to ban user! ${finalAttemptData?.message || `Please update your token scope by using !access again!`} ${negativeEmote}`)
             }
             else {
