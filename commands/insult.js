@@ -1,9 +1,9 @@
 const { wordBank } = require(`../config`)
 const { logMessage, pluralize, getNeutralEmote, getPositiveEmote } = require(`../utils`)
 
-function getNoun() { return wordBank.nouns[Math.floor(Math.random() * wordBank.nouns.length)] }
-function getVerb() { return wordBank.verbs[Math.floor(Math.random() * wordBank.verbs.length)] }
-function getAdjective() { return wordBank.adjectives[Math.floor(Math.random() * wordBank.adjectives.length)] }
+// function getNoun() { return wordBank.nouns[Math.floor(Math.random() * wordBank.nouns.length)] }
+// function getVerb() { return wordBank.verbs[Math.floor(Math.random() * wordBank.verbs.length)] }
+// function getAdjective() { return wordBank.adjectives[Math.floor(Math.random() * wordBank.adjectives.length)] }
 function getIndefiniteArticle(nextWord) { return /^[aeiou]/i.test(nextWord) ? `an ${nextWord}` : `a ${nextWord}` }
 
 function makePlural(noun) {
@@ -136,31 +136,32 @@ module.exports = {
             ...wordBank.adjectives,
             ...wordBank.adjectives,
             ...wordBank.adjectives,
+            ...wordBank.nouns.map(word => `${word}-like`),
             ...wordBank.verbs.map(word => `${addVerbSuffix(word, `y`)}`)
         ]
 
-        const verb1 = getVerb() || `squeeze`
-        let verb2 = getVerb() || `juice`
+        const verb1 = verbs[Math.floor(Math.random() * verbs.length)] || `squeeze`
+        let verb2 = verbs[Math.floor(Math.random() * verbs.length)] || `juice`
         while (verb2 === verb1) {
             verbs.push(`squeeze`, `juice`)
             logMessage([`-> Changing verb 2 from "${verb2}"`, verbs])
-            verb2 = getVerb()
+            verb2 = verbs[Math.floor(Math.random() * verbs.length)]
         }
 
-        const noun1 = getNoun() || `lemon`
-        let noun2 = getNoun() || `friend`
+        const noun1 = nouns[Math.floor(Math.random() * nouns.length)] || `lemon`
+        let noun2 = nouns[Math.floor(Math.random() * nouns.length)] || `friend`
         while (noun2 === noun1) {
             nouns.push(`lemon`, `friend`)
             logMessage([`-> Changing noun 2 from "${noun2}"`, nouns])
-            noun2 = getNoun()
+            noun2 = nouns[Math.floor(Math.random() * nouns.length)]
         }
 
-        const adjective1 = getAdjective() || `lemony`
-        let adjective2 = getAdjective() || `fresh`
+        const adjective1 = adjectives[Math.floor(Math.random() * adjectives.length)] || `lemony`
+        let adjective2 = adjectives[Math.floor(Math.random() * adjectives.length)] || `fresh`
         while (adjective2 === adjective1) {
             adjectives.push(`lemony`, `fresh`)
             logMessage([`-> Changing adjective 2 from "${adjective2}"`, adjectives])
-            adjective2 = getAdjective()
+            adjective2 = adjectives[Math.floor(Math.random() * adjectives.length)]
         }
 
         const insults = [
@@ -168,6 +169,7 @@ module.exports = {
             `go ${verb1} ${getIndefiniteArticle(noun1)}, you ${adjective1} ${noun2}!`,
             `${verb1} my ${noun1}, you ${noun2}-${addVerbSuffix(verb2, `er`)}!`,
             `I hope you ${verb1} on ${getIndefiniteArticle(adjective1)}, ${adjective2} ${noun1}!`,
+            `I hope ${getIndefiniteArticle(adjective1)} ${noun1} ${verb2}s your ${adjective2} ${noun2}!`,
             `get ${addVerbSuffix(verb1, `ed`)} by ${getIndefiniteArticle(adjective1)} ${noun1}, you ${noun2}!`,
             `you're ${getIndefiniteArticle(adjective1)}, ${adjective2} ${noun1} ${addVerbSuffix(verb1, `er`)}!`,
             `you're ${getIndefiniteArticle(adjective1)} ${noun1} ${addVerbSuffix(verb1, `ing`)} ${noun2}. And you're ${adjective2}!`,
