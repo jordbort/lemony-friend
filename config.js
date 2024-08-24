@@ -136,10 +136,9 @@ const settings = {
     },
     botMood: `happy`,
     autoBan: [
-        `Best viewers on`,
-        `Cheap viewers on`,
         `I want to offer promotion of your channel`,
-        `onlyfans`
+        `onlyfans`,
+        `viewers on`
     ]
 }
 

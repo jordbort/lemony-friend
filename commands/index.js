@@ -4,7 +4,6 @@ const { sayGoals } = require(`./sayGoals`)
 const { rockPaperScissors } = require(`./rps`)
 const { handleLemonify } = require(`./lemonify`)
 const { lemonTopThree } = require(`./lemonRank`)
-const { applyNicknames } = require(`../utils`)
 const { handleTempCmd, getTempCmds } = require(`./tempCmds`)
 const { sayCommands, getDocs, getStats } = require(`./help`)
 const { manageHangman, joinHangman } = require(`../patterns/hangman`)
@@ -43,8 +42,6 @@ module.exports = {
 
     '!goal': sayGoals,
     '!goals': sayGoals,
-
-    '!apply': applyNicknames,
 
     '!rps': rockPaperScissors,
 
