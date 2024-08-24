@@ -23,12 +23,15 @@ module.exports = {
                 if (isNaN(num)) { return bot.say(chatroom, `${counter ? counter.substring(0, 1).toUpperCase() + counter.substring(1) : `The counter`} cannot be set to "${num}"! ${negativeEmote}`) }
                 lemonyFresh[channel].count.value = num
 
-                return bot.say(chatroom, `${counter ? counter.substring(0, 1).toUpperCase() + counter.substring(1) : `The counter`} has been set to: ${lemonyFresh[channel].count.value}`)
+                return bot.say(chatroom, `${counter ? counter.substring(0, 1).toUpperCase() + counter.substring(1) : `The counter`} has been set to: ${lemonyFresh[channel].count.value} ${positiveEmote}`)
             }
 
             // NAME the count
             if (/^(re)?name$/i.test(args[0])) {
-                lemonyFresh[channel].count.name = args[1] || ""
+                args.shift()
+                lemonyFresh[channel].count.name = args.length
+                    ? args.join(` `)
+                    : ""
 
                 return bot.say(chatroom, `The counter ${lemonyFresh[channel].count.name
                     ? `has been renamed "${lemonyFresh[channel].count.name}"!`
