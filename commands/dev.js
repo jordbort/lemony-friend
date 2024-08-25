@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings } = require(`../config`)
-const { lemonyFresh, users, mods } = require(`../data`)
+const { lemonyFresh, users, mods, startingLemons, commonNicknames } = require(`../data`)
 
 const { getSubs } = require(`./help`)
 const { logMessage, dumpMemory } = require(`../utils`)
@@ -21,6 +21,11 @@ module.exports = {
     'dump': dumpMemory,
     '!test': checkPoints,
     'tags': (props) => { console.log(props.tags) },
+
+    'unknown': () => {
+        console.log(`unclaimed lemons:`, startingLemons)
+        console.log(`unapplied nicknames:`, commonNicknames)
+    },
 
     'channel': (props) => {
         const { channel, toUser } = props
