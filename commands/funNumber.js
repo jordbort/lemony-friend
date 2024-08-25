@@ -410,8 +410,6 @@ function awardLemonToChannelChatters(props) {
     const { bot, chatroom, channel } = props
     logMessage([`> awardLemonToChannelChatters(channel: '${channel}')`])
 
-    const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
-
     const recipients = []
     for (const username in users) {
         if (channel in users[username]) {
@@ -422,7 +420,7 @@ function awardLemonToChannelChatters(props) {
     logMessage([`-> recipients:`, recipients.join(`, `)])
 
     const lemonEmote = getLemonEmote()
-    bot.say(chatroom, `${pluralize(recipients.length, `chatter`, `chatters`)} in ${channelNickname}'s channel just received one lemon each! ${lemonEmote}`)
+    bot.say(chatroom, `${pluralize(recipients.length, `person`, `people`)} just received one lemon each! ${lemonEmote}`)
 }
 
 function useTwoEmotes(props) {
