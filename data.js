@@ -445,8 +445,8 @@ const lemonyFresh = {
         id: 100792658,
         accessToken: DOMONINTENDO1_ACCESS_TOKEN,
         refreshToken: DOMONINTENDO1_REFRESH_TOKEN,
-        subRaidMessage: `domoni6ChefHey HEY, DOMOSAPIENS HAVE ARRIVED domoni6ChefHey`,
-        noSubRaidMessage: `PogChamp HEY, DOMOSAPIENS HAVE ARRIVED PogChamp`,
+        subRaidMessage: `domoni6Mingo domoni6Sneeze domoni6Kek GET DOMONATED domoni6Kek domoni6Sneeze domoni6Mingo`,
+        noSubRaidMessage: `PogChamp GET DOMONATED PogChamp`,
         emotes: [
             `domoni6Really`,
             `domoni6Bingo`,
