@@ -33,6 +33,9 @@ const CATJERKY_REFRESH_TOKEN = process.env.CATJERKY_REFRESH_TOKEN
 const SKITTLE108_ACCESS_TOKEN = process.env.SKITTLE108_ACCESS_TOKEN
 const SKITTLE108_REFRESH_TOKEN = process.env.SKITTLE108_REFRESH_TOKEN
 
+const COMMON_NICKNAMES = process.env.COMMON_NICKNAMES
+const STARTING_LEMONS = process.env.STARTING_LEMONS
+
 const lemonyFresh = {
     channels: [
         `#jpegstripes`,
@@ -645,6 +648,12 @@ const mods = {
 
 const users = {}
 
+const commonNicknames = {}
+for (let arr = COMMON_NICKNAMES.split(`,`), i = 0; i < arr.length; i++) { if (i % 2 === 0) { commonNicknames[arr[i]] = arr[i + 1] } }
+
+const startingLemons = {}
+for (let arr = STARTING_LEMONS.split(`,`), i = 0; i < arr.length; i++) { if (i % 2 === 0) { startingLemons[arr[i]] = Number(arr[i + 1]) } }
+
 const knownTags = {}
 
 const tempCmds = {}
@@ -653,6 +662,8 @@ module.exports = {
     lemonyFresh,
     mods,
     users,
+    commonNicknames,
+    startingLemons,
     knownTags,
     tempCmds
 }
