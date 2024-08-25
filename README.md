@@ -82,10 +82,6 @@ Use this command to update lemony_friend's response to the `!raid` command. The 
 
 Use this command to update lemony_friend's response to the `!raid` command. The "no sub" raid message is intended for raid messages which do not use emotes that require a subscription to the channel (accessible to anyone).
 
-- `cli channel redeems` or `cli c r` (array of strings)
-
-Use this command to update the list of commands other bots might respond to. For example, adding `!buy <item>` could allow lemony_friend to use StreamElements loyalty points randomly to redeem store items.
-
 - `cli channel rollFunNumber` or `cli c rfn` (boolean)
 
 By default, lemony_friend posts a random message in chat after another chatter's every Nth message. Use this command to turn on or off this behavior.
@@ -116,15 +112,8 @@ Use this command to change lemony_friend's list of phrases from a first-time cha
 
 Use this command to update the list of usernames lemony_friend will ignore in certain situations. These include welcoming back the user if they haven't spoken in a while, being informed a user is marked as "away" when mentioning them, and being targeted with UndertaleBot, as well as other fun number responses.
 
-- `cli settings realRPS` or `cli s rps` (boolean)
-
-Use this command to swap between real and fake verions of the `!rps` game. In "real" Rock Paper Scissors, the game is played normally. In "fake" Rock Paper Scissors, the player cannot actually win. This is mostly used for fun, or as a prank.
-
 - `cli settings hangmanChances` or `cli s hc` (number)
 Use this command to change the starting number of chances in Hangman (default 6).
-
-- `cli settings chantCount` or `cli s cc` (number)
-Use this command to change the number of times a message is chanted (default 8).
 
 - `cli settings chantEmote` or `cli s ce` (string)
 Use this command to change or remove the emote/emoji used to separate chants (default 👏).
