@@ -1323,7 +1323,7 @@ module.exports = {
         const theftVerbs = [`steal`, `take`, `grab`, `thieve`, `nab`, `pickpocket`, `purloin`, `abscondwith`, `loot`, `pilfer`, `runawaywith`, `runoffwith`, `makeoffwith`]
         const creationVerbs = [`create`, `manufacture`, `generate`, `manifest`, `find`, `givemea`, `build`, `conceive`, `construct`, `devise`, `discover`, `forge`, `form`, `invent`, `produce`, `setup`, `spawn`, `actualize`, `beget`, `compose`, `concoct`, `constitute`, `contrive`, `effect`, `erect`, `fabricate`, `fashion`, `formulate`, `imagine`, `institute`, `procreate`]
         const cleanVerbs = [`clean`, `cleanup`, `cleanse`, `bathe`, `disinfect`, `rinse`, `soak`, `wash`, `washup`, `douse`, `drench`, `hose`, `shower`, `wet`]
-        const touchVerbs = [`touch`, `feel`, `fiddle`, `fiddlewith`, `play`, `playwith`, `fidget`, `fidgetwith`, `tinker`, `tinkerwith`, `mess`, `messwith`, `toy`, `toywith`, `trifle`, `triflewith`, `grope`, `brush`, `finger`, `paw`, `thumb`]
+        const touchVerbs = [`touch`, `feel`, `fiddle`, `fiddlewith`, `play`, `playwith`, `fidget`, `fidgetwith`, `tinker`, `tinkerwith`, `mess`, `messwith`, `toy`, `toywith`, `trifle`, `triflewith`, `grope`, `brush`, `finger`, `paw`, `thumb`, `poke`, `pokeat`, `pick`, `pickat`]
         if (user.lemons === 0
             && (!theftVerbs.includes(verb) || (theftVerbs.includes(verb) && !targetNickname))
             && (!cleanVerbs.includes(verb) || (cleanVerbs.includes(verb) && !targetNickname))
@@ -1682,6 +1682,10 @@ module.exports = {
             'finger': touchLemon,
             'paw': touchLemon,
             'thumb': touchLemon,
+            'poke': touchLemon,
+            'pokeat': touchLemon,
+            'pick': touchLemon,
+            'pickat': touchLemon,
         }
         if (verb in keyVerbs) {
             logMessage([`-> Matched: ${verb} lemon${suffix}:`, `[Function: ${keyVerbs[verb].name}]`])

@@ -1,13 +1,11 @@
 const DEV = process.env.DEV
 const BOT_ID = Number(process.env.BOT_ID)
 const BOT_USERNAME = process.env.BOT_USERNAME
-const COMMON_NICKNAMES = process.env.COMMON_NICKNAMES
-const STARTING_LEMONS = process.env.STARTING_LEMONS
 
 const fs = require(`fs/promises`)
 
 const { makeLogs } = require(`./commands/makeLogs`)
-const { lemonyFresh, users, mods, knownTags, tempCmds } = require(`./data`)
+const { lemonyFresh, users, commonNicknames, startingLemons, mods, knownTags, tempCmds } = require(`./data`)
 const { settings, resetTxt, grayTxt, whiteTxt, yellowBg, chatColors } = require(`./config`)
 
 function getLemonEmote() {
@@ -1292,16 +1290,16 @@ module.exports = {
         }
 
         // Restore lemons
-        const commonNicknames = COMMON_NICKNAMES.split(`,`)
-        const objNicknames = {}
-        for (const [i, e] of commonNicknames.entries()) { if (i % 2 === 0) { objNicknames[e] = commonNicknames[i + 1] } }
-        if (username in objNicknames) { users[username].nickname = objNicknames[username] }
+        if (username in commonNicknames) {
+            users[username].nickname = commonNicknames[username]
+            delete commonNicknames[username]
+        }
 
         // Apply nickname
-        const startingLemons = STARTING_LEMONS.split(`,`)
-        const objLemons = {}
-        for (const [i, e] of startingLemons.entries()) { if (i % 2 === 0) { objLemons[e] = Number(startingLemons[i + 1]) } }
-        if (username in objLemons) { users[username].lemons += objLemons[username] }
+        if (username in startingLemons) {
+            users[username].lemons += startingLemons[username]
+            delete startingLemons[username]
+        }
     },
     initUserChannel(tags, username, channel) {
         logMessage([`> initUserChannel(username: '${username}', channel: '${channel}')`])
@@ -1465,41 +1463,6 @@ module.exports = {
                 ? str.replace(/^[@#]/g, ``)
                 : null
             : null
-    },
-    applyNicknames(props) {
-        const { bot, chatroom } = props
-        logMessage([`> applyNicknames(chatroom: '${chatroom}')`])
-        const nicknames = COMMON_NICKNAMES.split(`,`)
-
-        const updatedUsers = []
-        const skippedUsers = []
-        const unknownUsers = []
-        for (const [i, name] of nicknames.entries()) {
-            if (i % 2 === 0) {
-                const nickname = nicknames[i + 1]
-                if (name in users) {
-                    if (!users[name].nickname) {
-                        users[name].nickname = nickname
-                        updatedUsers.push(nickname)
-                    } else { skippedUsers.push(nickname) }
-                } else { unknownUsers.push(name) }
-            }
-        }
-
-        const response = []
-        if (updatedUsers.length) {
-            logMessage([`-> updatedUsers: ${updatedUsers.join(`, `)}`])
-            response.push(`${updatedUsers.length} updated`)
-        }
-        if (skippedUsers.length) {
-            logMessage([`-> skippedUsers: ${skippedUsers.join(`, `)}`])
-            response.push(`${skippedUsers.length} skipped`)
-        }
-        if (unknownUsers.length) {
-            logMessage([`-> unknownUsers: ${unknownUsers.join(`, `)}`])
-            response.push(`${unknownUsers.length} not known yet`)
-        }
-        bot.say(chatroom, `/me ${response.join(`, `)}`)
     },
     findUserByNickname(str) {
         const nicknames = Object.fromEntries(

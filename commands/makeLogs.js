@@ -34,10 +34,12 @@ const SKITTLE108_ACCESS_TOKEN = process.env.SKITTLE108_ACCESS_TOKEN
 const SKITTLE108_REFRESH_TOKEN = process.env.SKITTLE108_REFRESH_TOKEN
 
 const { settings, wordBank } = require(`../config`)
-const { lemonyFresh, mods, users, knownTags, tempCmds } = require(`../data`)
+const { lemonyFresh, mods, users, knownTags, tempCmds, startingLemons, commonNicknames } = require(`../data`)
 
 function renderObj(obj, objName, indentation = ``) {
     const tab = `${indentation}\t`
+    if (!Object.keys(obj).length) { return `${objName}: {}` }
+
     const data = [`${objName}: {`]
     if (Object.keys(obj).length) {
         const keys = `\n${Object.keys(obj).map((key) => {
@@ -55,6 +57,7 @@ function renderObj(obj, objName, indentation = ``) {
         data.push(keys)
     }
     data.push(`\n${indentation}}`)
+
     return data.join(``)
 }
 
@@ -122,6 +125,22 @@ function makeLogs(arr) {
     for (const [obj, objName] of objectsToLog) {
         logs += `${renderObj(obj, objName)}\n\n`
     }
+
+    const listUserLemons = Object.keys(users)
+        .map(user => { return [user, users[user].lemons] })
+        .filter(el => el[1])
+        .concat(Object.keys(startingLemons).map(key => { return [key, startingLemons[key]] }))
+        .sort()
+        .join()
+    logs += `lemons: '${listUserLemons}'\n\n`
+
+    const listUserNicknames = Object.keys(users)
+        .map(user => { return [user, users[user].nickname] })
+        .filter(el => el[1])
+        .concat(Object.keys(commonNicknames).map(key => { return [key, commonNicknames[key]] }))
+        .sort()
+        .join()
+    logs += `nicknames: '${listUserNicknames}'\n\n`
 
     // If any tokens have changed, print a footer
     const anyTokenChange = lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN
