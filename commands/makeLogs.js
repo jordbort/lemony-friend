@@ -38,6 +38,8 @@ const { lemonyFresh, mods, users, knownTags, tempCmds, startingLemons, commonNic
 
 function renderObj(obj, objName, indentation = ``) {
     const tab = `${indentation}\t`
+    if (!Object.keys(obj).length) { return `${objName}: {}` }
+
     const data = [`${objName}: {`]
     if (Object.keys(obj).length) {
         const keys = `\n${Object.keys(obj).map((key) => {
@@ -55,6 +57,7 @@ function renderObj(obj, objName, indentation = ``) {
         data.push(keys)
     }
     data.push(`\n${indentation}}`)
+
     return data.join(``)
 }
 
