@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 const { settings } = require(`../config`)
 const { lemonyFresh, users } = require(`../data`)
-const { pluralize, getHypeEmote, getPositiveEmote, getUpsetEmote, getNegativeEmote, logMessage, getNeutralEmote } = require(`../utils`)
+const { pluralize, getHypeEmote, getPositiveEmote, getUpsetEmote, getNegativeEmote, logMessage, getNeutralEmote, arrToList } = require(`../utils`)
 
 async function getRandomWord() {
     logMessage([`> getRandomWord()`])
@@ -145,25 +145,17 @@ module.exports = {
         const hangman = lemonyFresh[channel].hangman
 
         // Already guessed letter
-        const guessLetters = hangman.guessedLetters
-        if (guessLetters.includes(guess)) {
-            const listOfLetters = guessLetters.map((letter, i) => {
-                if (i === guessLetters.length - 1 && i !== 0) { letter = `and ${letter}` }
-                return letter
-            })
+        if (hangman.guessedLetters.includes(guess)) {
             return bot.say(chatroom,
-                `${userNickname}, the letter${guessLetters.length === 1
+                `${userNickname}, the letter${hangman.guessedLetters.length === 1
                     ? ``
                     : `s`
-                } ${listOfLetters.length > 2
-                    ? listOfLetters.join(`, `)
-                    : listOfLetters.join(` `)
-                } ${guessLetters.length === 1
+                } ${arrToList(hangman.guessedLetters)} ${hangman.guessedLetters.length === 1
                     ? `has`
                     : `have`} already been guessed - try again!`
             )
         }
-        guessLetters.push(guess)
+        hangman.guessedLetters.push(guess)
 
         // Set up for next round
         hangman.currentPlayer++

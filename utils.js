@@ -1277,6 +1277,15 @@ module.exports = {
             ? str.replace(/^[@#]/g, ``).toLowerCase()
             : null
     },
+    arrToList(arr) {
+        return arr
+            .map((element, idx) => idx !== 0 && idx + 1 === arr.length
+                ? `and ${element}`
+                : element)
+            .join(arr.length > 2
+                ? `, `
+                : ` `)
+    },
     initUser(tags, self) {
         const username = tags.username
         logMessage([`> initUser(tags.username: '${tags.username}')`])
