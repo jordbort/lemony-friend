@@ -8,6 +8,7 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
+            `Added variables and arguments to tempcmds`,
             `Created !convert for unit conversion`,
             `Made !time zone and locale easier to use`,
             `Updated CLI settings`,
