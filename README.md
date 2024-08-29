@@ -54,6 +54,7 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!goodbye` (or `!bye` or `!gn` or `!goodnight`) - This command can be used to say good night to a user leaving chat.
 - `!dadjoke` - This command gets a random joke from a [Dad Joke API](https://icanhazdadjoke.com/api).
 - `!pokemon` - This command can be used to get useful information about a Pokémon from a [Pokémon API](https://pokeapi.co/).
+- `!convert` - This command can be used to convert measurements of temperature, length, weight, and volume from one unit to another. The syntax is `!convert <number> <fromUnit> <toUnit>`. Approximate values are used for imperial versus metric units, so there may be some small inconsistencies. For weight units, there is a distinction between a metric ton, US (short) ton, and UK (long) ton. For volume units, imperial cup measurements are used except when converting to metric, in which case the legal US cup is used. The US fluid ounce is also used, rather than the imperial fluid ounce measurement.
 
 ## Command Lemon Interface 🍋️
 If lemony_friend is present in your Twitch channel, or you are a moderator of a channel where lemony_friend is present, you are able to use the command `cli` to adjust lemony_friend's settings and data.
@@ -112,9 +113,12 @@ Use this command to change lemony_friend's list of phrases from a first-time cha
 
 Use this command to update the list of usernames lemony_friend will ignore in certain situations. These include welcoming back the user if they haven't spoken in a while, being informed a user is marked as "away" when mentioning them, and being targeted with UndertaleBot, as well as other fun number responses.
 
-- `cli settings hangmanChances` or `cli s hc` (number)
-Use this command to change the starting number of chances in Hangman (default 6).
+- `cli settings pokeballQuantity` or `cli s pq` (number)
+Use this command to change the amount of pokeballs lemony_friend will attempt to purchase if PokemonCommunityGame says it doesn't have pokeballs (default 100). This can be used to help lemony_friend avoid a loop of continually trying and failing to use pokeballs and purchasing them when it runs out and can't afford to purchase the quantity currently set.
 
 - `cli settings chantEmote` or `cli s ce` (string)
 Use this command to change or remove the emote/emoji used to separate chants (default 👏).
+
+- `cli settings hangmanChances` or `cli s hc` (number)
+Use this command to change the starting number of chances in Hangman (default 6).
 
