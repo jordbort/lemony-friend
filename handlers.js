@@ -207,7 +207,21 @@ module.exports = {
         // Check for tempCmd
         if (command in tempCmds) {
             logMessage([`MATCHED TEMPORARY COMMAND: ${command} ${tempCmds[command]}`])
-            return this.say(chatroom, tempCmds[command])
+            const response = tempCmds[command]
+                .replace(/\{user\}/i, users[username].displayName)
+                .replace(/\{touser\}/i, users[toUser]?.displayName || args[0] || users[username].displayName)
+                .replace(/\{usernn\}/i, users[username].nickname || users[username].displayName)
+                .replace(/\{tousernn\}/i, users[toUser]?.nickname || users[toUser]?.displayName || args[0] || users[username].nickname || users[username].displayName)
+                .replace(/\{1\}/i, args[0])
+                .replace(/\{2\}/i, args[1])
+                .replace(/\{3\}/i, args[2])
+                .replace(/\{4\}/i, args[3])
+                .replace(/\{5\}/i, args[4])
+                .replace(/\{6\}/i, args[5])
+                .replace(/\{7\}/i, args[6])
+                .replace(/\{8\}/i, args[7])
+                .replace(/\{9\}/i, args[8])
+            return this.say(chatroom, response)
         }
 
         // Listening for a message to be repeated by at least two other users
