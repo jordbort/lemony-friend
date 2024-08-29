@@ -54,6 +54,7 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!goodbye` (or `!bye` or `!gn` or `!goodnight`) - This command can be used to say good night to a user leaving chat.
 - `!dadjoke` - This command gets a random joke from a [Dad Joke API](https://icanhazdadjoke.com/api).
 - `!pokemon` - This command can be used to get useful information about a Pokémon from a [Pokémon API](https://pokeapi.co/).
+- `!convert` - This command can be used to convert measurements of temperature, length, weight, and volume from one unit to another. The syntax is `!convert <number> <fromUnit> <toUnit>`. Approximate values are used for imperial versus metric units, so there may be some small inconsistencies. For weight units, there is a distinction between a metric ton, US (short) ton, and UK (long) ton. For volume units, imperial cup measurements are used except when converting to metric, in which case the legal US cup is used. The US fluid ounce is also used, rather than the imperial fluid ounce measurement.
 
 ## Command Lemon Interface 🍋️
 If lemony_friend is present in your Twitch channel, or you are a moderator of a channel where lemony_friend is present, you are able to use the command `cli` to adjust lemony_friend's settings and data.
@@ -64,7 +65,7 @@ Use `cli channel` or `cli c` to access settings for the current channel (if you 
 - `cli channel timers <timer_name> cooldown` or `cli c t <timer_name> cd`
 - `cli channel timers <timer_name> listening` or `cli c t <timer_name> l`
 
-Use this command to adjust the cooldown and "listening" status of timers for bot commands and replies, such as `!so` and `!raid`, etc. Having a cooldown prevents the same command from being responded to multiple times within that time period. Changing the "listening" status of a command or reply type to `false` prevents the bot from acknowledging the message. For example, if you already have a bot in your channel that handles shoutouts, and don't want lemony_friend to give them, you can use `cli channel timer !so listening false` to disable this behavior.
+Use this command to adjust the cooldown and "listening" status of timers for bot commands and reply types. Having a cooldown prevents the same command from being responded to multiple times within that time period. Changing the "listening" status of a command or reply type to `false` prevents the bot from acknowledging the message. For example, if you already have a bot in your channel that handles shoutouts, and don't want lemony_friend to give them, you can use `cli channel timer !so listening false` to disable this behavior. Here is a current list of all timers that can be adjusted and/or enabled/disabled: `!so` The command for giving shoutouts, `!raid` The command for saying the raid message(s), `!count` The command for viewing/adjusting the count, `streak` Listening for message/emote streaks, `new-chatter` Greeting new chatters in a chatroom (does not include spam detection), `greet` Saying hi to one user, `mass-greet` Saying hi to multiple users, `say-goodnight` Saying bye/goodnight to a user, `say-thanks` Saying thanks to a user, `say-youre-welcome` Saying you're welcome to a user, `say-mood` Responding to "how are you" messages
 
 - `cli channel emotes` or `cli c e` (array of strings)
 
@@ -81,10 +82,6 @@ Use this command to update lemony_friend's response to the `!raid` command. The 
 - `cli channel noSubRaidMessage` or `cli c nsrm` (string)
 
 Use this command to update lemony_friend's response to the `!raid` command. The "no sub" raid message is intended for raid messages which do not use emotes that require a subscription to the channel (accessible to anyone).
-
-- `cli channel redeems` or `cli c r` (array of strings)
-
-Use this command to update the list of commands other bots might respond to. For example, adding `!buy <item>` could allow lemony_friend to use StreamElements loyalty points randomly to redeem store items.
 
 - `cli channel rollFunNumber` or `cli c rfn` (boolean)
 
@@ -116,16 +113,12 @@ Use this command to change lemony_friend's list of phrases from a first-time cha
 
 Use this command to update the list of usernames lemony_friend will ignore in certain situations. These include welcoming back the user if they haven't spoken in a while, being informed a user is marked as "away" when mentioning them, and being targeted with UndertaleBot, as well as other fun number responses.
 
-- `cli settings realRPS` or `cli s rps` (boolean)
-
-Use this command to swap between real and fake verions of the `!rps` game. In "real" Rock Paper Scissors, the game is played normally. In "fake" Rock Paper Scissors, the player cannot actually win. This is mostly used for fun, or as a prank.
-
-- `cli settings hangmanChances` or `cli s hc` (number)
-Use this command to change the starting number of chances in Hangman (default 6).
-
-- `cli settings chantCount` or `cli s cc` (number)
-Use this command to change the number of times a message is chanted (default 8).
+- `cli settings pokeballQuantity` or `cli s pq` (number)
+Use this command to change the amount of pokeballs lemony_friend will attempt to purchase if PokemonCommunityGame says it doesn't have pokeballs (default 100). This can be used to help lemony_friend avoid a loop of continually trying and failing to use pokeballs and purchasing them when it runs out and can't afford to purchase the quantity currently set.
 
 - `cli settings chantEmote` or `cli s ce` (string)
 Use this command to change or remove the emote/emoji used to separate chants (default 👏).
+
+- `cli settings hangmanChances` or `cli s hc` (number)
+Use this command to change the starting number of chances in Hangman (default 6).
 
