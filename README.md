@@ -54,6 +54,7 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!goodbye` (or `!bye` or `!gn` or `!goodnight`) - This command can be used to say good night to a user leaving chat.
 - `!dadjoke` - This command gets a random joke from a [Dad Joke API](https://icanhazdadjoke.com/api).
 - `!pokemon` - This command can be used to get useful information about a Pokémon from a [Pokémon API](https://pokeapi.co/).
+- `!ability` - This command can be used to get the description of a Pokémon ability from a [Pokémon API](https://pokeapi.co/).
 - `!convert` - This command can be used to convert measurements of temperature, length, weight, and volume from one unit to another. The syntax is `!convert <number> <fromUnit> <toUnit>`. Approximate values are used for imperial versus metric units, so there may be some small inconsistencies. For weight units, there is a distinction between a metric ton, US (short) ton, and UK (long) ton. For volume units, imperial cup measurements are used except when converting to metric, in which case the legal US cup is used. The US fluid ounce is also used, rather than the imperial fluid ounce measurement.
 
 ## Command Lemon Interface 🍋️
