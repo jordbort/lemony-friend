@@ -211,5 +211,27 @@ module.exports = {
         if (immuneTo.length > 0) { reply += `No effect to ${immuneTo.join(`/`)}-type Pokemon. ` }
         if (immuneFrom.length > 0) { reply += `No effect from ${immuneFrom.join(`/`)}-type moves.` }
         bot.say(chatroom, reply)
+    },
+    async getPokemonAbility(props) {
+        const { bot, chatroom, args, channel } = props
+        const ability = args.join(`-`).toLowerCase()
+        const negativeEmote = getNegativeEmote(channel)
+
+        logMessage([`> getPokemon(chatroom: ${chatroom}, ability: '${ability}')`])
+
+        if (!ability) {
+            logMessage([`-> No ability provided`])
+            return
+        }
+
+        const response = await fetch(`https://pokeapi.co/api/v2/ability/${ability}`)
+        if (response.status === 404) {
+            bot.say(chatroom, `Ability not found! ${negativeEmote}`)
+            return
+        }
+
+        const data = await response.json()
+        const enEffect = data.effect_entries[1].effect.replace(/\n+/g, ` `)
+        bot.say(chatroom, enEffect)
     }
 }
