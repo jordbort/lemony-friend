@@ -21,6 +21,7 @@ const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListen
 module.exports = {
     onConnectedHandler(addr, port) {
         settings.firstConnection && printLemon()
+        settings.firstConnection && logMessage([`Session started: ${settings.startDate.toLocaleDateString(`en-US`, { weekday: `long`, month: `long`, day: `numeric`, year: `numeric`, timeZone: settings.timeZone })} at ${settings.startDate.toLocaleTimeString(`en-US`, { hour: `numeric`, minute: `numeric`, second: `numeric`, timeZone: settings.timeZone, timeZoneName: `short` })}`])
         const time = new Date().toLocaleTimeString(settings.timeLocale, { timeZone: settings.timeZone })
         settings.firstConnection
             ? logMessage([`[${time}] 🍋 Connected to ${addr}:${port}`])
