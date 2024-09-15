@@ -8,15 +8,8 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Added command for Pokemon abilities`,
-            `Added variables and arguments to tempcmds`,
-            `Created !convert for unit conversion`,
-            `Made !time zone and locale easier to use`,
-            `Updated CLI settings`,
-            `More uses for lemons`,
-            `Implemented system for applying nicknames and starting lemons`,
-            `Updated emotes`,
-            `Updated count naming system`
+            `Fixed !ability command bug`,
+            `Added !balloons to JPEGSTRIPES redemptions`
         ]
 
         const timeOptions = {
