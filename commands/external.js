@@ -214,24 +214,38 @@ module.exports = {
     },
     async getPokemonAbility(props) {
         const { bot, chatroom, args, channel } = props
-        const ability = args.join(`-`).toLowerCase()
+        const abilityName = args.join(`-`).toLowerCase().replace(/'/g, ``)
         const negativeEmote = getNegativeEmote(channel)
 
-        logMessage([`> getPokemon(chatroom: ${chatroom}, ability: '${ability}')`])
+        logMessage([`> getPokemonAbility(chatroom: ${chatroom}, abilityName: '${abilityName}')`])
+        if (!abilityName) { return logMessage([`-> No ability provided`]) }
 
-        if (!ability) {
-            logMessage([`-> No ability provided`])
-            return
+        // Special cases
+        if (abilityName === `as-one`) {
+            const message = `Combines Unnerve (Makes the foe nervous and unable to eat Berries) and Chilling Neigh (Boosts Attack after knocking out a Pokémon)/Grim Neigh (Boosts Special Attack after knocking out a Pokémon)`
+            return bot.say(chatroom, message)
+        }
+        if (abilityName === `forewarn`) {
+            const message = `When this Pokémon enters battle, it reveals the move with the highest base power known by any opposing Pokémon to all participating trainers. In the event of a tie, one is chosen at random. Moves without a listed base power are assigned one as follows: One-hit KO moves (160), Counter moves (120), Variable power or set damage (80), Any such move not listed (0)`
+            return bot.say(chatroom, message)
         }
 
-        const response = await fetch(`https://pokeapi.co/api/v2/ability/${ability}`)
-        if (response.status === 404) {
-            bot.say(chatroom, `Ability not found! ${negativeEmote}`)
-            return
+        const response = await fetch(`https://pokeapi.co/api/v2/ability/${abilityName}`)
+        if (response.status !== 200) {
+            logMessage([`-> ${response.status}: ${response.statusText}`])
+            return bot.say(chatroom, `Ability "${args.join(` `)}" not found! ${negativeEmote}`)
         }
 
         const data = await response.json()
-        const enEffect = data.effect_entries[1].effect.replace(/\n+/g, ` `)
-        bot.say(chatroom, enEffect)
+        if (data.effect_entries.length) {
+            const message = data.effect_entries.filter(el => el.language.name === `en`)[0].effect.replace(/\n+/g, ` `).replace(/ +/g, ` `)
+            bot.say(chatroom, message)
+        } else {
+            logMessage([`-> No effect entries for`, args.join(` `), data.flavor_text_entries.length, `total flavor text entries`])
+            if (data.flavor_text_entries.length) {
+                const message = data.flavor_text_entries.filter(el => el.language.name === `en`)[0].flavor_text.replace(/\n+/g, ` `).replace(/ +/g, ` `)
+                bot.say(chatroom, message)
+            }
+        }
     }
 }
