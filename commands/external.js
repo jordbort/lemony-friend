@@ -89,16 +89,13 @@ module.exports = {
         const pokemon = args[0]?.toLowerCase()
         logMessage([`> getPokemon(chatroom: ${chatroom}, pokemon: ${pokemon})`])
 
-        if (!pokemon) {
-            logMessage([`-> No Pokemon provided`])
-            return
-        }
+        if (!pokemon) { return logMessage([`-> No Pokemon provided`]) }
 
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`)
         const negativeEmote = getNegativeEmote(channel)
-        if (response.statusText !== `OK`) {
-            bot.say(chatroom, `Pokemon ${pokemon} was not found! ${negativeEmote}`)
-            return
+        if (response.status !== 200) {
+            logMessage([`-> ${response.status}: ${response.statusText}`])
+            return bot.say(chatroom, `Pokémon "${pokemon}" was not found! ${negativeEmote}`)
         }
         const data = await response.json()
 
@@ -195,13 +192,13 @@ module.exports = {
         }
 
         if (settings.debug) {
-            console.log(`nullify:`, nullify)
-            console.log(`doubleDamageTo:`, doubleDamageTo)
-            console.log(`doubleDamageFrom:`, doubleDamageFrom)
-            console.log(`halfDamageTo:`, halfDamageTo)
-            console.log(`halfDamageFrom:`, halfDamageFrom)
-            console.log(`immuneTo:`, immuneTo)
-            console.log(`immuneFrom:`, immuneFrom)
+            logMessage([`nullify:`, nullify])
+            logMessage([`doubleDamageTo:`, doubleDamageTo])
+            logMessage([`doubleDamageFrom:`, doubleDamageFrom])
+            logMessage([`halfDamageTo:`, halfDamageTo])
+            logMessage([`halfDamageFrom:`, halfDamageFrom])
+            logMessage([`immuneTo:`, immuneTo])
+            logMessage([`immuneFrom:`, immuneFrom])
         }
 
         if (doubleDamageTo.length > 0) { reply += `Super effective to ${doubleDamageTo.join(`/`)}-type Pokemon. ` }
