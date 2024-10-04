@@ -18,6 +18,7 @@ module.exports = {
         } else if (/^rename$/i.test(args[0])) {
             if (!(args[1].toLowerCase() in tempCmds)) { return bot.say(chatroom, `No command "${args[1].toLowerCase()}" was found! ${negativeEmote}`) }
             if (!args[2]) { return bot.say(chatroom, `Hey ${userNickname}, I need to know what you want me to rename ${args[1].toLowerCase()} to! :O`) }
+            if (args[2].toLowerCase() in tempCmds) {return bot.say(chatroom, `A command called ${args[2].toLowerCase()} already exists! Try deleting or editing it! ${negativeEmote}`) }
             tempCmds[args[2].toLowerCase()] = tempCmds[args[1].toLowerCase()]
             delete tempCmds[args[1].toLowerCase()]
             bot.say(chatroom, `Command "${args[1].toLowerCase()}" has been renamed to "${args[2].toLowerCase()}"! ${positiveEmote}`)

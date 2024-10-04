@@ -1,7 +1,38 @@
 const DEV = process.env.DEV
 const { settings } = require(`../config`)
 const { lemonyFresh, users } = require(`../data`)
+const { validTimeZones, validLocales } = require(`../commands/time`)
 const { getLemonEmote, getToUser, pluralize, logMessage } = require(`../utils`)
+
+function updateTimeZone(bot, chatroom, obj, message, name, args) {
+    logMessage([`> updateTimeZone(chatroom: '${chatroom}', name: '${name}', args:`, args.join(`, `), `)`])
+    const input = args.join(` `)
+
+    for (const timeZone of Object.keys(validTimeZones)) {
+        const regex = new RegExp(timeZone.split(`/`).slice(1, timeZone.split(`/`).length - 1).join(`/`), timeZone.split(`/`)[timeZone.split(`/`).length - 1])
+        if (regex.test(input)) {
+            obj[name] = validTimeZones[regex]
+            return bot.say(chatroom, `/me ${message} set to: ${obj[name]}`)
+        }
+    }
+
+    bot.say(chatroom, `/me ${message} must be a valid timezone (currently: ${obj[name]})`)
+}
+
+function updateTimeLocale(bot, chatroom, obj, message, name, args) {
+    logMessage([`> updateTimeLocale(chatroom: '${chatroom}', name: '${name}', args:`, args.join(`, `), `)`])
+    const input = args.join(` `)
+
+    for (const locale of Object.keys(validLocales)) {
+        const regex = new RegExp(locale.split(`/`).slice(1, locale.split(`/`).length - 1).join(`/`), locale.split(`/`)[locale.split(`/`).length - 1])
+        if (regex.test(input)) {
+            obj[name] = validLocales[regex]
+            return bot.say(chatroom, `/me ${message} set to: ${obj[name]}`)
+        }
+    }
+
+    bot.say(chatroom, `/me ${message} must be a valid time locale (currently: ${obj[name]})`)
+}
 
 function updateBool(bot, chatroom, obj, message, name, args) {
     logMessage([`> updateBool(chatroom: '${chatroom}', name: '${name}', args:`, args.join(`, `), `)`])
@@ -299,15 +330,16 @@ function updateSettingsDev(props, args) {
     }
 
     const options = {
+        [/^autoBan$|^ab$/i]: { name: `autoBan`, func: updatePhraseArr },
+        [/^ignoredBots$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
+        [/^pokeballQuantity$|^pq$/i]: { name: `pokeballQuantity`, func: updateNum },
         [/^debug$|^d$/i]: { name: `debug`, func: updateBool },
-        [/^timeLocale$|^tl$/i]: { name: `timeLocale`, func: updateStr },
-        [/^timeZone$|^tz$/i]: { name: `timeZone`, func: updateStr },
+        [/^timeZone$|^tz$/i]: { name: `timeZone`, func: updateTimeZone },
+        [/^timeLocale$|^tl$/i]: { name: `timeLocale`, func: updateTimeLocale },
         // [/^joinMessage$|^jm$/i]: { name: `joinMessage`, func: updateStr },
         // [/^highlightBotMessage$|^hbm$/i]: { name: `highlightBotMessage`, func: updateBool },
         // [/^logTime$|^lt$/i]: { name: `logTime`, func: updateBool },
         // [/^hideNonDevChannel$|^hndc$/i]: { name: `hideNonDevChannel`, func: updateBool },
-        [/^autoBan$|^ab$/i]: { name: `autoBan`, func: updatePhraseArr },
-        [/^ignoredBots$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
         // [/^sayJoinMessage$|^sjm$/i]: { name: `sayJoinMessage`, func: updateBool },
         // [/^sayPartMessage$|^spm$/i]: { name: `sayPartMessage`, func: updateBool },
         [/^realRPS$|^rps$/i]: { name: `realRPS`, func: updateBool },
@@ -332,8 +364,7 @@ function updateSettingsDev(props, args) {
         }
     }
 
-    // bot.say(chatroom, `/me Options for "settings": debug (d), timeLocale (tl), timeZone (tz), joinMessage (jm), highlightBotMessage (hbm), logTime (lt), hideNonDevChannel (hndc), autoBan (ab), ignoredBots (ib), sayJoinMessage (sjm), sayPartMessage (spm), realRPS (rps), funNumberCount (fnc), funNumberTotal (fnt), streakThreshold (st), streamerEmoteStreakThreshold (sest), hangmanSignupSeconds (hss), hangmanChances (hc), hangmanLemonThreshold (hlt), chantCount (cc), chantEmote (ce), baseEmotes (be), botMood (m)`)
-    bot.say(chatroom, `/me Options for "settings": debug (d), timeLocale (tl), timeZone (tz), autoBan (ab), ignoredBots (ib), realRPS (rps), funNumberCount (fnc), funNumberTotal (fnt), streakThreshold (st), streamerEmoteStreakThreshold (sest), hangmanSignupSeconds (hss), hangmanChances (hc), hangmanLemonThreshold (hlt), chantCount (cc), chantEmote (ce), baseEmotes (be), botMood (m)`)
+    bot.say(chatroom, `/me Options for "settings": autoBan (ab), ignoredBots (ib), pokeballQuantity (pq), debug (d), timeZone (tz), timeLocale (tl), realRPS (rps), funNumberCount (fnc), funNumberTotal (fnt), streakThreshold (st), streamerEmoteStreakThreshold (sest), hangmanSignupSeconds (hss), hangmanChances (hc), hangmanLemonThreshold (hlt), chantCount (cc), chantEmote (ce), baseEmotes (be), botMood (m)`)
 }
 
 function updateSettings(props, args) {
@@ -344,8 +375,9 @@ function updateSettings(props, args) {
     const options = {
         [/^autoBan$|^ab$/i]: { name: `autoBan`, func: updatePhraseArr },
         [/^ignoredBots$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
-        [/^hangmanChances$|^hc$/i]: { name: `hangmanChances`, func: updateNum },
-        [/^chantEmote$|^ce$/i]: { name: `chantEmote`, func: updateStr }
+        [/^pokeballQuantity$|^pq$/i]: { name: `pokeballQuantity`, func: updateNum },
+        [/^chantEmote$|^ce$/i]: { name: `chantEmote`, func: updateStr },
+        [/^hangmanChances$|^hc$/i]: { name: `hangmanChances`, func: updateNum }
     }
 
     for (const option in options) {
@@ -357,7 +389,7 @@ function updateSettings(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for "settings": autoBan (ab), ignoredBots (ib), hangmanChances (hc), chantEmote (ce)`)
+    bot.say(chatroom, `/me Options for "settings": autoBan (ab), ignoredBots (ib), pokeballQuantity (pq), chantEmote (ce), hangmanChances (hc)`)
 }
 
 function updateBaseEmotesDev(bot, chatroom, args) {
