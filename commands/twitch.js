@@ -642,26 +642,29 @@ module.exports = {
         const twitchData = await response.json()
 
         if (response.status === 401) {
-            logMessage([`autoBanUser`, response.status, renderObj(twitchData, `twitchData`)])
+            logMessage([`> autoBanUser`, response.status, renderObj(twitchData, `twitchData`)])
             logMessage([`-> Unauthorized from autoBanUser(), attempting to refresh access token...`])
             await refreshToken({ bot: bot, chatroom: chatroom, channel: channel, username: channel, toUser: null }, false)
             options.headers.authorization = `Bearer ${lemonyFresh[channel].accessToken}`
             const finalAttempt = await fetch(endpoint, options)
             const finalAttemptData = await finalAttempt.json()
             if (finalAttempt.status !== 200) {
-                logMessage([`autoBanUser`, finalAttempt.status, renderObj(finalAttemptData, `finalAttemptData`)])
+                logMessage([`-> autoBanUser`, finalAttempt.status, renderObj(finalAttemptData, `finalAttemptData`)])
                 logMessage([`--> autoBanUser() failed a second time:`])
                 return bot.say(chatroom, `Failed to ban user! ${finalAttemptData?.message || `Please update your token scope by using !access again!`} ${negativeEmote}`)
             }
             else {
-                logMessage([`autoBanUser`, finalAttempt.status, renderObj(finalAttemptData.data[0], `finalAttemptData.data[0]`)])
+                logMessage([`-> autoBanUser`, finalAttempt.status, renderObj(finalAttemptData.data[0], `finalAttemptData.data[0]`)])
                 bot.say(chatroom, `Begone, spammer! ${greetingEmote}`)
             }
         } else if (response.status === 200) {
-            logMessage([`autoBanUser`, response.status, renderObj(twitchData.data[0], `twitchData.data[0]`)])
+            logMessage([`> autoBanUser`, response.status, renderObj(twitchData.data[0], `twitchData.data[0]`)])
             bot.say(chatroom, `Begone, spammer! ${greetingEmote}`)
         } else {
-            bot.say(chatroom, `Failed to ban ${users[username].displayName} automatically... ${dumbEmote} ${twitchData?.message || `Please update your token scope by using !access again!`}`)
+            logMessage([`> autoBanUser`, response.status, renderObj(twitchData, `twitchData`)])
+            if (twitchData?.message !== `The user specified in the user_id field is already banned.`) {
+                bot.say(chatroom, `Failed to ban ${users[username].displayName} automatically... ${dumbEmote} ${twitchData?.message || `Please update your token scope by using !access again!`}`)
+            }
         }
 
         // delete users[username]

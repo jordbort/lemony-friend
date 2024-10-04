@@ -73,6 +73,7 @@ const settings = {
     hangmanLemonThreshold: 2,
     chantCount: 8,
     chantEmote: `👏️`,
+    pokeballQuantity: 50,
     ignoredBots: [
         BOT_USERNAME,
         `blerp`,

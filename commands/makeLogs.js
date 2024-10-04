@@ -126,21 +126,21 @@ function makeLogs(arr) {
         logs += `${renderObj(obj, objName)}\n\n`
     }
 
-    const listUserLemons = Object.keys(users)
-        .map(user => { return [user, users[user].lemons] })
-        .filter(el => el[1])
-        .concat(Object.keys(startingLemons).map(key => { return [key, startingLemons[key]] }))
-        .sort()
-        .join()
-    logs += `lemons: '${listUserLemons}'\n\n`
-
     const listUserNicknames = Object.keys(users)
         .map(user => { return [user, users[user].nickname] })
         .filter(el => el[1])
         .concat(Object.keys(commonNicknames).map(key => { return [key, commonNicknames[key]] }))
         .sort()
         .join()
-    logs += `nicknames: '${listUserNicknames}'\n\n`
+    logs += `COMMON_NICKNAMES='${listUserNicknames}'\n\n`
+
+    const listUserLemons = Object.keys(users)
+        .map(user => { return [user, users[user].lemons] })
+        .filter(el => el[1])
+        .concat(Object.keys(startingLemons).map(key => { return [key, startingLemons[key]] }))
+        .sort()
+        .join()
+    logs += `STARTING_LEMONS='${listUserLemons}'\n\n`
 
     // If any tokens have changed, print a footer
     const anyTokenChange = lemonyFresh.botAccessToken !== BOT_ACCESS_TOKEN

@@ -1,5 +1,6 @@
 const { getTime } = require(`./time`)
 const { useCount } = require(`./count`)
+const { convert } = require(`./convert`)
 const { sayGoals } = require(`./sayGoals`)
 const { rockPaperScissors } = require(`./rps`)
 const { handleLemonify } = require(`./lemonify`)
@@ -7,7 +8,7 @@ const { lemonTopThree } = require(`./lemonRank`)
 const { handleTempCmd, getTempCmds } = require(`./tempCmds`)
 const { sayCommands, getDocs, getStats } = require(`./help`)
 const { manageHangman, joinHangman } = require(`../patterns/hangman`)
-const { getDadJoke, getPokemon, getDefinition } = require(`./external`)
+const { getDadJoke, getPokemon, getDefinition, getPokemonAbility } = require(`./external`)
 const { insultUser, manageVerbs, manageNouns, manageAdjectives } = require(`./insult`)
 const { sayGoodnight, handleGreet, chant, handleRaid, setAway, yell } = require(`./conversation`)
 const { getLastMessage, getMessageCount, sayOnlineTime, sayFriends, getColor, getLemons } = require(`./getInfo`)
@@ -37,6 +38,8 @@ module.exports = {
     '!banusers': banUsers,
 
     '!count': useCount,
+
+    '!convert': convert,
 
     '!time': getTime,
 
@@ -108,7 +111,9 @@ module.exports = {
     '!brb': setAway,
 
     '!dadjoke': getDadJoke,
+
     '!pokemon': getPokemon,
+    '!ability': getPokemonAbility,
 
     '!define': getDefinition,
     '!definition': getDefinition,

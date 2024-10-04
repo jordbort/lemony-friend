@@ -195,7 +195,8 @@ const lemonyFresh = {
             `!turbomaxwaste`,
             `!where`,
             `!luigi`,
-            `!water`
+            `!water`,
+            `!balloon`
         ],
     },
     sclarf: {

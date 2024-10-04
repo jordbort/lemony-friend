@@ -89,16 +89,13 @@ module.exports = {
         const pokemon = args[0]?.toLowerCase()
         logMessage([`> getPokemon(chatroom: ${chatroom}, pokemon: ${pokemon})`])
 
-        if (!pokemon) {
-            logMessage([`-> No Pokemon provided`])
-            return
-        }
+        if (!pokemon) { return logMessage([`-> No Pokemon provided`]) }
 
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`)
         const negativeEmote = getNegativeEmote(channel)
-        if (response.statusText !== `OK`) {
-            bot.say(chatroom, `Pokemon ${pokemon} was not found! ${negativeEmote}`)
-            return
+        if (response.status !== 200) {
+            logMessage([`-> ${response.status}: ${response.statusText}`])
+            return bot.say(chatroom, `Pokémon "${pokemon}" was not found! ${negativeEmote}`)
         }
         const data = await response.json()
 
@@ -195,13 +192,13 @@ module.exports = {
         }
 
         if (settings.debug) {
-            console.log(`nullify:`, nullify)
-            console.log(`doubleDamageTo:`, doubleDamageTo)
-            console.log(`doubleDamageFrom:`, doubleDamageFrom)
-            console.log(`halfDamageTo:`, halfDamageTo)
-            console.log(`halfDamageFrom:`, halfDamageFrom)
-            console.log(`immuneTo:`, immuneTo)
-            console.log(`immuneFrom:`, immuneFrom)
+            logMessage([`nullify:`, nullify])
+            logMessage([`doubleDamageTo:`, doubleDamageTo])
+            logMessage([`doubleDamageFrom:`, doubleDamageFrom])
+            logMessage([`halfDamageTo:`, halfDamageTo])
+            logMessage([`halfDamageFrom:`, halfDamageFrom])
+            logMessage([`immuneTo:`, immuneTo])
+            logMessage([`immuneFrom:`, immuneFrom])
         }
 
         if (doubleDamageTo.length > 0) { reply += `Super effective to ${doubleDamageTo.join(`/`)}-type Pokemon. ` }
@@ -211,5 +208,41 @@ module.exports = {
         if (immuneTo.length > 0) { reply += `No effect to ${immuneTo.join(`/`)}-type Pokemon. ` }
         if (immuneFrom.length > 0) { reply += `No effect from ${immuneFrom.join(`/`)}-type moves.` }
         bot.say(chatroom, reply)
+    },
+    async getPokemonAbility(props) {
+        const { bot, chatroom, args, channel } = props
+        const abilityName = args.join(`-`).toLowerCase().replace(/'/g, ``)
+        const negativeEmote = getNegativeEmote(channel)
+
+        logMessage([`> getPokemonAbility(chatroom: ${chatroom}, abilityName: '${abilityName}')`])
+        if (!abilityName) { return logMessage([`-> No ability provided`]) }
+
+        // Special cases
+        if (abilityName === `as-one`) {
+            const message = `Combines Unnerve (Makes the foe nervous and unable to eat Berries) and Chilling Neigh (Boosts Attack after knocking out a Pokémon)/Grim Neigh (Boosts Special Attack after knocking out a Pokémon)`
+            return bot.say(chatroom, message)
+        }
+        if (abilityName === `forewarn`) {
+            const message = `When this Pokémon enters battle, it reveals the move with the highest base power known by any opposing Pokémon to all participating trainers. In the event of a tie, one is chosen at random. Moves without a listed base power are assigned one as follows: One-hit KO moves (160), Counter moves (120), Variable power or set damage (80), Any such move not listed (0)`
+            return bot.say(chatroom, message)
+        }
+
+        const response = await fetch(`https://pokeapi.co/api/v2/ability/${abilityName}`)
+        if (response.status !== 200) {
+            logMessage([`-> ${response.status}: ${response.statusText}`])
+            return bot.say(chatroom, `Ability "${args.join(` `)}" not found! ${negativeEmote}`)
+        }
+
+        const data = await response.json()
+        if (data.effect_entries.length) {
+            const message = data.effect_entries.filter(el => el.language.name === `en`)[0].effect.replace(/\n+/g, ` `).replace(/ +/g, ` `)
+            bot.say(chatroom, message)
+        } else {
+            logMessage([`-> No effect entries for`, args.join(` `), data.flavor_text_entries.length, `total flavor text entries`])
+            if (data.flavor_text_entries.length) {
+                const message = data.flavor_text_entries.filter(el => el.language.name === `en`)[0].flavor_text.replace(/\n+/g, ` `).replace(/ +/g, ` `)
+                bot.say(chatroom, message)
+            }
+        }
     }
 }

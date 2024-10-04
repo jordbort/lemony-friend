@@ -1,3 +1,4 @@
+const { settings } = require(`../config`)
 const { getHypeEmote, logMessage } = require(`../utils`)
 
 module.exports = {
@@ -16,7 +17,7 @@ module.exports = {
         const { bot, chatroom, channel } = props
         logMessage([`> buyPokeballs(channel: '${channel}')`])
 
-        bot.say(chatroom, `!pokeshop pokeball 100`)
+        bot.say(chatroom, `!pokeshop pokeball ${settings.pokeballQuantity}`)
     },
     acknowledgeCaughtPokemon(props) {
         const { bot, chatroom, message, channel } = props
