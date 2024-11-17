@@ -526,8 +526,15 @@ const lemonyFresh = {
         id: 144838577,
         emotes: [
             `astral332Pop`,
+            `astral332Music`,
+            `astral332Freddy`,
+            `astral332Sherb`,
+            `astral332Vibe`,
+            `astral332Pophype`,
             `astral332Pophi`,
-            `astral332Pophype`
+            `astral332Obs`,
+            `astral332Lul`,
+            `astral332Load`
         ],
         accessToken: ASTRAL_AN0MALY_ACCESS_TOKEN,
         refreshToken: ASTRAL_AN0MALY_REFRESH_TOKEN,
