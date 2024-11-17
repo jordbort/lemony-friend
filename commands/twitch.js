@@ -7,7 +7,7 @@ const { lemonyFresh, mods, users } = require(`../data`)
 const { getNeutralEmote, getHypeEmote, getPositiveEmote, getNegativeEmote, getGreetingEmote, getDumbEmote, resetCooldownTimer, getToUser, renderObj, pluralize, logMessage } = require(`../utils`)
 
 async function getBotToken(props, replyWanted = true) {
-    const { bot, chatroom, channel, isLemonyFreshMember } = props
+    const { bot, chatroom, username, channel, isLemonyFreshMember } = props
     logMessage([`> getBotToken(channel: '${channel}')`])
 
     // Streamers and mods only
