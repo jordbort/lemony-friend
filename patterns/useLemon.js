@@ -1473,6 +1473,7 @@ module.exports = {
             'burst': smashLemon,
             'crunch': smashLemon,
             'blowup': smashLemon,
+            'detonate': smashLemon,
             'obliterate': smashLemon,
             'pulverize': smashLemon,
 
