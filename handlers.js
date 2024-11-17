@@ -123,9 +123,9 @@ module.exports = {
         const modChange = user[channel].mod !== tags.mod
         const vipChange = user[channel].vip !== (!!tags.vip || !!tags.badges?.vip)
 
-        if (subChange) { return handleSubChange(props) }
-        if (modChange) { return handleModChange(props) }
-        if (vipChange) { return handleVIPChange(props) }
+        if (subChange) { handleSubChange(props) }
+        if (modChange) { handleModChange(props) }
+        if (vipChange) { handleVIPChange(props) }
 
         // Bot stops listening
         if (self) { return }
