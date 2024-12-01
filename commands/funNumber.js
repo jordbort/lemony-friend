@@ -515,11 +515,11 @@ function useFunnyCommand(props) {
 }
 
 function imagineLemons(props) {
-    const { bot, channel } = props
+    const { bot, chatroom } = props
     const randNum = Math.floor(Math.random() * numbers.length)
     const lemonEmote = getLemonEmote()
-    logMessage([`> imagineLemons(channel: '${channel}', randNum: ${randNum})`])
-    bot.say(channel, `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${numbers[randNum + 1] || `one thousand`} lemons... ${lemonEmote}`)
+    logMessage([`> imagineLemons(chatroom: '${chatroom}', randNum: ${randNum})`])
+    bot.say(chatroom, `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${numbers[randNum + 1] || `one thousand`} lemons... ${lemonEmote}`)
 }
 
 module.exports = {
