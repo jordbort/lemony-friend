@@ -363,24 +363,30 @@ function restartFunTimer(props) {
 
 function getViewers(props) {
     const { bot, chatroom, channel } = props
-    const viewers = lemonyFresh[channel].viewers.length
-    logMessage([`> getViewers(channel: '${channel}', viewers: '${viewers}')`])
 
     const hypeEmote = getHypeEmote(channel)
     const positiveEmote = getPositiveEmote(channel)
     const neutralEmote = getNeutralEmote(channel)
 
+    const viewers = lemonyFresh[channel].viewers.slice()
     const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
 
-    if (viewers > 4) {
+    // Remove streamer and known/ignored bots
+    if (viewers.includes(channel)) { viewers.splice(viewers.indexOf(channel), 1) }
+    for (const bot of settings.ignoredBots) {
+        if (viewers.includes(bot)) { viewers.splice(viewers.indexOf(bot), 1) }
+    }
+    logMessage([`> getViewers(channel: '${channel}', viewers: ${viewers.length})`])
+
+    if (viewers.length > 4) {
         bot.say(chatroom,
-            `${channelNickname} has ${pluralize(viewers, `viewer`, `viewers`)}! ${viewers < 10
+            `${channelNickname} has ${pluralize(viewers.length, `viewer`, `viewers`)}! ${viewers.length < 10
                 ? neutralEmote
-                : viewers < 20
+                : viewers.length < 20
                     ? positiveEmote
                     : hypeEmote}`
         )
-    } else { logMessage([`-> ${chatroom} only has ${pluralize(viewers, `viewer`, `viewers`)}`]) }
+    } else { logMessage([`-> ${chatroom} only has ${pluralize(viewers.length, `viewer`, `viewers`)}`]) }
 }
 
 function getLurker(props) {
