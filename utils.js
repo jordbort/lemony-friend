@@ -1457,11 +1457,19 @@ module.exports = {
                         : typeof tags[tag]
                 : typeof tags[tag]
             if (!(tag in knownTags)) {
-                logMessage([`> New message tag '${tag}' discovered (type: ${type})`, type === `object` ? renderObj(tags[tag], tag) : tags[tag]])
+                logMessage([`> New message tag '${tag}' discovered (type: '${type}')`, type === `object` ? renderObj(tags[tag], tag) : tags[tag]])
                 knownTags[tag] = { types: [] }
+                if (tag === `msg-id`) { knownTags[tag].values = [] }
+            }
+            // Listening for msg-id values
+            if (tag === `msg-id`) {
+                if (!knownTags[tag].values.includes(tags[tag])) {
+                    logMessage([`> New values for message tag '${tag}' added: ${tags[tag]}`])
+                    knownTags[tag].values.push(type)
+                }
             }
             if (!knownTags[tag].types.includes(type)) {
-                if (knownTags[tag].types.length > 0) logMessage([`> New type for message tag '${tag}' added: ${type}`])
+                if (knownTags[tag].types.length > 0) { logMessage([`> New type for message tag '${tag}' added: '${type}'`]) }
                 knownTags[tag].types.push(type)
             }
             knownTags[tag].lastValue = tags[tag]
