@@ -13,6 +13,7 @@ module.exports = {
             `Fixed funnyCommands reference bug`,
             `Added new funNumber response`,
             `Updated viewer counting method`,
+            `Added !accept reply to duel`,
             `Attempt to fix channel info bug`,
             `Updated emotes`
         ]
