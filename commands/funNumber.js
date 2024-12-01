@@ -6,7 +6,7 @@ const { lemonyFresh, users } = require(`../data`)
 const { lemonify } = require(`./lemonify`)
 const { getTwitchChannel } = require(`./twitch`)
 const { getRandomUser, getRandomChannelMessage } = require(`./getInfo`)
-const { getLemonEmote, getNeutralEmote, pluralize, getHypeEmote, getPositiveEmote, getDumbEmote, logMessage } = require(`../utils`)
+const { getLemonEmote, getNeutralEmote, pluralize, getHypeEmote, getPositiveEmote, getDumbEmote, logMessage, numbers } = require(`../utils`)
 
 function makePyramid(props) {
     const { bot, chatroom, message, channel } = props
@@ -514,6 +514,14 @@ function useFunnyCommand(props) {
     bot.say(chatroom, response)
 }
 
+function imagineLemons(props) {
+    const { bot, channel } = props
+    const randNum = Math.floor(Math.random() * numbers.length)
+    const lemonEmote = getLemonEmote()
+    logMessage([`> imagineLemons(channel: '${channel}', randNum: ${randNum})`])
+    bot.say(channel, `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${numbers[randNum + 1] || `one thousand`} lemons... ${lemonEmote}`)
+}
+
 module.exports = {
     rollFunNumber(props, funNumber) {
         const { tags, message, channel, username } = props
@@ -545,7 +553,8 @@ module.exports = {
             17: getLurker,
             18: awardLemonToRecentChatters,
             19: useTwoEmotes,
-            20: useFunnyCommand
+            20: useFunnyCommand,
+            21: imagineLemons
         }
 
         if (funNumber in outcomes) {
