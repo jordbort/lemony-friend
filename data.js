@@ -420,7 +420,6 @@ const lemonyFresh = {
         ],
         funnyCommands: [
             `!shit`,
-            `!dm`,
             `!chumcocks`,
             `!unshit`,
             `!nomore`,
@@ -432,7 +431,8 @@ const lemonyFresh = {
             `!orbit`,
             `!krizpy`,
             `!glurk`,
-            `!dadtime`
+            `!dadtime`,
+            `!zeroth`
         ],
         redeems: [
             `!winner`,

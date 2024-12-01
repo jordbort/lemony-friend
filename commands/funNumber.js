@@ -447,7 +447,7 @@ function useFunnyCommand(props) {
     const { bot, message, chatroom, channel, username } = props
     logMessage([`> useFunnyCommand(channel: '${channel}'`])
 
-    const arrFunnyCommands = lemonyFresh[channel].funnyCommands
+    const arrFunnyCommands = lemonyFresh[channel].funnyCommands.slice()
 
     if (!arrFunnyCommands.length) {
         logMessage([`-> No funny commands`])
@@ -476,17 +476,39 @@ function useFunnyCommand(props) {
         )
     }
 
-    if (channel === `e1ectroma`) {
-        arrFunnyCommands.push(`!duel ${username}`)
+    if (channel === `sclarf`) {
+        arrFunnyCommands.push(
+            `!addcomb ${username}`,
+            `!antistar ${username}`,
+            `!blunt ${username}`,
+            `!braincell ${username}`,
+            `!cuddle ${username}`,
+            `!highfive ${username}`,
+            `!hug ${username}`,
+            `!piss ${username}`,
+            `!shit ${username}`,
+            `!slap ${username}`,
+            `!star ${username}`
+        )
     }
 
-    if (channel === `domonintendo1`) {
+    if (channel === `e1ectroma`) {
         arrFunnyCommands.push(
             `!timeout ${username}`,
             `!bog ${username}`,
             `!bong ${username}`,
             `!zeroth ${username}`,
-            `!duel ${username}`
+            `!duel ${username} ${users[username][channel].msgCount}`
+        )
+    }
+
+    if (channel === `domonintendo1`) {
+        arrFunnyCommands.push(
+            `!cheese ${username}`,
+            `!honey ${username}`,
+            `!hotdog ${username}`,
+            `!slap ${username}`,
+            `!teriyaki ${username}`
         )
     }
 
