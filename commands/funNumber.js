@@ -392,21 +392,11 @@ function getViewers(props) {
 function getLurker(props) {
     const { bot, chatroom, channel } = props
     const notChatted = lemonyFresh[channel].viewers.filter(username => !(username in users) || !(channel in users[username]))
-    let lurker = notChatted[Math.floor(Math.random() * notChatted.length)]
+    if (notChatted.includes(channel)) { notChatted.splice(notChatted.indexOf(channel), 1) }
+
+    const lurker = notChatted[Math.floor(Math.random() * notChatted.length)]
     logMessage([`> getLurker(channel: '${channel}', lurker: '${lurker}', notChatted.length: ${notChatted.length})`])
-
-    if (!notChatted.length) {
-        logMessage([`-> No lurkers found!`])
-        return
-    }
-
-    if (lurker === channel) {
-        if (notChatted.length === 1) { return logMessage([`-> ${lurker} can't be the only lurker in ${channel}`]) }
-        while (lurker === channel) {
-            logMessage([`-> Reshuffling lurker from ${lurker}...`])
-            lurker = notChatted[Math.floor(Math.random() * notChatted.length)]
-        }
-    }
+    if (!notChatted.length) { return logMessage([`-> No lurkers found!`]) }
 
     const dumbEmote = getDumbEmote(channel)
     bot.say(chatroom, `Has anyone heard from ${lurker}? ${dumbEmote}`)
