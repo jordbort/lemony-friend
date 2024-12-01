@@ -402,13 +402,14 @@ function getLurker(props) {
     bot.say(chatroom, `Has anyone heard from ${lurker}? ${dumbEmote}`)
 }
 
-function awardLemonToChannelChatters(props) {
-    const { bot, chatroom, channel } = props
-    logMessage([`> awardLemonToChannelChatters(channel: '${channel}')`])
+function awardLemonToRecentChatters(props) {
+    const { bot, currentTime, chatroom, channel } = props
+    logMessage([`> awardLemonToRecentChatters(channel: '${channel}')`])
 
+    // Check if user has chatted in the past 10 minutes
     const recipients = []
     for (const username in users) {
-        if (channel in users[username]) {
+        if (channel in users[username] && currentTime - users[username][channel].sentAt <= 600000) {
             users[username].lemons++
             recipients.push(username)
         }
@@ -542,7 +543,7 @@ module.exports = {
             15: restartFunTimer,
             16: getViewers,
             17: getLurker,
-            18: awardLemonToChannelChatters,
+            18: awardLemonToRecentChatters,
             19: useTwoEmotes,
             20: useFunnyCommand
         }
