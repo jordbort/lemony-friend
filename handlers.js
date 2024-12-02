@@ -161,9 +161,9 @@ module.exports = {
         // User is the funTimerGuesser and making an attempt
         if (lemonyFresh[channel].funTimerGuesser === username && /\b\d+\b/.test(msg)) { return funTimerGuess(props) }
 
-        /*************\
-        /REGEX/ PARSERS
-        \*************/
+        /***********\
+        REGEX PARSERS
+        \***********/
         // General regex patterns
         for (const pattern in patterns) {
             const regex = new RegExp(pattern.split(`/`)[1], pattern.split(`/`)[2])
@@ -172,6 +172,7 @@ module.exports = {
                 return patterns[regex](props, msg.split(regex))
             }
         }
+
         // Other bot mentions bot
         if ([`streamelements`, `pokemoncommunitygame`].includes(username)) {
             if (msg.includes(BOT_USERNAME)) {
@@ -189,6 +190,7 @@ module.exports = {
                 return this.say(chatroom, `!points`)
             }
         }
+
         // Any user mentions bot
         if (/\b(@?lemony_friend|l+e+m+o+n+y*|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)\b/i.test(msg)) {
             for (const pattern in botMention) {
@@ -200,6 +202,7 @@ module.exports = {
             }
             logMessage([`BOT MENTION DID NOT MATCH REGEX PATTERNS`])
         }
+
         // If hangman has started, and it's the current player's turn
         const hangman = lemonyFresh[channel].hangman
         if (hangman.listening && !hangman.signup && username === hangman.players[hangman.currentPlayer]) {

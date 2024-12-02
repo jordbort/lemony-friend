@@ -7,7 +7,7 @@ fs.writeFile(`lemony_logs.txt`, `🍋️ LEMONY LOGS 🍋️\n`, (err) => {
 })
 
 // Import helper functions
-const { handleUncaughtException } = require("./utils")
+const { handleUncaughtException } = require(`./utils`)
 
 // Import client
 const client = require(`./client`)
