@@ -184,7 +184,10 @@ module.exports = {
                 }
                 logMessage([`${username.toUpperCase()} DID NOT MATCH REGEX PATTERNS`])
             }
-            if (!(`points` in Object(users[BOT_USERNAME][channel])) && username === `streamelements`) { return this.say(chatroom, `!points`) }
+            if (!(`points` in Object(users[BOT_USERNAME][channel])) && username === `streamelements`) {
+                users[BOT_USERNAME][channel].points = 0
+                return this.say(chatroom, `!points`)
+            }
         }
         // Any user mentions bot
         if (/\b(@?lemony_friend|l+e+m+o+n+y*|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)\b/i.test(msg)) {
