@@ -1491,9 +1491,9 @@ module.exports = {
                     return [[arr[1].nickname.toLowerCase()], arr[0]]
                 })
         )
-        logMessage([`> findUserByNickname(str: '${str}', result: ${str.toLowerCase() in nicknames ? `'${nicknames[str.toLowerCase()]}'` : null})`])
-        return str.toLowerCase() in nicknames
-            ? nicknames[str.toLowerCase()]
+        logMessage([`> findUserByNickname(str: '${str}', result: ${str in nicknames ? `'${nicknames[str]}'` : null})`])
+        return str in nicknames
+            ? nicknames[str]
             : null
     }
 }
