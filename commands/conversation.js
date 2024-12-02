@@ -405,6 +405,8 @@ module.exports = {
 
         const chant = args.map((word) => {
             return !emotes.includes(word)
+                && !settings.globalEmotes.twitch.includes(word)
+                && !settings.globalEmotes.bttv.includes(word)
                 ? word.toUpperCase()
                 : word
         })
