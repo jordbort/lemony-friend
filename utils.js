@@ -1435,7 +1435,7 @@ module.exports = {
                         ? positiveEmote
                         : hypeEmote}`,
             `Let's play Hangman! ${positiveEmote}`,
-            `I know ${pluralize(lemonyFresh[channel].emotes.length, `emote`, `emotes`)} in ${channel}'s channel! ${lemonyFresh[channel].emotes[0] || neutralEmote}`,
+            `I know ${pluralize(lemonyFresh[channel].emotes.length, `emote`, `emotes`)} in ${channel}'s channel! ${neutralEmote}`,
             `It has been ${Date.now().toLocaleString(`en-US`)} milliseconds since January 1, 1970, 12:00:00 AM UTC ${lemonEmote}`,
             `${BOT_USERNAME} has entered the chat ${lemonEmote}`,
             `${BOT_USERNAME in users
