@@ -125,7 +125,8 @@ function handleGreetAll(bot, chatroom, username) {
 
 module.exports = {
     handleGreetOne,
-    handleNewChatter(bot, chatroom, username, message) {
+    handleNewChatter(props) {
+        const { bot, chatroom, username, message } = props
         logMessage([`> handleNewChatter(chatroom: ${chatroom}, username: ${username})`])
 
         // Check for automatic ban phrase

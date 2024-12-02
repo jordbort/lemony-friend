@@ -155,8 +155,7 @@ module.exports = {
         }
 
         // Check user's first message in a given channel
-        const firstMsg = tags[`first-msg`]
-        if (firstMsg) { return handleNewChatter(this, chatroom, username, message) }
+        if (tags[`first-msg`]) { return handleNewChatter(props) }
 
         // User is the funTimerGuesser and making an attempt
         if (lemonyFresh[channel].funTimerGuesser === username && /\b\d+\b/.test(msg)) { return funTimerGuess(props) }
