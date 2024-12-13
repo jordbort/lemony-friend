@@ -8,8 +8,16 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Fixed !ability command bug`,
-            `Added !balloons to JPEGSTRIPES redemptions`
+            `Implemented new {viewer} and {number#} variables for temporary commands`,
+            `Implemented global emotes lists for smarter !chant`,
+            `Fixed token refresh bug`,
+            `Updated funnyCommands`,
+            `Fixed funnyCommands reference bug`,
+            `Added new funNumber response`,
+            `Updated viewer counting method`,
+            `Added !accept reply to duel`,
+            `Attempt to fix channel info bug`,
+            `Updated emotes`
         ]
 
         const timeOptions = {

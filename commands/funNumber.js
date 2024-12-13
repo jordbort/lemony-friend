@@ -6,7 +6,7 @@ const { lemonyFresh, users } = require(`../data`)
 const { lemonify } = require(`./lemonify`)
 const { getTwitchChannel } = require(`./twitch`)
 const { getRandomUser, getRandomChannelMessage } = require(`./getInfo`)
-const { getLemonEmote, getNeutralEmote, pluralize, getHypeEmote, getPositiveEmote, getDumbEmote, logMessage } = require(`../utils`)
+const { getLemonEmote, getNeutralEmote, pluralize, getHypeEmote, getPositiveEmote, getDumbEmote, logMessage, numbers } = require(`../utils`)
 
 function makePyramid(props) {
     const { bot, chatroom, message, channel } = props
@@ -363,56 +363,46 @@ function restartFunTimer(props) {
 
 function getViewers(props) {
     const { bot, chatroom, channel } = props
-    const viewers = lemonyFresh[channel].viewers.length
-    logMessage([`> getViewers(channel: '${channel}', viewers: '${viewers}')`])
+    const viewers = lemonyFresh[channel].viewers.filter(viewer => viewer !== channel && !settings.ignoredBots.includes(viewer))
+    logMessage([`> getViewers(channel: '${channel}', viewers: ${viewers.length})`])
 
     const hypeEmote = getHypeEmote(channel)
     const positiveEmote = getPositiveEmote(channel)
     const neutralEmote = getNeutralEmote(channel)
-
     const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
 
-    if (viewers > 4) {
+    if (viewers.length > 4) {
         bot.say(chatroom,
-            `${channelNickname} has ${pluralize(viewers, `viewer`, `viewers`)}! ${viewers < 10
+            `${channelNickname} has ${pluralize(viewers.length, `viewer`, `viewers`)}! ${viewers.length < 10
                 ? neutralEmote
-                : viewers < 20
+                : viewers.length < 20
                     ? positiveEmote
                     : hypeEmote}`
         )
-    } else { logMessage([`-> ${chatroom} only has ${pluralize(viewers, `viewer`, `viewers`)}`]) }
+    } else { logMessage([`-> ${channel} only has ${pluralize(viewers.length, `viewer`, `viewers`)}`]) }
 }
 
 function getLurker(props) {
     const { bot, chatroom, channel } = props
     const notChatted = lemonyFresh[channel].viewers.filter(username => !(username in users) || !(channel in users[username]))
-    let lurker = notChatted[Math.floor(Math.random() * notChatted.length)]
+    if (notChatted.includes(channel)) { notChatted.splice(notChatted.indexOf(channel), 1) }
+
+    const lurker = notChatted[Math.floor(Math.random() * notChatted.length)]
     logMessage([`> getLurker(channel: '${channel}', lurker: '${lurker}', notChatted.length: ${notChatted.length})`])
-
-    if (!notChatted.length) {
-        logMessage([`-> No lurkers found!`])
-        return
-    }
-
-    if (lurker === channel) {
-        if (notChatted.length === 1) { return logMessage([`-> ${lurker} can't be the only lurker in ${channel}`]) }
-        while (lurker === channel) {
-            logMessage([`-> Reshuffling lurker from ${lurker}...`])
-            lurker = notChatted[Math.floor(Math.random() * notChatted.length)]
-        }
-    }
+    if (!notChatted.length) { return logMessage([`-> No lurkers found!`]) }
 
     const dumbEmote = getDumbEmote(channel)
     bot.say(chatroom, `Has anyone heard from ${lurker}? ${dumbEmote}`)
 }
 
-function awardLemonToChannelChatters(props) {
-    const { bot, chatroom, channel } = props
-    logMessage([`> awardLemonToChannelChatters(channel: '${channel}')`])
+function awardLemonToRecentChatters(props) {
+    const { bot, currentTime, chatroom, channel } = props
+    logMessage([`> awardLemonToRecentChatters(channel: '${channel}')`])
 
+    // Check if user has chatted in the past 10 minutes
     const recipients = []
     for (const username in users) {
-        if (channel in users[username]) {
+        if (channel in users[username] && currentTime - users[username][channel].sentAt <= 600000) {
             users[username].lemons++
             recipients.push(username)
         }
@@ -447,7 +437,7 @@ function useFunnyCommand(props) {
     const { bot, message, chatroom, channel, username } = props
     logMessage([`> useFunnyCommand(channel: '${channel}'`])
 
-    const arrFunnyCommands = lemonyFresh[channel].funnyCommands
+    const arrFunnyCommands = lemonyFresh[channel].funnyCommands.slice()
 
     if (!arrFunnyCommands.length) {
         logMessage([`-> No funny commands`])
@@ -476,23 +466,53 @@ function useFunnyCommand(props) {
         )
     }
 
-    if (channel === `e1ectroma`) {
-        arrFunnyCommands.push(`!duel ${username}`)
+    if (channel === `sclarf`) {
+        arrFunnyCommands.push(
+            `!addcomb ${username}`,
+            `!antistar ${username}`,
+            `!blunt ${username}`,
+            `!braincell ${username}`,
+            `!cuddle ${username}`,
+            `!highfive ${username}`,
+            `!hug ${username}`,
+            `!piss ${username}`,
+            `!shit ${username}`,
+            `!slap ${username}`,
+            `!star ${username}`
+        )
     }
 
-    if (channel === `domonintendo1`) {
+    if (channel === `e1ectroma`) {
         arrFunnyCommands.push(
             `!timeout ${username}`,
             `!bog ${username}`,
             `!bong ${username}`,
             `!zeroth ${username}`,
-            `!duel ${username}`
+            `!duel ${username} ${users[username][channel].msgCount}`
+        )
+    }
+
+    if (channel === `domonintendo1`) {
+        arrFunnyCommands.push(
+            `!cheese ${username}`,
+            `!honey ${username}`,
+            `!hotdog ${username}`,
+            `!slap ${username}`,
+            `!teriyaki ${username}`
         )
     }
 
     const response = arrFunnyCommands[Math.floor(Math.random() * arrFunnyCommands.length)]
 
     bot.say(chatroom, response)
+}
+
+function imagineLemons(props) {
+    const { bot, chatroom } = props
+    const randNum = Math.floor(Math.random() * numbers.length)
+    const lemonEmote = getLemonEmote()
+    logMessage([`> imagineLemons(chatroom: '${chatroom}', randNum: ${randNum})`])
+    bot.say(chatroom, `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${numbers[randNum + 1] || `one thousand`} lemons... ${lemonEmote}`)
 }
 
 module.exports = {
@@ -524,9 +544,10 @@ module.exports = {
             15: restartFunTimer,
             16: getViewers,
             17: getLurker,
-            18: awardLemonToChannelChatters,
+            18: awardLemonToRecentChatters,
             19: useTwoEmotes,
-            20: useFunnyCommand
+            20: useFunnyCommand,
+            21: imagineLemons
         }
 
         if (funNumber in outcomes) {

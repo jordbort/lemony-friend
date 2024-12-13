@@ -27,6 +27,7 @@ function getNeutralEmote(channel) {
     if (users[BOT_USERNAME]?.sclarf?.sub) { neutralEmotes.push(`sclarfWave`) }
     if (users[BOT_USERNAME]?.e1ectroma?.sub) { neutralEmotes.push(`e1ectr4Smile`) }
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { neutralEmotes.push(`domoni6ChefHey`) }
+    if (users[BOT_USERNAME]?.astral_an0maly?.sub) { neutralEmotes.push(`astral332Pop`) }
     if (users[BOT_USERNAME]?.artyinpink?.sub) { neutralEmotes.push(`cosyin1Wave`, `cosyin1Soft`) }
     if (users[BOT_USERNAME]?.thetarastark?.sub) { neutralEmotes.push(`thetar42Pelican`) }
 
@@ -48,7 +49,7 @@ function getHypeEmote(channel) {
     if (users[BOT_USERNAME]?.sclarf?.sub) { hypeEmotes.push(`sclarfRave`, `sclarfWobble`, `sclarfBark`, `sclarfSpin`, `sclarfPls`, `sclarfAmazed`, `sclarfHearts`, `sclarfDEEP`, `sclarfYay`) }
     if (users[BOT_USERNAME]?.e1ectroma?.sub) { hypeEmotes.push(`e1ectr4Lfg`, `e1ectr4Pikadance`, `e1ectr4Tromadance`, `e1ectr4Coop`, `e1ectr4Ocha`, `e1ectr4Smile`, `e1ectr4Salute`, `e1ectr4Lemfresh`) }
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { hypeEmotes.push(`domoni6Bingo`, `domoni6Love`, `domoni6Mingo`) }
-    if (users[BOT_USERNAME]?.astral_an0maly?.sub) { hypeEmotes.push(`astral332Pop`, `astral332Pophype`) }
+    if (users[BOT_USERNAME]?.astral_an0maly?.sub) { hypeEmotes.push(`astral332Pop`, `astral332Pophype`, `astral332Sherb`, `astral332Vibe`) }
     if (users[BOT_USERNAME]?.artyinpink?.sub) { hypeEmotes.push(`cosyin1Hype`, `cosyin1Dance`) }
     if (users[BOT_USERNAME]?.thetarastark?.sub) { hypeEmotes.push(`thetar42Cheer`, `thetar42POG`) }
 
@@ -70,7 +71,7 @@ function getPositiveEmote(channel) {
     if (users[BOT_USERNAME]?.sclarf?.sub) { positiveEmotes.push(`sclarfDog`, `sclarfHearts`, `sclarfPopbonk`) }
     if (users[BOT_USERNAME]?.e1ectroma?.sub) { positiveEmotes.push(`e1ectr4Pikadance`, `e1ectr4Coop`, `e1ectr4Smile`, `e1ectr4Salute`, `e1ectr4Lemfresh`, `e1ectr4Moses`, `e1ectr4Josie`) }
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { positiveEmotes.push(`domoni6Bingo`, `domoni6Mingo`) }
-    if (users[BOT_USERNAME]?.astral_an0maly?.sub) { positiveEmotes.push(`astral332Pop`) }
+    if (users[BOT_USERNAME]?.astral_an0maly?.sub) { positiveEmotes.push(`astral332Pop`, `astral332Pophi`) }
     if (users[BOT_USERNAME]?.artyinpink?.sub) { positiveEmotes.push(`cosyin1Hype`, `cosyin1Love`) }
     if (users[BOT_USERNAME]?.thetarastark?.sub) { positiveEmotes.push(`thetar42Hoagie`, `thetar42Cheer`) }
 
@@ -132,7 +133,7 @@ function getGreetingEmote(channel) {
     if (users[BOT_USERNAME]?.sclarf?.sub) { greetingEmotes.push(`sclarfRave`, `sclarfWobble`, `sclarfBark`, `sclarfSpin`, `sclarfPls`, `sclarfHowdy`, `sclarfDog`, `sclarfAmazed`, `sclarfHearts`, `sclarfDEEP`, `sclarfWave`, `sclarfYay`, `sclarfChickenmoley`) }
     if (users[BOT_USERNAME]?.e1ectroma?.sub) { greetingEmotes.push(`e1ectr4Lfg`, `e1ectr4Pikadance`, `e1ectr4Tromadance`, `e1ectr4Ocha`, `e1ectr4Hello`, `e1ectr4Hi`, `e1ectr4Wazzah`, `e1ectr4Smile`, `e1ectr4Ram`, `e1ectr4Salute`, `e1ectr4Lemfresh`, `e1ectr4Moses`, `e1ectr4Josie`, `e1ectr4Malort`, `e1ectr4Umbreon`) }
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { greetingEmotes.push(`domoni6Bingo`, `domoni6ChefHey`, `domoni6Sneeze`, `domoni6Love`, `domoni6Boom`, `domoni6Mingo`) }
-    if (users[BOT_USERNAME]?.astral_an0maly?.sub) { greetingEmotes.push(`astral332Pop`, `astral332Pophi`) }
+    if (users[BOT_USERNAME]?.astral_an0maly?.sub) { greetingEmotes.push(`astral332Pop`, `astral332Pophi`, `astral332Sherb`, `astral332Freddy`) }
     if (users[BOT_USERNAME]?.dirtyd0inks?.sub) { greetingEmotes.push(`dirtyd182LOVE`) }
     if (users[BOT_USERNAME]?.artyinpink?.sub) { greetingEmotes.push(`cosyin1Hype`, `cosyin1Dance`, `cosyin1Love`, `cosyin1Wave`, `cosyin1Soft`) }
     if (users[BOT_USERNAME]?.thetarastark?.sub) { greetingEmotes.push(`thetar42KeystonePride`, `thetar42Hoagie`, `thetar42Cheer`, `thetar42POG`, `thetar42Pelican`, `thetar42Blep`, `thetar42Sad`, `thetar42Spin`, `thetar42Laser`, `thetar42Glare`) }
@@ -174,6 +175,7 @@ function getDumbEmote(channel) {
     if (users[BOT_USERNAME]?.sclarf?.sub) { dumbEmotes.push(`sclarfSpin`, `sclarfHuh`, `sclarfBlind`, `sclarfSophisticated`, `sclarfLUL`, `sclarfDEEP`, `sclarfChickenmoley`) }
     if (users[BOT_USERNAME]?.e1ectroma?.sub) { dumbEmotes.push(`e1ectr4Bye`, `e1ectr4Laugh`, `e1ectr4Wazzah`, `e1ectr4Malort`) }
     if (users[BOT_USERNAME]?.domonintendo1?.sub) { dumbEmotes.push(`domoni6ChefHey`, `domoni6MeincSus`, `domoni6Sneeze`, `domoni6Dum`, `domoni6Kek`) }
+    if (users[BOT_USERNAME]?.astral_an0maly?.sub) { dumbEmotes.push(`astral332Load`) }
     if (users[BOT_USERNAME]?.artyinpink?.sub) { dumbEmotes.push(`cosyin1Dance`) }
     if (users[BOT_USERNAME]?.thetarastark?.sub) { dumbEmotes.push(`thetar42Blep`, `thetar42Sad`, `thetar42Laser`, `thetar42Glare`) }
 
@@ -1433,7 +1435,7 @@ module.exports = {
                         ? positiveEmote
                         : hypeEmote}`,
             `Let's play Hangman! ${positiveEmote}`,
-            `I know ${pluralize(lemonyFresh[channel].emotes.length, `emote`, `emotes`)} in ${channel}'s channel! ${lemonyFresh[channel].emotes[0] || neutralEmote}`,
+            `I know ${pluralize(lemonyFresh[channel].emotes.length, `emote`, `emotes`)} in ${channel}'s channel! ${neutralEmote}`,
             `It has been ${Date.now().toLocaleString(`en-US`)} milliseconds since January 1, 1970, 12:00:00 AM UTC ${lemonEmote}`,
             `${BOT_USERNAME} has entered the chat ${lemonEmote}`,
             `${BOT_USERNAME in users
@@ -1455,11 +1457,19 @@ module.exports = {
                         : typeof tags[tag]
                 : typeof tags[tag]
             if (!(tag in knownTags)) {
-                logMessage([`> New message tag '${tag}' discovered (type: ${type})`, type === `object` ? renderObj(tags[tag], tag) : tags[tag]])
+                logMessage([`> New message tag '${tag}' discovered (type: '${type}')`, type === `object` ? renderObj(tags[tag], tag) : tags[tag]])
                 knownTags[tag] = { types: [] }
+                if (tag === `msg-id`) { knownTags[tag].strings = [] }
+            }
+            // Listening for msg-id strings
+            if (tag === `msg-id` && type === `string`) {
+                if (!knownTags[tag].strings.includes(tags[tag])) {
+                    logMessage([`> New string for message tag '${tag}' added: ${tags[tag]}`])
+                    knownTags[tag].strings.push(tags[tag])
+                }
             }
             if (!knownTags[tag].types.includes(type)) {
-                if (knownTags[tag].types.length > 0) logMessage([`> New type for message tag '${tag}' added: ${type}`])
+                if (knownTags[tag].types.length > 0) { logMessage([`> New type for message tag '${tag}' added: '${type}'`]) }
                 knownTags[tag].types.push(type)
             }
             knownTags[tag].lastValue = tags[tag]
@@ -1481,9 +1491,9 @@ module.exports = {
                     return [[arr[1].nickname.toLowerCase()], arr[0]]
                 })
         )
-        logMessage([`> findUserByNickname(str: '${str}', result: ${str.toLowerCase() in nicknames ? `'${nicknames[str.toLowerCase()]}'` : null})`])
-        return str.toLowerCase() in nicknames
-            ? nicknames[str.toLowerCase()]
+        logMessage([`> findUserByNickname(str: '${str}', result: ${str in nicknames ? `'${nicknames[str]}'` : null})`])
+        return str in nicknames
+            ? nicknames[str]
             : null
     }
 }
