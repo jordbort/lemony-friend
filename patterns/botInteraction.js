@@ -64,6 +64,12 @@ function subtractPoints(props, splitMessage) {
     logMessage([`-> New points:`, users[BOT_USERNAME][channel].points])
 }
 
+function acceptDuel(props) {
+    const { bot, chatroom } = props
+    logMessage([`> acceptDuel(chatroom: '${chatroom}')`])
+    bot.say(chatroom, `!accept`)
+}
+
 module.exports = {
     [/lost (every|it)/i]: handleLoseAllPoints,
     [/now ha(?:s|ve) \[*(\d*)/i]: handleSetPoints,
@@ -72,6 +78,7 @@ module.exports = {
     [/^@?lemony_friend, you only have ([^a-z]\d*)/i]: handleSetPoints,
     [/^(?!lemony_friend).* gave (\d*)/i]: handleGivenPoints,
     [/lemony_friend gave ([^a-z]\d*)/i]: subtractPoints,
+    [/^@?lemony_friend, .* wants to duel you/i]: acceptDuel,
 
     [/Purchase successful!/i]: catchPokemon,
     [/You don't own that ball. Check the extension to see your items/i]: buyPokeballs,

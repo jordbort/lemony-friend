@@ -1,8 +1,8 @@
-const { lemonyFresh } = require('./data')
+const { lemonyFresh } = require(`./data`)
 const { onMessageHandler, onJoinedHandler, onPartedHandler, onWhisperHandler, onConnectedHandler } = require(`./handlers`)
 
 // Create bot client
-const tmi = require('tmi.js')
+const tmi = require(`tmi.js`)
 const BOT_USERNAME = process.env.BOT_USERNAME
 const OAUTH_TOKEN = process.env.OAUTH_TOKEN
 

@@ -48,7 +48,6 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!verbs` (or `!verb` or `!v`) - Use this command to add to the list of verbs Lemony Friend knows.
 - `!nouns` (or `!noun` or `!n`) - Use this command to add to the list of nouns Lemony Friend knows.
 - `!adjectives` (or `!adjective` or `!adj` or `!a`) - Use this command to add to the list of adjectives Lemony Friend knows.
-- `!tempcmd` (or `!tmpcmd`) - This command is used to create custom commands that will be active until the next time lemony_friend is rebooted. Use `!tempcmd <commandname> <response...>` to create/edit a command name and reply. You can also use `!tempcmd delete <commandname>` to delete a command, and `!tempcmd rename <oldname> <newname>` to change the name of an existing command. There are also variables you can use in commands that will be replaced with arguments: `{user}` is the display name of the user of the command, `{touser}` is the display name of a specified user (falling back on whatever was input, if that user isn't known, or the user of the command if no input), `{usernn}` is the nickname of the user of the command (falling back on display name if there's no nickname defined), `{tousernn}` is the nickname of a specified user (works like `{touser}`), and arguments `{1}` through `{9}`. Arguments `{1}` through `{9}` take whatever arguments are supplied, in order, falling back on `undefined` if not used.
 - `!tempcmds` (or `!tmpcmds`) - This command lists all existing temporary commands.
 - `!greet` - This command can be used to greet one or more users. Use `!greet <user>` to greet another user, `!greet <user1> <user2>...` to greet multiple users, or `!greet all` to greet all known users in the current channel who have chatted in the past hour, other than the user of the command.
 - `!goodbye` (or `!bye` or `!gn` or `!goodnight`) - This command can be used to say good night to a user leaving chat.
@@ -56,6 +55,22 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!pokemon` - This command can be used to get useful information about a Pokémon from a [Pokémon API](https://pokeapi.co/).
 - `!ability` - This command can be used to get the description of a Pokémon ability from a [Pokémon API](https://pokeapi.co/).
 - `!convert` - This command can be used to convert measurements of temperature, length, weight, and volume from one unit to another. The syntax is `!convert <number> <fromUnit> <toUnit>`. Approximate values are used for imperial versus metric units, so there may be some small inconsistencies. For weight units, there is a distinction between a metric ton, US (short) ton, and UK (long) ton. For volume units, imperial cup measurements are used except when converting to metric, in which case the legal US cup is used. The US fluid ounce is also used, rather than the imperial fluid ounce measurement.
+
+## Temporary Commands 🍋️
+Temporary commands are commands that can be made on the fly by anyone, which follow a simple call-and-response pattern. They are "temporary" because they aren't hard-coded into lemony_friend, and will be lost next time it's reset.
+- `!tempcmd` (or `!tmpcmd`) - This command is used to create custom commands that will be active until the next time lemony_friend is rebooted. Use `!tempcmd <commandname> <response...>` to create/edit a command name and reply. You can also use `!tempcmd delete <commandname>` to delete a command, and `!tempcmd rename <oldname> <newname>` to change the name of an existing command.
+
+### Temporary Command Variables
+There are also variables you can use in commands that will be replaced with arguments:
+- `{user}` is the display name of the user of the command.
+- `{usernn}` is the nickname of the user of the command (falling back on display name if there's no nickname defined).
+- `{touser}` is the display name of a specified user (falling back on whatever was input, if that user isn't known, or the user of the command if no input).
+- `{tousernn}` is the nickname of a specified user (works like `{touser}`).
+- `{viewer}` will choose a random viewer in chat who is not an ignored bot, even if they haven't spoken yet.
+- `{number#}` will choose a random number between 1 and `#`, where `#` is the number supplied by the user. Supplying a 0 or negative number will choose a number between that number and zero.
+- `{1}` through `{9}` take whatever arguments are supplied, in order, falling back on `undefined` if not used.
+
+Example: Using `!tempcmd !diceroll {user} rolled a {number6}!` would create a command called `!diceroll` that simulates the user of the command rolling a six-sided die.
 
 ## Command Lemon Interface 🍋️
 If lemony_friend is present in your Twitch channel, or you are a moderator of a channel where lemony_friend is present, you are able to use the command `cli` to adjust lemony_friend's settings and data.
