@@ -1344,6 +1344,7 @@ module.exports = {
             value: 0,
             ...lemonyFresh[channel].count
         }
+        lemonyFresh[channel].list = lemonyFresh[channel]?.list || [``]
         lemonyFresh[channel].hangman = {
             listening: false,
             signup: false,
