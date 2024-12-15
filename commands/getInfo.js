@@ -9,6 +9,8 @@ module.exports = {
 
         const newFeatures = [
             `Implemented new !list feature`,
+            `Fixed bug where the bot may greet the wrong user`,
+            `Rebuilt logic for checking sub/mod/vip for yourself and others including by nickname`,
             `Added new {viewer} and {number#} variables for temporary commands`
         ]
 
