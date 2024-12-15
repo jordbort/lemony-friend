@@ -108,6 +108,7 @@ function handleGreetAll(bot, chatroom, username) {
                 }
             }
         }
+        if (!usersToGreet.length) { return logMessage([`-> No users to greet!`]) }
 
         const greetings = [
             `hello`,
