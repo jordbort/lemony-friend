@@ -3,7 +3,7 @@ const { getNeutralEmote, getPositiveEmote, getNegativeEmote, logMessage, resetCo
 
 module.exports = {
     useCount(props) {
-        const { bot, chatroom, args, channel, } = props
+        const { bot, chatroom, args, channel } = props
         logMessage([`> useCount(channel: '${channel}', count.name: '${lemonyFresh[channel].count.name}', count.value: ${lemonyFresh[channel].count.value}, args:`, `'${args.join(`', '`)}')`])
 
         if (lemonyFresh[channel].timers[`!count`].listening) {
