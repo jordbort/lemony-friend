@@ -7,8 +7,8 @@ const { getLemonEmote, getNeutralEmote, getPositiveEmote, getGreetingEmote, getB
 const { autoBanUser } = require(`./twitch`)
 
 function handleGreetOne(props) {
-    const { bot, chatroom, channel, toUser, userNickname, targetNickname } = props
-    logMessage([`> handleGreetOne(chatroom: '${chatroom}', nickname: ${targetNickname || userNickname})`])
+    const { bot, chatroom, channel, command, userNickname, targetNickname } = props
+    logMessage([`> handleGreetOne(chatroom: '${chatroom}', nickname: '${command === `!greet` ? targetNickname || userNickname : userNickname}')`])
 
     if (lemonyFresh[channel].timers[`greet`].listening) {
         resetCooldownTimer(channel, `greet`)
@@ -26,7 +26,7 @@ function handleGreetOne(props) {
         ]
         const greeting = Math.floor(Math.random() * greetings.length)
 
-        let response = `${greetings[greeting]} ${toUser === BOT_USERNAME ? userNickname : targetNickname || userNickname}`
+        let response = `${greetings[greeting]} ${command === `!greet` ? targetNickname || userNickname : userNickname}`
         const greetingEmote = getGreetingEmote(channel)
 
         // If the greeting is "Howdy"
