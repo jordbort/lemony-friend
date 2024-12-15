@@ -1,0 +1,129 @@
+const { lemonyFresh } = require(`../data`)
+const { getNeutralEmote, getPositiveEmote, getNegativeEmote, getDumbEmote, logMessage, resetCooldownTimer } = require(`../utils`)
+
+function getItem(bot, chatroom, idx) {
+    logMessage([`-> getItem(idx: ${idx})`])
+    const channel = chatroom.substring(1)
+    const listName = lemonyFresh[channel].list[0] || `the list`
+    const negativeEmote = getNegativeEmote(channel)
+
+    lemonyFresh[channel].list[idx] && idx !== 0
+        ? bot.say(chatroom, `#${idx} from ${listName}: ${lemonyFresh[channel].list[idx]}`)
+        : bot.say(chatroom, `#${idx} doesn't exist in ${listName}! ${negativeEmote}`)
+}
+
+function addItem(bot, chatroom, args) {
+    logMessage([`-> addItem(args: '${args.join(`', '`)}')`])
+    const channel = chatroom.substring(1)
+    const listName = lemonyFresh[channel].list[0] || `the list`
+    const newItem = args.slice(1).join(` `)
+    const positiveEmote = getPositiveEmote(channel)
+    const dumbEmote = getDumbEmote(channel)
+
+    if (newItem) {
+        lemonyFresh[channel].list.push(newItem)
+        bot.say(chatroom, `Added #${lemonyFresh[channel].list.length - 1} to ${listName}! ${positiveEmote}`)
+    } else {
+        bot.say(chatroom, `Nothing added to ${listName}! ${dumbEmote}`)
+    }
+}
+
+function editItem(bot, chatroom, args) {
+    logMessage([`-> editItem(args: '${args.join(`', '`)}')`])
+    const channel = chatroom.substring(1)
+    const listName = lemonyFresh[channel].list[0] || `the list`
+    const positiveEmote = getPositiveEmote(channel)
+    const negativeEmote = getNegativeEmote(channel)
+    const dumbEmote = getDumbEmote(channel)
+
+    const idx = Number(args[1])
+    // Index is NaN, zero, or doesn't exist in array
+    if (!idx || !lemonyFresh[channel].list[idx]) { return bot.say(chatroom, `${args[1] ? `#${args[1]}` : `Item`} not found in ${listName}! ${negativeEmote}`) }
+
+    const updatedItem = args.slice(2).join(` `)
+    // No replacement text passed in
+    if (!updatedItem) { return bot.say(chatroom, `#${idx} in ${listName} was not updated! Did you mean to delete it? ${dumbEmote}`) }
+
+    lemonyFresh[channel].list[idx] = updatedItem
+    bot.say(chatroom, `Updated #${idx} in ${listName} to: "${updatedItem}" ${positiveEmote}`)
+}
+
+function deleteItem(bot, chatroom, args) {
+    logMessage([`-> deleteItem(args: '${args.join(`', '`)}')`])
+    const channel = chatroom.substring(1)
+    const listName = lemonyFresh[channel].list[0] || `the list`
+    const positiveEmote = getPositiveEmote(channel)
+    const negativeEmote = getNegativeEmote(channel)
+
+    const idx = Number(args[1])
+    // Index is NaN, zero, or doesn't exist in array
+    if (!idx || !lemonyFresh[channel].list[idx]) { return bot.say(chatroom, `${args[1] ? `#${args[1]}` : `Item`} not found in ${listName}! ${negativeEmote}`) }
+
+    lemonyFresh[channel].list.splice(idx, 1)
+    bot.say(chatroom, `Deleted #${idx} from ${listName}! ${positiveEmote}`)
+}
+
+function renameList(bot, chatroom, args) {
+    logMessage([`-> renameList(args: '${args.join(`', '`)}')`])
+    const channel = chatroom.substring(1)
+    const neutralEmote = getNeutralEmote(channel)
+    const positiveEmote = getPositiveEmote(channel)
+
+    const currentName = lemonyFresh[channel].list[0]
+    const newName = args.slice(1).join(` `)
+    if (currentName === newName) { return bot.say(chatroom, `List name is already ${currentName ? `"${currentName}"` : `blank`}! ${neutralEmote}`) }
+    lemonyFresh[channel].list[0] = newName
+    bot.say(chatroom, `List name ${newName ? `updated ${currentName ? `from "${currentName}" ` : ``}to "${newName}"` : `has been reset from "${currentName}"`}! ${positiveEmote}`)
+}
+
+function clearList(bot, chatroom, resetName) {
+    logMessage([`-> clearList(resetName? ${resetName})`])
+    const channel = chatroom.substring(1)
+    const positiveEmote = getPositiveEmote(channel)
+
+    lemonyFresh[channel].list.length = 1
+    if (resetName) { lemonyFresh[channel].list[0] = `` }
+    const listName = lemonyFresh[channel].list[0] || `The list`
+
+    bot.say(chatroom, `${listName} has been ${resetName ? `reset` : `cleared`}! ${positiveEmote}`)
+}
+
+module.exports = {
+    useList(props) {
+        const { bot, chatroom, args, channel } = props
+        logMessage([`> useList(channel: '${channel}', listName: '${lemonyFresh[channel].list[0]}', items: ${lemonyFresh[channel].list.slice(1).length}, args:`, `'${args.join(`', '`)}')`])
+
+        // Get item by number
+        if (/^-?\d+$/i.test(args[0])) { return getItem(bot, chatroom, Number(args[0])) }
+
+        // Get random item
+        if (/^random$/i.test(args[0])) { return getItem(bot, chatroom, Math.ceil(Math.random() * (lemonyFresh[channel].list.length - 1))) }
+
+        // Add item to list
+        if (/^add$/i.test(args[0])) { return addItem(bot, chatroom, args) }
+
+        // Edit item in list
+        if (/^edit$/i.test(args[0])) { return editItem(bot, chatroom, args) }
+
+        // Delete item from list
+        if (/^delete$/i.test(args[0])) { return deleteItem(bot, chatroom, args) }
+
+        // Name/rename list
+        if (/^(re)?name$/i.test(args[0])) { return renameList(bot, chatroom, args) }
+
+        // Clear list contents
+        if (/^clear$/i.test(args[0])) { return clearList(bot, chatroom, false) }
+
+        // Clear list contents and reset name
+        if (/^reset$/i.test(args[0])) { return clearList(bot, chatroom, true) }
+
+        // No args, or keyword not recognized
+        const listContents = lemonyFresh[channel].list.map((el, idx) => `${idx}) ${el}`)
+        listContents.shift()
+        const dumbEmote = getDumbEmote(channel)
+
+        listContents.length
+            ? bot.say(chatroom, `${lemonyFresh[channel].list[0] || `Here's the list`}: ${listContents.join(`, `)}`)
+            : bot.say(chatroom, `No items are in ${lemonyFresh[channel].list[0] || `the list`}! ${dumbEmote}`)
+    }
+}
