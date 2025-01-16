@@ -8,10 +8,8 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Implemented new !list feature`,
-            `Fixed bug where the bot may greet the wrong user`,
-            `Rebuilt logic for checking sub/mod/vip for yourself and others including by nickname`,
             `Added new {viewer} and {number#} variables for temporary commands`
+            `Added new {streamer}, {random "one" "two" "et cetera"}, {viewer1}, {viewer2}, and {viewer3} variables for temporary commands`
         ]
 
         const timeOptions = {
