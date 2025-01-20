@@ -67,8 +67,11 @@ There are also variables you can use in commands that will be replaced with argu
 - `{usernn}` is the nickname of the user of the command (falling back on display name if there's no nickname defined).
 - `{touser}` is the display name of a specified user (falling back on whatever was input, if that user isn't known, or the user of the command if no input).
 - `{tousernn}` is the nickname of a specified user (works like `{touser}`).
-- `{viewer}` will choose a random viewer in chat who is not an ignored bot, even if they haven't spoken yet.
+- `{viewer}` will choose a random viewer in chat (who is not an ignored bot), even if they haven't spoken yet.
+- `{viewer1}` `{viewer2}` `{viewer3}` can be used to choose up to three different random viewers (who are not ignored bots).
 - `{number#}` will choose a random number between 1 and `#`, where `#` is the number supplied by the user. Supplying a 0 or negative number will choose a number between that number and zero.
+- `{streamer}` is the nickname of whose chatroom the command is used in.
+- `{random "one" "two" "et cetera"}` can be used to provide a list (separate items with quotes) of words/phrases for lemony_friend to choose from at random.
 - `{1}` through `{9}` take whatever arguments are supplied, in order, falling back on `undefined` if not used.
 
 Example: Using `!tempcmd !diceroll {user} rolled a {number6}!` would create a command called `!diceroll` that simulates the user of the command rolling a six-sided die.
