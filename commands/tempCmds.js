@@ -3,7 +3,8 @@ const { lemonyFresh, users, tempCmds } = require(`../data`)
 const { getNeutralEmote, getPositiveEmote, getNegativeEmote, logMessage } = require(`../utils`)
 
 const regexNumber = /\{number(-?\d+)\}/gi
-const regexRandom = /\{random (.*)\}/gi
+const regexRandom = /\{random ("[^"]+" ?)+\}/gi
+const regexQuote = /"(.+?)"/
 
 function applyVariables(str, props) {
     const { args, channel, username, toUser } = props
@@ -47,10 +48,9 @@ function applyVariables(str, props) {
         .replace(/\{8\}/g, args[7])
         .replace(/\{9\}/g, args[8])
         .replace(regexRandom, (occurrence) => {
-            const capturedArr = occurrence.split(regexRandom)[1]
-                .split(`"`)
-                .filter(element => element && element !== ` `)
-                .map(element => element.trim())
+            const capturedArr = occurrence
+                .split(regexQuote)
+                .filter(element => ![`{random `, `}`, ` `].includes(element.toLowerCase()))
             const randomPick = capturedArr[Math.floor(Math.random() * capturedArr.length)]
             return randomPick
         })
