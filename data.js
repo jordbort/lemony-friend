@@ -444,6 +444,12 @@ const lemonyFresh = {
             `!bork`,
             `!maxwell`
         ],
+        list: [
+            `Quotes`,
+            `"please god don't milk me" -trom 2025`,
+            `"is latex cum?" -arty 2025`,
+            `"that's a big shit and a big gig right there" -trom 2025`
+        ]
     },
     domonintendo1: {
         id: 100792658,
@@ -515,6 +521,29 @@ const lemonyFresh = {
             `!remember`,
             `!skittle`,
             `!year`
+        ],
+        list: [
+            `Games`,
+            `Super Paper Mario`,
+            `Captain Toad's Treasure Tracker`,
+            `Animal Crossing`,
+            `Far Cry Vengeance`,
+            `Balatro`,
+            `Subnautica`,
+            `The Legend of Zelda: Skyward Sword`,
+            `Resident Evil 7`,
+            `The Legend of Zelda: Ocarina of Time`,
+            `The Legend of Zelda: Majora's Mask`,
+            `Dying Light`,
+            `Dying Light 2`,
+            `Dying Light 3`,
+            `Kirby: Return to Dreamland`,
+            `Graveyard Keeper`,
+            `Stardew Valley`,
+            `Baba Is You`,
+            `Thank Goodness You're Here!`,
+            `Factorio`,
+            `Odama`
         ]
     },
     ppuyya: {
