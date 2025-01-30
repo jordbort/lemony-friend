@@ -131,7 +131,21 @@ module.exports = {
         // Bot stops listening
         if (self) { return }
 
+        // Acknowledge color change
         if (colorChange) { return handleColorChange(props) }
+
+        // Acknowledge gigantified emote
+        if (tags[`msg-id`] === `gigantified-emote-message`) {
+            const emoteUsed = msg.split(` `)[msg.split(` `).length - 1]
+            const emoteOwner = Object.keys(lemonyFresh).filter(
+                key => typeof lemonyFresh[key] === `object`
+                    && `emotes` in lemonyFresh[key]
+                    && lemonyFresh[key].emotes.includes(emoteUsed))[0]
+                || null
+            logMessage([`> Gigantified ${emoteUsed} owner: ${emoteOwner || `unknown`}, ${BOT_USERNAME} subbed? ${!!users[BOT_USERNAME]?.[emoteOwner]?.sub}`])
+            if (users[BOT_USERNAME]?.[emoteOwner]?.sub) { this.say(chatroom, `BEEG ${emoteUsed}`) }
+        }
+
 
         /**************\
         !COMMANDS PARSER
