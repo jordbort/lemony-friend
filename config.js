@@ -522,7 +522,9 @@ const settings = {
     autoBan: [
         `I want to offer promotion of your channel`,
         `onlyfans`,
-        `viewers on`
+        `viewers on`,
+        `viewers̄`,
+        `viewers ͚on`
     ]
 }
 
