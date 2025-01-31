@@ -35,16 +35,15 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 ## Fun commands 🍋️
 - `!hangman` - This command initiates a game of Hangman and chooses a random word by using the [Rando API](https://random-word-api.vercel.app/). Join the game using `!play`, even after the game has started. A moderator can also manage the game by using `!hangman skip` to skip the current player's turn, and `!hangman end` to stop the game and reveal the answer.
 - `!play` - Use this command to join an active game of Hangman.
-- `!rps` - Use this command to challenge lemony_friend to a game of Rock, Paper, Scissors. You may can use `!rps rock` `!rps paper` `!rps scissors` to specify your move, or simply use `!rps` and a move will be chosen at random.
+- `!rps` - Use this command to challenge lemony_friend to a game of Rock, Paper, Scissors. You can use `!rps rock` `!rps paper` `!rps scissors` to specify your move, or simply use `!rps` and a move will be chosen at random.
 - `!chant` - Use this command to have lemony_friend chant it in all caps in chat..
 - `!yell` - Use this command with a message to send that message across all channels where someone has chatted in the past hour.
-- `!count` - Use this command to check the counter. Each channel lemony_friend is in has a counter set to zero by default. The counter can be added to or subtracted from by using a number (`!count 1` or `!count +` to add one, `!count -1` or `!count -` to subtract one, or any other number). There are also keywords that can be used to adjust the counter. Use `!count set 5` to change the counter directly to five, for example. Use `!count name deaths` to set the custom name of the counter, in case you'd like it to be less generic-sounding. Use `!count reset` to set the counter back to zero, and remove its custom name.
-- `!list` - Use this command to check the stream's list. Each channel lemony_friend is in has a list stored in memory that starts empty. Use `!list add <...>` to add an item to the list. Use `!list #` (where `#` is a number) to get a specific item from the list, or use `!list random` to get a random item from the list. Use `!list edit # <...>` to update the contents of a specific number in the list. Use `!list delete #` to delete a specific item from the list, shifting the items after it back by one. Use `!list name <...>` to give the channel's name a descriptive title other than its generic one, or to remove the name. Use `!list clear` to delete the contents of the list, or `!list reset` to delete the contents of the list, as well as return the list's name back to its default.
 - `!define` (or `!definition` or `!meaning`) - This command can be used followed by a word to look up its definition using an API from [API Ninjas](https://api-ninjas.com/).
 - `!lemon` (or `!lemons`) - This command can be used to check how many lemons the sender (or another user) has.
 - `!lemonboard` (or `!lemonrank`) - This command can be used to check who the top three users are that have the most lemons.
 - `![use]lemon[append?]` - This command is a wildcard that can be used. [Use] can be any verb (or verb phrase), and [append?] could be an optional suffix, if "lemon" is meant to be a descriptor, or possibly to pluralize "lemon" to all "lemons".
 - `!lemonify` - This command can be used to transform another user's message into lemons.
+- `!countdown` (or `!timer`) - This command can be used to start a countdown timer, or check the remaining duration of the countdown timer already running. You can pass in a number (in seconds) to start a new countdown timer. For example, using `!countdown 300` would start a countdown timer that lasts for five minutes.
 - `!insult` - Use this command to generate a random, Mad Libs-style "insult" directed at yourself or another user. You can add your own verbs, nouns, and adjectives to its word bank by using the respective commands.
 - `!verbs` (or `!verb` or `!v`) - Use this command to add to the list of verbs Lemony Friend knows.
 - `!nouns` (or `!noun` or `!n`) - Use this command to add to the list of nouns Lemony Friend knows.
@@ -56,6 +55,30 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!pokemon` - This command can be used to get useful information about a Pokémon from a [Pokémon API](https://pokeapi.co/).
 - `!ability` - This command can be used to get the description of a Pokémon ability from a [Pokémon API](https://pokeapi.co/).
 - `!convert` - This command can be used to convert measurements of temperature, length, weight, and volume from one unit to another. The syntax is `!convert <number> <fromUnit> <toUnit>`. Approximate values are used for imperial versus metric units, so there may be some small inconsistencies. For weight units, there is a distinction between a metric ton, US (short) ton, and UK (long) ton. For volume units, imperial cup measurements are used except when converting to metric, in which case the legal US cup is used. The US fluid ounce is also used, rather than the imperial fluid ounce measurement.
+
+## Count 🍋️
+Each channel lemony_friend is in has a generic, unnamed counter, set to zero by default. It has a wide range of use cases, depending on what you'd like to keep count of. Here is a list of commands you can use:
+- `!count` - Check the counter's current value.
+- `!count +` (or `!count 1`) - Increment the counter's value by 1.
+- `!count -` (or `!count -1`) - Decrement the counter's value by 1.
+- `!count <number>` - Increment or decrement the counter's value by some number.
+- `!count set <number>` - Set the counter's value directly.
+- `!count name <...>` - Set the name of the counter to something other than its generic name.
+- `!count reset` to set the counter back to zero, and remove its custom name.
+
+## List 🍋️
+Each channel lemony_friend is in has a generic, unnamed list, empty by default. Items in the list are stored in a numbered order, but can also be used for unordered items as well. Here is a list of commands you can use:
+- `!list` - Check the stream's list.
+- `!list add <...>` - Add an item to the list.
+- `!list <number>` - Recall a specific item from the list by its number.
+- `!list random` - Recall an item from the list at random.
+- `!list edit <number> <...>` - Update the contents of a specific number in the list.
+- `!list delete <number>` - Delete a specific item from the list, shifting the items after it back by one.
+- `!list swap <number1> <number2>` (or - `!list switch <number1> <number2>`) - Have two items trade positions in the list, where `<number1>` and `<number2>` are the current positions of the items to swap.
+- `!list move <number1> <number2>` - Move one item into a new position in the list, where `<number1>` is its current position, and `<number2>` is the new position you'd like it to be in. All items in between those positions will shift their positions accordingly.
+- `!list name <...>` - Give the list's name a descriptive title other than its generic one, or with no name to return the list's name back to its default.
+- `!list clear` - Delete all the contents of the list (keeps the list's name).
+- `!list reset` - Delete all the contents of the list, and clear the list's name.
 
 ## Temporary Commands 🍋️
 Temporary commands are commands that can be made on the fly by anyone, which follow a simple call-and-response pattern. They are "temporary" because they aren't hard-coded into lemony_friend, and will be lost next time it's reset.

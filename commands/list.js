@@ -1,5 +1,5 @@
 const { lemonyFresh } = require(`../data`)
-const { getNeutralEmote, getPositiveEmote, getNegativeEmote, getDumbEmote, logMessage, resetCooldownTimer } = require(`../utils`)
+const { getNeutralEmote, getPositiveEmote, getNegativeEmote, getDumbEmote, logMessage } = require(`../utils`)
 
 function getItem(bot, chatroom, idx) {
     logMessage([`-> getItem(idx: ${idx})`])
@@ -63,6 +63,64 @@ function deleteItem(bot, chatroom, args) {
     bot.say(chatroom, `Deleted #${idx} from ${listName}! ${positiveEmote}`)
 }
 
+function swapItems(bot, chatroom, args) {
+    logMessage([`-> swapItems(args: '${args.join(`', '`)}')`])
+    const channel = chatroom.substring(1)
+    const listName = lemonyFresh[channel].list[0] || `the list`
+    const positiveEmote = getPositiveEmote(channel)
+    const neutralEmote = getNeutralEmote(channel)
+    const negativeEmote = getNegativeEmote(channel)
+
+    if (args.length < 3) {
+        bot.say(chatroom, `Please provide two numbers to be swapped! ${neutralEmote}`)
+        return
+    }
+
+    const idxOne = Number(args[1])
+    const idxTwo = Number(args[2])
+    // Either index is NaN, zero, or doesn't exist in array
+    if (!idxOne || !lemonyFresh[channel].list[idxOne]) { return bot.say(chatroom, `${args[1] ? `#${args[1]}` : `Item`} not found in ${listName}! ${negativeEmote}`) }
+    if (!idxTwo || !lemonyFresh[channel].list[idxTwo]) { return bot.say(chatroom, `${args[2] ? `#${args[2]}` : `Item`} not found in ${listName}! ${negativeEmote}`) }
+
+    const value = lemonyFresh[channel].list[idxOne]
+    lemonyFresh[channel].list[idxOne] = lemonyFresh[channel].list[idxTwo]
+    lemonyFresh[channel].list[idxTwo] = value
+
+    bot.say(chatroom, `Swapped #${idxOne} and #${idxTwo} in ${listName}! ${positiveEmote}`)
+}
+
+function moveItems(bot, chatroom, args) {
+    logMessage([`-> moveItems(args: '${args.join(`', '`)}')`])
+    const channel = chatroom.substring(1)
+    const listName = lemonyFresh[channel].list[0] || `the list`
+    const positiveEmote = getPositiveEmote(channel)
+    const neutralEmote = getNeutralEmote(channel)
+    const negativeEmote = getNegativeEmote(channel)
+
+    if (args.length < 3) {
+        bot.say(chatroom, `Please provide two numbers: the current position and its new position! ${neutralEmote}`)
+        return
+    }
+
+    const idxOne = Number(args[1])
+    const idxTwo = Number(args[2])
+    // Either index is NaN, zero, or doesn't exist in array
+    if (!idxOne || !lemonyFresh[channel].list[idxOne]) { return bot.say(chatroom, `${args[1] ? `#${args[1]}` : `Item`} not found in ${listName}! ${negativeEmote}`) }
+    if (!idxTwo || !lemonyFresh[channel].list[idxTwo]) { return bot.say(chatroom, `${args[2] ? `#${args[2]}` : `Item`} not found in ${listName}! ${negativeEmote}`) }
+
+    if (idxOne > idxTwo) {
+        const value = lemonyFresh[channel].list[idxOne]
+        for (let i = idxOne; i > idxTwo; i--) { lemonyFresh[channel].list[i] = lemonyFresh[channel].list[i - 1]}
+        lemonyFresh[channel].list[idxTwo] = value
+    } else if (idxOne < idxTwo) {
+        const value = lemonyFresh[channel].list[idxOne]
+        for (let i = idxOne; i < idxTwo; i++) { lemonyFresh[channel].list[i] = lemonyFresh[channel].list[i + 1]}
+        lemonyFresh[channel].list[idxTwo] = value
+    }
+
+    bot.say(chatroom, `Moved #${idxOne} in ${listName} to position #${idxTwo}! ${positiveEmote}`)
+}
+
 function renameList(bot, chatroom, args) {
     logMessage([`-> renameList(args: '${args.join(`', '`)}')`])
     const channel = chatroom.substring(1)
@@ -104,6 +162,12 @@ module.exports = {
 
         // Edit item in list
         if (/^edit$/i.test(args[0])) { return editItem(bot, chatroom, args) }
+
+        // Swap/switch items in list
+        if (/^swap$|^switch$/i.test(args[0])) { return swapItems(bot, chatroom, args) }
+
+        // Move items in list
+        if (/^move$/i.test(args[0])) { return moveItems(bot, chatroom, args) }
 
         // Delete item from list
         if (/^delete$/i.test(args[0])) { return deleteItem(bot, chatroom, args) }

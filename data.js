@@ -196,7 +196,9 @@ const lemonyFresh = {
             `!where`,
             `!luigi`,
             `!water`,
-            `!balloon`
+            `!balloon`,
+            `!hello`,
+            `!litterbee`
         ],
     },
     sclarf: {

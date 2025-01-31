@@ -3,6 +3,7 @@ const { useList } = require(`./list`)
 const { useCount } = require(`./count`)
 const { convert } = require(`./convert`)
 const { sayGoals } = require(`./sayGoals`)
+const { countdown } = require(`./countdown`)
 const { rockPaperScissors } = require(`./rps`)
 const { lemonTopThree } = require(`./lemonRank`)
 const { handleLemonify } = require(`./lemonify`)
@@ -44,6 +45,9 @@ module.exports = {
     '!convert': convert,
 
     '!time': getTime,
+
+    '!countdown': countdown,
+    '!timer': countdown,
 
     '!goal': sayGoals,
     '!goals': sayGoals,

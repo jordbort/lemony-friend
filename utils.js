@@ -1370,6 +1370,14 @@ module.exports = {
             'say-mood': { cooldown: 0, listening: true },
             ...lemonyFresh[channel].timers
         }
+        lemonyFresh[channel].countdown = {
+            startedAt: 0,
+            duration: 0,
+            full: 0,
+            half: 0,
+            lastTen: 0,
+            ...lemonyFresh[channel].countdown
+        }
     },
     updateMod(chatroom, tags, self, username) {
         if (!(username in mods)) {

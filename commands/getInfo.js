@@ -8,6 +8,9 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
+            `Added !countdown (!timer) feature`,
+            `Implemented !list swap/switch # # method`,
+            `Implemented !list move # # method`,
             `Fixed logic for multiple {random "" ""} uses`,
             `Added acknowledgement of gigantified emotes`
         ]
