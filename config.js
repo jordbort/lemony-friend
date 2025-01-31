@@ -73,7 +73,8 @@ const settings = {
     hangmanLemonThreshold: 2,
     chantCount: 8,
     chantEmote: `👏️`,
-    pokeballQuantity: 50,
+    pokeballQuantity: 15,
+    maxCountdownDuration: 7200000,
     ignoredBots: [
         BOT_USERNAME,
         `blerp`,
@@ -521,7 +522,9 @@ const settings = {
     autoBan: [
         `I want to offer promotion of your channel`,
         `onlyfans`,
-        `viewers on`
+        `viewers on`,
+        `viewers̄`,
+        `viewers ͚on`
     ]
 }
 
