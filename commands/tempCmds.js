@@ -2,16 +2,70 @@ const { settings } = require(`../config`)
 const { lemonyFresh, users, tempCmds } = require(`../data`)
 const { getNeutralEmote, getPositiveEmote, getNegativeEmote, logMessage } = require(`../utils`)
 
-const regexNumber = /\{number(-?\d+)\}/i
+const regexNumber = /\{number(-?\d+)\}/gi
+const regexRandom = /\{random ("[^"]+" ?)+\}/gi
+const regexQuote = /"(.+?)"/
+
+function applyVariables(str, props) {
+    const { args, channel, username, toUser } = props
+    logMessage([`-> applyVariables(str: ${str}, args:`, `'${args.join(`', '`)}'`, `)`])
+
+    const viewers = lemonyFresh[channel].viewers.filter(viewer => !settings.ignoredBots.includes(viewer))
+    const randomViewerOne = viewers[Math.floor(Math.random() * viewers.length)]
+
+    let randomViewerTwo = viewers[Math.floor(Math.random() * viewers.length)]
+    if (viewers.length > 1) {
+        while (randomViewerTwo === randomViewerOne) {
+            randomViewerTwo = viewers[Math.floor(Math.random() * viewers.length)]
+        }
+    }
+
+    let randomViewerThree = viewers[Math.floor(Math.random() * viewers.length)]
+    if (viewers.length > 2) {
+        while (randomViewerThree === randomViewerOne || randomViewerThree === randomViewerTwo) {
+            randomViewerThree = viewers[Math.floor(Math.random() * viewers.length)]
+        }
+    }
+
+    const newStr = str
+        .replace(/\{user\}/gi, users[username].displayName)
+        .replace(/\{touser\}/gi, users[toUser]?.displayName || args[0] || users[username].displayName)
+        .replace(/\{usernn\}/gi, users[username].nickname || users[username].displayName)
+        .replace(/\{tousernn\}/gi, users[toUser]?.nickname || users[toUser]?.displayName || args[0] || users[username].nickname || users[username].displayName)
+        .replace(/\{streamer\}/gi, users[channel]?.nickname || users[channel]?.displayName || channel)
+        .replace(/\{viewer\}/gi, users[randomViewerOne]?.nickname || users[randomViewerOne]?.displayName || randomViewerOne)
+        .replace(/\{viewer1\}/gi, users[randomViewerOne]?.nickname || users[randomViewerOne]?.displayName || randomViewerOne)
+        .replace(/\{viewer2\}/gi, users[randomViewerTwo]?.nickname || users[randomViewerTwo]?.displayName || randomViewerTwo)
+        .replace(/\{viewer3\}/gi, users[randomViewerThree]?.nickname || users[randomViewerThree]?.displayName || randomViewerThree)
+        .replace(regexNumber, (occurrence) => Math.ceil(Math.random() * Number(occurrence.split(regexNumber)[1])))
+        .replace(/\{1\}/g, args[0])
+        .replace(/\{2\}/g, args[1])
+        .replace(/\{3\}/g, args[2])
+        .replace(/\{4\}/g, args[3])
+        .replace(/\{5\}/g, args[4])
+        .replace(/\{6\}/g, args[5])
+        .replace(/\{7\}/g, args[6])
+        .replace(/\{8\}/g, args[7])
+        .replace(/\{9\}/g, args[8])
+        .replace(regexRandom, (occurrence) => {
+            const capturedArr = occurrence
+                .split(regexQuote)
+                .filter(element => ![`{random `, `}`, ` `].includes(element.toLowerCase()))
+            const randomPick = capturedArr[Math.floor(Math.random() * capturedArr.length)]
+            return randomPick
+        })
+
+    return newStr
+}
 
 module.exports = {
     handleTempCmd(props) {
         const { bot, chatroom, args, channel, userNickname } = props
-        logMessage([`> handleTempCmd(chatroom: ${chatroom}, args:`, args, `)`])
+        logMessage([`> handleTempCmd(chatroom: ${chatroom}, args:`, `'${args.join(`', '`)}'`, `)`])
 
         const positiveEmote = getPositiveEmote(channel)
         const neutralEmote = getNeutralEmote(channel)
-        if (!args[1]) { return bot.say(chatroom, `Hey ${userNickname}, say "!tempcmd <command_name> <command_response>..." to add/edit a command, or say "!tempcmd delete <command_name>" to delete a command. You can also use !tempcmds to view all of them! :)${neutralEmote}`) }
+        if (!args[1]) { return bot.say(chatroom, `Hey ${userNickname}, say "!tempcmd <command_name> <command_response>..." to add/edit a command, or say "!tempcmd delete <command_name>" to delete a command. You can also use !tempcmds to view all of them! ${neutralEmote}`) }
 
         const negativeEmote = getNegativeEmote(channel)
         if (/^delete$/i.test(args[0])) {
@@ -35,35 +89,17 @@ module.exports = {
     },
     getTempCmds(props) {
         const { bot, chatroom, args, channel } = props
-        logMessage([`> getTempCmds(chatroom: ${chatroom}, args:`, args, `)`])
+        logMessage([`> getTempCmds(chatroom: ${chatroom}, args:`, `'${args.join(`', '`)}'`, `)`])
 
         const negativeEmote = getNegativeEmote(channel)
         const commands = Object.keys(tempCmds).map((key) => `${key} => "${tempCmds[key]}"`)
         bot.say(chatroom, `There ${commands.length === 1 ? `is` : `are`} ${commands.length} temporary command${commands.length === 1 ? `` : `s`}${commands.length === 0 ? `! ${negativeEmote}` : `: ${commands.join(', ')}`}`)
     },
     useTempCmd(props) {
-        const { bot, chatroom, args, command, channel, username, toUser, } = props
-        logMessage([`> useTempCmd(channel: ${channel}, command: ${command}, response: ${tempCmds[command]})`])
+        const { bot, chatroom, command } = props
+        logMessage([`> useTempCmd(command: ${command}, response: ${tempCmds[command]})`])
 
-        const viewers = lemonyFresh[channel].viewers.filter(viewer => !settings.ignoredBots.includes(viewer))
-        const randomViewer = viewers[Math.floor(Math.random() * viewers.length)]
-        const response = tempCmds[command]
-            .replace(/\{user\}/i, users[username].displayName)
-            .replace(/\{touser\}/i, users[toUser]?.displayName || args[0] || users[username].displayName)
-            .replace(/\{usernn\}/i, users[username].nickname || users[username].displayName)
-            .replace(/\{tousernn\}/i, users[toUser]?.nickname || users[toUser]?.displayName || args[0] || users[username].nickname || users[username].displayName)
-            .replace(/\{viewer\}/i, users[randomViewer]?.nickname || users[randomViewer]?.displayName || randomViewer)
-            .replace(regexNumber, Math.ceil(Math.random() * Number(tempCmds[command].split(regexNumber)[1])))
-            .replace(/\{1\}/i, args[0])
-            .replace(/\{2\}/i, args[1])
-            .replace(/\{3\}/i, args[2])
-            .replace(/\{4\}/i, args[3])
-            .replace(/\{5\}/i, args[4])
-            .replace(/\{6\}/i, args[5])
-            .replace(/\{7\}/i, args[6])
-            .replace(/\{8\}/i, args[7])
-            .replace(/\{9\}/i, args[8])
-
+        const response = applyVariables(tempCmds[command], props)
         bot.say(chatroom, response)
     }
 }
