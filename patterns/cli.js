@@ -155,6 +155,17 @@ function updateDuration(bot, chatroom, obj, message, name, args) {
     bot.say(chatroom, `/me ${message} must be between 0-120 (currently: ${obj[name]} seconds)`)
 }
 
+function updateLargeNum(bot, chatroom, obj, message, name, args) {
+    logMessage([`> updateLargeNum(chatroom: '${chatroom}', name: '${name}', args:`, args.join(`, `), `)`])
+
+    if (Number(args[0]) >= 1 && Number(args[0]) <= 9999999) {
+        obj[name] = Math.round(Number(args[0]))
+        return bot.say(chatroom, `/me ${message} set to: ${obj[name]}`)
+    }
+
+    bot.say(chatroom, `/me ${message} must be between 1-9999999 (currently: ${obj[name]})`)
+}
+
 function deleteUser(bot, chatroom, obj, message, name, args) {
     logMessage([`> deleteUser(chatroom: '${chatroom}', name: '${name}', args:`, args.join(`, `), `)`])
     delete users[name]
@@ -333,6 +344,7 @@ function updateSettingsDev(props, args) {
         [/^autoBan$|^ab$/i]: { name: `autoBan`, func: updatePhraseArr },
         [/^ignoredBots$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
         [/^pokeballQuantity$|^pq$/i]: { name: `pokeballQuantity`, func: updateNum },
+        [/^maxCountdownDuration$|^mcd$/i]: { name: `maxCountdownDuration`, func: updateLargeNum },
         [/^debug$|^d$/i]: { name: `debug`, func: updateBool },
         [/^timeZone$|^tz$/i]: { name: `timeZone`, func: updateTimeZone },
         [/^timeLocale$|^tl$/i]: { name: `timeLocale`, func: updateTimeLocale },
@@ -364,7 +376,7 @@ function updateSettingsDev(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for "settings": autoBan (ab), ignoredBots (ib), pokeballQuantity (pq), debug (d), timeZone (tz), timeLocale (tl), realRPS (rps), funNumberCount (fnc), funNumberTotal (fnt), streakThreshold (st), streamerEmoteStreakThreshold (sest), hangmanSignupSeconds (hss), hangmanChances (hc), hangmanLemonThreshold (hlt), chantCount (cc), chantEmote (ce), baseEmotes (be), botMood (m)`)
+    bot.say(chatroom, `/me Options for "settings": autoBan (ab), ignoredBots (ib), pokeballQuantity (pq), maxCountdownDuration (mcd), debug (d), timeZone (tz), timeLocale (tl), realRPS (rps), funNumberCount (fnc), funNumberTotal (fnt), streakThreshold (st), streamerEmoteStreakThreshold (sest), hangmanSignupSeconds (hss), hangmanChances (hc), hangmanLemonThreshold (hlt), chantCount (cc), chantEmote (ce), baseEmotes (be), botMood (m)`)
 }
 
 function updateSettings(props, args) {

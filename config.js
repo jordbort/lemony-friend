@@ -74,6 +74,7 @@ const settings = {
     chantCount: 8,
     chantEmote: `👏️`,
     pokeballQuantity: 15,
+    maxCountdownDuration: 7200000,
     ignoredBots: [
         BOT_USERNAME,
         `blerp`,
