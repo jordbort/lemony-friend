@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { users } = require(`../data`)
-const { getNeutralEmote, getHypeEmote, getPositiveEmote, getNegativeEmote, logMessage } = require(`../utils`)
+const { getNeutralEmote, getHypeEmote, getPositiveEmote, getNegativeEmote, logMessage, renderObj } = require(`../utils`)
 
 module.exports = {
     sayCommands(props) {
@@ -19,10 +19,14 @@ module.exports = {
     },
     getStats(props) {
         const { bot, chatroom, username, user, toUser, target } = props
-        logMessage([`> getStats(chatroom: ${chatroom})`])
+        logMessage([`> getStats(chatroom: "${chatroom}", user: "${toUser || username}")`])
+        if (toUser && !(toUser in users)) {
+            logMessage([`-> "${toUser}" isn't a known user!`])
+            return
+        }
 
         const stats = target || user
-        logMessage([`${toUser || username}:`, stats])
+        logMessage([renderObj(stats, toUser || username)])
 
         let data = `${toUser || username}: { id: ${stats.id}, displayName: '${stats.displayName}', nickname: '${stats.nickname}', color: '${stats.color}', lemons: ${stats.lemons}, hangmanWins: ${stats.hangmanWins}`
         for (const key of Object.keys(stats)) {
