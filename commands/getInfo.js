@@ -8,11 +8,10 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Added !countdown (!timer) feature`,
-            `Implemented !list swap/switch # # method`,
-            `Implemented !list move # # method`,
-            `Fixed logic for multiple {random "" ""} uses`,
-            `Added acknowledgement of gigantified emotes`
+            `Fixed !countdown (!timer) bug`,
+            `Updated tempcmd variable flexibility`,
+            `Added !tempcmd check <command_name>`,
+            `Changed the way all !tempcmds are rendered`
         ]
 
         const timeOptions = {
