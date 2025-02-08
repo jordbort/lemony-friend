@@ -10,6 +10,8 @@ function stopCountdown(bot, chatroom) {
     clearTimeout(lemonyFresh[channel].countdown.full)
     clearTimeout(lemonyFresh[channel].countdown.half)
     clearTimeout(lemonyFresh[channel].countdown.lastTen)
+    lemonyFresh[channel].countdown.startedAt = 0
+    lemonyFresh[channel].countdown.duration = 0
     lemonyFresh[channel].countdown.full = 0
     lemonyFresh[channel].countdown.half = 0
     lemonyFresh[channel].countdown.lastTen = 0
