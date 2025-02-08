@@ -569,8 +569,8 @@ const lemonyFresh = {
         ],
         accessToken: ASTRAL_AN0MALY_ACCESS_TOKEN,
         refreshToken: ASTRAL_AN0MALY_REFRESH_TOKEN,
-        subRaidMessage: `astral332Pophype astral332Pophi astral332Pop ASS RAID astral332Pop astral332Pophi astral332Pophype`,
-        noSubRaidMessage: `CorgiDerp ASS RAID CorgiDerp`
+        subRaidMessage: `astral332Pophype astral332Pophi astral332Pop ASTRAL RAID astral332Pop astral332Pophi astral332Pophype`,
+        noSubRaidMessage: `CorgiDerp ASTRAL RAID CorgiDerp`
     },
     dirtyd0inks: {
         id: 840745958,
