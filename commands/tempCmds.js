@@ -1,6 +1,6 @@
 const { settings } = require(`../config`)
 const { lemonyFresh, users, tempCmds } = require(`../data`)
-const { getNeutralEmote, getPositiveEmote, getNegativeEmote, logMessage } = require(`../utils`)
+const { getNeutralEmote, getPositiveEmote, getNegativeEmote, logMessage, pluralize } = require(`../utils`)
 
 const regexNumber = /\{\s?number\s?(-?\d+)\s?\}/gi
 const regexRandom = /\{\s?random\s?("[^"]+"\s?)+\s?\}/gi
@@ -73,6 +73,9 @@ module.exports = {
             if (!(args[1].toLowerCase() in tempCmds)) { return bot.say(chatroom, `No command "${args[1].toLowerCase()}" was found! ${negativeEmote}`) }
             delete tempCmds[args[1].toLowerCase()]
             bot.say(chatroom, `Command "${args[1].toLowerCase()}" has been deleted! ${positiveEmote}`)
+        } else if (/^check$/i.test(args[0])) {
+            if (!(args[1].toLowerCase() in tempCmds)) { return bot.say(chatroom, `No command "${args[1].toLowerCase()}" was found! ${negativeEmote}`) }
+            bot.say(chatroom, `Command "${args[1].toLowerCase()}" => ${tempCmds[args[1].toLowerCase()]}`)
         } else if (/^rename$/i.test(args[0])) {
             if (!(args[1].toLowerCase() in tempCmds)) { return bot.say(chatroom, `No command "${args[1].toLowerCase()}" was found! ${negativeEmote}`) }
             if (!args[2]) { return bot.say(chatroom, `Hey ${userNickname}, I need to know what you want me to rename ${args[1].toLowerCase()} to! :O`) }
@@ -93,8 +96,8 @@ module.exports = {
         logMessage([`> getTempCmds(chatroom: ${chatroom}, args:`, `'${args.join(`', '`)}'`, `)`])
 
         const negativeEmote = getNegativeEmote(channel)
-        const commands = Object.keys(tempCmds).map((key) => `${key} => "${tempCmds[key]}"`)
-        bot.say(chatroom, `There ${commands.length === 1 ? `is` : `are`} ${commands.length} temporary command${commands.length === 1 ? `` : `s`}${commands.length === 0 ? `! ${negativeEmote}` : `: ${commands.join(', ')}`}`)
+        const commands = Object.keys(tempCmds)
+        bot.say(chatroom, `There ${commands.length === 1 ? `is` : `are`} ${pluralize(commands.length, `temporary command`, `temporary commands`)}${commands.length === 0 ? `! ${negativeEmote}` : `: ${commands.join(`, `)}`}`)
     },
     useTempCmd(props) {
         const { bot, chatroom, command } = props
