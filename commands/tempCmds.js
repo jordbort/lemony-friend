@@ -2,8 +2,9 @@ const { settings } = require(`../config`)
 const { lemonyFresh, users, tempCmds } = require(`../data`)
 const { getNeutralEmote, getPositiveEmote, getNegativeEmote, logMessage } = require(`../utils`)
 
-const regexNumber = /\{number(-?\d+)\}/gi
-const regexRandom = /\{random ("[^"]+" ?)+\}/gi
+const regexNumber = /\{\s?number\s?(-?\d+)\s?\}/gi
+const regexRandom = /\{\s?random\s?("[^"]+"\s?)+\s?\}/gi
+const regexExclusion = /^$|^\s$|^\s?\}$|^\{\s?random\s?$/i
 const regexQuote = /"(.+?)"/
 
 function applyVariables(str, props) {
@@ -28,29 +29,29 @@ function applyVariables(str, props) {
     }
 
     const newStr = str
-        .replace(/\{user\}/gi, users[username].displayName)
-        .replace(/\{touser\}/gi, users[toUser]?.displayName || args[0] || users[username].displayName)
-        .replace(/\{usernn\}/gi, users[username].nickname || users[username].displayName)
-        .replace(/\{tousernn\}/gi, users[toUser]?.nickname || users[toUser]?.displayName || args[0] || users[username].nickname || users[username].displayName)
-        .replace(/\{streamer\}/gi, users[channel]?.nickname || users[channel]?.displayName || channel)
-        .replace(/\{viewer\}/gi, users[randomViewerOne]?.nickname || users[randomViewerOne]?.displayName || randomViewerOne)
-        .replace(/\{viewer1\}/gi, users[randomViewerOne]?.nickname || users[randomViewerOne]?.displayName || randomViewerOne)
-        .replace(/\{viewer2\}/gi, users[randomViewerTwo]?.nickname || users[randomViewerTwo]?.displayName || randomViewerTwo)
-        .replace(/\{viewer3\}/gi, users[randomViewerThree]?.nickname || users[randomViewerThree]?.displayName || randomViewerThree)
+        .replace(/\{\s?user\s?\}/gi, users[username].displayName)
+        .replace(/\{\s?touser\s?\}/gi, users[toUser]?.displayName || args[0] || users[username].displayName)
+        .replace(/\{\s?usernn\s?\}/gi, users[username].nickname || users[username].displayName)
+        .replace(/\{\s?tousernn\s?\}/gi, users[toUser]?.nickname || users[toUser]?.displayName || args[0] || users[username].nickname || users[username].displayName)
+        .replace(/\{\s?streamer\s?\}/gi, users[channel]?.nickname || users[channel]?.displayName || channel)
+        .replace(/\{\s?viewer\s?\}/gi, users[randomViewerOne]?.nickname || users[randomViewerOne]?.displayName || randomViewerOne)
+        .replace(/\{\s?viewer\s?1\s?\}/gi, users[randomViewerOne]?.nickname || users[randomViewerOne]?.displayName || randomViewerOne)
+        .replace(/\{\s?viewer\s?2\s?\}/gi, users[randomViewerTwo]?.nickname || users[randomViewerTwo]?.displayName || randomViewerTwo)
+        .replace(/\{\s?viewer\s?3\s?\}/gi, users[randomViewerThree]?.nickname || users[randomViewerThree]?.displayName || randomViewerThree)
         .replace(regexNumber, (occurrence) => Math.ceil(Math.random() * Number(occurrence.split(regexNumber)[1])))
-        .replace(/\{1\}/g, args[0])
-        .replace(/\{2\}/g, args[1])
-        .replace(/\{3\}/g, args[2])
-        .replace(/\{4\}/g, args[3])
-        .replace(/\{5\}/g, args[4])
-        .replace(/\{6\}/g, args[5])
-        .replace(/\{7\}/g, args[6])
-        .replace(/\{8\}/g, args[7])
-        .replace(/\{9\}/g, args[8])
+        .replace(/\{\s?1\s?\}/g, args[0])
+        .replace(/\{\s?2\s?\}/g, args[1])
+        .replace(/\{\s?3\s?\}/g, args[2])
+        .replace(/\{\s?4\s?\}/g, args[3])
+        .replace(/\{\s?5\s?\}/g, args[4])
+        .replace(/\{\s?6\s?\}/g, args[5])
+        .replace(/\{\s?7\s?\}/g, args[6])
+        .replace(/\{\s?8\s?\}/g, args[7])
+        .replace(/\{\s?9\s?\}/g, args[8])
         .replace(regexRandom, (occurrence) => {
             const capturedArr = occurrence
                 .split(regexQuote)
-                .filter(element => ![`{random `, `}`, ` `].includes(element.toLowerCase()))
+                .filter(element => !regexExclusion.test(element))
             const randomPick = capturedArr[Math.floor(Math.random() * capturedArr.length)]
             return randomPick
         })
