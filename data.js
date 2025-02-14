@@ -473,7 +473,8 @@ const lemonyFresh = {
             `domoni6Love`,
             `domoni6Boom`,
             `domoni6Kek`,
-            `domoni6Mingo`
+            `domoni6Mingo`,
+            `domoni6Point`
         ],
         bttvEmotes: [
             `catJAM`,
@@ -531,6 +532,7 @@ const lemonyFresh = {
         list: [
             `Games`,
             `Super Paper Mario`,
+            `Okami`,
             `Captain Toad's Treasure Tracker`,
             `Animal Crossing`,
             `Far Cry Vengeance`,
