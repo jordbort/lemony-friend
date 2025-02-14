@@ -129,10 +129,12 @@ module.exports = {
                     logMessage([`-> ${username} added to ${channel}'s Hangman players: ${hangman.players.join(`, `)}`])
                 }
             } else if (!hangman.players.includes(username)) {
+                const lastPlayerUsername = hangman.players[hangman.players.length - 1]
+                const lastPlayerNickname = users[lastPlayerUsername].nickname || users[lastPlayerUsername].displayName
                 hangman.players.push(username)
                 logMessage([`-> ${username} added to ${channel}'s Hangman players: ${hangman.players.join(`, `)}}`])
                 const positiveEmote = getPositiveEmote(channel)
-                bot.say(chatroom, `${userNickname}, you can still hop in, you'll go after everyone else! ${positiveEmote}`)
+                bot.say(chatroom, `${userNickname}, you can still hop in, you'll go after ${lastPlayerNickname}! ${positiveEmote}`)
             }
         } else {
             logMessage([`-> Hangman game is not currently in progress for ${channel}`])
