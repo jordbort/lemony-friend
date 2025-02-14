@@ -5,8 +5,10 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 const fs = require(`fs/promises`)
 
 const { makeLogs } = require(`./commands/makeLogs`)
-const { lemonyFresh, users, commonNicknames, startingLemons, mods, knownTags, tempCmds } = require(`./data`)
+const { lemonyFresh, users, commonNicknames, startingLemons, hangmanWins, mods, knownTags, tempCmds } = require(`./data`)
 const { settings, resetTxt, grayTxt, whiteTxt, yellowBg, chatColors } = require(`./config`)
+
+const twitchUsernamePattern = /^[a-z0-9_]{4,25}$/i
 
 function getLemonEmote() {
     // const lemonEmotes = [...settings.baseEmotes.lemonEmotes]
@@ -1245,6 +1247,7 @@ const numbers = [
 
 module.exports = {
     numbers,
+    twitchUsernamePattern,
     getLemonEmote,
     getNeutralEmote,
     getHypeEmote,
@@ -1300,16 +1303,22 @@ module.exports = {
             hangmanWins: 0
         }
 
-        // Restore lemons
+        // Apply nickname
         if (username in commonNicknames) {
             users[username].nickname = commonNicknames[username]
             delete commonNicknames[username]
         }
 
-        // Apply nickname
+        // Restore lemons
         if (username in startingLemons) {
             users[username].lemons += startingLemons[username]
             delete startingLemons[username]
+        }
+
+        // Restore Hangman wins
+        if (username in hangmanWins) {
+            users[username].hangmanWins += hangmanWins[username]
+            delete hangmanWins[username]
         }
     },
     initUserChannel(tags, username, channel) {
@@ -1485,7 +1494,6 @@ module.exports = {
         }
     },
     getUsername(str) {
-        const twitchUsernamePattern = /^[a-z0-9_]{4,25}$/i
         return str
             ? str.replace(/^[@#]/g, ``).match(twitchUsernamePattern)
                 ? str.replace(/^[@#]/g, ``)

@@ -73,7 +73,8 @@ const settings = {
     hangmanLemonThreshold: 2,
     chantCount: 8,
     chantEmote: `👏️`,
-    pokeballQuantity: 15,
+    playPCG: true,
+    pokeballQuantity: 10,
     maxCountdownDuration: 7200000,
     ignoredBots: [
         BOT_USERNAME,

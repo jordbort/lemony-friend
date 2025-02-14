@@ -27,6 +27,9 @@ const ARTYINPINK_REFRESH_TOKEN = process.env.ARTYINPINK_REFRESH_TOKEN
 const THETARASTARK_ACCESS_TOKEN = process.env.THETARASTARK_ACCESS_TOKEN
 const THETARASTARK_REFRESH_TOKEN = process.env.THETARASTARK_REFRESH_TOKEN
 
+const SLEBTV_ACCESS_TOKEN = process.env.SLEBTV_ACCESS_TOKEN
+const SLEBTV_REFRESH_TOKEN = process.env.SLEBTV_REFRESH_TOKEN
+
 const CATJERKY_ACCESS_TOKEN = process.env.CATJERKY_ACCESS_TOKEN
 const CATJERKY_REFRESH_TOKEN = process.env.CATJERKY_REFRESH_TOKEN
 
@@ -35,6 +38,7 @@ const SKITTLE108_REFRESH_TOKEN = process.env.SKITTLE108_REFRESH_TOKEN
 
 const COMMON_NICKNAMES = process.env.COMMON_NICKNAMES
 const STARTING_LEMONS = process.env.STARTING_LEMONS
+const HANGMAN_WINS = process.env.HANGMAN_WINS
 
 const lemonyFresh = {
     channels: [
@@ -46,7 +50,8 @@ const lemonyFresh = {
         `#astral_an0maly`,
         '#dirtyd0inks',
         '#artyinpink',
-        '#thetarastark'
+        '#thetarastark',
+        '#slebTV'
     ],
     botAccessToken: BOT_ACCESS_TOKEN,
     jpegstripes: {
@@ -469,7 +474,8 @@ const lemonyFresh = {
             `domoni6Love`,
             `domoni6Boom`,
             `domoni6Kek`,
-            `domoni6Mingo`
+            `domoni6Mingo`,
+            `domoni6Point`
         ],
         bttvEmotes: [
             `catJAM`,
@@ -527,6 +533,7 @@ const lemonyFresh = {
         list: [
             `Games`,
             `Super Paper Mario`,
+            `Okami`,
             `Captain Toad's Treasure Tracker`,
             `Animal Crossing`,
             `Far Cry Vengeance`,
@@ -569,8 +576,8 @@ const lemonyFresh = {
         ],
         accessToken: ASTRAL_AN0MALY_ACCESS_TOKEN,
         refreshToken: ASTRAL_AN0MALY_REFRESH_TOKEN,
-        subRaidMessage: `astral332Pophype astral332Pophi astral332Pop ASS RAID astral332Pop astral332Pophi astral332Pophype`,
-        noSubRaidMessage: `CorgiDerp ASS RAID CorgiDerp`
+        subRaidMessage: `astral332Pophype astral332Pophi astral332Pop ASTRAL RAID astral332Pop astral332Pophi astral332Pophype`,
+        noSubRaidMessage: `CorgiDerp ASTRAL RAID CorgiDerp`
     },
     dirtyd0inks: {
         id: 840745958,
@@ -669,7 +676,12 @@ const lemonyFresh = {
         accessToken: THETARASTARK_ACCESS_TOKEN,
         refreshToken: THETARASTARK_REFRESH_TOKEN,
         timers: { '!so': { cooldown: 4, listening: false } }
-    }
+    },
+    slebtv: {
+        id: 1013603562,
+        accessToken: SLEBTV_ACCESS_TOKEN,
+        refreshToken: SLEBTV_REFRESH_TOKEN
+    },
 }
 
 const mods = {
@@ -693,6 +705,9 @@ for (let arr = COMMON_NICKNAMES.split(`,`), i = 0; i < arr.length; i++) { if (i 
 const startingLemons = {}
 for (let arr = STARTING_LEMONS.split(`,`), i = 0; i < arr.length; i++) { if (i % 2 === 0) { startingLemons[arr[i]] = Number(arr[i + 1]) } }
 
+const hangmanWins = {}
+for (let arr = HANGMAN_WINS.split(`,`), i = 0; i < arr.length; i++) { if (i % 2 === 0) { hangmanWins[arr[i]] = Number(arr[i + 1]) } }
+
 const knownTags = {}
 
 const tempCmds = {}
@@ -703,6 +718,7 @@ module.exports = {
     users,
     commonNicknames,
     startingLemons,
+    hangmanWins,
     knownTags,
     tempCmds
 }

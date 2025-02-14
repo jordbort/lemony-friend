@@ -146,6 +146,8 @@ module.exports = {
             if (users[BOT_USERNAME]?.[emoteOwner]?.sub) { this.say(chatroom, `BEEG ${emoteUsed}`) }
         }
 
+        // Acknowledge highlighted message
+        if (tags[`msg-id`] === `highlighted-message`) { logMessage([`This was a highlighted message`]) }
 
         /**************\
         !COMMANDS PARSER
