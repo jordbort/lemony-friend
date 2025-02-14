@@ -110,11 +110,11 @@ function moveItems(bot, chatroom, args) {
 
     if (idxOne > idxTwo) {
         const value = lemonyFresh[channel].list[idxOne]
-        for (let i = idxOne; i > idxTwo; i--) { lemonyFresh[channel].list[i] = lemonyFresh[channel].list[i - 1]}
+        for (let i = idxOne; i > idxTwo; i--) { lemonyFresh[channel].list[i] = lemonyFresh[channel].list[i - 1] }
         lemonyFresh[channel].list[idxTwo] = value
     } else if (idxOne < idxTwo) {
         const value = lemonyFresh[channel].list[idxOne]
-        for (let i = idxOne; i < idxTwo; i++) { lemonyFresh[channel].list[i] = lemonyFresh[channel].list[i + 1]}
+        for (let i = idxOne; i < idxTwo; i++) { lemonyFresh[channel].list[i] = lemonyFresh[channel].list[i + 1] }
         lemonyFresh[channel].list[idxTwo] = value
     }
 
@@ -146,10 +146,23 @@ function clearList(bot, chatroom, resetName) {
     bot.say(chatroom, `${listName} has been ${resetName ? `reset` : `cleared`}! ${positiveEmote}`)
 }
 
+function getListMethods(bot, chatroom, isModOrVIP) {
+    logMessage([`-> getListMethods(isModOrVIP? ${isModOrVIP})`])
+    const channel = chatroom.substring(1)
+    const neutralEmote = getNeutralEmote(channel)
+
+    isModOrVIP
+        ? bot.say(chatroom, `You can use !list to show the full list, or !list <number> or "random" to get a specific or random item from the list! VIPs/mods can also use !list add <new item>, edit <number>, delete <number>, swap/switch <number1> <number2>, move <number1> <number2>, name/rename <list name>, clear (to empty list), and reset (to empty list and reset name)! ${neutralEmote}`)
+        : bot.say(chatroom, `You can use !list to show the full list, or !list <number> or "random" to get a specific or random item from the list! ${neutralEmote}`)
+}
+
 module.exports = {
     useList(props) {
         const { bot, chatroom, args, channel } = props
         logMessage([`> useList(channel: '${channel}', listName: '${lemonyFresh[channel].list[0]}', items: ${lemonyFresh[channel].list.slice(1).length}, args:`, `'${args.join(`', '`)}')`])
+
+        // Get list of all methods
+        if (/^help$/i.test(args[0])) { return getListMethods(bot, chatroom, isModOrVIP) }
 
         // Get item by number
         if (/^-?\d+$/i.test(args[0])) { return getItem(bot, chatroom, Number(args[0])) }
