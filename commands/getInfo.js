@@ -8,10 +8,12 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Fixed !countdown (!timer) bug`,
-            `Updated tempcmd variable flexibility`,
-            `Added !tempcmd check <command_name>`,
-            `Changed the way all !tempcmds are rendered`
+            `Added "!list help" to provide a list of all methods`,
+            `Restricted permissions for !list add, edit, delete, swap/switch, move, name/rename, clear, reset`,
+            `Added a CLI setting to enable/disable playing PokemonCommunityGame`,
+            `Added !multitwitch to generate a MultiTwitch stream link for multiple users`,
+            `Hangman players who use !play after the signup window are now told whose turn they're after`,
+            `Number of Hangman victories now preserved between resets`
         ]
 
         const timeOptions = {
