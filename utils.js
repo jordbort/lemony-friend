@@ -5,7 +5,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 const fs = require(`fs/promises`)
 
 const { makeLogs } = require(`./commands/makeLogs`)
-const { lemonyFresh, users, commonNicknames, startingLemons, mods, knownTags, tempCmds } = require(`./data`)
+const { lemonyFresh, users, commonNicknames, startingLemons, hangmanWins, mods, knownTags, tempCmds } = require(`./data`)
 const { settings, resetTxt, grayTxt, whiteTxt, yellowBg, chatColors } = require(`./config`)
 
 function getLemonEmote() {
@@ -1300,16 +1300,22 @@ module.exports = {
             hangmanWins: 0
         }
 
-        // Restore lemons
+        // Apply nickname
         if (username in commonNicknames) {
             users[username].nickname = commonNicknames[username]
             delete commonNicknames[username]
         }
 
-        // Apply nickname
+        // Restore lemons
         if (username in startingLemons) {
             users[username].lemons += startingLemons[username]
             delete startingLemons[username]
+        }
+
+        // Restore Hangman wins
+        if (username in hangmanWins) {
+            users[username].hangmanWins += hangmanWins[username]
+            delete hangmanWins[username]
         }
     },
     initUserChannel(tags, username, channel) {

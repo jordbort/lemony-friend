@@ -34,7 +34,7 @@ const SKITTLE108_ACCESS_TOKEN = process.env.SKITTLE108_ACCESS_TOKEN
 const SKITTLE108_REFRESH_TOKEN = process.env.SKITTLE108_REFRESH_TOKEN
 
 const { settings, wordBank } = require(`../config`)
-const { lemonyFresh, mods, users, knownTags, tempCmds, startingLemons, commonNicknames } = require(`../data`)
+const { lemonyFresh, mods, users, knownTags, tempCmds, commonNicknames, startingLemons, hangmanWins } = require(`../data`)
 
 function renderObj(obj, objName, indentation = ``) {
     const tab = `${indentation}\t`

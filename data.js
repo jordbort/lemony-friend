@@ -38,6 +38,7 @@ const SKITTLE108_REFRESH_TOKEN = process.env.SKITTLE108_REFRESH_TOKEN
 
 const COMMON_NICKNAMES = process.env.COMMON_NICKNAMES
 const STARTING_LEMONS = process.env.STARTING_LEMONS
+const HANGMAN_WINS = process.env.HANGMAN_WINS
 
 const lemonyFresh = {
     channels: [
@@ -704,6 +705,9 @@ for (let arr = COMMON_NICKNAMES.split(`,`), i = 0; i < arr.length; i++) { if (i 
 const startingLemons = {}
 for (let arr = STARTING_LEMONS.split(`,`), i = 0; i < arr.length; i++) { if (i % 2 === 0) { startingLemons[arr[i]] = Number(arr[i + 1]) } }
 
+const hangmanWins = {}
+for (let arr = HANGMAN_WINS.split(`,`), i = 0; i < arr.length; i++) { if (i % 2 === 0) { hangmanWins[arr[i]] = Number(arr[i + 1]) } }
+
 const knownTags = {}
 
 const tempCmds = {}
@@ -714,6 +718,7 @@ module.exports = {
     users,
     commonNicknames,
     startingLemons,
+    hangmanWins,
     knownTags,
     tempCmds
 }
