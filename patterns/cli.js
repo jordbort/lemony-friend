@@ -343,11 +343,12 @@ function updateSettingsDev(props, args) {
     const options = {
         [/^autoBan$|^ab$/i]: { name: `autoBan`, func: updatePhraseArr },
         [/^ignoredBots$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
+        [/^playPCG$|^pcg$/i]: { name: `playPCG`, func: updateBool },
         [/^pokeballQuantity$|^pq$/i]: { name: `pokeballQuantity`, func: updateNum },
         [/^maxCountdownDuration$|^mcd$/i]: { name: `maxCountdownDuration`, func: updateLargeNum },
-        [/^debug$|^d$/i]: { name: `debug`, func: updateBool },
+        // [/^debug$|^d$/i]: { name: `debug`, func: updateBool },
         [/^timeZone$|^tz$/i]: { name: `timeZone`, func: updateTimeZone },
-        [/^timeLocale$|^tl$/i]: { name: `timeLocale`, func: updateTimeLocale },
+        // [/^timeLocale$|^tl$/i]: { name: `timeLocale`, func: updateTimeLocale },
         // [/^joinMessage$|^jm$/i]: { name: `joinMessage`, func: updateStr },
         // [/^highlightBotMessage$|^hbm$/i]: { name: `highlightBotMessage`, func: updateBool },
         // [/^logTime$|^lt$/i]: { name: `logTime`, func: updateBool },
@@ -359,9 +360,9 @@ function updateSettingsDev(props, args) {
         [/^funNumberTotal$|^fnt$/i]: { name: `funNumberTotal`, func: updateNum },
         [/^streakThreshold$|^st$/i]: { name: `streakThreshold`, func: updateNum },
         [/^streamerEmoteStreakThreshold$|^sest$/i]: { name: `streamerEmoteStreakThreshold`, func: updateNum },
-        [/^hangmanSignupSeconds$|^hss$/i]: { name: `hangmanSignupSeconds`, func: updateNum },
-        [/^hangmanChances$|^hc$/i]: { name: `hangmanChances`, func: updateNum },
-        [/^hangmanLemonThreshold$|^hlt$/i]: { name: `hangmanLemonThreshold`, func: updateNum },
+        // [/^hangmanSignupSeconds$|^hss$/i]: { name: `hangmanSignupSeconds`, func: updateNum },
+        // [/^hangmanChances$|^hc$/i]: { name: `hangmanChances`, func: updateNum },
+        // [/^hangmanLemonThreshold$|^hlt$/i]: { name: `hangmanLemonThreshold`, func: updateNum },
         [/^chantCount$|^cc$/i]: { name: `chantCount`, func: updateNum },
         [/^chantEmote$|^ce$/i]: { name: `chantEmote`, func: updateStr },
         [/^botMood$|^m$/i]: { name: `botMood`, func: updateStr }
@@ -376,7 +377,7 @@ function updateSettingsDev(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for "settings": autoBan (ab), ignoredBots (ib), pokeballQuantity (pq), maxCountdownDuration (mcd), debug (d), timeZone (tz), timeLocale (tl), realRPS (rps), funNumberCount (fnc), funNumberTotal (fnt), streakThreshold (st), streamerEmoteStreakThreshold (sest), hangmanSignupSeconds (hss), hangmanChances (hc), hangmanLemonThreshold (hlt), chantCount (cc), chantEmote (ce), baseEmotes (be), botMood (m)`)
+    bot.say(chatroom, `/me Options for "settings": autoBan (ab), ignoredBots (ib), playPCG (pcg), pokeballQuantity (pq), maxCountdownDuration (mcd), timeZone (tz), realRPS (rps), funNumberCount (fnc), funNumberTotal (fnt), streakThreshold (st), streamerEmoteStreakThreshold (sest), chantCount (cc), chantEmote (ce), baseEmotes (be), botMood (m)`)
 }
 
 function updateSettings(props, args) {
@@ -387,9 +388,10 @@ function updateSettings(props, args) {
     const options = {
         [/^autoBan$|^ab$/i]: { name: `autoBan`, func: updatePhraseArr },
         [/^ignoredBots$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
+        [/^playPCG$|^pcg$/i]: { name: `playPCG`, func: updateBool },
         [/^pokeballQuantity$|^pq$/i]: { name: `pokeballQuantity`, func: updateNum },
         [/^chantEmote$|^ce$/i]: { name: `chantEmote`, func: updateStr },
-        [/^hangmanChances$|^hc$/i]: { name: `hangmanChances`, func: updateNum }
+        // [/^hangmanChances$|^hc$/i]: { name: `hangmanChances`, func: updateNum }
     }
 
     for (const option in options) {
@@ -401,7 +403,7 @@ function updateSettings(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for "settings": autoBan (ab), ignoredBots (ib), pokeballQuantity (pq), chantEmote (ce), hangmanChances (hc)`)
+    bot.say(chatroom, `/me Options for "settings": autoBan (ab), ignoredBots (ib), playPCG (pcg), pokeballQuantity (pq), chantEmote (ce)`)
 }
 
 function updateBaseEmotesDev(bot, chatroom, args) {
