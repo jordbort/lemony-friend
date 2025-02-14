@@ -8,6 +8,8 @@ const { makeLogs } = require(`./commands/makeLogs`)
 const { lemonyFresh, users, commonNicknames, startingLemons, hangmanWins, mods, knownTags, tempCmds } = require(`./data`)
 const { settings, resetTxt, grayTxt, whiteTxt, yellowBg, chatColors } = require(`./config`)
 
+const twitchUsernamePattern = /^[a-z0-9_]{4,25}$/i
+
 function getLemonEmote() {
     // const lemonEmotes = [...settings.baseEmotes.lemonEmotes]
     // if (users[BOT_USERNAME]?.e1ectroma?.sub) { lemonEmotes.push(`e1ectr4Lemfresh`) }
@@ -1245,6 +1247,7 @@ const numbers = [
 
 module.exports = {
     numbers,
+    twitchUsernamePattern,
     getLemonEmote,
     getNeutralEmote,
     getHypeEmote,
@@ -1491,7 +1494,6 @@ module.exports = {
         }
     },
     getUsername(str) {
-        const twitchUsernamePattern = /^[a-z0-9_]{4,25}$/i
         return str
             ? str.replace(/^[@#]/g, ``).match(twitchUsernamePattern)
                 ? str.replace(/^[@#]/g, ``)
