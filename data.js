@@ -27,6 +27,9 @@ const ARTYINPINK_REFRESH_TOKEN = process.env.ARTYINPINK_REFRESH_TOKEN
 const THETARASTARK_ACCESS_TOKEN = process.env.THETARASTARK_ACCESS_TOKEN
 const THETARASTARK_REFRESH_TOKEN = process.env.THETARASTARK_REFRESH_TOKEN
 
+const SLEBTV_ACCESS_TOKEN = process.env.SLEBTV_ACCESS_TOKEN
+const SLEBTV_REFRESH_TOKEN = process.env.SLEBTV_REFRESH_TOKEN
+
 const CATJERKY_ACCESS_TOKEN = process.env.CATJERKY_ACCESS_TOKEN
 const CATJERKY_REFRESH_TOKEN = process.env.CATJERKY_REFRESH_TOKEN
 
@@ -46,7 +49,8 @@ const lemonyFresh = {
         `#astral_an0maly`,
         '#dirtyd0inks',
         '#artyinpink',
-        '#thetarastark'
+        '#thetarastark',
+        '#slebTV'
     ],
     botAccessToken: BOT_ACCESS_TOKEN,
     jpegstripes: {
@@ -669,7 +673,12 @@ const lemonyFresh = {
         accessToken: THETARASTARK_ACCESS_TOKEN,
         refreshToken: THETARASTARK_REFRESH_TOKEN,
         timers: { '!so': { cooldown: 4, listening: false } }
-    }
+    },
+    slebtv: {
+        id: 1013603562,
+        accessToken: SLEBTV_ACCESS_TOKEN,
+        refreshToken: SLEBTV_REFRESH_TOKEN
+    },
 }
 
 const mods = {
