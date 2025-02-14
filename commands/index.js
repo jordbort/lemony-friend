@@ -7,6 +7,7 @@ const { countdown } = require(`./countdown`)
 const { rockPaperScissors } = require(`./rps`)
 const { lemonTopThree } = require(`./lemonRank`)
 const { handleLemonify } = require(`./lemonify`)
+const { makeMultiTwitchLink } = require(`./multitwitch`)
 const { handleTempCmd, getTempCmds } = require(`./tempCmds`)
 const { sayCommands, getDocs, getStats } = require(`./help`)
 const { manageHangman, joinHangman } = require(`../patterns/hangman`)
@@ -115,6 +116,8 @@ module.exports = {
     '!lurk': setAway,
     '!away': setAway,
     '!brb': setAway,
+
+    '!multitwitch': makeMultiTwitchLink,
 
     '!dadjoke': getDadJoke,
 

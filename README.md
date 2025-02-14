@@ -67,18 +67,19 @@ Each channel lemony_friend is in has a generic, unnamed counter, set to zero by 
 - `!count reset` to set the counter back to zero, and remove its custom name.
 
 ## List 🍋️
-Each channel lemony_friend is in has a generic, unnamed list, empty by default. Items in the list are stored in a numbered order, but can also be used for unordered items as well. Here is a list of commands you can use:
+Each channel lemony_friend is in has a generic, unnamed list, empty by default. Items in the list are stored in a numbered order, but can also be used for unordered items as well. Mods, VIPs, and the channel owner are able to update and re-order the list's contents. Here is a list of commands you can use:
 - `!list` - Check the stream's list.
-- `!list add <...>` - Add an item to the list.
+- `!list help` - Return all methods available to the user (mods, VIPs, and channel owners have more options).
 - `!list <number>` - Recall a specific item from the list by its number.
 - `!list random` - Recall an item from the list at random.
-- `!list edit <number> <...>` - Update the contents of a specific number in the list.
-- `!list delete <number>` - Delete a specific item from the list, shifting the items after it back by one.
-- `!list swap <number1> <number2>` (or - `!list switch <number1> <number2>`) - Have two items trade positions in the list, where `<number1>` and `<number2>` are the current positions of the items to swap.
-- `!list move <number1> <number2>` - Move one item into a new position in the list, where `<number1>` is its current position, and `<number2>` is the new position you'd like it to be in. All items in between those positions will shift their positions accordingly.
-- `!list name <...>` - Give the list's name a descriptive title other than its generic one, or with no name to return the list's name back to its default.
-- `!list clear` - Delete all the contents of the list (keeps the list's name).
-- `!list reset` - Delete all the contents of the list, and clear the list's name.
+- `!list add <...>` - Add an item to the list. Only available to mods, VIPs, and the channel owner.
+- `!list edit <number> <...>` - Update the contents of a specific number in the list. Only available to mods, VIPs, and the channel owner.
+- `!list delete <number>` - Delete a specific item from the list, shifting the items after it back by one. Only available to mods, VIPs, and the channel owner.
+- `!list swap <number1> <number2>` (or - `!list switch <number1> <number2>`) - Have two items trade positions in the list, where `<number1>` and `<number2>` are the current positions of the items to swap. Only available to mods, VIPs, and the channel owner.
+- `!list move <number1> <number2>` - Move one item into a new position in the list, where `<number1>` is its current position, and `<number2>` is the new position you'd like it to be in. All items in between those positions will shift their positions accordingly. Only available to mods, VIPs, and the channel owner.
+- `!list name <...>` - Give the list's name a descriptive title other than its generic one, or with no name to return the list's name back to its default. Only available to mods, VIPs, and the channel owner.
+- `!list clear` - Delete all the contents of the list (keeps the list's name). Only available to mods, VIPs, and the channel owner.
+- `!list reset` - Delete all the contents of the list, and clear the list's name. Only available to mods, VIPs, and the channel owner.
 
 ## Temporary Commands 🍋️
 Temporary commands are commands that can be made on the fly by anyone, which follow a simple call-and-response pattern. They are "temporary" because they aren't hard-coded into lemony_friend, and will be lost next time it's reset.
@@ -156,12 +157,15 @@ Use this command to change lemony_friend's list of phrases from a first-time cha
 
 Use this command to update the list of usernames lemony_friend will ignore in certain situations. These include welcoming back the user if they haven't spoken in a while, being informed a user is marked as "away" when mentioning them, and being targeted with UndertaleBot, as well as other fun number responses.
 
+- `cli settings playPCG` or `cli s pcg` (boolean)
+
+Use this command to control whether or not Lemony_friend will attempt to catch a Pokémon when PokemonCommunityGame makes an announcement in chat.
+
 - `cli settings pokeballQuantity` or `cli s pq` (number)
-Use this command to change the amount of pokeballs lemony_friend will attempt to purchase if PokemonCommunityGame says it doesn't have pokeballs (default 100). This can be used to help lemony_friend avoid a loop of continually trying and failing to use pokeballs and purchasing them when it runs out and can't afford to purchase the quantity currently set.
+
+Use this command to change the amount of pokeballs lemony_friend will attempt to purchase if PokemonCommunityGame says it doesn't have pokeballs. This can be used to help lemony_friend avoid a loop of continually trying and failing to use pokeballs and purchasing them when it runs out and can't afford to purchase the quantity currently set.
 
 - `cli settings chantEmote` or `cli s ce` (string)
-Use this command to change or remove the emote/emoji used to separate chants (default 👏).
 
-- `cli settings hangmanChances` or `cli s hc` (number)
-Use this command to change the starting number of chances in Hangman (default 6).
+Use this command to change or remove the emote/emoji used to separate chants (default 👏).
 

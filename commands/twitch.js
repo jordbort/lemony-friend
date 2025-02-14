@@ -53,13 +53,12 @@ async function getTwitchUser(props) {
     const negativeEmote = getNegativeEmote(channel)
     if (response.status !== 200) {
         if (twitchData.error === `Unauthorized`) {
-            // bot.say(chatroom, `Hold on, I need to refresh my token...`)
             logMessage([`-> Unauthorized from getTwitchUser(), attempting to refresh bot's token...`])
             await getBotToken(props, false)
             options.headers.authorization = `Bearer ${lemonyFresh.botAccessToken}`
             const finalAttempt = await fetch(endpoint, options)
             const finalAttemptData = await finalAttempt.json()
-            logMessage([`getTwitchUser`, finalAttempt.status, `data` in finalAttemptData ? finalAttemptData.length ? renderObj(finalAttemptData.data[0], `finalAttemptData.data[0]`) : `finalAttemptData.data: []` : renderObj(finalAttemptData, `finalAttemptData`)])
+            logMessage([`getTwitchUser`, finalAttempt.status, `data` in finalAttemptData ? finalAttemptData.data.length ? renderObj(finalAttemptData.data[0], `finalAttemptData.data[0]`) : `finalAttemptData.data: []` : renderObj(finalAttemptData, `finalAttemptData`)])
             if (finalAttempt.status === 200) {
                 return finalAttemptData.data[0]
             } else {
@@ -243,7 +242,6 @@ module.exports = {
             setTimeout(() => { lemonyFresh[channel].pollId = `` }, duration * 1000)
             bot.say(chatroom, `Poll created, go vote! ${positiveEmote}`)
         } else if (response.status === 401) {
-            // bot.say(chatroom, `Hold on, I need to refresh the token...`)
             logMessage([`-> Unauthorized from pollStart(), attempting to refresh access token...`])
             props.username = channel
             await refreshToken(props, false)
@@ -336,7 +334,6 @@ module.exports = {
                     const twitchData = await response.json()
                     logMessage([`handleShoutOut`, response.status, renderObj(twitchData, `twitchData`)])
                     if (response.status === 401) {
-                        // bot.say(chatroom, `Hold on, I need to refresh ${modHasToken ? username : channel}'s token...`)
                         logMessage([`-> Unauthorized from handleShoutOut(), attempting to refresh access token...`])
                         props.username = modHasToken ? username : channel
                         await refreshToken(props, false)
@@ -400,7 +397,6 @@ module.exports = {
             const twitchData = await response.json()
             logMessage([`makeAnnouncement`, response.status, renderObj(twitchData, `twitchData`)])
             if (response.status === 401) {
-                // bot.say(chatroom, `Hold on, I need to refresh ${modHasToken ? username : channel}'s token...`)
                 logMessage([`-> Unauthorized from makeAnnouncement(), attempting to refresh access token...`])
                 await refreshToken(props, false)
                 options.headers.authorization = `Bearer ${modHasToken ? mods[username].accessToken : lemonyFresh[channel].accessToken}`
@@ -580,7 +576,7 @@ module.exports = {
                     options.headers.authorization = `Bearer ${modHasToken ? mods[username].accessToken : lemonyFresh[channel].accessToken}`
                     const finalAttempt = await fetch(endpoint, options)
                     const finalAttemptData = await finalAttempt.json()
-                    logMessage([`banUsers`, finalAttempt.status, `data` in finalAttemptData ? finalAttemptData.length ? renderObj(finalAttemptData.data[0], `finalAttemptData.data[0]`) : `finalAttemptData.data: []` : renderObj(finalAttemptData, `finalAttemptData`)])
+                    logMessage([`banUsers`, finalAttempt.status, `data` in finalAttemptData ? finalAttemptData.data.length ? renderObj(finalAttemptData.data[0], `finalAttemptData.data[0]`) : `finalAttemptData.data: []` : renderObj(finalAttemptData, `finalAttemptData`)])
                     if (finalAttempt.status === 400 && finalAttemptData.message === `The user specified in the user_id field is already banned.`) {
                         alreadyBanned.push(userToBan)
                     } else if (finalAttempt.status !== 200) {

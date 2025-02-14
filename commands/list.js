@@ -12,9 +12,15 @@ function getItem(bot, chatroom, idx) {
         : bot.say(chatroom, `#${idx} doesn't exist in ${listName}! ${negativeEmote}`)
 }
 
-function addItem(bot, chatroom, args) {
-    logMessage([`-> addItem(args: '${args.join(`', '`)}')`])
+function addItem(bot, chatroom, args, isModOrVIP) {
+    logMessage([`-> addItem(args: '${args.join(`', '`)}', isModOrVIP? ${isModOrVIP})`])
     const channel = chatroom.substring(1)
+    const negativeEmote = getNegativeEmote(channel)
+    if (!isModOrVIP) {
+        bot.say(chatroom, `Only a mod or VIP is allowed to add items to the list! ${negativeEmote}`)
+        return
+    }
+
     const listName = lemonyFresh[channel].list[0] || `the list`
     const newItem = args.slice(1).join(` `)
     const positiveEmote = getPositiveEmote(channel)
@@ -28,12 +34,17 @@ function addItem(bot, chatroom, args) {
     }
 }
 
-function editItem(bot, chatroom, args) {
-    logMessage([`-> editItem(args: '${args.join(`', '`)}')`])
+function editItem(bot, chatroom, args, isModOrVIP) {
+    logMessage([`-> editItem(args: '${args.join(`', '`)}', isModOrVIP? ${isModOrVIP})`])
     const channel = chatroom.substring(1)
+    const negativeEmote = getNegativeEmote(channel)
+    if (!isModOrVIP) {
+        bot.say(chatroom, `Only a mod or VIP is allowed to edit items on list! ${negativeEmote}`)
+        return
+    }
+
     const listName = lemonyFresh[channel].list[0] || `the list`
     const positiveEmote = getPositiveEmote(channel)
-    const negativeEmote = getNegativeEmote(channel)
     const dumbEmote = getDumbEmote(channel)
 
     const idx = Number(args[1])
@@ -48,12 +59,17 @@ function editItem(bot, chatroom, args) {
     bot.say(chatroom, `Updated #${idx} in ${listName} to: "${updatedItem}" ${positiveEmote}`)
 }
 
-function deleteItem(bot, chatroom, args) {
-    logMessage([`-> deleteItem(args: '${args.join(`', '`)}')`])
+function deleteItem(bot, chatroom, args, isModOrVIP) {
+    logMessage([`-> deleteItem(args: '${args.join(`', '`)}', isModOrVIP? ${isModOrVIP})`])
     const channel = chatroom.substring(1)
+    const negativeEmote = getNegativeEmote(channel)
+    if (!isModOrVIP) {
+        bot.say(chatroom, `Only a mod or VIP is allowed to delete items from the list! ${negativeEmote}`)
+        return
+    }
+
     const listName = lemonyFresh[channel].list[0] || `the list`
     const positiveEmote = getPositiveEmote(channel)
-    const negativeEmote = getNegativeEmote(channel)
 
     const idx = Number(args[1])
     // Index is NaN, zero, or doesn't exist in array
@@ -63,13 +79,18 @@ function deleteItem(bot, chatroom, args) {
     bot.say(chatroom, `Deleted #${idx} from ${listName}! ${positiveEmote}`)
 }
 
-function swapItems(bot, chatroom, args) {
-    logMessage([`-> swapItems(args: '${args.join(`', '`)}')`])
+function swapItems(bot, chatroom, args, isModOrVIP) {
+    logMessage([`-> swapItems(args: '${args.join(`', '`)}', isModOrVIP? ${isModOrVIP})`])
     const channel = chatroom.substring(1)
+    const negativeEmote = getNegativeEmote(channel)
+    if (!isModOrVIP) {
+        bot.say(chatroom, `Only a mod or VIP is allowed to reorder items in the list! ${negativeEmote}`)
+        return
+    }
+
     const listName = lemonyFresh[channel].list[0] || `the list`
     const positiveEmote = getPositiveEmote(channel)
     const neutralEmote = getNeutralEmote(channel)
-    const negativeEmote = getNegativeEmote(channel)
 
     if (args.length < 3) {
         bot.say(chatroom, `Please provide two numbers to be swapped! ${neutralEmote}`)
@@ -89,13 +110,18 @@ function swapItems(bot, chatroom, args) {
     bot.say(chatroom, `Swapped #${idxOne} and #${idxTwo} in ${listName}! ${positiveEmote}`)
 }
 
-function moveItems(bot, chatroom, args) {
-    logMessage([`-> moveItems(args: '${args.join(`', '`)}')`])
+function moveItems(bot, chatroom, args, isModOrVIP) {
     const channel = chatroom.substring(1)
+    const negativeEmote = getNegativeEmote(channel)
+    logMessage([`-> moveItems(args: '${args.join(`', '`)}', isModOrVIP? ${isModOrVIP})`])
+    if (!isModOrVIP) {
+        bot.say(chatroom, `Only a mod or VIP is allowed to reorder items in the list! ${negativeEmote}`)
+        return
+    }
+
     const listName = lemonyFresh[channel].list[0] || `the list`
     const positiveEmote = getPositiveEmote(channel)
     const neutralEmote = getNeutralEmote(channel)
-    const negativeEmote = getNegativeEmote(channel)
 
     if (args.length < 3) {
         bot.say(chatroom, `Please provide two numbers: the current position and its new position! ${neutralEmote}`)
@@ -110,20 +136,26 @@ function moveItems(bot, chatroom, args) {
 
     if (idxOne > idxTwo) {
         const value = lemonyFresh[channel].list[idxOne]
-        for (let i = idxOne; i > idxTwo; i--) { lemonyFresh[channel].list[i] = lemonyFresh[channel].list[i - 1]}
+        for (let i = idxOne; i > idxTwo; i--) { lemonyFresh[channel].list[i] = lemonyFresh[channel].list[i - 1] }
         lemonyFresh[channel].list[idxTwo] = value
     } else if (idxOne < idxTwo) {
         const value = lemonyFresh[channel].list[idxOne]
-        for (let i = idxOne; i < idxTwo; i++) { lemonyFresh[channel].list[i] = lemonyFresh[channel].list[i + 1]}
+        for (let i = idxOne; i < idxTwo; i++) { lemonyFresh[channel].list[i] = lemonyFresh[channel].list[i + 1] }
         lemonyFresh[channel].list[idxTwo] = value
     }
 
     bot.say(chatroom, `Moved #${idxOne} in ${listName} to position #${idxTwo}! ${positiveEmote}`)
 }
 
-function renameList(bot, chatroom, args) {
-    logMessage([`-> renameList(args: '${args.join(`', '`)}')`])
+function renameList(bot, chatroom, args, isModOrVIP) {
     const channel = chatroom.substring(1)
+    const negativeEmote = getNegativeEmote(channel)
+    logMessage([`-> renameList(args: '${args.join(`', '`)}', isModOrVIP? ${isModOrVIP})`])
+    if (!isModOrVIP) {
+        bot.say(chatroom, `Only a mod or VIP is allowed to rename the list! ${negativeEmote}`)
+        return
+    }
+
     const neutralEmote = getNeutralEmote(channel)
     const positiveEmote = getPositiveEmote(channel)
 
@@ -134,9 +166,15 @@ function renameList(bot, chatroom, args) {
     bot.say(chatroom, `List name ${newName ? `updated ${currentName ? `from "${currentName}" ` : ``}to "${newName}"` : `has been reset from "${currentName}"`}! ${positiveEmote}`)
 }
 
-function clearList(bot, chatroom, resetName) {
-    logMessage([`-> clearList(resetName? ${resetName})`])
+function clearList(bot, chatroom, resetName, isModOrVIP) {
+    logMessage([`-> clearList(resetName? ${resetName}, isModOrVIP? ${isModOrVIP})`])
     const channel = chatroom.substring(1)
+    const negativeEmote = getNegativeEmote(channel)
+    if (!isModOrVIP) {
+        bot.say(chatroom, `Only a mod or VIP is allowed to clear/reset the list! ${negativeEmote}`)
+        return
+    }
+
     const positiveEmote = getPositiveEmote(channel)
 
     lemonyFresh[channel].list.length = 1
@@ -146,10 +184,23 @@ function clearList(bot, chatroom, resetName) {
     bot.say(chatroom, `${listName} has been ${resetName ? `reset` : `cleared`}! ${positiveEmote}`)
 }
 
+function getListMethods(bot, chatroom, isModOrVIP) {
+    logMessage([`-> getListMethods(isModOrVIP? ${isModOrVIP})`])
+    const channel = chatroom.substring(1)
+    const neutralEmote = getNeutralEmote(channel)
+
+    isModOrVIP
+        ? bot.say(chatroom, `You can use !list to show the full list, or !list <number> or "random" to get a specific or random item from the list! VIPs/mods can also use !list add <new item>, edit <number>, delete <number>, swap/switch <number1> <number2>, move <number1> <number2>, name/rename <list name>, clear (to empty list), and reset (to empty list and reset name)! ${neutralEmote}`)
+        : bot.say(chatroom, `You can use !list to show the full list, or !list <number> or "random" to get a specific or random item from the list! ${neutralEmote}`)
+}
+
 module.exports = {
     useList(props) {
-        const { bot, chatroom, args, channel } = props
+        const { bot, chatroom, args, channel, isModOrVIP } = props
         logMessage([`> useList(channel: '${channel}', listName: '${lemonyFresh[channel].list[0]}', items: ${lemonyFresh[channel].list.slice(1).length}, args:`, `'${args.join(`', '`)}')`])
+
+        // Get list of all methods
+        if (/^help$/i.test(args[0])) { return getListMethods(bot, chatroom, isModOrVIP) }
 
         // Get item by number
         if (/^-?\d+$/i.test(args[0])) { return getItem(bot, chatroom, Number(args[0])) }
@@ -158,28 +209,28 @@ module.exports = {
         if (/^random$/i.test(args[0])) { return getItem(bot, chatroom, Math.ceil(Math.random() * (lemonyFresh[channel].list.length - 1))) }
 
         // Add item to list
-        if (/^add$/i.test(args[0])) { return addItem(bot, chatroom, args) }
+        if (/^add$/i.test(args[0])) { return addItem(bot, chatroom, args, isModOrVIP) }
 
         // Edit item in list
-        if (/^edit$/i.test(args[0])) { return editItem(bot, chatroom, args) }
-
-        // Swap/switch items in list
-        if (/^swap$|^switch$/i.test(args[0])) { return swapItems(bot, chatroom, args) }
-
-        // Move items in list
-        if (/^move$/i.test(args[0])) { return moveItems(bot, chatroom, args) }
+        if (/^edit$/i.test(args[0])) { return editItem(bot, chatroom, args, isModOrVIP) }
 
         // Delete item from list
-        if (/^delete$/i.test(args[0])) { return deleteItem(bot, chatroom, args) }
+        if (/^delete$/i.test(args[0])) { return deleteItem(bot, chatroom, args, isModOrVIP) }
+
+        // Swap/switch items in list
+        if (/^swap$|^switch$/i.test(args[0])) { return swapItems(bot, chatroom, args, isModOrVIP) }
+
+        // Move items in list
+        if (/^move$/i.test(args[0])) { return moveItems(bot, chatroom, args, isModOrVIP) }
 
         // Name/rename list
-        if (/^(re)?name$/i.test(args[0])) { return renameList(bot, chatroom, args) }
+        if (/^(re)?name$/i.test(args[0])) { return renameList(bot, chatroom, args, isModOrVIP) }
 
         // Clear list contents
-        if (/^clear$/i.test(args[0])) { return clearList(bot, chatroom, false) }
+        if (/^clear$/i.test(args[0])) { return clearList(bot, chatroom, false, isModOrVIP) }
 
         // Clear list contents and reset name
-        if (/^reset$/i.test(args[0])) { return clearList(bot, chatroom, true) }
+        if (/^reset$/i.test(args[0])) { return clearList(bot, chatroom, true, isModOrVIP) }
 
         // No args, or keyword not recognized
         const listContents = lemonyFresh[channel].list.map((el, idx) => `${idx}) ${el}`)

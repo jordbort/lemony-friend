@@ -4,8 +4,12 @@ const { getHypeEmote, logMessage } = require(`../utils`)
 module.exports = {
     catchPokemon(props) {
         const { bot, chatroom, channel, username } = props
-        logMessage([`> catchPokemon(channel: '${channel}', username: '${username}')`])
+        logMessage([`> catchPokemon(channel: '${channel}', username: '${username}', playPCG: ${settings.playPCG})`])
 
+        if (!settings.playPCG) {
+            logMessage([`-> Playing PokemonCommunityGame is disabled, ignoring`])
+            return
+        }
         if (username !== `pokemoncommunitygame`) {
             logMessage([`-> Message not from PokemonCommunityGame, ignoring`])
             return
