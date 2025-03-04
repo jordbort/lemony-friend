@@ -19,6 +19,12 @@ function checkPoints(props) {
 
 module.exports = {
     '_crash': function kms(props) { throw Error(`Error${props.args.length ? ` with value${props.args.length === 1 ? `` : `s`} '${props.args.join(`', '`)}'` : ``}`) },
+    '_shutdown': async (props) => {
+        const { bot, chatroom } = props
+        await dumpMemory(props)
+        bot.say(chatroom, `Bye for now! :)`)
+        process.exit(0)
+    },
     'dump': dumpMemory,
     '!test': checkPoints,
     'tags': (props) => { console.log(props.tags) },
