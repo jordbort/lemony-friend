@@ -36,7 +36,7 @@ module.exports = {
         bot.say(chatroom, `I've been online since ${settings.startDate.toLocaleDateString(settings.timeLocale, dateOptions)} at ${settings.startDate.toLocaleTimeString(settings.timeLocale, timeOptions)}! ${neutralEmote}${newFeatures.length ? ` Updates: ${newFeatures.join(`, `)}` : ``}`)
     },
     getLastMessage(props) {
-        const { bot, chatroom, args, channel, username, user, userNickname, toUser, target, targetNickname } = props
+        const { bot, chatroom, args, currentTime, channel, username, user, userNickname, toUser, target, targetNickname } = props
         const otherChannel = getToUser(args[1])
         const userObj = target || user
         const userObjNickname = targetNickname || userNickname
@@ -47,10 +47,25 @@ module.exports = {
             ? users[otherChannel]?.nickname || users[otherChannel]?.displayName || otherChannel
             : null
 
+        const timeDiff = otherChannel in userObj
+            ? currentTime - userObj[otherChannel].sentAt
+            : currentTime - userObj[channel].sentAt
+
+        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
+        const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24)
+        const minutes = Math.floor((timeDiff / (1000 * 60)) % 60)
+        const seconds = Math.floor((timeDiff / 1000) % 60)
+
+        const duration = []
+        if (days) { duration.push(pluralize(days, `day`, `days`)) }
+        if (hours) { duration.push(pluralize(hours, `hour`, `hours`)) }
+        if (minutes) { duration.push(pluralize(minutes, `minute`, `minutes`)) }
+        if (seconds) { duration.push(pluralize(seconds, `second`, `seconds`)) }
+
         otherChannel in userObj
-            ? bot.say(chatroom, `${userObjNickname} last said: "${userObj[otherChannel].lastMessage}" in ${otherChannelNickname}'s chat!`)
+            ? bot.say(chatroom, `${userObjNickname} last said: "${userObj[otherChannel].lastMessage}" in ${otherChannelNickname}'s chat ${arrToList(duration)}${!duration.length ? `just now` : ` ago`}!`)
             : channel in userObj
-                ? bot.say(chatroom, `${userObjNickname} last said: "${userObj[channel].lastMessage}" in ${channelNickname}'s chat!`)
+                ? bot.say(chatroom, `${userObjNickname} last said: "${userObj[channel].lastMessage}" in ${channelNickname}'s chat ${arrToList(duration)}${!duration.length ? `just now` : ` ago`}!`)
                 : bot.say(chatroom, `${userObjNickname} hasn't spoken in ${channelNickname}'s chat!`)
     },
     getMessageCount(props) {
