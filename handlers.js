@@ -70,7 +70,13 @@ module.exports = {
         const color = tags.color || ``
 
         // Log incoming message and capture message tags
-        logMessage([msg], time, channel, username, color, self)
+        const sharedChat = `source-room-id` in tags
+        const originChannel = tags[`room-id`] === tags[`source-room-id`]
+        sharedChat
+            ? originChannel
+                ? logMessage([msg], time, channel, username, color, self)
+                : logMessage([`${username}'s message also posted in ${channel}'s channel`])
+            : logMessage([msg], time, channel, username, color, self)
         tagsListener(tags)
 
         // Initialize new user
@@ -85,6 +91,9 @@ module.exports = {
         const user = users[username]
         user[channel].msgCount++
         user[channel].lastMessage = msg
+
+        // If shared chat, stop listening here if not the origin channel
+        if (!self && sharedChat && !originChannel) { return }
 
         // Checking time comparisons
         const currentTime = Number(tags[`tmi-sent-ts`])
