@@ -36,8 +36,7 @@ module.exports = {
         const { bot, chatroom, args, channel } = props
         logMessage([`> handlePart(chatroom: ${chatroom}, args:`, args, `)`])
 
-        // lemonyFresh.channels are not allowed to be parted
-        const validUsers = args.map(arg => getUsername(arg)).filter(user => user && !lemonyFresh.channels.includes(`#${user}`))
+        const validUsers = args.map(arg => getUsername(arg)).filter(user => user)
         const needToPart = validUsers.filter(user => bot.channels.includes(`#${user}`))
         const notInChannel = validUsers.filter(user => !bot.channels.includes(`#${user}`))
 
