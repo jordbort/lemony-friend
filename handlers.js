@@ -137,10 +137,7 @@ module.exports = {
         // Acknowledge gigantified emote
         if (tags[`msg-id`] === `gigantified-emote-message`) {
             const emoteUsed = msg.split(` `)[msg.split(` `).length - 1]
-            const emoteOwner = Object.keys(lemonyFresh).filter(
-                key => typeof lemonyFresh[key] === `object`
-                    && `emotes` in lemonyFresh[key]
-                    && lemonyFresh[key].emotes.includes(emoteUsed))[0]
+            const emoteOwner = Object.keys(lemonyFresh).filter(key => `emotes` in lemonyFresh[key] && lemonyFresh[key].emotes.includes(emoteUsed))[0]
                 || null
             logMessage([`> Gigantified ${emoteUsed} owner: ${emoteOwner || `unknown`}, ${BOT_USERNAME} subbed? ${!!users[BOT_USERNAME]?.[emoteOwner]?.sub}`])
             if (users[BOT_USERNAME]?.[emoteOwner]?.sub) { this.say(chatroom, `BEEG ${emoteUsed}`) }

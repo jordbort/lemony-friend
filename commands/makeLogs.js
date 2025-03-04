@@ -91,7 +91,7 @@ OAUTH_TOKEN='${OAUTH_TOKEN}'
 
 CLIENT_ID='${CLIENT_ID}'
 CLIENT_SECRET='${CLIENT_SECRET}'
-BOT_ACCESS_TOKEN='${lemonyFresh.botAccessToken}'
+BOT_ACCESS_TOKEN='${settings.botAccessToken}'
 
 REDIRECT_URI='${REDIRECT_URI}'
 

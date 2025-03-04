@@ -1,3 +1,4 @@
+const BOT_ACCESS_TOKEN = process.env.BOT_ACCESS_TOKEN
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 // Terminal colors
@@ -49,6 +50,7 @@ const chatColors = {
 
 // Global settings
 const settings = {
+    botAccessToken: BOT_ACCESS_TOKEN,
     debug: true,
     timeLocale: `en-US`,
     timeZone: `America/New_York`,

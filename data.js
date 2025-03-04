@@ -1,5 +1,3 @@
-const BOT_ACCESS_TOKEN = process.env.BOT_ACCESS_TOKEN
-
 const JPEGSTRIPES_ACCESS_TOKEN = process.env.JPEGSTRIPES_ACCESS_TOKEN
 const JPEGSTRIPES_REFRESH_TOKEN = process.env.JPEGSTRIPES_REFRESH_TOKEN
 
@@ -41,19 +39,6 @@ const STARTING_LEMONS = process.env.STARTING_LEMONS
 const HANGMAN_WINS = process.env.HANGMAN_WINS
 
 const lemonyFresh = {
-    channels: [
-        `#jpegstripes`,
-        `#sclarf`,
-        `#e1ectroma`,
-        `#domonintendo1`,
-        `#ppuyya`,
-        `#astral_an0maly`,
-        '#dirtyd0inks',
-        '#artyinpink',
-        '#thetarastark',
-        '#slebTV'
-    ],
-    botAccessToken: BOT_ACCESS_TOKEN,
     jpegstripes: {
         id: 70624062,
         accessToken: JPEGSTRIPES_ACCESS_TOKEN,
@@ -681,7 +666,7 @@ const lemonyFresh = {
         id: 1013603562,
         accessToken: SLEBTV_ACCESS_TOKEN,
         refreshToken: SLEBTV_REFRESH_TOKEN
-    },
+    }
 }
 
 const mods = {

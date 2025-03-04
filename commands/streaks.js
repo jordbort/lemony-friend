@@ -84,9 +84,8 @@ module.exports = {
                 .map(channel => lemonyFresh[channel].emotes)
                 .flat()
             if (accessibleEmotes.some(emote => message.includes(emote))) {
-                const emoteOwner = Object.keys(lemonyFresh).filter(key => typeof lemonyFresh[key] === `object`
-                    && `emotes` in lemonyFresh[key]
-                    && lemonyFresh[key].emotes.some(emote => message.includes(emote)))[0]
+                const emoteOwner = Object.keys(lemonyFresh).filter(channel => `emotes` in lemonyFresh[channel]
+                    && lemonyFresh[channel].emotes.some(emote => message.includes(emote)))[0]
                 checkStreamerEmoteStreak(bot, chatroom, emoteOwner)
             }
         } else { logMessage([`> Timer in ${channel} 'streak' is not currently listening`]) }
