@@ -73,7 +73,7 @@ function makeLogs(arr) {
         [users, `users`],
         [knownTags, 'knownTags'],
         [settings, `settings`],
-        [wordBank, `wordBank`],
+        // [wordBank, `wordBank`],
         [tempCmds, `tempCmds`]
     ]
     for (const [obj, objName] of objectsToLog) {
@@ -138,6 +138,12 @@ SKITTLE108_REFRESH_TOKEN='${mods.skittle108.refreshToken}'\n\n`
     logs += `STARTING_LEMONS='${createCSV(startingLemons, users, `lemons`)}'\n\n`
 
     logs += `HANGMAN_WINS='${createCSV(hangmanWins, users, `hangmanWins`)}'\n\n`
+
+    logs += `WORDBANK_NOUNS='${JSON.stringify(wordBank.nouns)}'\n`
+
+    logs += `WORDBANK_VERBS='${JSON.stringify(wordBank.verbs)}'\n`
+
+    logs += `WORDBANK_ADJECTIVES='${JSON.stringify(wordBank.adjectives)}'\n`
 
     logs += `${Array(50).fill(`*`).join(` `)}\n`
 
