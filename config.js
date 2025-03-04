@@ -527,7 +527,8 @@ const settings = {
         `onlyfans`,
         `viewers on`,
         `viewers̄`,
-        `viewers ͚on`
+        `viewers ͚on`,
+        `viěw̐e̩rs ̳o̫n`
     ]
 }
 
