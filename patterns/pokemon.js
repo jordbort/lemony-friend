@@ -15,7 +15,7 @@ module.exports = {
             return
         }
 
-        bot.say(chatroom, `!pokecatch`)
+        bot.say(chatroom, `!pokecatch ${settings.usedPokeball}`)
     },
     buyPokeballs(props) {
         const { bot, chatroom, channel } = props

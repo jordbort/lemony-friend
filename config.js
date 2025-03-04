@@ -80,6 +80,7 @@ const settings = {
     chantEmote: `👏️`,
     playPCG: true,
     pokeballQuantity: 10,
+    usedPokeball: `pokeball`,
     maxCountdownDuration: 7200000,
     ignoredBots: [
         BOT_USERNAME,
