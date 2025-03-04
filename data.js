@@ -506,7 +506,9 @@ const lemonyFresh = {
             `Quotes`,
             `"please god don't milk me" -trom 2025`,
             `"is latex cum?" -arty 2025`,
-            `"that's a big shit and a big gig right there" -trom 2025`
+            `"that's a big shit and a big gig right there" -trom 2025`,
+            `"bro loves ears" -trom, 2025`,
+            `"I've heard the balls are quite complementary to the curious taste of the shaft" -Ggekk0r, 2025`
         ]
     },
     domonintendo1: {
@@ -604,12 +606,12 @@ const lemonyFresh = {
         list: [
             `Games`,
             `Super Paper Mario`,
+            `Subnautica`,
             `Okami`,
             `Captain Toad's Treasure Tracker`,
             `Animal Crossing`,
             `Far Cry Vengeance`,
             `Balatro`,
-            `Subnautica`,
             `The Legend of Zelda: Skyward Sword`,
             `Resident Evil 7`,
             `The Legend of Zelda: Ocarina of Time`,
