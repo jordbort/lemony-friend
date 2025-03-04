@@ -48,7 +48,7 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!verbs` (or `!verb` or `!v`) - Use this command to add to the list of verbs Lemony Friend knows.
 - `!nouns` (or `!noun` or `!n`) - Use this command to add to the list of nouns Lemony Friend knows.
 - `!adjectives` (or `!adjective` or `!adj` or `!a`) - Use this command to add to the list of adjectives Lemony Friend knows.
-- `!tempcmds` (or `!tmpcmds`) - This command lists all existing temporary commands.
+- `!lemoncommands` (or `!lemcmds`) - This command lists all existing lemon commands.
 - `!greet` - This command can be used to greet one or more users. Use `!greet <user>` to greet another user, `!greet <user1> <user2>...` to greet multiple users, or `!greet all` to greet all known users in the current channel who have chatted in the past hour, other than the user of the command.
 - `!goodbye` (or `!bye` or `!gn` or `!goodnight`) - This command can be used to say good night to a user leaving chat.
 - `!dadjoke` - This command gets a random joke from a [Dad Joke API](https://icanhazdadjoke.com/api).
@@ -81,11 +81,11 @@ Each channel lemony_friend is in has a generic, unnamed list, empty by default. 
 - `!list clear` - Delete all the contents of the list (keeps the list's name). Only available to mods, VIPs, and the channel owner.
 - `!list reset` - Delete all the contents of the list, and clear the list's name. Only available to mods, VIPs, and the channel owner.
 
-## Temporary Commands 🍋️
-Temporary commands are commands that can be made on the fly by anyone, which follow a simple call-and-response pattern. They are "temporary" because they aren't hard-coded into lemony_friend, and will be lost next time it's reset.
-- `!tempcmd` (or `!tmpcmd`) - This command is used to create custom commands that will be active until the next time lemony_friend is rebooted. Use `!tempcmd <commandname> <response...>` to create/edit a command name and reply. You can also use `!tempcmd delete <commandname>` to delete a command, and `!tempcmd rename <oldname> <newname>` to change the name of an existing command.
+## Lemon Commands 🍋️
+Lemon commands are custom commands that can be made on the fly by anyone, which follow a simple call-and-response pattern.
+- `!lemoncommand` (or `!lemcmd`) - This command is used to create custom commands. Use `!lemcmd <commandname> <response...>` to create/edit a command name and reply. You can also use `!lemcmd delete <commandname>` to delete a command, `!lemcmd rename <oldname> <newname>` to change the name of an existing command, and `!lemcmd check <commandname>` to view the contents of a command.
 
-### Temporary Command Variables
+### Lemon Command Variables
 There are also variables you can use in commands that will be replaced with arguments:
 - `{user}` is the display name of the user of the command.
 - `{usernn}` is the nickname of the user of the command (falling back on display name if there's no nickname defined).
@@ -97,8 +97,9 @@ There are also variables you can use in commands that will be replaced with argu
 - `{streamer}` is the nickname of whose chatroom the command is used in.
 - `{random "one" "two" "et cetera"}` can be used to provide a list (separate items with quotes) of words/phrases for lemony_friend to choose from at random.
 - `{1}` through `{9}` take whatever arguments are supplied, in order, falling back on `undefined` if not used.
+- The 9 types of context emotes can also be used: `{lemon}` (or `{lem}`), `{neutral}` (or `{neu}`), `{positive}` (or `{pos}`), `{negative}` (or `{neg}`), `{hype}`, `{upset}` (or `{up}`), `{greeting}` (or `{greet}`), `{bye}`, and `{dumb}` (or `{dum}`)
 
-Example: Using `!tempcmd !diceroll {user} rolled a {number6}!` would create a command called `!diceroll` that simulates the user of the command rolling a six-sided die.
+Example: Using `!lemcmd !diceroll {user} rolled a {number6}!` would create a command called `!diceroll` that simulates the user of the command rolling a six-sided die.
 
 ## Command Lemon Interface 🍋️
 If lemony_friend is present in your Twitch channel, or you are a moderator of a channel where lemony_friend is present, you are able to use the command `cli` to adjust lemony_friend's settings and data.
@@ -118,6 +119,10 @@ Use this command to update the list of emotes lemony_friend has access to within
 - `cli channel bttvEmotes` or `cli c bttv` (array of strings)
 
 Use this command to update the list of BTTV emotes lemony_friend has access to within a channel.
+
+- `cli channel contextEmote` or `cli c ce` (emote type, array of strings)
+
+Use this command to update the 18 categories of emotes (Twitch sub emotes and BTTV emotes, 9 each) lemony_friend will use at random, defined for each channel. The categories are: `lemonEmotes` (`lem`), `neutralEmotes` (`neu`), `hypeEmotes` (`hype`), `positiveEmotes` (`pos`), `upsetEmotes` (`up`), `negativeEmotes` (`neg`), `greetingEmotes` (`greet`), `byeEmotes` (`bye`), `dumbEmotes` (`dumb`), `bttvLemonEmotes` (`bttvLem`), `bttvNeutralEmotes` (`bttvNeu`), `bttvHypeEmotes` (`hype`), `bttvPositiveEmotes` (`bttvPos`), `bttvUpsetEmotes` (`bttvUp`), `bttvNegativeEmotes` (`bttvNeg`), `bttvGreetingEmotes` (`bttvGreet`), `bttvByeEmotes` (`bttvBye`), `bttvDumbEmotes` (`bttvDumb`)
 
 - `cli channel subRaidMessage` or `cli c srm` (string)
 
@@ -164,6 +169,10 @@ Use this command to control whether or not Lemony_friend will attempt to catch a
 - `cli settings pokeballQuantity` or `cli s pq` (number)
 
 Use this command to change the amount of pokeballs lemony_friend will attempt to purchase if PokemonCommunityGame says it doesn't have pokeballs. This can be used to help lemony_friend avoid a loop of continually trying and failing to use pokeballs and purchasing them when it runs out and can't afford to purchase the quantity currently set.
+
+- `cli settings usedPokeball` or `cli s up` (string)
+
+Use this command to change the type of pokeball lemony_friend will use when catching a Pokémon with PokemonCommunityGame (default 'pokeball').
 
 - `cli settings chantEmote` or `cli s ce` (string)
 
