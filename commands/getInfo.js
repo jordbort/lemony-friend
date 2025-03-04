@@ -8,14 +8,19 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Changed !tempcmd to !lemoncommand and !lemcmd`,
-            `Added elapsed time to !lastmsg command`,
-            `Updated tempcmd variables {1-9} to fall back on an empty string`,
-            `Implemented handling for Twitch shared chat`,
-            `Lemon commands are now remembered`,
-            `Insult nouns, verbs, and adjectives are now remembered`,
             `Partial backend restructuring`,
-            `Updated CLI to handle channel contextEmotes`
+            `Updated CLI to handle channel contextEmotes`,
+            `Changed !tempcmd to !lemoncommand and !lemcmd`,
+            `Added contextEmotes as lemon command variables`,
+            `Lemon commands are now remembered`,
+            `Added 5 new insult patterns`,
+            `Insult nouns, verbs, and adjectives are now remembered`,
+            `Implemented handling for Twitch shared chat`,
+            `Added elapsed time to !lastmsg command`,
+            `Added more reactions to bot being mentioned`,
+            `Updated tempcmd variables {1-9} to fall back on an empty string`,
+            `Says how many total lemons after successfully doubling them`,
+            `Updated CLI to choose usedPokeball in PCG`
         ]
 
         const timeOptions = {
