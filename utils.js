@@ -10,180 +10,27 @@ const { settings, resetTxt, grayTxt, whiteTxt, yellowBg, chatColors } = require(
 
 const twitchUsernamePattern = /^[a-z0-9_]{4,25}$/i
 
-function getLemonEmote() {
-    // const lemonEmotes = [...settings.baseEmotes.lemonEmotes]
-    // if (users[BOT_USERNAME]?.e1ectroma?.sub) { lemonEmotes.push(`e1ectr4Lemfresh`) }
+function getContextEmote(type, channel) {
+    const baseType = `${type}Emotes`
+    const bttvType = `bttv${type.substring(0, 1).toUpperCase()}${type.substring(1)}Emotes`
+    const emotes = [...settings.baseEmotes[baseType]]
 
-    // const lemonEmote = lemonEmotes[Math.floor(Math.random() * lemonEmotes.length)]
-    // logMessage([`> getLemonEmote() => '${lemonEmote}'), choices:`, lemonEmotes.length])
-    // return lemonEmote
-    return users[BOT_USERNAME]?.e1ectroma?.sub
-        ? `e1ectr4Lemfresh`
-        : `🍋`
-}
+    if (channel === `jpegstripes` && !users[BOT_USERNAME]?.jpegstripes?.sub) {
+        if (type === `hype`) { emotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
+        if (type === `positive`) { emotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
+        if (type === `greeting`) { emotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
+        if (type === `bye`) { emotes.push(`WhitneyVibe`) }
+    }
 
-function getNeutralEmote(channel) {
-    const neutralEmotes = [...settings.baseEmotes.neutralEmotes]
+    for (const member in lemonyFresh) {
+        if (users[BOT_USERNAME]?.[member]?.sub) { emotes.push(...lemonyFresh[member].contextEmotes[baseType]) }
+        if (member === channel) { emotes.push(...lemonyFresh[member].contextEmotes[bttvType]) }
+    }
+    if (type === `lemon` && emotes.length > 1) { emotes.shift() }
+    // logMessage([`> getContextEmote(type: '${type}', channel: '${channel}', emotes: '${emotes.join(`', '`)}')`])
 
-    if (users[BOT_USERNAME]?.jpegstripes?.sub) { neutralEmotes.push(`jpegstHeyGuys`) }
-    if (users[BOT_USERNAME]?.sclarf?.sub) { neutralEmotes.push(`sclarfWave`) }
-    if (users[BOT_USERNAME]?.e1ectroma?.sub) { neutralEmotes.push(`e1ectr4Smile`) }
-    if (users[BOT_USERNAME]?.domonintendo1?.sub) { neutralEmotes.push(`domoni6ChefHey`) }
-    if (users[BOT_USERNAME]?.astral_an0maly?.sub) { neutralEmotes.push(`astral332Pop`) }
-    if (users[BOT_USERNAME]?.artyinpink?.sub) { neutralEmotes.push(`cosyin1Wave`, `cosyin1Soft`) }
-    if (users[BOT_USERNAME]?.thetarastark?.sub) { neutralEmotes.push(`thetar42Pelican`) }
-
-    const neutralEmote = neutralEmotes[Math.floor(Math.random() * neutralEmotes.length)]
-    // logMessage([`> getNeutralEmote(channel: '${channel}') => '${neutralEmote}'), choices:`, neutralEmotes.length])
-    return neutralEmote
-}
-
-function getHypeEmote(channel) {
-    const hypeEmotes = [...settings.baseEmotes.hypeEmotes]
-
-    if (channel === `jpegstripes`) { hypeEmotes.push(`(ditto)`, `bongoTap`, `catJAM`, `CherryStomp`, `Clap`, `diddyJAM`, `HYPERCHOP`, `KongDance`, `KyleFestivale`, `MitziJump`, `PartyKirby`, `popCat`, `raccPls`, `racJam`, `ratJAM`, `DogChamp`, `MallowDance`, `MarioDance`) }
-    if (channel === `jpegstripes` && !users[BOT_USERNAME]?.jpegstripes?.sub) { hypeEmotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
-    if (channel === `sclarf`) { hypeEmotes.push(`(ditto)`, `batJAM`, `BoneZone`, `bongoTap`, `catJAM`, `Clap`, `EZ`, `GIGACHAD`, `gorgHAIP`, `hypeE`, `MorshuPls`, `NODDERS`, `OOOO`) }
-    if (channel === `e1ectroma`) { hypeEmotes.push(`AlienPls`, `BlobDance`, `BoneZone`, `bongoTap`, `catJAM`, `chikaYo`, `Clap`, `dekuHYPE`, `PokemonTrainer`, `popCat`, `RareChar`, `ratJAM`, `ricardoFlick`, `WeSmart`) }
-    if (channel === `domonintendo1`) { hypeEmotes.push(`catJAM`, `ChipiChipi`, `Drake`, `GIGACHAD`, `HYPERS`, `marioD`, `NODDERS`, `PartyKirby`, `pepeD`, `pepeDS`, `POGGERS`, `ricardoFlick`, `SunshineDance`) }
-
-    if (users[BOT_USERNAME]?.jpegstripes?.sub) { hypeEmotes.push(`jpegstCoin`, `jpegstGeno`, `jpegstKylePls`, `jpegstBamJAM`, `jpegstCherry`, `jpegstKetchup`, `jpegstJulian`, `jpegstScoot`, `jpegstMitzi`, `jpegstApollo`, `jpegstKylePog`, `jpegstYes`, `jpegstSlay`) }
-    if (users[BOT_USERNAME]?.sclarf?.sub) { hypeEmotes.push(`sclarfRave`, `sclarfWobble`, `sclarfBark`, `sclarfSpin`, `sclarfPls`, `sclarfAmazed`, `sclarfHearts`, `sclarfDEEP`, `sclarfYay`) }
-    if (users[BOT_USERNAME]?.e1ectroma?.sub) { hypeEmotes.push(`e1ectr4Lfg`, `e1ectr4Pikadance`, `e1ectr4Tromadance`, `e1ectr4Coop`, `e1ectr4Ocha`, `e1ectr4Smile`, `e1ectr4Salute`, `e1ectr4Lemfresh`) }
-    if (users[BOT_USERNAME]?.domonintendo1?.sub) { hypeEmotes.push(`domoni6Bingo`, `domoni6Love`, `domoni6Mingo`) }
-    if (users[BOT_USERNAME]?.astral_an0maly?.sub) { hypeEmotes.push(`astral332Pop`, `astral332Pophype`, `astral332Sherb`, `astral332Vibe`) }
-    if (users[BOT_USERNAME]?.artyinpink?.sub) { hypeEmotes.push(`cosyin1Hype`, `cosyin1Dance`) }
-    if (users[BOT_USERNAME]?.thetarastark?.sub) { hypeEmotes.push(`thetar42Cheer`, `thetar42POG`) }
-
-    const hypeEmote = hypeEmotes[Math.floor(Math.random() * hypeEmotes.length)]
-    // logMessage([`> getHypeEmote(channel: '${channel}') => '${hypeEmote}'), choices:`, hypeEmotes.length])
-    return hypeEmote
-}
-
-function getPositiveEmote(channel) {
-    const positiveEmotes = [...settings.baseEmotes.positiveEmotes]
-
-    if (channel === `jpegstripes`) { positiveEmotes.push(`CherryStomp`, `MallowDance`, `MarioDance`) }
-    if (channel === `jpegstripes` && !users[BOT_USERNAME]?.jpegstripes?.sub) { positiveEmotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
-    if (channel === `sclarf`) { positiveEmotes.push(`(ditto)`, `NODDERS`) }
-    if (channel === `e1ectroma`) { positiveEmotes.push(`AlienPls`, `PokeMon`, `PokemonTrainer`, `RareChar`) }
-    if (channel === `domonintendo1`) { positiveEmotes.push(`HYPERS`, `Mariok`, `NODDERS`, `peepoHappy`) }
-
-    if (users[BOT_USERNAME]?.jpegstripes?.sub) { positiveEmotes.push(`jpegstGeno`, `jpegstKylePls`, `jpegstBamJAM`, `jpegstCherry`, `jpegstKetchup`, `jpegstJulian`, `jpegstScoot`, `jpegstMitzi`, `jpegstApollo`, `jpegstYes`, `jpegstDog`) }
-    if (users[BOT_USERNAME]?.sclarf?.sub) { positiveEmotes.push(`sclarfDog`, `sclarfHearts`, `sclarfPopbonk`) }
-    if (users[BOT_USERNAME]?.e1ectroma?.sub) { positiveEmotes.push(`e1ectr4Pikadance`, `e1ectr4Coop`, `e1ectr4Smile`, `e1ectr4Salute`, `e1ectr4Lemfresh`, `e1ectr4Moses`, `e1ectr4Josie`) }
-    if (users[BOT_USERNAME]?.domonintendo1?.sub) { positiveEmotes.push(`domoni6Bingo`, `domoni6Mingo`) }
-    if (users[BOT_USERNAME]?.astral_an0maly?.sub) { positiveEmotes.push(`astral332Pop`, `astral332Pophi`) }
-    if (users[BOT_USERNAME]?.artyinpink?.sub) { positiveEmotes.push(`cosyin1Hype`, `cosyin1Love`) }
-    if (users[BOT_USERNAME]?.thetarastark?.sub) { positiveEmotes.push(`thetar42Hoagie`, `thetar42Cheer`) }
-
-    const positiveEmote = positiveEmotes[Math.floor(Math.random() * positiveEmotes.length)]
-    // logMessage([`> getPositiveEmote(channel: '${channel}') => '${positiveEmote}'), choices:`, positiveEmotes.length])
-    return positiveEmote
-}
-
-function getUpsetEmote(channel) {
-    const upsetEmotes = [...settings.baseEmotes.upsetEmotes]
-
-    if (channel === `jpegstripes`) { upsetEmotes.push(`BowserRAGE`) }
-    if (channel === `sclarf`) { upsetEmotes.push(`Madge`, `NOOO`, `NOPERS`) }
-    if (channel === `e1ectroma`) { upsetEmotes.push(`pikaO`, `pressF`, `sadCat`) }
-    if (channel === `domonintendo1`) { upsetEmotes.push(`coffinPLZ`, `monkaX`, `sadCat`, `tenseSmash`, `VegetaPain`) }
-
-    if (users[BOT_USERNAME]?.jpegstripes?.sub) { upsetEmotes.push(`jpegstKylePog`, `jpegstNo`) }
-    if (users[BOT_USERNAME]?.sclarf?.sub) { upsetEmotes.push(`sclarfMad`, `sclarfPalm`, `sclarfDead`, `sclarfHiss`, `sclarfD8`) }
-    if (users[BOT_USERNAME]?.e1ectroma?.sub) { upsetEmotes.push(`e1ectr4Devil`, `e1ectr4Heat`) }
-    if (users[BOT_USERNAME]?.domonintendo1?.sub) { upsetEmotes.push(`domoni6Sneeze`, `domoni6Dum`) }
-    if (users[BOT_USERNAME]?.artyinpink?.sub) { upsetEmotes.push(`cosyin1Crying`) }
-    if (users[BOT_USERNAME]?.thetarastark?.sub) { upsetEmotes.push(`thetar42Fkickline`, `thetar42Leave`) }
-
-    const upsetEmote = upsetEmotes[Math.floor(Math.random() * upsetEmotes.length)]
-    // logMessage([`> getUpsetEmote(channel: '${channel}') => '${sadEmote}'), choices:`, upsetEmotes.length])
-    return upsetEmote
-}
-
-function getNegativeEmote(channel) {
-    const negativeEmotes = [...settings.baseEmotes.negativeEmotes]
-
-    if (channel === `jpegstripes`) { negativeEmotes.push(`modCheck`) }
-    if (channel === `sclarf`) { negativeEmotes.push(`NOOO`, `NOPERS`) }
-    if (channel === `e1ectroma`) { negativeEmotes.push(`pikaO`, `pressF`, `sadCat`) }
-    if (channel === `domonintendo1`) { negativeEmotes.push(`sadCat`) }
-
-    if (users[BOT_USERNAME]?.jpegstripes?.sub) { negativeEmotes.push(`jpegstNo`, `jpegstBroken`) }
-    if (users[BOT_USERNAME]?.sclarf?.sub) { negativeEmotes.push(`sclarfBlind`, `sclarfDead`, `sclarfHiss`, `sclarfD8`) }
-    if (users[BOT_USERNAME]?.e1ectroma?.sub) { negativeEmotes.push(`e1ectr4Devil`, `e1ectr4Heat`) }
-    if (users[BOT_USERNAME]?.domonintendo1?.sub) { negativeEmotes.push(`domoni6Sneeze`, `domoni6Dum`) }
-    if (users[BOT_USERNAME]?.artyinpink?.sub) { negativeEmotes.push(`cosyin1Crying`) }
-    if (users[BOT_USERNAME]?.thetarastark?.sub) { negativeEmotes.push(`thetar42Fkickline`, `thetar42Leave`) }
-
-    const negativeEmote = negativeEmotes[Math.floor(Math.random() * negativeEmotes.length)]
-    // logMessage([`> getNegativeEmote(channel: '${channel}') => '${negativeEmote}'), choices:`, negativeEmotes.length])
-    return negativeEmote
-}
-
-function getGreetingEmote(channel) {
-    const greetingEmotes = [...settings.baseEmotes.greetingEmotes]
-
-    if (channel === `jpegstripes`) { greetingEmotes.push(`(ditto)`, `bongoTap`, `CherryStomp`, `diddyJAM`, `HYPERCHOP`, `KongDance`, `KyleFestivale`, `MitziJump`, `PartyKirby`, `popCat`, `raccPls`, `racJam`, `ratJAM`, `VillagerTimber`, `MallowDance`, `MarioDance`, `marioWave`) }
-    if (channel === `jpegstripes` && !users[BOT_USERNAME]?.jpegstripes?.sub) { greetingEmotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
-    if (channel === `sclarf`) { greetingEmotes.push(`(ditto)`, `BoneZone`, `bongoTap`, `BOOBA`, `catKISS`, `EZ`, `GIGACHAD`, `jesusBeBallin`, `LICKA`, `MEOW`, `OOOO`, `peepoShy`) }
-    if (channel === `e1ectroma`) { greetingEmotes.push(`AlienPls`, `BlobDance`, `BoneZone`, `bongoTap`, `chikaYo`, `dekuHYPE`, `PokeMon`, `PokemonTrainer`, `popCat`, `RareChar`, `ricardoFlick`) }
-    if (channel === `domonintendo1`) { greetingEmotes.push(`ChipiChipi`, `GIGACHAD`, `HYPERS`, `marioD`, `Mariok`, `peepoHappy`, `pikaHi`, `POGGERS`, `ricardoFlick`, `SunshineDance`) }
-
-    if (users[BOT_USERNAME]?.jpegstripes?.sub) { greetingEmotes.push(`jpegstCoin`, `jpegstTimber`, `jpegstGeno`, `jpegstKylePls`, `jpegstBamJAM`, `jpegstCherry`, `jpegstKetchup`, `jpegstJulian`, `jpegstScoot`, `jpegstMitzi`, `jpegstApollo`, `jpegstHeyGuys`, `jpegstYes`, `jpegstChrome`, `jpegstBroken`, `jpegstSlay`, `jpegstDog`) }
-    if (users[BOT_USERNAME]?.sclarf?.sub) { greetingEmotes.push(`sclarfRave`, `sclarfWobble`, `sclarfBark`, `sclarfSpin`, `sclarfPls`, `sclarfHowdy`, `sclarfDog`, `sclarfAmazed`, `sclarfHearts`, `sclarfDEEP`, `sclarfWave`, `sclarfYay`, `sclarfChickenmoley`) }
-    if (users[BOT_USERNAME]?.e1ectroma?.sub) { greetingEmotes.push(`e1ectr4Lfg`, `e1ectr4Pikadance`, `e1ectr4Tromadance`, `e1ectr4Ocha`, `e1ectr4Hello`, `e1ectr4Hi`, `e1ectr4Wazzah`, `e1ectr4Smile`, `e1ectr4Ram`, `e1ectr4Salute`, `e1ectr4Lemfresh`, `e1ectr4Moses`, `e1ectr4Josie`, `e1ectr4Malort`, `e1ectr4Umbreon`) }
-    if (users[BOT_USERNAME]?.domonintendo1?.sub) { greetingEmotes.push(`domoni6Bingo`, `domoni6ChefHey`, `domoni6Sneeze`, `domoni6Love`, `domoni6Boom`, `domoni6Mingo`) }
-    if (users[BOT_USERNAME]?.astral_an0maly?.sub) { greetingEmotes.push(`astral332Pop`, `astral332Pophi`, `astral332Sherb`, `astral332Freddy`) }
-    if (users[BOT_USERNAME]?.dirtyd0inks?.sub) { greetingEmotes.push(`dirtyd182LOVE`) }
-    if (users[BOT_USERNAME]?.artyinpink?.sub) { greetingEmotes.push(`cosyin1Hype`, `cosyin1Dance`, `cosyin1Love`, `cosyin1Wave`, `cosyin1Soft`) }
-    if (users[BOT_USERNAME]?.thetarastark?.sub) { greetingEmotes.push(`thetar42KeystonePride`, `thetar42Hoagie`, `thetar42Cheer`, `thetar42POG`, `thetar42Pelican`, `thetar42Blep`, `thetar42Sad`, `thetar42Spin`, `thetar42Laser`, `thetar42Glare`) }
-
-    const greetingEmote = greetingEmotes[Math.floor(Math.random() * greetingEmotes.length)]
-    // logMessage([`> getgreetingEmote(channel: '${channel}') => '${greetingEmote}'), choices:`, greetingEmotes.length])
-    return greetingEmote
-}
-
-function getByeEmote(channel) {
-    const byeEmotes = [...settings.baseEmotes.byeEmotes]
-
-    if (channel === `jpegstripes`) { byeEmotes.push(`marioWave`) }
-    if (channel === `jpegstripes` && !users[BOT_USERNAME]?.jpegstripes?.sub) { byeEmotes.push(`WhitneyVibe`) }
-    if (channel === `sclarf`) { byeEmotes.push(`catKISS`, `LICKA`, `MEOW`) }
-    if (channel === `e1ectroma`) { byeEmotes.push(`PokemonTrainer`) }
-    if (channel === `domonintendo1`) { byeEmotes.push(`peepoHappy`, `pikaHi`) }
-
-    if (users[BOT_USERNAME]?.jpegstripes?.sub) { byeEmotes.push(`jpegstGeno`, `jpegstKylePls`, `jpegstCherry`, `jpegstKetchup`, `jpegstMitzi`, `jpegstApollo`, `jpegstHeyGuys`, `jpegstTapeEnd`, `jpegstDog`) }
-    if (users[BOT_USERNAME]?.sclarf?.sub) { byeEmotes.push(`sclarfSleep`, `sclarfWave`) }
-    if (users[BOT_USERNAME]?.e1ectroma?.sub) { byeEmotes.push(`e1ectr4Pikadance`, `e1ectr4Hello`, `e1ectr4Smile`, `e1ectr4Ram`, `e1ectr4Salute`, `e1ectr4Lemfresh`, `e1ectr4Moses`, `e1ectr4Josie`) }
-    if (users[BOT_USERNAME]?.domonintendo1?.sub) { byeEmotes.push(`domoni6Love`) }
-    if (users[BOT_USERNAME]?.artyinpink?.sub) { byeEmotes.push(`cosyin1Love`, `cosyin1Wave`, `cosyin1Cozy`) }
-
-    const byeEmote = byeEmotes[Math.floor(Math.random() * byeEmotes.length)]
-    // logMessage([`> getbyeEmote(channel: '${channel}') => '${byeEmote}'), choices:`, byeEmotes.length])
-    return byeEmote
-}
-
-function getDumbEmote(channel) {
-    const dumbEmotes = [...settings.baseEmotes.dumbEmotes]
-
-    if (channel === `jpegstripes`) { dumbEmotes.push(`KEKW`, `modCheck`, `popCat`, `catLurk`) }
-    if (channel === `sclarf`) { dumbEmotes.push(`Clueless`, `COPIUM`, `DonoWall`, `KEKW`, `modCheck`) }
-    if (channel === `e1ectroma`) { dumbEmotes.push(`dekuHYPE`, `KEKW`, `modCheck`, `pikaO`, `popCat`, `pressF`) }
-    if (channel === `domonintendo1`) { dumbEmotes.push(`COPIUM`, `HUHH`, `KEKW`, `modCheck`, `monkaHmm`, `NODDERS`, `PauseChamp`, `pepoG`, `weirdChamp`) }
-
-    if (users[BOT_USERNAME]?.jpegstripes?.sub) { dumbEmotes.push(`jpegstChrome`, `jpegstBroken`, `jpegstBonk`, `jpegstMegamind`) }
-    if (users[BOT_USERNAME]?.sclarf?.sub) { dumbEmotes.push(`sclarfSpin`, `sclarfHuh`, `sclarfBlind`, `sclarfSophisticated`, `sclarfLUL`, `sclarfDEEP`, `sclarfChickenmoley`) }
-    if (users[BOT_USERNAME]?.e1ectroma?.sub) { dumbEmotes.push(`e1ectr4Bye`, `e1ectr4Laugh`, `e1ectr4Wazzah`, `e1ectr4Malort`) }
-    if (users[BOT_USERNAME]?.domonintendo1?.sub) { dumbEmotes.push(`domoni6ChefHey`, `domoni6MeincSus`, `domoni6Sneeze`, `domoni6Dum`, `domoni6Kek`) }
-    if (users[BOT_USERNAME]?.astral_an0maly?.sub) { dumbEmotes.push(`astral332Load`) }
-    if (users[BOT_USERNAME]?.artyinpink?.sub) { dumbEmotes.push(`cosyin1Dance`) }
-    if (users[BOT_USERNAME]?.thetarastark?.sub) { dumbEmotes.push(`thetar42Blep`, `thetar42Sad`, `thetar42Laser`, `thetar42Glare`) }
-
-    const dumbEmote = dumbEmotes[Math.floor(Math.random() * dumbEmotes.length)]
-    // logMessage([`> getDumbEmote(channel: '${channel}') => '${dumbEmote}'), choices:`, dumbEmotes.length])
-    return dumbEmote
+    const emote = emotes[Math.floor(Math.random() * emotes.length)]
+    return emote
 }
 
 function pluralize(num, singularForm, pluralForm) {
@@ -1248,15 +1095,7 @@ const numbers = [
 module.exports = {
     numbers,
     twitchUsernamePattern,
-    getLemonEmote,
-    getNeutralEmote,
-    getHypeEmote,
-    getPositiveEmote,
-    getUpsetEmote,
-    getNegativeEmote,
-    getGreetingEmote,
-    getByeEmote,
-    getDumbEmote,
+    getContextEmote,
     pluralize,
     renderObj,
     logMessage,
@@ -1341,6 +1180,27 @@ module.exports = {
         lemonyFresh[channel].noSubRaidMessage = lemonyFresh[channel]?.noSubRaidMessage || ``
         lemonyFresh[channel].emotes = lemonyFresh[channel]?.emotes || []
         lemonyFresh[channel].bttvEmotes = lemonyFresh[channel]?.bttvEmotes || []
+        lemonyFresh[channel].contextEmotes = {
+            lemonEmotes: [],
+            neutralEmotes: [],
+            hypeEmotes: [],
+            positiveEmotes: [],
+            upsetEmotes: [],
+            negativeEmotes: [],
+            greetingEmotes: [],
+            byeEmotes: [],
+            dumbEmotes: [],
+            bttvLemonEmotes: [],
+            bttvNeutralEmotes: [],
+            bttvHypeEmotes: [],
+            bttvPositiveEmotes: [],
+            bttvUpsetEmotes: [],
+            bttvNegativeEmotes: [],
+            bttvGreetingEmotes: [],
+            bttvByeEmotes: [],
+            bttvDumbEmotes: [],
+            ...lemonyFresh[channel].contextEmotes
+        }
         lemonyFresh[channel].funnyCommands = lemonyFresh[channel]?.funnyCommands || []
         lemonyFresh[channel].redeems = lemonyFresh[channel]?.redeems || []
         lemonyFresh[channel].rollFunNumber = lemonyFresh[channel]?.rollFunNumber || true
@@ -1420,12 +1280,12 @@ module.exports = {
         logMessage([`> sayJoinMessage(chatroom: '${chatroom}'${settings.joinMessage ? `, '${settings.joinMessage}'` : ``})`])
 
         const channel = chatroom.substring(1)
-        const lemonEmote = getLemonEmote()
-        const neutralEmote = getNeutralEmote(channel)
-        const positiveEmote = getPositiveEmote(channel)
-        const hypeEmote = getHypeEmote(channel)
-        const greetingEmote = getGreetingEmote(channel)
-        const dumbEmote = getDumbEmote(channel)
+        const lemonEmote = getContextEmote(`lemon`, channel)
+        const neutralEmote = getContextEmote(`neutral`, channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
+        const hypeEmote = getContextEmote(`hype`, channel)
+        const greetingEmote = getContextEmote(`greeting`, channel)
+        const dumbEmote = getContextEmote(`dumb`, channel)
         const numUsers = Object.keys(users).length
         const numTempCmds = Object.keys(tempCmds).length
         const randNum = Math.floor(Math.random() * numbers.length)

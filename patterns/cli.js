@@ -2,7 +2,7 @@ const DEV = process.env.DEV
 const { settings } = require(`../config`)
 const { lemonyFresh, users } = require(`../data`)
 const { validTimeZones, validLocales } = require(`../commands/time`)
-const { getLemonEmote, getToUser, pluralize, logMessage } = require(`../utils`)
+const { getContextEmote, getToUser, pluralize, logMessage } = require(`../utils`)
 
 function updateTimeZone(bot, chatroom, obj, message, name, args) {
     logMessage([`> updateTimeZone(chatroom: '${chatroom}', name: '${name}', args:`, args.join(`, `), `)`])
@@ -166,6 +166,43 @@ function updateLargeNum(bot, chatroom, obj, message, name, args) {
     bot.say(chatroom, `/me ${message} must be between 1-9999999 (currently: ${obj[name]})`)
 }
 
+function updateContextEmotes(bot, chatroom, obj, message, name, args) {
+    logMessage([`> updateContextEmotes(chatroom: '${chatroom}', name: '${name}', args:`, args.join(`, `), `)`])
+    const channel = chatroom.substring(1)
+
+    const options = {
+        [/^lemon(Emotes)?$|^lem$/i]: { name: `lemonEmotes`, func: updateArr },
+        [/^neutral(Emotes)?$|^neu$/i]: { name: `neutralEmotes`, func: updateArr },
+        [/^hype(Emotes)?$/i]: { name: `hypeEmotes`, func: updateArr },
+        [/^positive(Emotes)?$|^pos$/i]: { name: `positiveEmotes`, func: updateArr },
+        [/^upset(Emotes)?$|^up$/i]: { name: `upsetEmotes`, func: updateArr },
+        [/^negative(Emotes)?$|^neg$/i]: { name: `negativeEmotes`, func: updateArr },
+        [/^greeting(Emotes)?$|^greet$/i]: { name: `greetingEmotes`, func: updateArr },
+        [/^bye(Emotes)?$/i]: { name: `byeEmotes`, func: updateArr },
+        [/^dumb(Emotes)?$|^dumb?$/i]: { name: `dumbEmotes`, func: updateArr },
+        [/^bttvLemon(Emotes)?$|^bttvLem$/i]: { name: `bttvLemonEmotes`, func: updateArr },
+        [/^bttvNeutral(Emotes)?$|^bttvNeu$/i]: { name: `bttvNeutralEmotes`, func: updateArr },
+        [/^bttvHype(Emotes)?$/i]: { name: `bttvHypeEmotes`, func: updateArr },
+        [/^bttvPositive(Emotes)?$|^bttvPos$/i]: { name: `bttvPositiveEmotes`, func: updateArr },
+        [/^bttvUpset(Emotes)?$|^bttvUp$/i]: { name: `bttvUpsetEmotes`, func: updateArr },
+        [/^bttvNegative(Emotes)?$|^bttvNeg$/i]: { name: `bttvNegativeEmotes`, func: updateArr },
+        [/^bttvGreeting(Emotes)?$|^bttvGreet$/i]: { name: `bttvGreetingEmotes`, func: updateArr },
+        [/^bttvBye(Emotes)?$/i]: { name: `bttvByeEmotes`, func: updateArr },
+        [/^bttvDumb(Emotes)?$|^bttvDumb?$/i]: { name: `bttvDumbEmotes`, func: updateArr }
+    }
+
+    for (const option in options) {
+        const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
+        if (regex.test(args[0])) {
+            logMessage([`-> Channel "${channel}" option "${args[0]}" matched:`, regex, `[Function: ${options[regex].func.name}]`])
+            args.shift()
+            return options[regex].func(bot, chatroom, obj.contextEmotes, `Channel ${channel} contextEmotes "${options[regex].name}"`, options[regex].name, args)
+        }
+    }
+
+    bot.say(chatroom, `/me ${message} options: lemon (lem), neutral (neu), hype, positive (pos), upset (up), negative (neg), greeting (greet), bye, dumb (dum), bttvLemon (bttvLem), bttvNeutral (bttvNeu), bttvHype, bttvPositive (bttvPos), bttvUpset (bttvUp), bttvNegative (bttvNeg), bttvGreeting (bttvGreet), bttvBye, bttvDumb (bttvDum)`)
+}
+
 function deleteUser(bot, chatroom, obj, message, name, args) {
     logMessage([`> deleteUser(chatroom: '${chatroom}', name: '${name}', args:`, args.join(`, `), `)`])
     delete users[name]
@@ -187,6 +224,7 @@ function updateChannelDev(props, args) {
         [/^rollFunNumber$|^rfn$/i]: { name: `rollFunNumber`, func: updateBool },
         [/^emotes?$|^e$/i]: { name: `emotes`, func: updateArr },
         [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
+        [/^contextEmotes?$|^ce$/i]: { name: `contextEmotes`, func: updateContextEmotes },
         [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
         [/^noSubRaidMessage$|^nsrm$/i]: { name: `noSubRaidMessage`, func: updateStr },
         [/^funnyCommands?$|^fc$/i]: { name: `funnyCommands`, func: updateArr },
@@ -203,7 +241,7 @@ function updateChannelDev(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for channel "${toUser}": timers (t), rollFunNumber (rfn), emotes (e), bttvEmotes (bttv), subRaidMessage (srm), noSubRaidMessage (nsrm), funnyCommands (fc), redeems (r), funTimerGuesser (ftg)`)
+    bot.say(chatroom, `/me Options for channel "${toUser}": timers (t), rollFunNumber (rfn), emotes (e), bttvEmotes (bttv), contextEmotes (ce), subRaidMessage (srm), noSubRaidMessage (nsrm), funnyCommands (fc), redeems (r), funTimerGuesser (ftg)`)
 }
 
 function updateChannel(props, args) {
@@ -216,8 +254,9 @@ function updateChannel(props, args) {
         [/^rollFunNumber$|^rfn$/i]: { name: `rollFunNumber`, func: updateBool },
         [/^emotes?$|^e$/i]: { name: `emotes`, func: updateArr },
         [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
+        [/^contextEmotes?$|^ce$/i]: { name: `contextEmotes`, func: updateContextEmotes },
         [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
-        [/^noSubRaidMessage$|^nsrm$/i]: { name: `noSubRaidMessage`, func: updateStr },
+        [/^noSubRaidMessage$|^nsrm$/i]: { name: `noSubRaidMessage`, func: updateStr }
     }
 
     for (const option in options) {
@@ -410,15 +449,15 @@ function updateBaseEmotesDev(bot, chatroom, args) {
     logMessage([`> updateBaseEmotesDev(args:`, args.join(`, `), `)`])
 
     const options = {
-        [/^lemonEmotes$|^lem$/i]: { name: `lemonEmotes`, func: updateArr },
-        [/^neutralEmotes$|^neu$/i]: { name: `neutralEmotes`, func: updateArr },
-        [/^hypeEmotes$|^hype$/i]: { name: `hypeEmotes`, func: updateArr },
-        [/^positiveEmotes$|^pos$/i]: { name: `positiveEmotes`, func: updateArr },
-        [/^upsetEmotes$|^up$/i]: { name: `upsetEmotes`, func: updateArr },
-        [/^negativeEmotes$|^neg$/i]: { name: `negativeEmotes`, func: updateArr },
-        [/^greetingEmotes$|^greet$/i]: { name: `greetingEmotes`, func: updateArr },
-        [/^byeEmotes$|^bye$/i]: { name: `byeEmotes`, func: updateArr },
-        [/^dumbEmotes$|^dum$/i]: { name: `dumbEmotes`, func: updateArr },
+        [/^lemon(Emotes)?$|^lem$/i]: { name: `lemonEmotes`, func: updateArr },
+        [/^neutral(Emotes)?$|^neu$/i]: { name: `neutralEmotes`, func: updateArr },
+        [/^hype(Emotes)?$/i]: { name: `hypeEmotes`, func: updateArr },
+        [/^positive(Emotes)?$|^pos$/i]: { name: `positiveEmotes`, func: updateArr },
+        [/^upset(Emotes)?$|^up$/i]: { name: `upsetEmotes`, func: updateArr },
+        [/^negative(Emotes)?$|^neg$/i]: { name: `negativeEmotes`, func: updateArr },
+        [/^greeting(Emotes)?$|^greet$/i]: { name: `greetingEmotes`, func: updateArr },
+        [/^bye(Emotes)?$/i]: { name: `byeEmotes`, func: updateArr },
+        [/^dumb(Emotes)?$|^dumb?$/i]: { name: `dumbEmotes`, func: updateArr }
     }
 
     for (const option in options) {
@@ -430,7 +469,7 @@ function updateBaseEmotesDev(bot, chatroom, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for setting "baseEmotes": lemonEmotes (lem), neutralEmotes (neu), hypeEmotes (hype), positiveEmotes (pos), upsetEmotes (up), negativeEmotes (neg), greetingEmotes (greet), byeEmotes (bye), dumbEmotes (dum)`)
+    bot.say(chatroom, `/me Options for setting "baseEmotes": lemon (lem), neutral (neu), hype, positive (pos), upset (up), negative (neg), greeting (greet), bye, dumb (dum)`)
 }
 
 function updateTimer(bot, chatroom, obj, message, name, args) {
@@ -459,7 +498,7 @@ function updateTimer(bot, chatroom, obj, message, name, args) {
 
 module.exports = {
     commandLemonInterface(props, splitMessage) {
-        const { bot, chatroom, username, isMod, isLemonyFreshMember } = props
+        const { bot, chatroom, channel, username, isMod, isLemonyFreshMember } = props
         splitMessage.shift()
         const args = splitMessage[0].split(` `)
         logMessage([`> commandLemonInterface(username, '${username}', isMod, ${isMod}, isLemonyFreshMember, ${isLemonyFreshMember}, args:`, args.join(`, `), `)`])
@@ -511,7 +550,7 @@ module.exports = {
         }
 
         if (isMod || isLemonyFreshMember) {
-            const lemonEmote = getLemonEmote()
+            const lemonEmote = getContextEmote(`lemon`, channel)
             bot.say(chatroom, `/me Command Lemon Interface ${lemonEmote} > try: channel (c), user (u), settings (s)`)
         }
     }

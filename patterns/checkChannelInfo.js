@@ -1,5 +1,5 @@
 const { users, lemonyFresh } = require(`../data`)
-const { getHypeEmote, getNegativeEmote, getDumbEmote, getToUser, pluralize, logMessage, findUserByNickname } = require(`../utils`)
+const { getContextEmote, getToUser, pluralize, logMessage, findUserByNickname } = require(`../utils`)
 
 module.exports = {
     checkEmotes(props, splitMessage) {
@@ -36,9 +36,9 @@ module.exports = {
 
         logMessage([`> checkSelfSub(chatroom: '${chatroom}', userNickname: '${userNickname}', channel: '${channel}', validatedOtherChannelName: '${validatedOtherChannelName}')`])
 
-        const hypeEmote = getHypeEmote(channel)
-        const negativeEmote = getNegativeEmote(channel)
-        const dumbEmote = getDumbEmote(channel)
+        const hypeEmote = getContextEmote(`hype`, channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
+        const dumbEmote = getContextEmote(`dumb`, channel)
 
         validatedOtherChannelName
             ? validatedOtherChannelName in user
@@ -66,9 +66,9 @@ module.exports = {
 
         logMessage([`> checkSelfMod(chatroom: '${chatroom}', userNickname: '${userNickname}', channel: '${channel}', validatedOtherChannelName: '${validatedOtherChannelName}')`])
 
-        const hypeEmote = getHypeEmote(channel)
-        const negativeEmote = getNegativeEmote(channel)
-        const dumbEmote = getDumbEmote(channel)
+        const hypeEmote = getContextEmote(`hype`, channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
+        const dumbEmote = getContextEmote(`dumb`, channel)
 
         validatedOtherChannelName
             ? validatedOtherChannelName in user
@@ -96,9 +96,9 @@ module.exports = {
 
         logMessage([`> checkSelfVIP(chatroom: '${chatroom}', userNickname: '${userNickname}', channel: '${channel}', validatedOtherChannelName: '${validatedOtherChannelName}')`])
 
-        const hypeEmote = getHypeEmote(channel)
-        const negativeEmote = getNegativeEmote(channel)
-        const dumbEmote = getDumbEmote(channel)
+        const hypeEmote = getContextEmote(`hype`, channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
+        const dumbEmote = getContextEmote(`dumb`, channel)
 
         validatedOtherChannelName
             ? validatedOtherChannelName in user
@@ -136,9 +136,9 @@ module.exports = {
 
         logMessage([`> checkTargetSub(chatroom: '${chatroom}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}', targetNickname: '${targetNickname}')`])
 
-        const hypeEmote = getHypeEmote(channel)
-        const negativeEmote = getNegativeEmote(channel)
-        const dumbEmote = getDumbEmote(channel)
+        const hypeEmote = getContextEmote(`hype`, channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
+        const dumbEmote = getContextEmote(`dumb`, channel)
 
         if (target) {
             validatedOtherChannelName
@@ -180,9 +180,9 @@ module.exports = {
 
         logMessage([`> checkTargetMod(chatroom: '${chatroom}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}', targetNickname: '${targetNickname}')`])
 
-        const hypeEmote = getHypeEmote(channel)
-        const negativeEmote = getNegativeEmote(channel)
-        const dumbEmote = getDumbEmote(channel)
+        const hypeEmote = getContextEmote(`hype`, channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
+        const dumbEmote = getContextEmote(`dumb`, channel)
 
         if (target) {
             validatedOtherChannelName
@@ -224,9 +224,9 @@ module.exports = {
 
         logMessage([`> checkTargetVIP(chatroom: '${chatroom}', otherChannelNickname: '${otherChannelNickname}', userNickname: '${userNickname}', targetNickname: '${targetNickname}')`])
 
-        const hypeEmote = getHypeEmote(channel)
-        const negativeEmote = getNegativeEmote(channel)
-        const dumbEmote = getDumbEmote(channel)
+        const hypeEmote = getContextEmote(`hype`, channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
+        const dumbEmote = getContextEmote(`dumb`, channel)
 
         if (target) {
             validatedOtherChannelName

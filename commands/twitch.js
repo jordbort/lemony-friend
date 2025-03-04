@@ -4,7 +4,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET
 const REDIRECT_URI = process.env.REDIRECT_URI
 
 const { lemonyFresh, mods, users } = require(`../data`)
-const { getNeutralEmote, getHypeEmote, getPositiveEmote, getNegativeEmote, getGreetingEmote, getDumbEmote, resetCooldownTimer, getToUser, renderObj, pluralize, logMessage } = require(`../utils`)
+const { getContextEmote, resetCooldownTimer, getToUser, renderObj, pluralize, logMessage } = require(`../utils`)
 
 async function getBotToken(props, replyWanted = true) {
     const { bot, chatroom, username, channel, isLemonyFreshMember } = props
@@ -16,8 +16,8 @@ async function getBotToken(props, replyWanted = true) {
         return
     }
 
-    const hypeEmote = getHypeEmote(channel)
-    const negativeEmote = getNegativeEmote(channel)
+    const hypeEmote = getContextEmote(`hype`, channel)
+    const negativeEmote = getContextEmote(`negative`, channel)
 
     const url = `https://id.twitch.tv/oauth2/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&grant_type=client_credentials`;
     const response = await fetch(url, { method: `POST` })
@@ -25,7 +25,7 @@ async function getBotToken(props, replyWanted = true) {
     logMessage([`getBotToken`, response.status, renderObj(twitchData, `twitchData`)])
 
     if (response.status === 200) {
-        lemonyFresh.botAccessToken = twitchData.access_token
+        settings.botAccessToken = twitchData.access_token
         if (replyWanted) { bot.say(chatroom, `Updated! My new token expires in ~${Math.round(twitchData.expires_in / 1000 / 60)} minutes! ${hypeEmote}`) }
     } else {
         if (replyWanted) {
@@ -41,7 +41,7 @@ async function getTwitchUser(props) {
     const endpoint = `https://api.twitch.tv/helix/users?login=${username}`
     const options = {
         headers: {
-            authorization: `Bearer ${lemonyFresh.botAccessToken}`,
+            authorization: `Bearer ${settings.botAccessToken}`,
             'Client-Id': CLIENT_ID
         }
     }
@@ -50,12 +50,12 @@ async function getTwitchUser(props) {
     const twitchData = await response.json()
     logMessage([`getTwitchUser`, response.status, `data` in twitchData ? twitchData.data.length ? renderObj(twitchData.data[0], `twitchData.data[0]`) : `twitchData.data: []` : renderObj(twitchData, `twitchData`)])
 
-    const negativeEmote = getNegativeEmote(channel)
+    const negativeEmote = getContextEmote(`negative`, channel)
     if (response.status !== 200) {
         if (twitchData.error === `Unauthorized`) {
             logMessage([`-> Unauthorized from getTwitchUser(), attempting to refresh bot's token...`])
             await getBotToken(props, false)
-            options.headers.authorization = `Bearer ${lemonyFresh.botAccessToken}`
+            options.headers.authorization = `Bearer ${settings.botAccessToken}`
             const finalAttempt = await fetch(endpoint, options)
             const finalAttemptData = await finalAttempt.json()
             logMessage([`getTwitchUser`, finalAttempt.status, `data` in finalAttemptData ? finalAttemptData.data.length ? renderObj(finalAttemptData.data[0], `finalAttemptData.data[0]`) : `finalAttemptData.data: []` : renderObj(finalAttemptData, `finalAttemptData`)])
@@ -79,7 +79,7 @@ async function refreshToken(props, replyWanted = true) {
     logMessage([`> refreshToken(chatroom: '${chatroom}', userOrChannel: '${userOrChannel}', replyWanted: ${replyWanted})`])
 
     const refreshToken = userOrChannel === channel ? lemonyFresh[userOrChannel].refreshToken : mods[userOrChannel]?.refreshToken || lemonyFresh[userOrChannel]?.refreshToken
-    const neutralEmote = getNeutralEmote(channel)
+    const neutralEmote = getContextEmote(`neutral`, channel)
     if (!refreshToken && replyWanted) { return bot.say(chatroom, `${userOrChannel} is unauthorized! Please use !access and follow the instructions ${neutralEmote}`) }
 
     const endpoint = `https://id.twitch.tv/oauth2/token`
@@ -96,8 +96,8 @@ async function refreshToken(props, replyWanted = true) {
     const twitchData = await response.json()
     logMessage([`refreshToken`, response.status, renderObj(twitchData, `twitchData`)])
 
-    const hypeEmote = getHypeEmote(channel)
-    const negativeEmote = getNegativeEmote(channel)
+    const hypeEmote = getContextEmote(`hype`, channel)
+    const negativeEmote = getContextEmote(`negative`, channel)
     if (response.status === 200) {
         if (userOrChannel in lemonyFresh) {
             lemonyFresh[userOrChannel].accessToken = twitchData.access_token
@@ -130,7 +130,8 @@ async function getTwitchChannel(bot, chatroom, broadcaster_id) {
     logMessage([`getTwitchChannel`, response.status, `data` in twitchData ? twitchData.data.length ? renderObj(twitchData.data[0], `twitchData.data[0]`) : `twitchData.data: []` : renderObj(twitchData, `twitchData`)])
 
     const channel = chatroom.substring(1)
-    if (response.status !== 200) { return bot.say(chatroom, `${twitchData?.message || `There was a problem getting the channel info!`} ${getNegativeEmote(channel)}`) }
+    const negativeEmote = getContextEmote(`negative`, channel)
+    if (response.status !== 200) { return bot.say(chatroom, `${twitchData?.message || `There was a problem getting the channel info!`} ${negativeEmote}`) }
     return twitchData.data[0]
 }
 
@@ -150,9 +151,9 @@ module.exports = {
             return
         }
 
-        const negativeEmote = getNegativeEmote(channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
         if (!lemonyFresh[channel].pollId) { return bot.say(chatroom, `There is no active poll! ${negativeEmote}`) }
-        const positiveEmote = getPositiveEmote(channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
         if (!status) { return bot.say(chatroom, `Use !stoppoll to finish and show the results, or !cancelpoll to remove it! ${positiveEmote}`) }
 
         const endpoint = `https://api.twitch.tv/helix/polls?broadcaster_id=${lemonyFresh[channel].id}&id=${lemonyFresh[channel].pollId}&status=${status}`
@@ -186,7 +187,7 @@ module.exports = {
             return
         }
 
-        const negativeEmote = getNegativeEmote(channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
         if (lemonyFresh[channel].pollId) { return bot.say(chatroom, `There is already a poll in progress! ${negativeEmote}`) }
 
         const params = str.split(new RegExp(/ ?\/ ?/))
@@ -197,7 +198,7 @@ module.exports = {
         if ([`<`, `>`].some((bracket) => seconds.includes(bracket))) {
             const regex = /^<(\d+)>$/
             if (!seconds.match(regex)) {
-                const neutralEmote = getNeutralEmote(channel)
+                const neutralEmote = getContextEmote(`neutral`, channel)
                 return bot.say(chatroom, `Error: Please don't use angle brackets in the seconds! ${neutralEmote}`)
             } else {
                 duration = Number(seconds.split(regex)[1])
@@ -236,7 +237,7 @@ module.exports = {
         const twitchData = await response.json()
         logMessage([`pollStart`, response.status, `data` in twitchData ? twitchData.data.length ? renderObj(twitchData.data[0], `twitchData.data[0]`) : `twitchData.data: []` : renderObj(twitchData, `twitchData`)])
 
-        const positiveEmote = getPositiveEmote(channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
         if (response.status === 200) {
             lemonyFresh[channel].pollId = twitchData.data[0].id
             setTimeout(() => { lemonyFresh[channel].pollId = `` }, duration * 1000)
@@ -291,7 +292,7 @@ module.exports = {
             stream.game_name
                 ? reply += `They were last playing ${stream.game_name}${twitchUser.broadcaster_type ? ` and are a Twitch ${twitchUser.broadcaster_type.substring(0, 1).toUpperCase() + twitchUser.broadcaster_type.substring(1)}!` : `.`}`
                 : reply += `#NoGameGang`
-            const neutralEmote = getNeutralEmote(channel)
+            const neutralEmote = getContextEmote(`neutral`, channel)
             reply += ` Follow them here: https://www.twitch.tv/${stream.broadcaster_login} ${neutralEmote}`
 
             bot.say(chatroom, reply)
@@ -357,7 +358,7 @@ module.exports = {
         const str = args.join(` `)
         logMessage([`> makeAnnouncement(chatroom: '${chatroom}', commandSuffix: '${[`blue`, `green`, `orange`, `purple`].includes(commandSuffix) ? commandSuffix : `primary`}', username: '${username}', str: '${str}')`])
 
-        const negativeEmote = getNegativeEmote(channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
         if (!str) { return bot.say(chatroom, `No announcement message provided! ${negativeEmote}`) }
 
         const color = [`blue`, `green`, `orange`, `purple`].includes(commandSuffix) ? commandSuffix : `primary`
@@ -405,7 +406,7 @@ module.exports = {
                     const finalAttemptData = await finalAttempt.json()
                     logMessage([`--> makeAnnouncement() failed a second time:`])
                     logMessage([`makeAnnouncement`, finalAttempt.status, renderObj(finalAttemptData, `finalAttemptData`)])
-                    bot.say(chatroom, `Failed to make announcement! ${finalAttemptData.message} from ${modHasToken ? username : channel} ${getNegativeEmote(channel)}`)
+                    bot.say(chatroom, `Failed to make announcement! ${finalAttemptData.message} from ${modHasToken ? username : channel} ${negativeEmote}`)
                 }
             }
         }
@@ -423,7 +424,7 @@ module.exports = {
 
         const accessToken = userOrChannel === channel ? lemonyFresh[userOrChannel].accessToken : mods[userOrChannel]?.accessToken || lemonyFresh[userOrChannel]?.accessToken
         if (!accessToken) {
-            const neutralEmote = getNeutralEmote(channel)
+            const neutralEmote = getContextEmote(`neutral`, channel)
             return bot.say(chatroom, `${userOrChannel} is unauthorized! Please use !access and follow the instructions ${neutralEmote}`)
         }
 
@@ -438,8 +439,8 @@ module.exports = {
         const twitchData = await response.json()
         logMessage([`validateToken`, response.status, renderObj(twitchData, `twitchData`)])
 
-        const positiveEmote = getPositiveEmote(channel)
-        const negativeEmote = getNegativeEmote(channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
         return `expires_in` in twitchData
             ? bot.say(chatroom, `${users[twitchData.login]?.displayName || twitchData.login}'s token expires in ${Math.round(twitchData.expires_in / 60)} minute${Math.round(twitchData.expires_in / 60) === 1 ? `` : `s`}! ${positiveEmote}`)
             : bot.say(chatroom, `${userOrChannel}'s token is invalid! ${negativeEmote}`)
@@ -474,8 +475,8 @@ module.exports = {
         const twitchData = await response.json()
         logMessage([`authorizeToken`, response.status, renderObj(twitchData, `twitchData`)])
 
-        const hypeEmote = getHypeEmote(channel)
-        const negativeEmote = getNegativeEmote(channel)
+        const hypeEmote = getContextEmote(`hype`, channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
         if (response.status === 200) {
             if (username in lemonyFresh) {
                 lemonyFresh[username].accessToken = twitchData.access_token
@@ -532,8 +533,8 @@ module.exports = {
 
         const endpoint = `https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${lemonyFresh[channel].id}&moderator_id=${moderatorId}`
 
-        const positiveEmote = getPositiveEmote(channel)
-        const negativeEmote = getNegativeEmote(channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
 
         // Please wait if list will take a moment to process
         if (args.length >= 5) { bot.say(chatroom, `Please wait while I work on this list of ${args.length.toLocaleString()} usernames...`) }
@@ -604,9 +605,9 @@ module.exports = {
         const channel = chatroom.substring(1)
         logMessage([`> autoBanUser(channel: ${channel}, username: ${username})`])
 
-        const greetingEmote = getGreetingEmote(channel)
-        const negativeEmote = getNegativeEmote(channel)
-        const dumbEmote = getDumbEmote(channel)
+        const greetingEmote = getContextEmote(`greeting`, channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
+        const dumbEmote = getContextEmote(`dumb`, channel)
 
         // Stop if the channel doesn't have an access token
         if (!lemonyFresh[channel].accessToken) {

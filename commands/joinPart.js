@@ -1,7 +1,7 @@
 const { settings } = require(`../config`)
 const { lemonyFresh } = require(`../data`)
 const { getTwitchUser } = require(`./twitch`)
-const { getUsername, getByeEmote, logMessage } = require(`../utils`)
+const { getUsername, getContextEmote, logMessage } = require(`../utils`)
 
 module.exports = {
     async handleJoin(props) {
@@ -41,7 +41,7 @@ module.exports = {
         const needToPart = validUsers.filter(user => bot.channels.includes(`#${user}`))
         const notInChannel = validUsers.filter(user => !bot.channels.includes(`#${user}`))
 
-        const byeEmote = getByeEmote(channel)
+        const byeEmote = getContextEmote(`bye`, channel)
         needToPart.forEach(user => {
             if (settings.sayPartMessage) { bot.say(`#${user}`, `Bye for now! ${byeEmote}`) }
             bot.part(`#${user}`)

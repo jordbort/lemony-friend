@@ -1,6 +1,6 @@
 const { settings } = require(`../config`)
 const { lemonyFresh, users, tempCmds } = require(`../data`)
-const { getNeutralEmote, getPositiveEmote, getNegativeEmote, logMessage, pluralize } = require(`../utils`)
+const { getContextEmote, logMessage, pluralize } = require(`../utils`)
 
 const regexNumber = /\{\s?number\s?(-?\d+)\s?\}/gi
 const regexRandom = /\{\s?random\s?("[^"]+"\s?)+\s?\}/gi
@@ -64,11 +64,11 @@ module.exports = {
         const { bot, chatroom, args, channel, userNickname } = props
         logMessage([`> handleTempCmd(chatroom: ${chatroom}, args:`, `'${args.join(`', '`)}'`, `)`])
 
-        const positiveEmote = getPositiveEmote(channel)
-        const neutralEmote = getNeutralEmote(channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
+        const neutralEmote = getContextEmote(`neutral`, channel)
         if (!args[1]) { return bot.say(chatroom, `Hey ${userNickname}, say "!tempcmd <command_name> <command_response>..." to add/edit a command, or say "!tempcmd delete <command_name>" to delete a command. You can also use !tempcmds to view all of them! ${neutralEmote}`) }
 
-        const negativeEmote = getNegativeEmote(channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
         if (/^delete$/i.test(args[0])) {
             if (!(args[1].toLowerCase() in tempCmds)) { return bot.say(chatroom, `No command "${args[1].toLowerCase()}" was found! ${negativeEmote}`) }
             delete tempCmds[args[1].toLowerCase()]
@@ -95,7 +95,7 @@ module.exports = {
         const { bot, chatroom, args, channel } = props
         logMessage([`> getTempCmds(chatroom: ${chatroom}, args:`, `'${args.join(`', '`)}'`, `)`])
 
-        const negativeEmote = getNegativeEmote(channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
         const commands = Object.keys(tempCmds)
         bot.say(chatroom, `There ${commands.length === 1 ? `is` : `are`} ${pluralize(commands.length, `temporary command`, `temporary commands`)}${commands.length === 0 ? `! ${negativeEmote}` : `: ${commands.join(`, `)}`}`)
     },

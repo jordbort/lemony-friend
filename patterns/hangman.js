@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 const { settings } = require(`../config`)
 const { lemonyFresh, users } = require(`../data`)
-const { pluralize, getHypeEmote, getPositiveEmote, getUpsetEmote, getNegativeEmote, logMessage, getNeutralEmote, arrToList } = require(`../utils`)
+const { pluralize, getContextEmote, logMessage, arrToList } = require(`../utils`)
 
 async function getRandomWord() {
     logMessage([`> getRandomWord()`])
@@ -32,7 +32,7 @@ function solvePuzzle(bot, chatroom, username) {
     const channel = chatroom.substring(1)
     const user = users[username]
     const hangman = lemonyFresh[channel].hangman
-    const hypeEmote = getHypeEmote(channel)
+    const hypeEmote = getContextEmote(`hype`, channel)
     hangman.listening = false
     user.hangmanWins++
     if (user.hangmanWins % settings.hangmanLemonThreshold === 0) {
@@ -47,8 +47,8 @@ function hangmanAnnounce(bot, chatroom, userNickname) {
     logMessage([`> hangmanAnnounce(chatroom: '${chatroom}', userNickname: '${userNickname}')`])
 
     const channel = chatroom.substring(1)
-    const hypeEmote = getHypeEmote(channel)
-    const positiveEmote = getPositiveEmote(channel)
+    const hypeEmote = getContextEmote(`hype`, channel)
+    const positiveEmote = getContextEmote(`positive`, channel)
     const hangman = lemonyFresh[channel].hangman
 
     bot.say(chatroom, `${userNickname} has started a game of Hangman! Type !play in the next ${settings.hangmanSignupSeconds} seconds if you'd like to join in, too! ${hypeEmote}`)
@@ -81,7 +81,7 @@ module.exports = {
         const hangman = lemonyFresh[channel].hangman
         if (hangman.listening) {
             // Mod can end the game early
-            const neutralEmote = getNeutralEmote(channel)
+            const neutralEmote = getContextEmote(`neutral`, channel)
             if (isMod && /^end$/i.test(args[0])) {
                 hangman.listening = false
                 clearTimeout(hangman.signup)
@@ -133,7 +133,7 @@ module.exports = {
                 const lastPlayerNickname = users[lastPlayerUsername].nickname || users[lastPlayerUsername].displayName
                 hangman.players.push(username)
                 logMessage([`-> ${username} added to ${channel}'s Hangman players: ${hangman.players.join(`, `)}}`])
-                const positiveEmote = getPositiveEmote(channel)
+                const positiveEmote = getContextEmote(`positive`, channel)
                 bot.say(chatroom, `${userNickname}, you can still hop in, you'll go after ${lastPlayerNickname}! ${positiveEmote}`)
             }
         } else {
@@ -162,8 +162,8 @@ module.exports = {
         // Set up for next round
         hangman.currentPlayer++
         if (hangman.currentPlayer === hangman.players.length) { hangman.currentPlayer = 0 }
-        const hypeEmote = getHypeEmote(channel)
-        const negativeEmote = getNegativeEmote(channel)
+        const hypeEmote = getContextEmote(`hype`, channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
 
         if (hangman.answer.includes(guess.toLowerCase())) {
             // Correct guess
@@ -178,7 +178,7 @@ module.exports = {
             hangman.chances--
             if (hangman.chances === 0) {
                 hangman.listening = false
-                const upsetEmote = getUpsetEmote(channel)
+                const upsetEmote = getContextEmote(`upset`, channel)
                 return bot.say(chatroom, `Sorry ${userNickname}, ${guess} wasn't in the word! The answer was "${hangman.answer}". Game over! ${upsetEmote}`)
             }
             bot.say(chatroom, `Sorry ${userNickname}, ${guess} wasn't in the word! ${pluralize(hangman.chances, `chance left...`, `chances left!`)} ${negativeEmote} Now it's your turn, ${users[hangman.players[hangman.currentPlayer]].displayName}!`)
@@ -202,14 +202,14 @@ module.exports = {
         hangman.chances--
         if (hangman.chances === 0) {
             hangman.listening = false
-            const upsetEmote = getUpsetEmote(channel)
+            const upsetEmote = getContextEmote(`upset`, channel)
             return bot.say(chatroom, `Sorry ${userNickname}, "${guess}" wasn't the answer! The answer was "${hangman.answer}". Game over! ${upsetEmote}`)
         }
 
         // Set up for next round
         hangman.currentPlayer++
         if (hangman.currentPlayer === hangman.players.length) { hangman.currentPlayer = 0 }
-        const negativeEmote = getNegativeEmote(channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
 
         // Next round
         bot.say(chatroom, `Sorry ${userNickname}, "${guess}" wasn't the answer! ${pluralize(hangman.chances, `chance left...`, `chances left!`)} ${negativeEmote} Now it's your turn, ${users[hangman.players[hangman.currentPlayer]].displayName}!`)

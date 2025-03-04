@@ -1,5 +1,5 @@
 const { wordBank } = require(`../config`)
-const { logMessage, pluralize, getNeutralEmote, getPositiveEmote } = require(`../utils`)
+const { logMessage, pluralize, getContextEmote } = require(`../utils`)
 
 // function getNoun() { return wordBank.nouns[Math.floor(Math.random() * wordBank.nouns.length)] }
 // function getVerb() { return wordBank.verbs[Math.floor(Math.random() * wordBank.verbs.length)] }
@@ -29,8 +29,8 @@ module.exports = {
         const { bot, chatroom, args, channel, userNickname } = props
         logMessage([`> manageVerbs(args: [${args}])`])
 
-        const neutralEmote = getNeutralEmote(channel)
-        const positiveEmote = getPositiveEmote(channel)
+        const neutralEmote = getContextEmote(`neutral`, channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
         if (!args.length) { return bot.say(chatroom, `I know ${pluralize(wordBank.verbs.length, `verb`, `verbs`)}${wordBank.verbs.length ? `: ${wordBank.verbs.join(`, `)} -` : `!`} Please give me more verbs to remember, or say "!verbs delete <list of verbs>" for me to forget some, or "!verbs clear" for me to forget all, ${userNickname}! ${neutralEmote}`) }
 
         if (/^clear$|^c$/i.test(args[0])) {
@@ -57,8 +57,8 @@ module.exports = {
         const { bot, chatroom, args, channel, userNickname } = props
         logMessage([`> manageNouns(args: [${args}])`])
 
-        const neutralEmote = getNeutralEmote(channel)
-        const positiveEmote = getPositiveEmote(channel)
+        const neutralEmote = getContextEmote(`neutral`, channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
         if (!args.length) { return bot.say(chatroom, `I know ${pluralize(wordBank.nouns.length, `noun`, `nouns`)}${wordBank.nouns.length ? `: ${wordBank.nouns.join(`, `)} -` : `!`} Please give me more nouns to remember, or say "!nouns delete <list of nouns>" for me to forget some, or "!nouns clear" for me to forget all, ${userNickname}! ${neutralEmote}`) }
 
         if (/^clear$|^c$/i.test(args[0])) {
@@ -85,8 +85,8 @@ module.exports = {
         const { bot, chatroom, args, channel, userNickname } = props
         logMessage([`> manageAdjectives(args: [${args}])`])
 
-        const neutralEmote = getNeutralEmote(channel)
-        const positiveEmote = getPositiveEmote(channel)
+        const neutralEmote = getContextEmote(`neutral`, channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
         if (!args.length) { return bot.say(chatroom, `I know ${pluralize(wordBank.adjectives.length, `adjective`, `adjectives`)}${wordBank.adjectives.length ? `: ${wordBank.adjectives.join(`, `)} -` : `!`} Please give me more adjectives to remember, or say "!adjectives delete <list of adjectives>" for me to forget some, or "!adjectives clear" for me to forget all, ${userNickname}! ${neutralEmote}`) }
 
         if (/^clear$|^c$/i.test(args[0])) {

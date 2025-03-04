@@ -1,10 +1,10 @@
 const { users } = require(`../data`)
-const { getLemonEmote, pluralize } = require(`../utils`)
+const { getContextEmote, pluralize } = require(`../utils`)
 
 module.exports = {
     lemonTopThree(props) {
         const { bot, chatroom, channel } = props
-        const lemonEmote = getLemonEmote(channel)
+        const lemonEmote = getContextEmote(`lemon`, channel)
         const topThree = Object.keys(users)
             .sort((a, b) => users[b].lemons - users[a].lemons)
             .slice(0, 3)

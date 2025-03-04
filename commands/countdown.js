@@ -1,11 +1,11 @@
 const { settings } = require(`../config`)
 const { lemonyFresh } = require(`../data`)
-const { getDumbEmote, getNegativeEmote, getPositiveEmote, getHypeEmote, pluralize, logMessage, getNeutralEmote } = require(`../utils`)
+const { getContextEmote, pluralize, logMessage } = require(`../utils`)
 
 function stopCountdown(bot, chatroom) {
     logMessage([`> stopCountdown(chatroom: '${chatroom}')`])
     const channel = chatroom.substring(1)
-    const positiveEmote = getPositiveEmote(chatroom)
+    const positiveEmote = getContextEmote(`positive`, chatroom)
 
     clearTimeout(lemonyFresh[channel].countdown.full)
     clearTimeout(lemonyFresh[channel].countdown.half)
@@ -24,10 +24,10 @@ module.exports = {
         const { bot, chatroom, args, channel } = props
         logMessage([`> countdown(channel: '${channel}', args: '${args.join(`', '`)}')`])
 
-        const positiveEmote = getPositiveEmote(channel)
-        const negativeEmote = getNegativeEmote(channel)
-        const neutralEmote = getNeutralEmote(channel)
-        const dumbEmote = getDumbEmote(channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
+        const neutralEmote = getContextEmote(`neutral`, channel)
+        const dumbEmote = getContextEmote(`dumb`, channel)
 
         // No args, and countdown timer not running
         if (!args.length && !lemonyFresh[channel].countdown.startedAt) {
@@ -75,7 +75,7 @@ module.exports = {
             lemonyFresh[channel].countdown.full = 0
             lemonyFresh[channel].countdown.half = 0
             lemonyFresh[channel].countdown.lastTen = 0
-            const hypeEmote = getHypeEmote(channel)
+            const hypeEmote = getContextEmote(`hype`, channel)
             bot.say(chatroom, `Countdown finished! ${hypeEmote}`)
         }, duration))
 

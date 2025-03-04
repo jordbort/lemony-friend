@@ -6,7 +6,7 @@ const { lemonyFresh, users } = require(`../data`)
 const { lemonify } = require(`./lemonify`)
 const { getTwitchChannel } = require(`./twitch`)
 const { getRandomUser, getRandomChannelMessage } = require(`./getInfo`)
-const { getLemonEmote, getNeutralEmote, pluralize, getHypeEmote, getPositiveEmote, getDumbEmote, logMessage, numbers } = require(`../utils`)
+const { getContextEmote, pluralize, logMessage, numbers } = require(`../utils`)
 
 function makePyramid(props) {
     const { bot, chatroom, message, channel } = props
@@ -298,7 +298,7 @@ async function askAboutGame(props) {
     const game = twitchChannel.game_name
     logMessage([`> askAboutGame(channel: '${channel}', game: '${game}', game_id: '${twitchChannel.game_id}')`])
 
-    const neutralEmote = getNeutralEmote(channel)
+    const neutralEmote = getContextEmote(`neutral`, channel)
     bot.say(
         chatroom,
         game === `Just Chatting`
@@ -312,7 +312,7 @@ function awardLemon(props) {
     logMessage([`> awardLemon(channel: '${channel}', userNickname: '${userNickname}')`])
 
     users[username].lemons++
-    const lemonEmote = getLemonEmote()
+    const lemonEmote = getContextEmote(`lemon`, channel)
     bot.say(chatroom, `${userNickname} earned one (1) lemon! ${lemonEmote}`)
 }
 
@@ -366,9 +366,9 @@ function getViewers(props) {
     const viewers = lemonyFresh[channel].viewers.filter(viewer => viewer !== channel && !settings.ignoredBots.includes(viewer))
     logMessage([`> getViewers(channel: '${channel}', viewers: ${viewers.length})`])
 
-    const hypeEmote = getHypeEmote(channel)
-    const positiveEmote = getPositiveEmote(channel)
-    const neutralEmote = getNeutralEmote(channel)
+    const hypeEmote = getContextEmote(`hype`, channel)
+    const positiveEmote = getContextEmote(`positive`, channel)
+    const neutralEmote = getContextEmote(`neutral`, channel)
     const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
 
     if (viewers.length > 4) {
@@ -391,7 +391,7 @@ function getLurker(props) {
     logMessage([`> getLurker(channel: '${channel}', lurker: '${lurker}', notChatted.length: ${notChatted.length})`])
     if (!notChatted.length) { return logMessage([`-> No lurkers found!`]) }
 
-    const dumbEmote = getDumbEmote(channel)
+    const dumbEmote = getContextEmote(`dumb`, channel)
     bot.say(chatroom, `Has anyone heard from ${lurker}? ${dumbEmote}`)
 }
 
@@ -409,7 +409,7 @@ function awardLemonToRecentChatters(props) {
     }
     logMessage([`-> recipients:`, recipients.join(`, `)])
 
-    const lemonEmote = getLemonEmote()
+    const lemonEmote = getContextEmote(`lemon`, channel)
     bot.say(chatroom, `${pluralize(recipients.length, `person`, `people`)} just received one lemon each! ${lemonEmote}`)
 }
 
@@ -510,7 +510,7 @@ function useFunnyCommand(props) {
 function imagineLemons(props) {
     const { bot, chatroom } = props
     const randNum = Math.floor(Math.random() * numbers.length)
-    const lemonEmote = getLemonEmote()
+    const lemonEmote = getContextEmote(`lemon`, channel)
     logMessage([`> imagineLemons(chatroom: '${chatroom}', randNum: ${randNum})`])
     bot.say(chatroom, `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${numbers[randNum + 1] || `one thousand`} lemons... ${lemonEmote}`)
 }

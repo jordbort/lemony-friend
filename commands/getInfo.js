@@ -1,6 +1,6 @@
 const { lemonyFresh, users } = require(`../data`)
 const { chatColors, settings } = require(`../config`)
-const { numbers, getLemonEmote, getDumbEmote, pluralize, getNeutralEmote, getToUser, getPositiveEmote, getHypeEmote, logMessage } = require(`../utils`)
+const { numbers, getContextEmote, pluralize, getToUser, logMessage, arrToList } = require(`../utils`)
 
 module.exports = {
     sayOnlineTime(props) {
@@ -32,7 +32,7 @@ module.exports = {
             timeZone: settings.timeZone
         }
 
-        const neutralEmote = getNeutralEmote(channel)
+        const neutralEmote = getContextEmote(`neutral`, channel)
         bot.say(chatroom, `I've been online since ${settings.startDate.toLocaleDateString(settings.timeLocale, dateOptions)} at ${settings.startDate.toLocaleTimeString(settings.timeLocale, timeOptions)}! ${neutralEmote}${newFeatures.length ? ` Updates: ${newFeatures.join(`, `)}` : ``}`)
     },
     getLastMessage(props) {
@@ -73,10 +73,11 @@ module.exports = {
         const { bot, chatroom, channel, username, user, userNickname, toUser, target, targetNickname } = props
         const userObj = target || user
         const userObjNickname = targetNickname || userNickname
+        const dumbEmote = getContextEmote(`dumb`, channel)
         logMessage([`> getColor(chatroom: ${chatroom}, userObj: '${target ? toUser : username})`])
 
         !userObj.color
-            ? bot.say(chatroom, `I can't tell what ${userObjNickname}'s chat color is! ${getDumbEmote(channel)}`)
+            ? bot.say(chatroom, `I can't tell what ${userObjNickname}'s chat color is! ${dumbEmote}`)
             : userObj.color in chatColors
                 ? bot.say(chatroom, `${userObjNickname}'s chat color is ${chatColors[userObj.color].name}!`)
                 : bot.say(chatroom, `${userObjNickname}'s chat color is hex code ${userObj.color}`)
@@ -106,10 +107,10 @@ module.exports = {
         logMessage([`> sayFriends(chatroom: ${chatroom})`])
 
         const numUsers = Object.keys(users).length
-        const dumbEmote = getDumbEmote(channel)
-        const neutralEmote = getNeutralEmote(channel)
-        const positiveEmote = getPositiveEmote(channel)
-        const hypeEmote = getHypeEmote(channel)
+        const dumbEmote = getContextEmote(`dumb`, channel)
+        const neutralEmote = getContextEmote(`neutral`, channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
+        const hypeEmote = getContextEmote(`hype`, channel)
 
         bot.say(
             chatroom,
@@ -125,10 +126,10 @@ module.exports = {
         )
     },
     getLemons(props) {
-        const { bot, chatroom, username, user, toUser, target } = props
+        const { bot, chatroom, channel, username, user, toUser, target } = props
         logMessage([`> getLemons(chatroom: '${chatroom}', username: '${username}', toUser: '${toUser}')`])
 
-        const lemonEmote = getLemonEmote()
+        const lemonEmote = getContextEmote(`lemon`, channel)
         target
             ? bot.say(chatroom, `${target.displayName} has ${target.lemons} lemon${target.lemons === 1 ? `` : `s`}! ${lemonEmote}`)
             : bot.say(chatroom, `${user.displayName} has ${user.lemons} lemon${user.lemons === 1 ? `` : `s`}! ${lemonEmote}`)
