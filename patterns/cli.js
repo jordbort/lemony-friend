@@ -215,9 +215,7 @@ function updateChannelDev(props, args) {
     logMessage([`> updateChannel(username, '${username}', channel, '${channel}', args:`, args.join(`, `), `)`])
 
     const toUser = getToUser(args.shift())
-    if (!(toUser in lemonyFresh)
-        || typeof lemonyFresh[toUser] !== `object`
-        || Array.isArray(lemonyFresh[toUser])) { return bot.say(chatroom, `/me Please specify a valid channel: ${Object.keys(lemonyFresh).filter(channel => typeof lemonyFresh[channel] === `object` && !Array.isArray(lemonyFresh[channel])).join(`, `)}`) }
+    if (!(toUser in lemonyFresh)) { return bot.say(chatroom, `/me Please specify a valid channel: ${Object.keys(lemonyFresh).join(`, `)}`) }
 
     const options = {
         [/^timers?$|^t$/i]: { name: `timers`, func: updateTimer },

@@ -3,6 +3,7 @@ const CLIENT_ID = process.env.CLIENT_ID
 const CLIENT_SECRET = process.env.CLIENT_SECRET
 const REDIRECT_URI = process.env.REDIRECT_URI
 
+const { settings } = require(`../config`)
 const { lemonyFresh, mods, users } = require(`../data`)
 const { getContextEmote, resetCooldownTimer, getToUser, renderObj, pluralize, logMessage } = require(`../utils`)
 
@@ -120,7 +121,7 @@ async function getTwitchChannel(bot, chatroom, broadcaster_id) {
     const endpoint = `https://api.twitch.tv/helix/channels?broadcaster_id=${broadcaster_id}`
     const options = {
         headers: {
-            authorization: `Bearer ${lemonyFresh.botAccessToken}`,
+            authorization: `Bearer ${settings.botAccessToken}`,
             'Client-Id': CLIENT_ID
         }
     }
