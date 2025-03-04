@@ -15,13 +15,19 @@ function makePlural(noun) {
 }
 
 function addVerbSuffix(verb, suffix) {
-    return /[aeiou][^aeiouwxy]$/i.test(verb)
-        ? verb[verb.length - 3] === verb[verb.length - 2]
-            ? `${verb}${suffix}`
-            : `${verb}${verb[verb.length - 1]}${suffix}`
-        : /e$/i.test(verb)
-            ? `${verb.substring(0, verb.length - 1)}${suffix}`
-            : `${verb}${suffix}`
+    return suffix === `s`
+        ? /(o|s|z|x|ch|sh)$/i.test(verb)
+            ? `${verb}e${suffix}`
+            : /y$/i.test(verb)
+                ? `${verb.substring(0, verb.length - 1)}ie${suffix}`
+                : `${verb}${suffix}`
+        : /[aeiou][^aeiouwxy]$/i.test(verb)
+            ? verb[verb.length - 3] === verb[verb.length - 2]
+                ? `${verb}${suffix}`
+                : `${verb}${verb[verb.length - 1]}${suffix}`
+            : /e$/i.test(verb)
+                ? `${verb.substring(0, verb.length - 1)}${suffix}`
+                : `${verb}${suffix}`
 }
 
 module.exports = {
