@@ -464,5 +464,25 @@ module.exports = {
 
         // End of onChatHandler logic
         logMessage([`MESSAGE DID NOT MATCH REGEX PATTERNS`])
+    },
+    hypeReact(props) {
+        const { bot, chatroom, channel } = props
+        const hypeEmote = getContextEmote(`hype`, channel)
+        bot.say(chatroom, hypeEmote)
+    },
+    neutralReact(props) {
+        const { bot, chatroom, channel } = props
+        const neutralEmote = getContextEmote(`neutral`, channel)
+        bot.say(chatroom, neutralEmote)
+    },
+    negativeReact(props) {
+        const { bot, chatroom, channel } = props
+        const negativeEmote = getContextEmote(`negative`, channel)
+        bot.say(chatroom, negativeEmote)
+    },
+    dumbReact(props) {
+        const { bot, chatroom, channel } = props
+        const dumbEmote = getContextEmote(`dumb`, channel)
+        bot.say(chatroom, dumbEmote)
     }
 }
