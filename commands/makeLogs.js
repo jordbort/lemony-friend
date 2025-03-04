@@ -8,7 +8,7 @@ const REDIRECT_URI = process.env.REDIRECT_URI
 const API_KEY = process.env.API_KEY
 
 const { settings, wordBank } = require(`../config`)
-const { lemonyFresh, mods, users, knownTags, tempCmds, commonNicknames, startingLemons, hangmanWins } = require(`../data`)
+const { lemonyFresh, mods, users, knownTags, lemCmds, commonNicknames, startingLemons, hangmanWins } = require(`../data`)
 
 function renderObj(obj, objName, indentation = ``) {
     const tab = `${indentation}\t`
@@ -74,7 +74,7 @@ function makeLogs(arr) {
         [knownTags, 'knownTags'],
         [settings, `settings`],
         // [wordBank, `wordBank`],
-        [tempCmds, `tempCmds`]
+        // [lemCmds, `lemCmds`]
     ]
     for (const [obj, objName] of objectsToLog) {
         logs += `${renderObj(obj, objName)}\n\n`
@@ -138,6 +138,8 @@ SKITTLE108_REFRESH_TOKEN='${mods.skittle108.refreshToken}'\n\n`
     logs += `STARTING_LEMONS='${createCSV(startingLemons, users, `lemons`)}'\n\n`
 
     logs += `HANGMAN_WINS='${createCSV(hangmanWins, users, `hangmanWins`)}'\n\n`
+
+    logs += `LEMON_COMMANDS='${JSON.stringify(lemCmds)}'\n\n`
 
     logs += `WORDBANK_NOUNS='${JSON.stringify(wordBank.nouns)}'\n`
 

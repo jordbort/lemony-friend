@@ -37,6 +37,7 @@ const SKITTLE108_REFRESH_TOKEN = process.env.SKITTLE108_REFRESH_TOKEN
 const COMMON_NICKNAMES = process.env.COMMON_NICKNAMES
 const STARTING_LEMONS = process.env.STARTING_LEMONS
 const HANGMAN_WINS = process.env.HANGMAN_WINS
+const LEMON_COMMANDS = process.env.LEMON_COMMANDS
 
 const lemonyFresh = {
     jpegstripes: {
@@ -860,7 +861,7 @@ for (let arr = HANGMAN_WINS.split(`,`), i = 0; i < arr.length; i++) { if (i % 2 
 
 const knownTags = {}
 
-const tempCmds = {}
+const lemCmds = JSON.parse(LEMON_COMMANDS)
 
 module.exports = {
     lemonyFresh,
@@ -870,5 +871,5 @@ module.exports = {
     startingLemons,
     hangmanWins,
     knownTags,
-    tempCmds
+    lemCmds
 }

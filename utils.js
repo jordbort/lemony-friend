@@ -5,7 +5,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 const fs = require(`fs/promises`)
 
 const { makeLogs } = require(`./commands/makeLogs`)
-const { lemonyFresh, users, commonNicknames, startingLemons, hangmanWins, mods, knownTags, tempCmds } = require(`./data`)
+const { lemonyFresh, users, commonNicknames, startingLemons, hangmanWins, mods, knownTags, lemCmds } = require(`./data`)
 const { settings, resetTxt, grayTxt, whiteTxt, yellowBg, chatColors } = require(`./config`)
 
 const twitchUsernamePattern = /^[a-z0-9_]{4,25}$/i
@@ -1287,7 +1287,7 @@ module.exports = {
         const greetingEmote = getContextEmote(`greeting`, channel)
         const dumbEmote = getContextEmote(`dumb`, channel)
         const numUsers = Object.keys(users).length
-        const numTempCmds = Object.keys(tempCmds).length
+        const numLemCmds = Object.keys(lemCmds).length
         const randNum = Math.floor(Math.random() * numbers.length)
 
         const joinMessages = [
@@ -1305,11 +1305,11 @@ module.exports = {
                         : numUsers < 50
                             ? positiveEmote
                             : hypeEmote}`,
-            `There ${numTempCmds === 1 ? `is` : `are`} ${pluralize(numTempCmds, `temporary command`, `temporary commands`)}! ${numTempCmds === 0
+            `There ${numLemCmds === 1 ? `is` : `are`} ${pluralize(numLemCmds, `lemon command`, `lemon commands`)}! ${numLemCmds === 0
                 ? dumbEmote
-                : numTempCmds < 3
+                : numLemCmds < 3
                     ? neutralEmote
-                    : numTempCmds < 5
+                    : numLemCmds < 5
                         ? positiveEmote
                         : hypeEmote}`,
             `Let's play Hangman! ${positiveEmote}`,

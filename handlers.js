@@ -9,9 +9,9 @@ const botInteraction = require(`./patterns/botInteraction`)
 const botMention = require(`./patterns/botMention`)
 
 const { settings } = require(`./config`)
-const { lemonyFresh, users, tempCmds } = require(`./data`)
+const { lemonyFresh, users, lemCmds } = require(`./data`)
 
-const { useTempCmd } = require(`./commands/tempCmds`)
+const { useLemCmd } = require(`./commands/lemCmds`)
 const { streakListener } = require(`./commands/streaks`)
 const { rollFunNumber } = require(`./commands/funNumber`)
 const { checkWord, checkLetter } = require(`./patterns/hangman`)
@@ -229,8 +229,8 @@ module.exports = {
             logMessage([`NOT A HANGMAN GUESS`])
         }
 
-        // Check for tempCmd
-        if (command in tempCmds) { return useTempCmd(props) }
+        // Check for lemonCommand
+        if (command in lemCmds) { return useLemCmd(props) }
 
         // Listening for a message to be repeated by at least two other users
         if (lemonyFresh[channel].timers.streak.listening) { streakListener(props) }
