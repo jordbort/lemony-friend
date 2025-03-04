@@ -8,12 +8,14 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Added "!list help" to provide a list of all methods`,
-            `Restricted permissions for !list add, edit, delete, swap/switch, move, name/rename, clear, reset`,
-            `Added a CLI setting to enable/disable playing PokemonCommunityGame`,
-            `Added !multitwitch to generate a MultiTwitch stream link for multiple users`,
-            `Hangman players who use !play after the signup window are now told whose turn they're after`,
-            `Number of Hangman victories now preserved between resets`
+            `Changed !tempcmd to !lemoncommand and !lemcmd`,
+            `Added elapsed time to !lastmsg command`,
+            `Updated tempcmd variables {1-9} to fall back on an empty string`,
+            `Implemented handling for Twitch shared chat`,
+            `Lemon commands are now remembered`,
+            `Insult nouns, verbs, and adjectives are now remembered`,
+            `Partial backend restructuring`,
+            `Updated CLI to handle channel contextEmotes`
         ]
 
         const timeOptions = {
