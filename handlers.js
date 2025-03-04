@@ -160,19 +160,15 @@ module.exports = {
         \**************/
         // Dev commands
         if (username === DEV) {
-            for (const cmd in dev) {
-                if (command === cmd) {
-                    logMessage([`MATCHED DEV COMMAND:`, cmd, `[Function: ${dev[command].name}]`])
-                    return dev[command](props)
-                }
+            if (command in dev) {
+                logMessage([`MATCHED DEV COMMAND:`, command, `[Function: ${dev[command].name}]`])
+                return dev[command](props)
             }
         }
         if (msg.startsWith(`!`)) {
-            for (const cmd in commands) {
-                if (command === cmd) {
-                    logMessage([`MATCHED COMMAND:`, cmd, `[Function: ${commands[command].name}]`])
-                    return commands[command](props)
-                }
+            if (command in commands) {
+                logMessage([`MATCHED COMMAND:`, command, `[Function: ${commands[command].name}]`])
+                return commands[command](props)
             }
             if (!/^!([a-z]+)lemon([a-z]*)/.test(command)) { logMessage([`COMMAND NOT RECOGNIZED`]) }
         }
