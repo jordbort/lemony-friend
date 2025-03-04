@@ -72,7 +72,7 @@ const lemonyFresh = {
             `jpegstBlank`,
             `jpegstDog`,
             `jpegstBonk`,
-            `jpegstMegamind`
+            `jpegstHuh`
         ],
         bttvEmotes: [
             `(ditto)`,
@@ -369,6 +369,10 @@ const lemonyFresh = {
             `e1ectr4Tromadance`,
             `e1ectr4Coop`,
             `e1ectr4Ocha`,
+            `e1ectr4Twlax`,
+            `e1ectr4Mario`,
+            `e1ectr4Palp`,
+            `e1ectr4Woo`,
             `e1ectr4Hello`,
             `e1ectr4Hi`,
             `e1ectr4Bye`,
@@ -383,7 +387,8 @@ const lemonyFresh = {
             `e1ectr4Josie`,
             `e1ectr4Malort`,
             `e1ectr4Heat`,
-            `e1ectr4Umbreon`
+            `e1ectr4Umbreon`,
+            `e1ectr4Point`
         ],
         bttvEmotes: [
             `AlienPls`,
