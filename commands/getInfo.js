@@ -18,9 +18,10 @@ module.exports = {
             `Implemented handling for Twitch shared chat`,
             `Added elapsed time to !lastmsg command`,
             `Added more reactions to bot being mentioned`,
-            `Updated tempcmd variables {1-9} to fall back on an empty string`,
+            `Updated lemcmd variables {1-9} to fall back on an empty string`,
             `Says how many total lemons after successfully doubling them`,
-            `Updated CLI to choose usedPokeball in PCG`
+            `Updated CLI to choose usedPokeball in PCG`,
+            `Updated channel emotes, contextEmotes, and lists`
         ]
 
         const timeOptions = {
