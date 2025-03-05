@@ -1,7 +1,7 @@
 const API_KEY = process.env.API_KEY
 
 const { settings } = require(`../config`)
-const { getNegativeEmote, renderObj, logMessage } = require(`../utils`)
+const { getContextEmote, renderObj, logMessage } = require(`../utils`)
 
 module.exports = {
     async checkSentiment(props) {
@@ -42,7 +42,7 @@ module.exports = {
         const data = await response.json()
         logMessage([`getDadJoke`, response.status, renderObj(data, `data`)])
 
-        const negativeEmote = getNegativeEmote(channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
         data.status === 200
             ? bot.say(chatroom, data.joke)
             : bot.say(chatroom, `Error fetching dad joke! ${negativeEmote}`)
@@ -64,7 +64,7 @@ module.exports = {
         const data = await response.json()
         logMessage([`getDefinition`, response.status, renderObj(data, `data`)])
 
-        const negativeEmote = getNegativeEmote(channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
         if ('error' in data) {
             bot.say(chatroom, `Error: ${data.error} ${negativeEmote}`)
         } else if (!data.valid || !data.definition) {
@@ -92,7 +92,7 @@ module.exports = {
         if (!pokemon) { return logMessage([`-> No Pokemon provided`]) }
 
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`)
-        const negativeEmote = getNegativeEmote(channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
         if (response.status !== 200) {
             logMessage([`-> ${response.status}: ${response.statusText}`])
             return bot.say(chatroom, `Pokémon "${pokemon}" was not found! ${negativeEmote}`)
@@ -212,7 +212,7 @@ module.exports = {
     async getPokemonAbility(props) {
         const { bot, chatroom, args, channel } = props
         const abilityName = args.join(`-`).toLowerCase().replace(/'/g, ``)
-        const negativeEmote = getNegativeEmote(channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
 
         logMessage([`> getPokemonAbility(chatroom: ${chatroom}, abilityName: '${abilityName}')`])
         if (!abilityName) { return logMessage([`-> No ability provided`]) }

@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 const { users } = require(`../data`)
 const { catchPokemon, buyPokeballs, acknowledgeCaughtPokemon } = require(`./pokemon`)
-const { getHypeEmote, getUpsetEmote, getGreetingEmote, logMessage } = require(`../utils`)
+const { getContextEmote, logMessage } = require(`../utils`)
 
 function handleGivenPoints(props, splitMessage) {
     const { bot, chatroom, message, channel } = props
@@ -11,7 +11,8 @@ function handleGivenPoints(props, splitMessage) {
     const nickname = users[givingUser].nickname || users[givingUser].displayName
     logMessage([`> handleGivenPoints(channel: '${channel}', givingUser: '${givingUser}', pointsNum: ${pointsNum}, current points: ${users[BOT_USERNAME][channel]?.points})`])
 
-    bot.say(chatroom, `Thank you for the points, ${nickname}! ${getGreetingEmote(channel)}`)
+    const greetingEmote = getContextEmote(`greeting`, channel)
+    bot.say(chatroom, `Thank you for the points, ${nickname}! ${greetingEmote}`)
 
     // Add points and check if undefined
     if (`points` in users[BOT_USERNAME][channel]) {
@@ -30,8 +31,8 @@ function handleSetPoints(props, splitMessage) {
     const pointsNum = Number(splitMessage[1])
     logMessage([`> handleSetPoints(channel: '${channel}', pointsNum: ${pointsNum}, current points: ${users[BOT_USERNAME][channel]?.points})`])
 
-    const hypeEmote = getHypeEmote(channel)
-    const upsetEmote = getUpsetEmote(channel)
+    const hypeEmote = getContextEmote(`hype`, channel)
+    const upsetEmote = getContextEmote(`upset`, channel)
     if (`points` in users[BOT_USERNAME][channel]) {
         if (pointsNum > users[BOT_USERNAME][channel].points) { bot.say(chatroom, hypeEmote) }
         if (pointsNum < users[BOT_USERNAME][channel].points) { bot.say(chatroom, upsetEmote) }
@@ -46,7 +47,7 @@ function handleLoseAllPoints(props) {
     users[BOT_USERNAME][channel].points = 0
     logMessage([`> handleLoseAllPoints(channel: '${channel}', current points: ${users[BOT_USERNAME][channel].points})`])
 
-    const upsetEmote = getUpsetEmote(channel)
+    const upsetEmote = getContextEmote(`upset`, channel)
     bot.say(chatroom, `${upsetEmote}`)
 }
 

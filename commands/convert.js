@@ -1,4 +1,4 @@
-const { getPositiveEmote, getNeutralEmote, getDumbEmote, logMessage, arrToList } = require(`../utils`)
+const { getContextEmote, logMessage, arrToList } = require(`../utils`)
 
 const units = {
     [/\bf\b|\bfahrenheit\b/i]: { name: `Fahrenheit`, plural: `Fahrenheit`, type: `temperature` },
@@ -323,9 +323,9 @@ module.exports = {
         const { bot, chatroom, args, channel } = props
         logMessage([`> convert(channel: '${channel}', args: [${args.length ? `'${args.join(`', '`)}'` : ``}])`])
 
-        const neutralEmote = getNeutralEmote(channel)
-        const positiveEmote = getPositiveEmote(channel)
-        const dumbEmote = getDumbEmote(channel)
+        const neutralEmote = getContextEmote(`neutral`, channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
+        const dumbEmote = getContextEmote(`dumb`, channel)
 
         const num = Number(args[0])
         if (isNaN(num)) {

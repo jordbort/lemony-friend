@@ -1,14 +1,14 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { users } = require(`../data`)
-const { getNeutralEmote, getHypeEmote, getPositiveEmote, getNegativeEmote, logMessage, renderObj } = require(`../utils`)
+const { getContextEmote, logMessage, renderObj } = require(`../utils`)
 
 module.exports = {
     sayCommands(props) {
         const { bot, chatroom, channel } = props
         logMessage([`> sayCommands(chatroom: ${chatroom})`])
 
-        const neutralEmote = getNeutralEmote(channel)
+        const neutralEmote = getContextEmote(`neutral`, channel)
         bot.say(chatroom, `Commands: !greet => Say hi to one or more people, !bye => Say goodnight to someone, !hangman => Start a game of Hangman, !rps => Play me in Rock, Paper, Scissors (move optional), !yell => Chat across Lemony Fresh ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Lemfresh ` : `🍋️`}, !away => (Optionally add an away message), !tempcmd => Make your own command! ${neutralEmote}`)
     },
     getDocs(props) {
@@ -43,10 +43,10 @@ module.exports = {
 
         const subbedChannels = Object.keys(users[BOT_USERNAME]).filter(channel => typeof users[BOT_USERNAME][channel] === `object` && users[BOT_USERNAME][channel].sub)
 
-        const hypeEmote = getHypeEmote(channel)
-        const positiveEmote = getPositiveEmote(channel)
-        const neutralEmote = getNeutralEmote(channel)
-        const negativeEmote = getNegativeEmote(channel)
+        const hypeEmote = getContextEmote(`hype`, channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
+        const neutralEmote = getContextEmote(`neutral`, channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
 
         subbedChannels.length
             ? bot.say(chatroom,

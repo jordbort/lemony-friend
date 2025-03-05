@@ -1,4 +1,4 @@
-const { twitchUsernamePattern, logMessage, getNegativeEmote, getNeutralEmote, getDumbEmote } = require(`../utils`)
+const { twitchUsernamePattern, logMessage, getContextEmote } = require(`../utils`)
 
 module.exports = {
     makeMultiTwitchLink(props) {
@@ -6,9 +6,9 @@ module.exports = {
         logMessage([`> makeMultiTwitchLink(args: '${args.join(`', '`)}')`])
 
         const channel = chatroom.substring(1)
-        const negativeEmote = getNegativeEmote(channel)
-        const neutralEmote = getNeutralEmote(channel)
-        const dumbEmote = getDumbEmote(channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
+        const neutralEmote = getContextEmote(`neutral`, channel)
+        const dumbEmote = getContextEmote(`dumb`, channel)
 
         if (args.length < 2) {
             bot.say(chatroom, `Please provide at least two usernames! ${neutralEmote}`)

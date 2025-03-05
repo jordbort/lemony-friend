@@ -1,5 +1,5 @@
 const { settings } = require(`../config`)
-const { getHypeEmote, logMessage } = require(`../utils`)
+const { getContextEmote, logMessage } = require(`../utils`)
 
 module.exports = {
     catchPokemon(props) {
@@ -15,7 +15,7 @@ module.exports = {
             return
         }
 
-        bot.say(chatroom, `!pokecatch`)
+        bot.say(chatroom, `!pokecatch ${settings.usedPokeball}`)
     },
     buyPokeballs(props) {
         const { bot, chatroom, channel } = props
@@ -27,7 +27,7 @@ module.exports = {
         const { bot, chatroom, message, channel } = props
         logMessage([`> acknowledgeCaughtPokemon(channel: '${channel}')`])
 
-        const hypeEmote = getHypeEmote(channel)
+        const hypeEmote = getContextEmote(`hype`, channel)
         const regex = /\(SHINY/
 
         regex.test(message)

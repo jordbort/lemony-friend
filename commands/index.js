@@ -8,7 +8,7 @@ const { rockPaperScissors } = require(`./rps`)
 const { lemonTopThree } = require(`./lemonRank`)
 const { handleLemonify } = require(`./lemonify`)
 const { makeMultiTwitchLink } = require(`./multitwitch`)
-const { handleTempCmd, getTempCmds } = require(`./tempCmds`)
+const { handleLemCmd, getLemCmds } = require(`./lemCmds`)
 const { sayCommands, getDocs, getStats } = require(`./help`)
 const { manageHangman, joinHangman } = require(`../patterns/hangman`)
 const { insultUser, manageVerbs, manageNouns, manageAdjectives } = require(`./insult`)
@@ -57,11 +57,11 @@ module.exports = {
 
     '!lemonify': handleLemonify,
 
-    '!tempcmd': handleTempCmd,
-    '!tmpcmd': handleTempCmd,
+    '!lemoncommand': handleLemCmd,
+    '!lemcmd': handleLemCmd,
 
-    '!tempcmds': getTempCmds,
-    '!tmpcmds': getTempCmds,
+    '!lemoncommands': getLemCmds,
+    '!lemcmds': getLemCmds,
 
     '!commands': sayCommands,
     '!docs': getDocs,

@@ -1,4 +1,8 @@
+const BOT_ACCESS_TOKEN = process.env.BOT_ACCESS_TOKEN
 const BOT_USERNAME = process.env.BOT_USERNAME
+const WORDBANK_NOUNS = process.env.WORDBANK_NOUNS
+const WORDBANK_VERBS = process.env.WORDBANK_VERBS
+const WORDBANK_ADJECTIVES = process.env.WORDBANK_ADJECTIVES
 
 // Terminal colors
 const resetTxt = `\x1b[0m`
@@ -49,6 +53,7 @@ const chatColors = {
 
 // Global settings
 const settings = {
+    botAccessToken: BOT_ACCESS_TOKEN,
     debug: true,
     timeLocale: `en-US`,
     timeZone: `America/New_York`,
@@ -75,6 +80,7 @@ const settings = {
     chantEmote: `👏️`,
     playPCG: true,
     pokeballQuantity: 10,
+    usedPokeball: `pokeball`,
     maxCountdownDuration: 7200000,
     ignoredBots: [
         BOT_USERNAME,
@@ -525,14 +531,15 @@ const settings = {
         `onlyfans`,
         `viewers on`,
         `viewers̄`,
-        `viewers ͚on`
+        `viewers ͚on`,
+        `viěw̐e̩rs ̳o̫n`
     ]
 }
 
 const wordBank = {
-    verbs: [],
-    nouns: [],
-    adjectives: []
+    nouns: JSON.parse(WORDBANK_NOUNS),
+    verbs: JSON.parse(WORDBANK_VERBS),
+    adjectives: JSON.parse(WORDBANK_ADJECTIVES)
 }
 
 module.exports = {

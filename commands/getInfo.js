@@ -1,6 +1,6 @@
 const { lemonyFresh, users } = require(`../data`)
 const { chatColors, settings } = require(`../config`)
-const { numbers, getLemonEmote, getDumbEmote, pluralize, getNeutralEmote, getToUser, getPositiveEmote, getHypeEmote, logMessage } = require(`../utils`)
+const { numbers, getContextEmote, pluralize, getToUser, logMessage, arrToList } = require(`../utils`)
 
 module.exports = {
     sayOnlineTime(props) {
@@ -8,12 +8,20 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Added "!list help" to provide a list of all methods`,
-            `Restricted permissions for !list add, edit, delete, swap/switch, move, name/rename, clear, reset`,
-            `Added a CLI setting to enable/disable playing PokemonCommunityGame`,
-            `Added !multitwitch to generate a MultiTwitch stream link for multiple users`,
-            `Hangman players who use !play after the signup window are now told whose turn they're after`,
-            `Number of Hangman victories now preserved between resets`
+            `Partial backend restructuring`,
+            `Updated CLI to handle channel contextEmotes`,
+            `Changed !tempcmd to !lemoncommand and !lemcmd`,
+            `Added contextEmotes as lemon command variables`,
+            `Lemon commands are now remembered`,
+            `Added 5 new insult patterns`,
+            `Insult nouns, verbs, and adjectives are now remembered`,
+            `Implemented handling for Twitch shared chat`,
+            `Added elapsed time to !lastmsg command`,
+            `Added more reactions to bot being mentioned`,
+            `Updated lemcmd variables {1-9} to fall back on an empty string`,
+            `Says how many total lemons after successfully doubling them`,
+            `Updated CLI to choose usedPokeball in PCG`,
+            `Updated channel emotes, contextEmotes, and lists`
         ]
 
         const timeOptions = {
@@ -32,11 +40,11 @@ module.exports = {
             timeZone: settings.timeZone
         }
 
-        const neutralEmote = getNeutralEmote(channel)
+        const neutralEmote = getContextEmote(`neutral`, channel)
         bot.say(chatroom, `I've been online since ${settings.startDate.toLocaleDateString(settings.timeLocale, dateOptions)} at ${settings.startDate.toLocaleTimeString(settings.timeLocale, timeOptions)}! ${neutralEmote}${newFeatures.length ? ` Updates: ${newFeatures.join(`, `)}` : ``}`)
     },
     getLastMessage(props) {
-        const { bot, chatroom, args, channel, username, user, userNickname, toUser, target, targetNickname } = props
+        const { bot, chatroom, args, currentTime, channel, username, user, userNickname, toUser, target, targetNickname } = props
         const otherChannel = getToUser(args[1])
         const userObj = target || user
         const userObjNickname = targetNickname || userNickname
@@ -47,10 +55,25 @@ module.exports = {
             ? users[otherChannel]?.nickname || users[otherChannel]?.displayName || otherChannel
             : null
 
+        const timeDiff = otherChannel in userObj
+            ? currentTime - userObj[otherChannel].sentAt
+            : currentTime - userObj[channel].sentAt
+
+        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
+        const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24)
+        const minutes = Math.floor((timeDiff / (1000 * 60)) % 60)
+        const seconds = Math.floor((timeDiff / 1000) % 60)
+
+        const duration = []
+        if (days) { duration.push(pluralize(days, `day`, `days`)) }
+        if (hours) { duration.push(pluralize(hours, `hour`, `hours`)) }
+        if (minutes) { duration.push(pluralize(minutes, `minute`, `minutes`)) }
+        if (seconds) { duration.push(pluralize(seconds, `second`, `seconds`)) }
+
         otherChannel in userObj
-            ? bot.say(chatroom, `${userObjNickname} last said: "${userObj[otherChannel].lastMessage}" in ${otherChannelNickname}'s chat!`)
+            ? bot.say(chatroom, `${userObjNickname} last said: "${userObj[otherChannel].lastMessage}" in ${otherChannelNickname}'s chat ${arrToList(duration)}${!duration.length ? `just now` : ` ago`}!`)
             : channel in userObj
-                ? bot.say(chatroom, `${userObjNickname} last said: "${userObj[channel].lastMessage}" in ${channelNickname}'s chat!`)
+                ? bot.say(chatroom, `${userObjNickname} last said: "${userObj[channel].lastMessage}" in ${channelNickname}'s chat ${arrToList(duration)}${!duration.length ? `just now` : ` ago`}!`)
                 : bot.say(chatroom, `${userObjNickname} hasn't spoken in ${channelNickname}'s chat!`)
     },
     getMessageCount(props) {
@@ -73,10 +96,11 @@ module.exports = {
         const { bot, chatroom, channel, username, user, userNickname, toUser, target, targetNickname } = props
         const userObj = target || user
         const userObjNickname = targetNickname || userNickname
+        const dumbEmote = getContextEmote(`dumb`, channel)
         logMessage([`> getColor(chatroom: ${chatroom}, userObj: '${target ? toUser : username})`])
 
         !userObj.color
-            ? bot.say(chatroom, `I can't tell what ${userObjNickname}'s chat color is! ${getDumbEmote(channel)}`)
+            ? bot.say(chatroom, `I can't tell what ${userObjNickname}'s chat color is! ${dumbEmote}`)
             : userObj.color in chatColors
                 ? bot.say(chatroom, `${userObjNickname}'s chat color is ${chatColors[userObj.color].name}!`)
                 : bot.say(chatroom, `${userObjNickname}'s chat color is hex code ${userObj.color}`)
@@ -106,10 +130,10 @@ module.exports = {
         logMessage([`> sayFriends(chatroom: ${chatroom})`])
 
         const numUsers = Object.keys(users).length
-        const dumbEmote = getDumbEmote(channel)
-        const neutralEmote = getNeutralEmote(channel)
-        const positiveEmote = getPositiveEmote(channel)
-        const hypeEmote = getHypeEmote(channel)
+        const dumbEmote = getContextEmote(`dumb`, channel)
+        const neutralEmote = getContextEmote(`neutral`, channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
+        const hypeEmote = getContextEmote(`hype`, channel)
 
         bot.say(
             chatroom,
@@ -125,10 +149,10 @@ module.exports = {
         )
     },
     getLemons(props) {
-        const { bot, chatroom, username, user, toUser, target } = props
+        const { bot, chatroom, channel, username, user, toUser, target } = props
         logMessage([`> getLemons(chatroom: '${chatroom}', username: '${username}', toUser: '${toUser}')`])
 
-        const lemonEmote = getLemonEmote()
+        const lemonEmote = getContextEmote(`lemon`, channel)
         target
             ? bot.say(chatroom, `${target.displayName} has ${target.lemons} lemon${target.lemons === 1 ? `` : `s`}! ${lemonEmote}`)
             : bot.say(chatroom, `${user.displayName} has ${user.lemons} lemon${user.lemons === 1 ? `` : `s`}! ${lemonEmote}`)

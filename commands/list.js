@@ -1,11 +1,11 @@
 const { lemonyFresh } = require(`../data`)
-const { getNeutralEmote, getPositiveEmote, getNegativeEmote, getDumbEmote, logMessage } = require(`../utils`)
+const { getContextEmote, logMessage } = require(`../utils`)
 
 function getItem(bot, chatroom, idx) {
     logMessage([`-> getItem(idx: ${idx})`])
     const channel = chatroom.substring(1)
     const listName = lemonyFresh[channel].list[0] || `the list`
-    const negativeEmote = getNegativeEmote(channel)
+    const negativeEmote = getContextEmote(`negative`, channel)
 
     lemonyFresh[channel].list[idx] && idx !== 0
         ? bot.say(chatroom, `#${idx} from ${listName}: ${lemonyFresh[channel].list[idx]}`)
@@ -15,7 +15,7 @@ function getItem(bot, chatroom, idx) {
 function addItem(bot, chatroom, args, isModOrVIP) {
     logMessage([`-> addItem(args: '${args.join(`', '`)}', isModOrVIP? ${isModOrVIP})`])
     const channel = chatroom.substring(1)
-    const negativeEmote = getNegativeEmote(channel)
+    const negativeEmote = getContextEmote(`negative`, channel)
     if (!isModOrVIP) {
         bot.say(chatroom, `Only a mod or VIP is allowed to add items to the list! ${negativeEmote}`)
         return
@@ -23,8 +23,8 @@ function addItem(bot, chatroom, args, isModOrVIP) {
 
     const listName = lemonyFresh[channel].list[0] || `the list`
     const newItem = args.slice(1).join(` `)
-    const positiveEmote = getPositiveEmote(channel)
-    const dumbEmote = getDumbEmote(channel)
+    const positiveEmote = getContextEmote(`positive`, channel)
+    const dumbEmote = getContextEmote(`dumb`, channel)
 
     if (newItem) {
         lemonyFresh[channel].list.push(newItem)
@@ -37,15 +37,15 @@ function addItem(bot, chatroom, args, isModOrVIP) {
 function editItem(bot, chatroom, args, isModOrVIP) {
     logMessage([`-> editItem(args: '${args.join(`', '`)}', isModOrVIP? ${isModOrVIP})`])
     const channel = chatroom.substring(1)
-    const negativeEmote = getNegativeEmote(channel)
+    const negativeEmote = getContextEmote(`negative`, channel)
     if (!isModOrVIP) {
         bot.say(chatroom, `Only a mod or VIP is allowed to edit items on list! ${negativeEmote}`)
         return
     }
 
     const listName = lemonyFresh[channel].list[0] || `the list`
-    const positiveEmote = getPositiveEmote(channel)
-    const dumbEmote = getDumbEmote(channel)
+    const positiveEmote = getContextEmote(`positive`, channel)
+    const dumbEmote = getContextEmote(`dumb`, channel)
 
     const idx = Number(args[1])
     // Index is NaN, zero, or doesn't exist in array
@@ -62,14 +62,14 @@ function editItem(bot, chatroom, args, isModOrVIP) {
 function deleteItem(bot, chatroom, args, isModOrVIP) {
     logMessage([`-> deleteItem(args: '${args.join(`', '`)}', isModOrVIP? ${isModOrVIP})`])
     const channel = chatroom.substring(1)
-    const negativeEmote = getNegativeEmote(channel)
+    const negativeEmote = getContextEmote(`negative`, channel)
     if (!isModOrVIP) {
         bot.say(chatroom, `Only a mod or VIP is allowed to delete items from the list! ${negativeEmote}`)
         return
     }
 
     const listName = lemonyFresh[channel].list[0] || `the list`
-    const positiveEmote = getPositiveEmote(channel)
+    const positiveEmote = getContextEmote(`positive`, channel)
 
     const idx = Number(args[1])
     // Index is NaN, zero, or doesn't exist in array
@@ -82,15 +82,15 @@ function deleteItem(bot, chatroom, args, isModOrVIP) {
 function swapItems(bot, chatroom, args, isModOrVIP) {
     logMessage([`-> swapItems(args: '${args.join(`', '`)}', isModOrVIP? ${isModOrVIP})`])
     const channel = chatroom.substring(1)
-    const negativeEmote = getNegativeEmote(channel)
+    const negativeEmote = getContextEmote(`negative`, channel)
     if (!isModOrVIP) {
         bot.say(chatroom, `Only a mod or VIP is allowed to reorder items in the list! ${negativeEmote}`)
         return
     }
 
     const listName = lemonyFresh[channel].list[0] || `the list`
-    const positiveEmote = getPositiveEmote(channel)
-    const neutralEmote = getNeutralEmote(channel)
+    const positiveEmote = getContextEmote(`positive`, channel)
+    const neutralEmote = getContextEmote(`neutral`, channel)
 
     if (args.length < 3) {
         bot.say(chatroom, `Please provide two numbers to be swapped! ${neutralEmote}`)
@@ -112,7 +112,7 @@ function swapItems(bot, chatroom, args, isModOrVIP) {
 
 function moveItems(bot, chatroom, args, isModOrVIP) {
     const channel = chatroom.substring(1)
-    const negativeEmote = getNegativeEmote(channel)
+    const negativeEmote = getContextEmote(`negative`, channel)
     logMessage([`-> moveItems(args: '${args.join(`', '`)}', isModOrVIP? ${isModOrVIP})`])
     if (!isModOrVIP) {
         bot.say(chatroom, `Only a mod or VIP is allowed to reorder items in the list! ${negativeEmote}`)
@@ -120,8 +120,8 @@ function moveItems(bot, chatroom, args, isModOrVIP) {
     }
 
     const listName = lemonyFresh[channel].list[0] || `the list`
-    const positiveEmote = getPositiveEmote(channel)
-    const neutralEmote = getNeutralEmote(channel)
+    const positiveEmote = getContextEmote(`positive`, channel)
+    const neutralEmote = getContextEmote(`neutral`, channel)
 
     if (args.length < 3) {
         bot.say(chatroom, `Please provide two numbers: the current position and its new position! ${neutralEmote}`)
@@ -149,15 +149,15 @@ function moveItems(bot, chatroom, args, isModOrVIP) {
 
 function renameList(bot, chatroom, args, isModOrVIP) {
     const channel = chatroom.substring(1)
-    const negativeEmote = getNegativeEmote(channel)
+    const negativeEmote = getContextEmote(`negative`, channel)
     logMessage([`-> renameList(args: '${args.join(`', '`)}', isModOrVIP? ${isModOrVIP})`])
     if (!isModOrVIP) {
         bot.say(chatroom, `Only a mod or VIP is allowed to rename the list! ${negativeEmote}`)
         return
     }
 
-    const neutralEmote = getNeutralEmote(channel)
-    const positiveEmote = getPositiveEmote(channel)
+    const neutralEmote = getContextEmote(`neutral`, channel)
+    const positiveEmote = getContextEmote(`positive`, channel)
 
     const currentName = lemonyFresh[channel].list[0]
     const newName = args.slice(1).join(` `)
@@ -169,13 +169,13 @@ function renameList(bot, chatroom, args, isModOrVIP) {
 function clearList(bot, chatroom, resetName, isModOrVIP) {
     logMessage([`-> clearList(resetName? ${resetName}, isModOrVIP? ${isModOrVIP})`])
     const channel = chatroom.substring(1)
-    const negativeEmote = getNegativeEmote(channel)
+    const negativeEmote = getContextEmote(`negative`, channel)
     if (!isModOrVIP) {
         bot.say(chatroom, `Only a mod or VIP is allowed to clear/reset the list! ${negativeEmote}`)
         return
     }
 
-    const positiveEmote = getPositiveEmote(channel)
+    const positiveEmote = getContextEmote(`positive`, channel)
 
     lemonyFresh[channel].list.length = 1
     if (resetName) { lemonyFresh[channel].list[0] = `` }
@@ -187,7 +187,7 @@ function clearList(bot, chatroom, resetName, isModOrVIP) {
 function getListMethods(bot, chatroom, isModOrVIP) {
     logMessage([`-> getListMethods(isModOrVIP? ${isModOrVIP})`])
     const channel = chatroom.substring(1)
-    const neutralEmote = getNeutralEmote(channel)
+    const neutralEmote = getContextEmote(`neutral`, channel)
 
     isModOrVIP
         ? bot.say(chatroom, `You can use !list to show the full list, or !list <number> or "random" to get a specific or random item from the list! VIPs/mods can also use !list add <new item>, edit <number>, delete <number>, swap/switch <number1> <number2>, move <number1> <number2>, name/rename <list name>, clear (to empty list), and reset (to empty list and reset name)! ${neutralEmote}`)
@@ -235,7 +235,7 @@ module.exports = {
         // No args, or keyword not recognized
         const listContents = lemonyFresh[channel].list.map((el, idx) => `${idx}) ${el}`)
         listContents.shift()
-        const dumbEmote = getDumbEmote(channel)
+        const dumbEmote = getContextEmote(`dumb`, channel)
 
         listContents.length
             ? bot.say(chatroom, `${lemonyFresh[channel].list[0] || `Here's the list`}: ${listContents.join(`, `)}`)

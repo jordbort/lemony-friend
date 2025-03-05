@@ -1,5 +1,5 @@
 const { checkSentiment } = require(`../commands/external`)
-const { handleGreetOne, sayGoodnight, sayThanks, sayYoureWelcome, sayMood } = require(`../commands/conversation`)
+const { handleGreetOne, sayGoodnight, sayThanks, sayYoureWelcome, sayMood, dumbReact, neutralReact, negativeReact, hypeReact } = require(`../commands/conversation`)
 
 module.exports = {
     // good night
@@ -60,6 +60,15 @@ module.exports = {
     [/\b(m+e+|h+)o+w+d+y+/i]: handleGreetOne,
     // yo
     [/\b(y+o+)+\b/i]: handleGreetOne,
+
+    // "ok(ay) lemon"
+    [/^o+k+(a*y+)? (@?lemony_friend|l+e+m+o+n+y*|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)$/i]: dumbReact,
+    // "yes lemon"
+    [/^y+e+s+ (@?lemony_friend|l+e+m+o+n+y*|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)$/i]: neutralReact,
+    // "no lemon"
+    [/^n+o+ (@?lemony_friend|l+e+m+o+n+y*|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)$/i]: negativeReact,
+    // good bot
+    [/\bg+o{2,}d+ b+ot+\b/i]: hypeReact,
 
     // Contains "you" or "u"
     [/\b(you|u)['"]*r*e*\b/i]: checkSentiment

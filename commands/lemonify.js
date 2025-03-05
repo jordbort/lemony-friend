@@ -1,5 +1,5 @@
 const { getRandomChannelMessage } = require(`./getInfo`)
-const { getLemonEmote, getPositiveEmote, logMessage } = require(`../utils`)
+const { getContextEmote, logMessage } = require(`../utils`)
 
 function lemonify(str) {
     logMessage([`> lemonify(str: ${str})`])
@@ -184,8 +184,8 @@ module.exports = {
     lemonify,
     handleLemonify(props) {
         const { bot, chatroom, channel, target } = props
-        const lemonEmote = getLemonEmote()
-        const positiveEmote = getPositiveEmote()
+        const lemonEmote = getContextEmote(`lemon`, channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
         if (!target) { return bot.say(chatroom, `${lemonEmote}${lemonEmote}${lemonEmote} ${positiveEmote}`) }
         const channelMsg = target[channel]?.lastMessage || getRandomChannelMessage(target)
         const lemonMsg = lemonify(channelMsg)
