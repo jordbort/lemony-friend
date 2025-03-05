@@ -1,5 +1,5 @@
 const { lemonyFresh } = require(`../data`)
-const { getNeutralEmote, getPositiveEmote, getNegativeEmote, logMessage, resetCooldownTimer } = require(`../utils`)
+const { getContextEmote, logMessage, resetCooldownTimer } = require(`../utils`)
 
 module.exports = {
     useCount(props) {
@@ -9,9 +9,9 @@ module.exports = {
         if (lemonyFresh[channel].timers[`!count`].listening) {
             resetCooldownTimer(channel, `!count`)
 
-            const negativeEmote = getNegativeEmote(channel)
-            const neutralEmote = getNeutralEmote(channel)
-            const positiveEmote = getPositiveEmote(channel)
+            const negativeEmote = getContextEmote(`negative`, channel)
+            const neutralEmote = getContextEmote(`neutral`, channel)
+            const positiveEmote = getContextEmote(`positive`, channel)
 
             const counter = lemonyFresh[channel].count.name
             const count = lemonyFresh[channel].count.value

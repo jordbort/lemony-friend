@@ -3,7 +3,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 const { settings } = require(`../config`)
 const { users, lemonyFresh } = require(`../data`)
 
-const { getLemonEmote, getNeutralEmote, getPositiveEmote, getGreetingEmote, getByeEmote, pluralize, resetCooldownTimer, getHypeEmote, getUpsetEmote, getNegativeEmote, getDumbEmote, logMessage } = require(`../utils`)
+const { getContextEmote, pluralize, resetCooldownTimer, logMessage } = require(`../utils`)
 const { autoBanUser } = require(`./twitch`)
 
 function handleGreetOne(props) {
@@ -27,7 +27,7 @@ function handleGreetOne(props) {
         const greeting = Math.floor(Math.random() * greetings.length)
 
         let response = `${greetings[greeting]} ${command === `!greet` ? targetNickname || userNickname : userNickname}`
-        const greetingEmote = getGreetingEmote(channel)
+        const greetingEmote = getContextEmote(`greeting`, channel)
 
         // If the greeting is "Howdy"
         if (greeting === 0) {
@@ -75,7 +75,7 @@ function handleGreetMany(bot, chatroom, arr) {
             `hi`
         ]
         const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)]
-        const greetingEmote = getGreetingEmote(channel)
+        const greetingEmote = getContextEmote(`greeting`, channel)
 
         const response = []
         for (let str of arr) {
@@ -118,7 +118,7 @@ function handleGreetAll(bot, chatroom, username) {
         ]
         const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)]
 
-        const greetingEmote = getGreetingEmote(channel)
+        const greetingEmote = getContextEmote(`greeting`, channel)
         const response = usersToGreet.map((user) => `${randomGreeting} ${user} ${greetingEmote}`)
         bot.say(chatroom, response.join(` `))
     } else { logMessage([`-> Timer in ${channel} 'greetAll' is not currently listening`]) }
@@ -156,7 +156,7 @@ module.exports = {
             ]
             const greeting = greetings[Math.floor(Math.random() * greetings.length)]
 
-            const greetingEmote = getGreetingEmote(channel)
+            const greetingEmote = getContextEmote(`greeting`, channel)
             setTimeout(() => bot.say(chatroom, `${greeting} ${greetingEmote}`), 5000)
         } else { logMessage([`-> Timer in ${channel} 'newChatter' is not currently listening`]) }
     },
@@ -171,7 +171,7 @@ module.exports = {
         // If multiple args are used, or toUser is not known
         else if (args.length) { handleGreetMany(bot, chatroom, args) }
         // If no args are used
-        else { bot.say(chatroom, `Greetings, ${userNickname}! ${getGreetingEmote(channel)}`) }
+        else { bot.say(chatroom, `Greetings, ${userNickname}! ${getContextEmote(`greeting`, channel)}`) }
     },
     sayGoodnight(props) {
         const { bot, chatroom, message, args, channel, userNickname, toUser, targetNickname } = props
@@ -203,7 +203,7 @@ module.exports = {
                 response += `, ${appends[Math.floor(Math.random() * appends.length)]}`
             }
 
-            const byeEmote = getByeEmote(channel)
+            const byeEmote = getContextEmote(`bye`, channel)
             response += `! ${byeEmote}`
             bot.say(chatroom, response)
         } else { logMessage([`-> Timer in ${channel} 'sayGoodnight' is not currently listening`]) }
@@ -233,7 +233,7 @@ module.exports = {
                 response += ` ${appends[Math.floor(Math.random() * appends.length)]}`
             }
 
-            const positiveEmote = getPositiveEmote(channel)
+            const positiveEmote = getContextEmote(`positive`, channel)
             response += `! ${positiveEmote}`
             bot.say(chatroom, response)
         } else { logMessage([`-> Timer in ${channel} 'sayYoureWelcome' is not currently listening`]) }
@@ -269,7 +269,7 @@ module.exports = {
                 response += ` ${appends[Math.floor(Math.random() * appends.length)]}`
             }
 
-            const positiveEmote = getPositiveEmote(channel)
+            const positiveEmote = getContextEmote(`positive`, channel)
             response += `! ${positiveEmote}`
             bot.say(chatroom, response)
         } else { logMessage([`-> Timer in ${channel} 'sayThanks' is not currently listening`]) }
@@ -281,15 +281,8 @@ module.exports = {
         if (lemonyFresh[channel].timers[`say-mood`].listening) {
             resetCooldownTimer(channel, `say-mood`)
 
-            const lemonEmote = getLemonEmote(channel)
-            const neutralEmote = getNeutralEmote(channel)
-            const hypeEmote = getHypeEmote(channel)
-            const positiveEmote = getPositiveEmote(channel)
-            const upsetEmote = getUpsetEmote(channel)
-            const negativeEmote = getNegativeEmote(channel)
-            const greetingEmote = getGreetingEmote(channel)
-            const byeEmote = getByeEmote(channel)
-            const dumbEmote = getDumbEmote(channel)
+            const neutralEmote = getContextEmote(`neutral`, channel)
+            const dumbEmote = getContextEmote(`dumb`, channel)
 
             const botMoods = {
                 dev: {
@@ -354,7 +347,7 @@ module.exports = {
             const subRaidMessage = lemonyFresh[channel].subRaidMessage
             const noSubRaidMessage = lemonyFresh[channel].noSubRaidMessage
             const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip ? 1000 : 2000
-            const appendEmote = users[BOT_USERNAME][channel].sub ? lemonyFresh[channel].emotes[0] : getPositiveEmote(channel)
+            const appendEmote = users[BOT_USERNAME][channel].sub ? lemonyFresh[channel].emotes[0] : getContextEmote(`positive`, channel)
 
             if (subRaidMessage) { bot.say(chatroom, subRaidMessage) }
             if (noSubRaidMessage) {
@@ -373,7 +366,7 @@ module.exports = {
         const { bot, chatroom, channel, user, userNickname } = props
         logMessage([`> welcomeBack(chatroom: '${chatroom}', userNickname: '${userNickname}')`])
 
-        const greetingEmote = getGreetingEmote(channel)
+        const greetingEmote = getContextEmote(`greeting`, channel)
         user[channel].away = false
         user[channel].awayMessage = ``
         setTimeout(() => bot.say(chatroom, `Welcome back, ${userNickname}! ${greetingEmote}`), 5000)
@@ -386,10 +379,10 @@ module.exports = {
 
         if (regex.test(message)) {
             user.lemons++
-            const lemonEmote = getLemonEmote(channel)
+            const lemonEmote = getContextEmote(`lemon`, channel)
             bot.say(chatroom, `That's right ${userNickname}, the number was ${lemonyFresh[channel].funTimer}. Have a lemon! ${lemonEmote}`)
         } else {
-            const neutralEmote = getNeutralEmote(channel)
+            const neutralEmote = getContextEmote(`neutral`, channel)
             bot.say(chatroom, `Sorry ${userNickname}, the number was ${lemonyFresh[channel].funTimer}. Next time! ${neutralEmote}`)
         }
         lemonyFresh[channel].funTimer = 0
@@ -440,7 +433,7 @@ module.exports = {
 
         user[channel].away = true
         if (args.length) { user[channel].awayMessage = args.join(` `) }
-        const byeEmote = getByeEmote(channel)
+        const byeEmote = getContextEmote(`bye`, channel)
         if (command !== `!lurk`) {
             user[channel].awayMessage
                 ? bot.say(chatroom, `See you later, ${userNickname}! I'll pass along your away message if they mention you! ${byeEmote}`)
@@ -471,5 +464,25 @@ module.exports = {
 
         // End of onChatHandler logic
         logMessage([`MESSAGE DID NOT MATCH REGEX PATTERNS`])
+    },
+    hypeReact(props) {
+        const { bot, chatroom, channel } = props
+        const hypeEmote = getContextEmote(`hype`, channel)
+        bot.say(chatroom, hypeEmote)
+    },
+    neutralReact(props) {
+        const { bot, chatroom, channel } = props
+        const neutralEmote = getContextEmote(`neutral`, channel)
+        bot.say(chatroom, neutralEmote)
+    },
+    negativeReact(props) {
+        const { bot, chatroom, channel } = props
+        const negativeEmote = getContextEmote(`negative`, channel)
+        bot.say(chatroom, negativeEmote)
+    },
+    dumbReact(props) {
+        const { bot, chatroom, channel } = props
+        const dumbEmote = getContextEmote(`dumb`, channel)
+        bot.say(chatroom, dumbEmote)
     }
 }

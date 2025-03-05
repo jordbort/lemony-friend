@@ -1052,7 +1052,7 @@ function gambleLemon(bot, chatroom, user, suffix) {
     if (allLemons) {
         if (coinFlip) {
             user.lemons *= 2
-            return bot.say(chatroom, `${userNickname} gambled all their lemons, and doubled them!`)
+            return bot.say(chatroom, `${userNickname} gambled all their lemons, and doubled them for a total of ${user.lemons}!`)
         } else {
             user.lemons = 0
             return bot.say(chatroom, `${userNickname} gambled all their lemons, and lost them all!`)

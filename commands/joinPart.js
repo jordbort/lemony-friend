@@ -1,7 +1,7 @@
 const { settings } = require(`../config`)
 const { lemonyFresh } = require(`../data`)
 const { getTwitchUser } = require(`./twitch`)
-const { getUsername, getByeEmote, logMessage } = require(`../utils`)
+const { getUsername, getContextEmote, logMessage } = require(`../utils`)
 
 module.exports = {
     async handleJoin(props) {
@@ -36,12 +36,11 @@ module.exports = {
         const { bot, chatroom, args, channel } = props
         logMessage([`> handlePart(chatroom: ${chatroom}, args:`, args, `)`])
 
-        // lemonyFresh.channels are not allowed to be parted
-        const validUsers = args.map(arg => getUsername(arg)).filter(user => user && !lemonyFresh.channels.includes(`#${user}`))
+        const validUsers = args.map(arg => getUsername(arg)).filter(user => user)
         const needToPart = validUsers.filter(user => bot.channels.includes(`#${user}`))
         const notInChannel = validUsers.filter(user => !bot.channels.includes(`#${user}`))
 
-        const byeEmote = getByeEmote(channel)
+        const byeEmote = getContextEmote(`bye`, channel)
         needToPart.forEach(user => {
             if (settings.sayPartMessage) { bot.say(`#${user}`, `Bye for now! ${byeEmote}`) }
             bot.part(`#${user}`)

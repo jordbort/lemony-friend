@@ -1,5 +1,5 @@
 const { chatColors } = require(`../config`)
-const { getPositiveEmote, getNegativeEmote, getNeutralEmote, logMessage } = require(`../utils`)
+const { getContextEmote, logMessage } = require(`../utils`)
 
 module.exports = {
     handleColorChange(props) {
@@ -8,7 +8,7 @@ module.exports = {
         logMessage([`> handleColorChange(chatroom: '${chatroom}', user: '${userNickname}', newColor: '${newColor}')`])
 
         user.color = newColor
-        const neutralEmote = getNeutralEmote(channel)
+        const neutralEmote = getContextEmote(`neutral`, channel)
         newColor in chatColors
             ? bot.say(chatroom, `${userNickname} is ${chatColors[newColor].name} now! ${neutralEmote}`)
             : bot.say(chatroom, `Acknowledging ${userNickname}'s color change ${neutralEmote}`)
@@ -19,8 +19,8 @@ module.exports = {
         logMessage([`> handleSubChange(chatroom: '${chatroom}', userNickname: '${userNickname}', subStatus: ${subStatus})`])
 
         user[channel].sub = subStatus
-        const positiveEmote = getPositiveEmote(channel)
-        const negativeEmote = getNegativeEmote(channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
+        const negativeEmote = getContextEmote(`negative`, channel)
 
         if (self) {
             setTimeout(() => subStatus
@@ -37,7 +37,7 @@ module.exports = {
         logMessage([`> handleModChange(chatroom: '${chatroom}', userNickname: '${userNickname}', modStatus: ${modStatus})`])
 
         user[channel].mod = modStatus
-        const positiveEmote = getPositiveEmote(channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
 
         if (modStatus) {
             self
@@ -52,7 +52,7 @@ module.exports = {
         logMessage([`> handleVIPChange(chatroom: '${chatroom}', userNickname: '${userNickname}', vipStatus: ${vipStatus})`])
 
         user[channel].vip = vipStatus
-        const positiveEmote = getPositiveEmote(channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
 
         if (vipStatus) {
             self

@@ -9,9 +9,9 @@ const botInteraction = require(`./patterns/botInteraction`)
 const botMention = require(`./patterns/botMention`)
 
 const { settings } = require(`./config`)
-const { lemonyFresh, users, tempCmds } = require(`./data`)
+const { lemonyFresh, users, lemCmds } = require(`./data`)
 
-const { useTempCmd } = require(`./commands/tempCmds`)
+const { useLemCmd } = require(`./commands/lemCmds`)
 const { streakListener } = require(`./commands/streaks`)
 const { rollFunNumber } = require(`./commands/funNumber`)
 const { checkWord, checkLetter } = require(`./patterns/hangman`)
@@ -70,7 +70,13 @@ module.exports = {
         const color = tags.color || ``
 
         // Log incoming message and capture message tags
-        logMessage([msg], time, channel, username, color, self)
+        const sharedChat = `source-room-id` in tags
+        const originChannel = tags[`room-id`] === tags[`source-room-id`]
+        sharedChat
+            ? originChannel
+                ? logMessage([msg], time, channel, username, color, self)
+                : logMessage([`${username}'s message also posted in ${channel}'s channel`])
+            : logMessage([msg], time, channel, username, color, self)
         tagsListener(tags)
 
         // Initialize new user
@@ -85,6 +91,9 @@ module.exports = {
         const user = users[username]
         user[channel].msgCount++
         user[channel].lastMessage = msg
+
+        // If shared chat, stop listening here if not the origin channel
+        if (!self && sharedChat && !originChannel) { return }
 
         // Checking time comparisons
         const currentTime = Number(tags[`tmi-sent-ts`])
@@ -137,10 +146,7 @@ module.exports = {
         // Acknowledge gigantified emote
         if (tags[`msg-id`] === `gigantified-emote-message`) {
             const emoteUsed = msg.split(` `)[msg.split(` `).length - 1]
-            const emoteOwner = Object.keys(lemonyFresh).filter(
-                key => typeof lemonyFresh[key] === `object`
-                    && `emotes` in lemonyFresh[key]
-                    && lemonyFresh[key].emotes.includes(emoteUsed))[0]
+            const emoteOwner = Object.keys(lemonyFresh).filter(key => `emotes` in lemonyFresh[key] && lemonyFresh[key].emotes.includes(emoteUsed))[0]
                 || null
             logMessage([`> Gigantified ${emoteUsed} owner: ${emoteOwner || `unknown`}, ${BOT_USERNAME} subbed? ${!!users[BOT_USERNAME]?.[emoteOwner]?.sub}`])
             if (users[BOT_USERNAME]?.[emoteOwner]?.sub) { this.say(chatroom, `BEEG ${emoteUsed}`) }
@@ -154,19 +160,15 @@ module.exports = {
         \**************/
         // Dev commands
         if (username === DEV) {
-            for (const cmd in dev) {
-                if (command === cmd) {
-                    logMessage([`MATCHED DEV COMMAND:`, cmd, `[Function: ${dev[command].name}]`])
-                    return dev[command](props)
-                }
+            if (command in dev) {
+                logMessage([`MATCHED DEV COMMAND:`, command, `[Function: ${dev[command].name}]`])
+                return dev[command](props)
             }
         }
         if (msg.startsWith(`!`)) {
-            for (const cmd in commands) {
-                if (command === cmd) {
-                    logMessage([`MATCHED COMMAND:`, cmd, `[Function: ${commands[command].name}]`])
-                    return commands[command](props)
-                }
+            if (command in commands) {
+                logMessage([`MATCHED COMMAND:`, command, `[Function: ${commands[command].name}]`])
+                return commands[command](props)
             }
             if (!/^!([a-z]+)lemon([a-z]*)/.test(command)) { logMessage([`COMMAND NOT RECOGNIZED`]) }
         }
@@ -227,8 +229,8 @@ module.exports = {
             logMessage([`NOT A HANGMAN GUESS`])
         }
 
-        // Check for tempCmd
-        if (command in tempCmds) { return useTempCmd(props) }
+        // Check for lemonCommand
+        if (command in lemCmds) { return useLemCmd(props) }
 
         // Listening for a message to be repeated by at least two other users
         if (lemonyFresh[channel].timers.streak.listening) { streakListener(props) }

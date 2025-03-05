@@ -1,5 +1,5 @@
 const { settings } = require(`../config`)
-const { getNeutralEmote, getHypeEmote, logMessage } = require(`../utils`)
+const { getContextEmote, logMessage } = require(`../utils`)
 
 module.exports = {
     rockPaperScissors(props) {
@@ -12,8 +12,8 @@ module.exports = {
 
             const botChoice = rps[Math.floor(Math.random() * rps.length)]
             let reply = `${userNickname} throws ${playerChoice}! I throw ${botChoice}`
-            const neutralEmote = getNeutralEmote(channel)
-            const hypeEmote = getHypeEmote(channel)
+            const neutralEmote = getContextEmote(`neutral`, channel)
+            const hypeEmote = getContextEmote(`hype`, channel)
 
             if ((playerChoice === `rock` && botChoice === `paper`)
                 || (playerChoice === `paper` && botChoice === `scissors`)
@@ -29,7 +29,7 @@ module.exports = {
             logMessage([`> fakeRockPaperScissors(chatroom: ${chatroom}, userNickname: ${userNickname}, playerChoice: ${playerChoice})`])
 
             let reply = `${userNickname} throws ${playerChoice}! I throw `
-            const neutralEmote = getNeutralEmote(channel)
+            const neutralEmote = getContextEmote(`neutral`, channel)
 
             if (playerChoice === `rock`) { reply += `paper. Sorry, I win! ${neutralEmote}` }
             else if (playerChoice === `paper`) { reply += `scissors. Sorry, I win! ${neutralEmote}` }

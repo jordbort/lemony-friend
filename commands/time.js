@@ -1,5 +1,5 @@
 const { settings } = require(`../config`)
-const { getNeutralEmote, logMessage } = require(`../utils`)
+const { getContextEmote, logMessage } = require(`../utils`)
 
 const validTimeZones = {
     [/^(africa\/)?abidjan$/i]: `Africa/Abidjan`,
@@ -788,7 +788,7 @@ module.exports = {
         const date = new Date(currentTime).toLocaleDateString(locale, { weekday: `short`, year: `numeric`, month: `short`, day: `numeric`, timeZone: tz })
         const time = new Date(currentTime).toLocaleTimeString(locale, { timeZone: tz })
 
-        const neutralEmote = getNeutralEmote(chatroom.substring(1))
+        const neutralEmote = getContextEmote(`neutral`, chatroom.substring(1))
         bot.say(chatroom, `The current time is ${time} ${tz} on ${date}! ${neutralEmote}`)
     }
 }

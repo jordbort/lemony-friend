@@ -1,5 +1,5 @@
 const { wordBank } = require(`../config`)
-const { logMessage, pluralize, getNeutralEmote, getPositiveEmote } = require(`../utils`)
+const { logMessage, pluralize, getContextEmote } = require(`../utils`)
 
 // function getNoun() { return wordBank.nouns[Math.floor(Math.random() * wordBank.nouns.length)] }
 // function getVerb() { return wordBank.verbs[Math.floor(Math.random() * wordBank.verbs.length)] }
@@ -15,13 +15,19 @@ function makePlural(noun) {
 }
 
 function addVerbSuffix(verb, suffix) {
-    return /[aeiou][^aeiouwxy]$/i.test(verb)
-        ? verb[verb.length - 3] === verb[verb.length - 2]
-            ? `${verb}${suffix}`
-            : `${verb}${verb[verb.length - 1]}${suffix}`
-        : /e$/i.test(verb)
-            ? `${verb.substring(0, verb.length - 1)}${suffix}`
-            : `${verb}${suffix}`
+    return suffix === `s`
+        ? /(o|s|z|x|ch|sh)$/i.test(verb)
+            ? `${verb}e${suffix}`
+            : /y$/i.test(verb)
+                ? `${verb.substring(0, verb.length - 1)}ie${suffix}`
+                : `${verb}${suffix}`
+        : /[aeiou][^aeiouwxy]$/i.test(verb)
+            ? verb[verb.length - 3] === verb[verb.length - 2]
+                ? `${verb}${suffix}`
+                : `${verb}${verb[verb.length - 1]}${suffix}`
+            : /e$/i.test(verb)
+                ? `${verb.substring(0, verb.length - 1)}${suffix}`
+                : `${verb}${suffix}`
 }
 
 module.exports = {
@@ -29,8 +35,8 @@ module.exports = {
         const { bot, chatroom, args, channel, userNickname } = props
         logMessage([`> manageVerbs(args: [${args}])`])
 
-        const neutralEmote = getNeutralEmote(channel)
-        const positiveEmote = getPositiveEmote(channel)
+        const neutralEmote = getContextEmote(`neutral`, channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
         if (!args.length) { return bot.say(chatroom, `I know ${pluralize(wordBank.verbs.length, `verb`, `verbs`)}${wordBank.verbs.length ? `: ${wordBank.verbs.join(`, `)} -` : `!`} Please give me more verbs to remember, or say "!verbs delete <list of verbs>" for me to forget some, or "!verbs clear" for me to forget all, ${userNickname}! ${neutralEmote}`) }
 
         if (/^clear$|^c$/i.test(args[0])) {
@@ -57,8 +63,8 @@ module.exports = {
         const { bot, chatroom, args, channel, userNickname } = props
         logMessage([`> manageNouns(args: [${args}])`])
 
-        const neutralEmote = getNeutralEmote(channel)
-        const positiveEmote = getPositiveEmote(channel)
+        const neutralEmote = getContextEmote(`neutral`, channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
         if (!args.length) { return bot.say(chatroom, `I know ${pluralize(wordBank.nouns.length, `noun`, `nouns`)}${wordBank.nouns.length ? `: ${wordBank.nouns.join(`, `)} -` : `!`} Please give me more nouns to remember, or say "!nouns delete <list of nouns>" for me to forget some, or "!nouns clear" for me to forget all, ${userNickname}! ${neutralEmote}`) }
 
         if (/^clear$|^c$/i.test(args[0])) {
@@ -85,8 +91,8 @@ module.exports = {
         const { bot, chatroom, args, channel, userNickname } = props
         logMessage([`> manageAdjectives(args: [${args}])`])
 
-        const neutralEmote = getNeutralEmote(channel)
-        const positiveEmote = getPositiveEmote(channel)
+        const neutralEmote = getContextEmote(`neutral`, channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
         if (!args.length) { return bot.say(chatroom, `I know ${pluralize(wordBank.adjectives.length, `adjective`, `adjectives`)}${wordBank.adjectives.length ? `: ${wordBank.adjectives.join(`, `)} -` : `!`} Please give me more adjectives to remember, or say "!adjectives delete <list of adjectives>" for me to forget some, or "!adjectives clear" for me to forget all, ${userNickname}! ${neutralEmote}`) }
 
         if (/^clear$|^c$/i.test(args[0])) {
@@ -169,13 +175,18 @@ module.exports = {
             `go ${verb1} ${getIndefiniteArticle(noun1)}, you ${adjective1} ${noun2}!`,
             `${verb1} my ${noun1}, you ${noun2}-${addVerbSuffix(verb2, `er`)}!`,
             `I hope you ${verb1} on ${getIndefiniteArticle(adjective1)}, ${adjective2} ${noun1}!`,
-            `I hope ${getIndefiniteArticle(adjective1)} ${noun1} ${verb2}s your ${adjective2} ${noun2}!`,
+            `I hope ${getIndefiniteArticle(adjective1)} ${noun1} ${addVerbSuffix(verb2, `s`)} your ${adjective2} ${noun2}!`,
             `get ${addVerbSuffix(verb1, `ed`)} by ${getIndefiniteArticle(adjective1)} ${noun1}, you ${noun2}!`,
             `you're ${getIndefiniteArticle(adjective1)}, ${adjective2} ${noun1} ${addVerbSuffix(verb1, `er`)}!`,
             `you're ${getIndefiniteArticle(adjective1)} ${noun1} ${addVerbSuffix(verb1, `ing`)} ${noun2}. And you're ${adjective2}!`,
             `you're not just ${getIndefiniteArticle(adjective1)} ${noun1} ${addVerbSuffix(verb1, `er`)}, but ${getIndefiniteArticle(adjective2)} ${noun2} too!`,
             `try ${addVerbSuffix(verb1, `ing`)} ${getIndefiniteArticle(adjective1)} ${noun1}, you ${adjective2} ${noun2}-${addVerbSuffix(verb2), `er`}!`,
-            `go get ${addVerbSuffix(verb1, `ed`)} by a ${[`hundred`, `hundred`, `hundred`, `thousand`, `thousand`, `thousand`, `million`, `million`, `billion`, `billion`, `trillion`][Math.floor(Math.random() * 7)]} ${adjective1} ${makePlural(noun1)}!`
+            `go get ${addVerbSuffix(verb1, `ed`)} by a ${[`hundred`, `hundred`, `hundred`, `thousand`, `thousand`, `thousand`, `million`, `million`, `billion`, `billion`, `trillion`][Math.floor(Math.random() * 7)]} ${adjective1} ${makePlural(noun1)}!`,
+            `I bet your ${noun1} ${addVerbSuffix(verb1, `s`)} like ${getIndefiniteArticle(adjective1)} ${noun2}!`,
+            `your ${adjective1} ${noun1} can't ${verb1}, ${noun2}-${addVerbSuffix(verb2, `er`)}!`,
+            `you're ${getIndefiniteArticle(adjective1)} ${noun1} whose ${adjective2} ${noun2} couldn't ${verb1}!`,
+            `your ${adjective1} ${noun1} is ${addVerbSuffix(verb1, `ing`)} like ${getIndefiniteArticle(adjective2)} ${noun2}!`,
+            `I hope ${getIndefiniteArticle(noun1)} ${addVerbSuffix(verb1, `s`)} your ${adjective1} ${noun2} while ${getIndefiniteArticle(noun2)} ${addVerbSuffix(verb2, `s`)}!`
         ]
 
         const insult = insults[Math.floor(Math.random() * insults.length)]
