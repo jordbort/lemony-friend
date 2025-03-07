@@ -63,7 +63,7 @@ module.exports = {
             return
         }
 
-        const msg = message.replace(/ +/g, ` `).replace(`'`, `’`)
+        const msg = message.replace(/ +/g, ` `).replace(/'/g, `’`)
         const channel = chatroom.substring(1)
         const username = tags.username
         const time = new Date().toLocaleTimeString(settings.timeLocale, { timeZone: settings.timeZone })
