@@ -1150,24 +1150,6 @@ module.exports = {
             lemons: 0,
             hangmanWins: 0
         }
-
-        // Apply nickname
-        if (username in commonNicknames) {
-            users[username].nickname = commonNicknames[username]
-            delete commonNicknames[username]
-        }
-
-        // Restore lemons
-        if (username in startingLemons) {
-            users[username].lemons += startingLemons[username]
-            delete startingLemons[username]
-        }
-
-        // Restore Hangman wins
-        if (username in hangmanWins) {
-            users[username].hangmanWins += hangmanWins[username]
-            delete hangmanWins[username]
-        }
     },
     initUserChannel(tags, username, channel) {
         logMessage([`> initUserChannel(username: '${username}', channel: '${channel}')`])
