@@ -50,7 +50,7 @@ REDIRECT_URI='${REDIRECT_URI}'
 
 API_KEY='${API_KEY}'
 
-JOINED_CHANNELS='${JSON.stringify(arr.join())}'
+JOINED_CHANNELS='${JSON.stringify(arr)}'
 
 SETTINGS='${JSON.stringify(settings)}'
 
