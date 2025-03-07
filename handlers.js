@@ -92,15 +92,15 @@ module.exports = {
         user[channel].msgCount++
         user[channel].lastMessage = msg
 
-        // If shared chat, stop listening here if not the origin channel
-        if (!self && sharedChat && !originChannel) { return }
-
         // Checking time comparisons
         const currentTime = Number(tags[`tmi-sent-ts`])
         const minutesSinceLastMsg = (currentTime - user[channel].sentAt) / 60000
         self
             ? user[channel].sentAt = Date.now()
             : user[channel].sentAt = currentTime
+
+        // If shared chat, stop listening here if not the origin channel
+        if (!self && sharedChat && !originChannel) { return }
 
         const args = msg.split(` `)
         const command = args.shift().toLowerCase()
