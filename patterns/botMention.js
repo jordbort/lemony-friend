@@ -28,8 +28,8 @@ module.exports = {
     [/\bh+o+w+\b.*\b(a+r+e+|r+)\b.*\b(y+o+u+|u+)/i]: sayMood,
     // how're you
     [/\bh+o+w+['"]*r+e+\b.*\b(y+o+u+|u+)/i]: sayMood,
-    // hru
-    [/\bh+r+u+\b/i]: sayMood,
+    // hru/hbu
+    [/\bh+(r|b)+u+\b/i]: sayMood,
     // hyd
     [/\bh+y+d+\b/i]: sayMood,
     // how is it going
