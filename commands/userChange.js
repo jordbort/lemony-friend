@@ -1,3 +1,4 @@
+const { mods } = require(`../data`)
 const { chatColors } = require(`../config`)
 const { getContextEmote, logMessage } = require(`../utils`)
 
@@ -32,7 +33,7 @@ module.exports = {
         }
     },
     handleModChange(props) {
-        const { bot, chatroom, tags, self, channel, user, userNickname } = props
+        const { bot, chatroom, tags, self, channel, username, user, userNickname } = props
         const modStatus = tags.mod
         logMessage([`> handleModChange(chatroom: '${chatroom}', userNickname: '${userNickname}', modStatus: ${modStatus})`])
 
@@ -44,6 +45,10 @@ module.exports = {
                 ? setTimeout(() => bot.say(chatroom, `Thank you for modding me! ${positiveEmote}`)
                     , 2000)
                 : bot.say(chatroom, `Wow, ${userNickname} became a mod! ${positiveEmote}`)
+        } else {
+            while (mods[username].isModIn.includes(chatroom)) {
+                mods[username].isModIn.splice(mods[username].isModIn.indexOf(chatroom), 1)
+            }
         }
     },
     handleVIPChange(props) {

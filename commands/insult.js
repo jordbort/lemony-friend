@@ -1,9 +1,6 @@
-const { wordBank } = require(`../config`)
+const { wordBank } = require(`../data`)
 const { logMessage, pluralize, getContextEmote } = require(`../utils`)
 
-// function getNoun() { return wordBank.nouns[Math.floor(Math.random() * wordBank.nouns.length)] }
-// function getVerb() { return wordBank.verbs[Math.floor(Math.random() * wordBank.verbs.length)] }
-// function getAdjective() { return wordBank.adjectives[Math.floor(Math.random() * wordBank.adjectives.length)] }
 function getIndefiniteArticle(nextWord) { return /^[aeiou]/i.test(nextWord) ? `an ${nextWord}` : `a ${nextWord}` }
 
 function makePlural(noun) {

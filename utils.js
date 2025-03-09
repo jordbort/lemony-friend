@@ -4,7 +4,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 
 const fs = require(`fs/promises`)
 
-const { makeLogs } = require(`./commands/makeLogs`)
+const { makeLogs, makeEnv } = require(`./commands/makeLogs`)
 const { lemonyFresh, users, commonNicknames, startingLemons, hangmanWins, mods, knownTags, lemCmds } = require(`./data`)
 const { settings, resetTxt, grayTxt, whiteTxt, yellowBg, chatColors } = require(`./config`)
 
@@ -87,6 +87,13 @@ async function logMessage(messages, time, channel, username, color, self) {
         })
         if (settings.debug) { console.log(`${grayTxt}${log}${resetTxt}`) }
     }
+}
+
+async function printEnv(arr) {
+    const newEnv = makeEnv(arr)
+    await fs.writeFile(`.env`, newEnv, (err) => {
+        if (err) { console.log(`Error creating .env:`, err) }
+    })
 }
 
 const numbers = [
@@ -1099,7 +1106,9 @@ module.exports = {
     pluralize,
     renderObj,
     logMessage,
+    printEnv,
     async handleUncaughtException(bot, err, location) {
+        await printEnv(bot.channels)
         await logMessage([`> handleUncaughtException(err.message: '${err.message}', location: '${location}')`])
 
         const emote = users[BOT_USERNAME]?.jpegstripes?.sub ? `jpegstBroken` : users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Heat` : users[BOT_USERNAME]?.domonintendo1?.sub ? `domoni6Sneeze` : `>(`
@@ -1140,24 +1149,6 @@ module.exports = {
             color: tags.color || ``,
             lemons: 0,
             hangmanWins: 0
-        }
-
-        // Apply nickname
-        if (username in commonNicknames) {
-            users[username].nickname = commonNicknames[username]
-            delete commonNicknames[username]
-        }
-
-        // Restore lemons
-        if (username in startingLemons) {
-            users[username].lemons += startingLemons[username]
-            delete startingLemons[username]
-        }
-
-        // Restore Hangman wins
-        if (username in hangmanWins) {
-            users[username].hangmanWins += hangmanWins[username]
-            delete hangmanWins[username]
         }
     },
     initUserChannel(tags, username, channel) {
