@@ -7,8 +7,8 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET
 const REDIRECT_URI = process.env.REDIRECT_URI
 const API_KEY = process.env.API_KEY
 
-const { settings, wordBank } = require(`../config`)
-const { lemonyFresh, mods, users, knownTags, lemCmds, commonNicknames, startingLemons, hangmanWins } = require(`../data`)
+const { settings } = require(`../config`)
+const { lemonyFresh, mods, users, knownTags, lemCmds, wordBank } = require(`../data`)
 
 function renderObj(obj, objName, indentation = ``) {
     const tab = `${indentation}\t`
@@ -35,55 +35,8 @@ function renderObj(obj, objName, indentation = ``) {
     return data.join(``)
 }
 
-function createCSV(prevObj, currObj, property) {
-    const listCSV = Object.keys(currObj)
-        .map(key => { return [key, currObj[key][property]] })
-        .filter(el => el[1])
-        .concat(Object.keys(prevObj).map(key => { return [key, prevObj[key]] }))
-        .sort()
-        .join()
-    return listCSV
-}
-
-function makeLogs(arr) {
-    let logs = `🍋️ LEMONY LOGS 🍋️\n`
-
-    const dateOptions = {
-        weekday: `long`,
-        month: `long`,
-        day: `numeric`,
-        year: `numeric`,
-        timeZone: settings.timeZone
-    }
-    const timeOptions = {
-        hour: `numeric`,
-        minute: `numeric`,
-        second: `numeric`,
-        timeZone: settings.timeZone,
-        timeZoneName: `short`
-    }
-
-    logs += `Session started: ${settings.startDate.toLocaleDateString(`en-US`, dateOptions)} at ${settings.startDate.toLocaleTimeString(`en-US`, timeOptions)}\n`
-
-    logs += `\nJoined channels: ['${arr.join(`', '`)}']\n\n`
-
-    const objectsToLog = [
-        [lemonyFresh, `lemonyFresh`],
-        [mods, `mods`],
-        [users, `users`],
-        [knownTags, 'knownTags'],
-        [settings, `settings`],
-        // [wordBank, `wordBank`],
-        // [lemCmds, `lemCmds`]
-    ]
-    for (const [obj, objName] of objectsToLog) {
-        logs += `${renderObj(obj, objName)}\n\n`
-    }
-
-    logs += `${Array(50).fill(`*`).join(` `)}`
-
-    logs += `
-BOT_USERNAME='${BOT_USERNAME}'
+function makeEnv(arr) {
+    const newEnv = `BOT_USERNAME='${BOT_USERNAME}'
 BOT_ID='${BOT_ID}'
 DEV='${DEV}'
 
@@ -97,59 +50,73 @@ REDIRECT_URI='${REDIRECT_URI}'
 
 API_KEY='${API_KEY}'
 
-JPEGSTRIPES_ACCESS_TOKEN='${lemonyFresh.jpegstripes.accessToken}'
-JPEGSTRIPES_REFRESH_TOKEN='${lemonyFresh.jpegstripes.refreshToken}'
+JOINED_CHANNELS='${JSON.stringify(arr)}'
 
-SCLARF_ACCESS_TOKEN='${lemonyFresh.sclarf.accessToken}'
-SCLARF_REFRESH_TOKEN='${lemonyFresh.sclarf.refreshToken}'
+SETTINGS='${JSON.stringify(settings)}'
 
-E1ECTROMA_ACCESS_TOKEN='${lemonyFresh.e1ectroma.accessToken}'
-E1ECTROMA_REFRESH_TOKEN='${lemonyFresh.e1ectroma.refreshToken}'
+LEMONY_FRESH='${JSON.stringify(lemonyFresh)}'
 
-DOMONINTENDO1_ACCESS_TOKEN='${lemonyFresh.domonintendo1.accessToken}'
-DOMONINTENDO1_REFRESH_TOKEN='${lemonyFresh.domonintendo1.refreshToken}'
+MOD_DATA='${JSON.stringify(mods)}'
 
-PPUYYA_ACCESS_TOKEN='${lemonyFresh.ppuyya.accessToken}'
-PPUYYA_REFRESH_TOKEN='${lemonyFresh.ppuyya.refreshToken}'
+USER_DATA='${JSON.stringify(users)}'
 
-ASTRAL_AN0MALY_ACCESS_TOKEN='${lemonyFresh.astral_an0maly.accessToken}'
-ASTRAL_AN0MALY_REFRESH_TOKEN='${lemonyFresh.astral_an0maly.refreshToken}'
+KNOWN_TAGS='${JSON.stringify(knownTags)}'
 
-DIRTYD0INKS_ACCESS_TOKEN='${lemonyFresh.dirtyd0inks.accessToken}'
-DIRTYD0INKS_REFRESH_TOKEN='${lemonyFresh.dirtyd0inks.refreshToken}'
+LEMON_COMMANDS='${JSON.stringify(lemCmds)}'
 
-ARTYINPINK_ACCESS_TOKEN='${lemonyFresh.artyinpink.accessToken}'
-ARTYINPINK_REFRESH_TOKEN='${lemonyFresh.artyinpink.refreshToken}'
+WORDBANK_NOUNS='${JSON.stringify(wordBank.nouns)}'
 
-THETARASTARK_ACCESS_TOKEN='${lemonyFresh.thetarastark.accessToken}'
-THETARASTARK_REFRESH_TOKEN='${lemonyFresh.thetarastark.refreshToken}'
+WORDBANK_VERBS='${JSON.stringify(wordBank.verbs)}'
 
-SLEBTV_ACCESS_TOKEN='${lemonyFresh.slebtv.accessToken}'
-SLEBTV_REFRESH_TOKEN='${lemonyFresh.slebtv.refreshToken}'
+WORDBANK_ADJECTIVES='${JSON.stringify(wordBank.adjectives)}'\n`
 
-CATJERKY_ACCESS_TOKEN='${mods.catjerky.accessToken}'
-CATJERKY_REFRESH_TOKEN='${mods.catjerky.refreshToken}'
-
-SKITTLE108_ACCESS_TOKEN='${mods.skittle108.accessToken}'
-SKITTLE108_REFRESH_TOKEN='${mods.skittle108.refreshToken}'\n\n`
-
-    logs += `COMMON_NICKNAMES='${createCSV(commonNicknames, users, `nickname`)}'\n\n`
-
-    logs += `STARTING_LEMONS='${createCSV(startingLemons, users, `lemons`)}'\n\n`
-
-    logs += `HANGMAN_WINS='${createCSV(hangmanWins, users, `hangmanWins`)}'\n\n`
-
-    logs += `LEMON_COMMANDS='${JSON.stringify(lemCmds)}'\n\n`
-
-    logs += `WORDBANK_NOUNS='${JSON.stringify(wordBank.nouns)}'\n`
-
-    logs += `WORDBANK_VERBS='${JSON.stringify(wordBank.verbs)}'\n`
-
-    logs += `WORDBANK_ADJECTIVES='${JSON.stringify(wordBank.adjectives)}'\n`
-
-    logs += `${Array(50).fill(`*`).join(` `)}\n`
-
-    return logs
+    return newEnv
 }
 
-module.exports = { makeLogs }
+module.exports = {
+    makeEnv,
+    makeLogs(arr) {
+        let logs = `🍋️ LEMONY LOGS 🍋️\n`
+        const border = `${Array(50).fill(`*`).join(` `)}\n`
+
+        const newEnv = makeEnv(arr)
+
+        const dateOptions = {
+            weekday: `long`,
+            month: `long`,
+            day: `numeric`,
+            year: `numeric`,
+            timeZone: settings.timeZone
+        }
+        const timeOptions = {
+            hour: `numeric`,
+            minute: `numeric`,
+            second: `numeric`,
+            timeZone: settings.timeZone,
+            timeZoneName: `short`
+        }
+
+        logs += `Session started: ${settings.startDate.toLocaleDateString(`en-US`, dateOptions)} at ${settings.startDate.toLocaleTimeString(`en-US`, timeOptions)}\n`
+
+        logs += `\nJoined channels: ['${arr.join(`', '`)}']\n\n`
+
+        const objectsToLog = [
+            [lemonyFresh, `lemonyFresh`],
+            [mods, `mods`],
+            [users, `users`],
+            [knownTags, 'knownTags'],
+            [settings, `settings`],
+            [wordBank, `wordBank`],
+            [lemCmds, `lemCmds`]
+        ]
+        for (const [obj, objName] of objectsToLog) {
+            logs += `${renderObj(obj, objName)}\n\n`
+        }
+
+        logs += border
+        logs += newEnv
+        logs += border
+
+        return logs
+    }
+}

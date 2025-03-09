@@ -378,13 +378,13 @@ function updateSettingsDev(props, args) {
     }
 
     const options = {
+        [/^debug$|^d$/i]: { name: `debug`, func: updateBool },
         [/^autoBan$|^ab$/i]: { name: `autoBan`, func: updatePhraseArr },
         [/^ignoredBots$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
         [/^playPCG$|^pcg$/i]: { name: `playPCG`, func: updateBool },
         [/^pokeballQuantity$|^pq$/i]: { name: `pokeballQuantity`, func: updateNum },
         [/^usedPokeball$|^up$/i]: { name: `usedPokeball`, func: updateStr },
         [/^maxCountdownDuration$|^mcd$/i]: { name: `maxCountdownDuration`, func: updateLargeNum },
-        // [/^debug$|^d$/i]: { name: `debug`, func: updateBool },
         [/^timeZone$|^tz$/i]: { name: `timeZone`, func: updateTimeZone },
         // [/^timeLocale$|^tl$/i]: { name: `timeLocale`, func: updateTimeLocale },
         // [/^joinMessage$|^jm$/i]: { name: `joinMessage`, func: updateStr },
@@ -415,7 +415,7 @@ function updateSettingsDev(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for "settings": autoBan (ab), ignoredBots (ib), playPCG (pcg), pokeballQuantity (pq), usedPokeball (up), maxCountdownDuration (mcd), timeZone (tz), realRPS (rps), funNumberCount (fnc), funNumberTotal (fnt), streakThreshold (st), streamerEmoteStreakThreshold (sest), chantCount (cc), chantEmote (ce), baseEmotes (be), botMood (m)`)
+    bot.say(chatroom, `/me Options for "settings": debug (d), autoBan (ab), ignoredBots (ib), playPCG (pcg), pokeballQuantity (pq), usedPokeball (up), maxCountdownDuration (mcd), timeZone (tz), realRPS (rps), funNumberCount (fnc), funNumberTotal (fnt), streakThreshold (st), streamerEmoteStreakThreshold (sest), chantCount (cc), chantEmote (ce), baseEmotes (be), botMood (m)`)
 }
 
 function updateSettings(props, args) {
