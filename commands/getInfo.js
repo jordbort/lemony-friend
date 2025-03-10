@@ -8,8 +8,8 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Implemented perpetual lemon memory`,
-            `Small bug fixes`
+            `Fixed imagineLemons bug`,
+            `Updated Oh_Artemis's channel`
         ]
 
         const timeOptions = {
