@@ -15,10 +15,11 @@ const { lemonyFresh, users, lemCmds } = require(`./data`)
 const { useLemCmd } = require(`./commands/lemCmds`)
 const { streakListener } = require(`./commands/streaks`)
 const { rollFunNumber } = require(`./commands/funNumber`)
+const { sayJoinMessage } = require(`./commands/joinPart`)
 const { checkWord, checkLetter } = require(`./patterns/hangman`)
 const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
-const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, sayJoinMessage, logMessage } = require(`./utils`)
+const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, logMessage } = require(`./utils`)
 
 module.exports = {
     onConnectedHandler(addr, port) {
