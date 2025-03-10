@@ -169,8 +169,7 @@ module.exports = {
             if (command in commands) {
                 logMessage([`MATCHED COMMAND:`, command, `[Function: ${commands[command].name}]`])
                 return commands[command](props)
-            }
-            if (!/^!([a-z]+)lemon([a-z]*)/.test(command)) { logMessage([`COMMAND NOT RECOGNIZED`]) }
+            } else { logMessage([`COMMAND NOT RECOGNIZED`]) }
         }
 
         // Check user's first message in a given channel
