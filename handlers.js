@@ -1,5 +1,6 @@
 const DEV = process.env.DEV
 const BOT_USERNAME = process.env.BOT_USERNAME
+const BOT_NICKNAME_REGEX = process.env.BOT_NICKNAME_REGEX
 
 const dev = require(`./commands/dev`)
 const commands = require(`./commands`)
@@ -209,7 +210,7 @@ module.exports = {
         }
 
         // Any user mentions bot
-        if (/\b(@?lemony_friend|l+e+m+o+n+y*|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)\b/i.test(msg)) {
+        if (RegExp(`\\b${BOT_NICKNAME_REGEX}\\b`, `i`).test(msg)) {
             for (const pattern in botMention) {
                 const regex = new RegExp(pattern.split(`/`)[1], pattern.split(`/`)[2])
                 if (regex.test(msg)) {

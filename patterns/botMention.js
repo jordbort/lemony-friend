@@ -1,3 +1,5 @@
+const BOT_NICKNAME_REGEX = process.env.BOT_NICKNAME_REGEX
+
 const { checkSentiment } = require(`../commands/external`)
 const { handleGreetOne, sayGoodnight, sayThanks, sayYoureWelcome, sayMood, dumbReact, neutralReact, negativeReact, hypeReact } = require(`../commands/conversation`)
 
@@ -61,12 +63,13 @@ module.exports = {
     // yo
     [/\b(y+o+)+\b/i]: handleGreetOne,
 
-    // "ok(ay) lemon"
-    [/^o+k+(a*y+)? (@?lemony_friend|l+e+m+o+n+y*|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)$/i]: dumbReact,
-    // "yes lemon"
-    [/^y+e+s+ (@?lemony_friend|l+e+m+o+n+y*|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)$/i]: neutralReact,
-    // "no lemon"
-    [/^n+o+ (@?lemony_friend|l+e+m+o+n+y*|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)$/i]: negativeReact,
+    // "ok(ay) lemon"/"lemon ok(ay)"
+    [RegExp(`^o+k+(a*y+)?\\s${BOT_NICKNAME_REGEX}$|^${BOT_NICKNAME_REGEX}\\so+k+(a*y+)?$`, `i`)]: dumbReact,
+    // "yes lemon"/"lemon yes"
+    [RegExp(`^y+e+s+\\s${BOT_NICKNAME_REGEX}$|^${BOT_NICKNAME_REGEX}\\sy+e+s+$`, `i`)]: neutralReact,
+    // "no lemon"/"lemon no"
+    [RegExp(`^n+o+\\s${BOT_NICKNAME_REGEX}$|^${BOT_NICKNAME_REGEX}\\sn+o+$`, `i`)]: negativeReact,
+
     // good bot
     [/\bg+o{2,}d+ b+ot+\b/i]: hypeReact,
 
