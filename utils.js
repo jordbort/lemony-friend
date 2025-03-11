@@ -1139,16 +1139,44 @@ module.exports = {
                 ? `, `
                 : ` `)
     },
-    initUser(tags, self) {
-        const username = tags.username
-        logMessage([`> initUser(tags.username: '${tags.username}')`])
-        users[username] = {
+    initUser(bot, chatroom, tags, self) {
+        const newUsername = tags.username
+        logMessage([`> initUser(tags.username: '${newUsername}')`])
+        users[newUsername] = {
             id: self ? BOT_ID : Number(tags[`user-id`]),
             displayName: tags[`display-name`],
             nickname: '',
             color: tags.color || ``,
             lemons: 0,
             hangmanWins: 0
+        }
+
+        // Check if user ID already exists, and merge their data
+        for (const user of Object.keys(users)) {
+            if (users[newUsername].id === users[user].id && user !== newUsername) {
+                logMessage([`-> Merging '${user}' (ID: ${users[user].id}) into '${newUsername}'`])
+                users[newUsername] = {
+                    ...users[user],
+                    displayName: tags[`display-name`],
+                    nickname: '',
+                    color: tags.color || ``
+                }
+                bot.say(chatroom, `Wow, ${users[user].nickname || users[user].displayName} changed their name to ${users[newUsername].displayName}!`)
+                delete users[user]
+
+                // Update if mod
+                if (user in mods) {
+                    mods[newUsername] = { ...mods[user] }
+                    delete mods[user]
+                }
+
+                // Update if in channel
+                if (user in lemonyFresh) {
+                    lemonyFresh[newUsername] = { ...lemonyFresh[user] }
+                    delete lemonyFresh[user]
+                    bot.join(newUsername)
+                }
+            }
         }
     },
     initUserChannel(tags, username, channel) {
