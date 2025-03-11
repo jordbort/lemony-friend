@@ -3,6 +3,24 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 const { users } = require(`../data`)
 const { getContextEmote, logMessage, renderObj } = require(`../utils`)
 
+function renderData(obj, objName) {
+    const data = [`${objName ? `${objName}: ` : ``}{`]
+    if (Object.keys(obj).length) {
+        const keys = Object.keys(obj).map((key) => {
+            return typeof obj[key] === `string`
+                ? `${key}: '${obj[key]}'`
+                : typeof obj[key] === `object`
+                    ? obj[key] === null
+                        ? `${key}: ${obj[key]}`
+                        : `${key}: ${renderData(obj[key], ``)}`
+                    : `${key}: ${obj[key]}`
+        }).join(`, `)
+        data.push(keys)
+        data.push(`}`)
+    } else { data[0] += `}` }
+    return data.join(``)
+}
+
 module.exports = {
     sayCommands(props) {
         const { bot, chatroom, channel } = props
@@ -28,13 +46,7 @@ module.exports = {
         const stats = target || user
         logMessage([renderObj(stats, toUser || username)])
 
-        let data = `${toUser || username}: { id: ${stats.id}, displayName: '${stats.displayName}', nickname: '${stats.nickname}', color: '${stats.color}', lemons: ${stats.lemons}, hangmanWins: ${stats.hangmanWins}`
-        for (const key of Object.keys(stats)) {
-            if (typeof stats[key] === `object`) {
-                data += `, ${key}: { sub: ${stats[key]?.sub}, mod: ${stats[key].mod}, vip: ${stats[key].vip}, msgCount: ${stats[key].msgCount}, away: ${stats[key].away ? `${stats[key].away}, awayMessage: '${stats[key].awayMessage}'` : `${stats[key].away}`}, lastMessage: '${stats[key].lastMessage}', sentAt: ${stats[key].sentAt} }`
-            }
-        }
-        data += ` }`
+        const data = renderData(stats, toUser || username)
         bot.say(chatroom, data)
     },
     getSubs(props) {

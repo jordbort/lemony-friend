@@ -1,4 +1,5 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
+const BOT_NICKNAME_REGEX = process.env.BOT_NICKNAME_REGEX
 const BOT_ID = process.env.BOT_ID
 const DEV = process.env.DEV
 const OAUTH_TOKEN = process.env.OAUTH_TOKEN
@@ -39,6 +40,7 @@ function makeEnv(arr) {
     const newEnv = `BOT_USERNAME='${BOT_USERNAME}'
 BOT_ID='${BOT_ID}'
 DEV='${DEV}'
+BOT_NICKNAME_REGEX='${BOT_NICKNAME_REGEX}'
 
 OAUTH_TOKEN='${OAUTH_TOKEN}'
 

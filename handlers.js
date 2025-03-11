@@ -1,5 +1,6 @@
 const DEV = process.env.DEV
 const BOT_USERNAME = process.env.BOT_USERNAME
+const BOT_NICKNAME_REGEX = process.env.BOT_NICKNAME_REGEX
 
 const dev = require(`./commands/dev`)
 const commands = require(`./commands`)
@@ -14,10 +15,11 @@ const { lemonyFresh, users, lemCmds } = require(`./data`)
 const { useLemCmd } = require(`./commands/lemCmds`)
 const { streakListener } = require(`./commands/streaks`)
 const { rollFunNumber } = require(`./commands/funNumber`)
+const { sayJoinMessage } = require(`./commands/joinPart`)
 const { checkWord, checkLetter } = require(`./patterns/hangman`)
 const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
-const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, sayJoinMessage, logMessage } = require(`./utils`)
+const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, logMessage } = require(`./utils`)
 
 module.exports = {
     onConnectedHandler(addr, port) {
@@ -80,7 +82,7 @@ module.exports = {
         tagsListener(tags)
 
         // Initialize new user
-        if (!(username in users)) { initUser(tags, self) }
+        if (!(username in users)) { initUser(this, chatroom, tags, self) }
 
         // Add mod/update isModIn list
         if (tags.mod) { updateMod(chatroom, tags, self, username) }
@@ -169,8 +171,7 @@ module.exports = {
             if (command in commands) {
                 logMessage([`MATCHED COMMAND:`, command, `[Function: ${commands[command].name}]`])
                 return commands[command](props)
-            }
-            if (!/^!([a-z]+)lemon([a-z]*)/.test(command)) { logMessage([`COMMAND NOT RECOGNIZED`]) }
+            } else { logMessage([`COMMAND NOT RECOGNIZED`]) }
         }
 
         // Check user's first message in a given channel
@@ -210,7 +211,7 @@ module.exports = {
         }
 
         // Any user mentions bot
-        if (/\b(@?lemony_friend|l+e+m+o+n+y*|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)\b/i.test(msg)) {
+        if (RegExp(`\\b${BOT_NICKNAME_REGEX}\\b`, `i`).test(msg)) {
             for (const pattern in botMention) {
                 const regex = new RegExp(pattern.split(`/`)[1], pattern.split(`/`)[2])
                 if (regex.test(msg)) {
