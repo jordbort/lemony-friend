@@ -1139,16 +1139,44 @@ module.exports = {
                 ? `, `
                 : ` `)
     },
-    initUser(tags, self) {
-        const username = tags.username
-        logMessage([`> initUser(tags.username: '${tags.username}')`])
-        users[username] = {
+    initUser(bot, chatroom, tags, self) {
+        const newUsername = tags.username
+        logMessage([`> initUser(tags.username: '${newUsername}')`])
+        users[newUsername] = {
             id: self ? BOT_ID : Number(tags[`user-id`]),
             displayName: tags[`display-name`],
             nickname: '',
             color: tags.color || ``,
             lemons: 0,
             hangmanWins: 0
+        }
+
+        // Check if user ID already exists, and merge their data
+        for (const user of Object.keys(users)) {
+            if (users[newUsername].id === users[user].id && user !== newUsername) {
+                logMessage([`-> Merging '${user}' (ID: ${users[user].id}) into '${newUsername}'`])
+                users[newUsername] = {
+                    ...users[user],
+                    displayName: tags[`display-name`],
+                    nickname: '',
+                    color: tags.color || ``
+                }
+                bot.say(chatroom, `Wow, ${users[user].nickname || users[user].displayName} changed their name to ${users[newUsername].displayName}!`)
+                delete users[user]
+
+                // Update if mod
+                if (user in mods) {
+                    mods[newUsername] = { ...mods[user] }
+                    delete mods[user]
+                }
+
+                // Update if in channel
+                if (user in lemonyFresh) {
+                    lemonyFresh[newUsername] = { ...lemonyFresh[user] }
+                    delete lemonyFresh[user]
+                    bot.join(newUsername)
+                }
+            }
         }
     },
     initUserChannel(tags, username, channel) {
@@ -1266,54 +1294,6 @@ module.exports = {
             lemonyFresh[channel].timers[timer].listening = true
             logMessage([`-> Listening for '${timer}' again!`])
         }, lemonyFresh[channel].timers[timer].cooldown * 1000))
-    },
-    sayJoinMessage(bot, chatroom) {
-        logMessage([`> sayJoinMessage(chatroom: '${chatroom}'${settings.joinMessage ? `, '${settings.joinMessage}'` : ``})`])
-
-        const channel = chatroom.substring(1)
-        const lemonEmote = getContextEmote(`lemon`, channel)
-        const neutralEmote = getContextEmote(`neutral`, channel)
-        const positiveEmote = getContextEmote(`positive`, channel)
-        const hypeEmote = getContextEmote(`hype`, channel)
-        const greetingEmote = getContextEmote(`greeting`, channel)
-        const dumbEmote = getContextEmote(`dumb`, channel)
-        const numUsers = Object.keys(users).length
-        const numLemCmds = Object.keys(lemCmds).length
-        const randNum = Math.floor(Math.random() * numbers.length)
-
-        const joinMessages = [
-            `Let's see how long before I crash ${dumbEmote}`,
-            `* ${BOT_USERNAME.substring(0, 1).toUpperCase() + BOT_USERNAME.substring(1)} blocks the way! ${positiveEmote}`,
-            `Hi ${channel}, I'm ${BOT_USERNAME}! ${greetingEmote} ${lemonEmote}`,
-            `(Windows XP startup sound plays)`,
-            `I'm onl`,
-            `I have ${numUsers <= 999
-                ? `${numbers[numUsers]} (${numUsers}) friend${numUsers === 1 ? `` : `s`}`
-                : pluralize(numUsers, `friend`, `friends`)}! ${numUsers === 0
-                    ? dumbEmote
-                    : numUsers < 25
-                        ? neutralEmote
-                        : numUsers < 50
-                            ? positiveEmote
-                            : hypeEmote}`,
-            `There ${numLemCmds === 1 ? `is` : `are`} ${pluralize(numLemCmds, `lemon command`, `lemon commands`)}! ${numLemCmds === 0
-                ? dumbEmote
-                : numLemCmds < 3
-                    ? neutralEmote
-                    : numLemCmds < 5
-                        ? positiveEmote
-                        : hypeEmote}`,
-            `Let's play Hangman! ${positiveEmote}`,
-            `I know ${pluralize(lemonyFresh[channel].emotes.length, `emote`, `emotes`)} in ${channel}'s channel! ${neutralEmote}`,
-            `It has been ${Date.now().toLocaleString(`en-US`)} milliseconds since January 1, 1970, 12:00:00 AM UTC ${lemonEmote}`,
-            `${BOT_USERNAME} has entered the chat ${lemonEmote}`,
-            `${BOT_USERNAME in users
-                ? `I have ${pluralize(users[BOT_USERNAME].lemons, `lemon`, `lemons`)}! ${lemonEmote}`
-                : `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${numbers[randNum + 1] || `one thousand`} lemons... ${lemonEmote}`}`
-        ]
-        const joinMessage = joinMessages[Math.floor(Math.random() * joinMessages.length)]
-
-        bot.say(channel, settings.joinMessage || joinMessage)
     },
     // (For debugging/discovery) Add to list of known message tags
     tagsListener(tags) {

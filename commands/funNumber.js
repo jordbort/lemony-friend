@@ -508,7 +508,7 @@ function useFunnyCommand(props) {
 }
 
 function imagineLemons(props) {
-    const { bot, chatroom } = props
+    const { bot, chatroom, channel } = props
     const randNum = Math.floor(Math.random() * numbers.length)
     const lemonEmote = getContextEmote(`lemon`, channel)
     logMessage([`> imagineLemons(chatroom: '${chatroom}', randNum: ${randNum})`])
