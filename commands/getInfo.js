@@ -9,7 +9,8 @@ module.exports = {
 
         const newFeatures = [
             `Fixed imagineLemons bug`,
-            `Updated Oh_Artemis's channel`
+            `Updated Oh_Artemis's channel`,
+            `Handled username changes`
         ]
 
         const timeOptions = {
