@@ -82,7 +82,7 @@ module.exports = {
         tagsListener(tags)
 
         // Initialize new user
-        if (!(username in users)) { initUser(tags, self) }
+        if (!(username in users)) { initUser(this, chatroom, tags, self) }
 
         // Add mod/update isModIn list
         if (tags.mod) { updateMod(chatroom, tags, self, username) }
