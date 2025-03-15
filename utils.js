@@ -1342,7 +1342,9 @@ module.exports = {
                 if (knownTags[tag].types.length > 0) { logMessage([`> New type for message tag '${tag}' added: '${type}'`]) }
                 knownTags[tag].types.push(type)
             }
-            knownTags[tag].lastValue = tags[tag]
+            knownTags[tag].lastValue = typeof tags[tag] === `string`
+                ? tags[tag].replace(/'/g, `’`)
+                : tags[tag]
         }
     },
     getUsername(str) {
