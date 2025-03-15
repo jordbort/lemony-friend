@@ -33,9 +33,9 @@ module.exports = {
     'tags': (props) => { console.log(props.tags) },
 
     'unknown': () => {
-        console.log(`unapplied nicknames:`, commonNicknames)
-        console.log(`unclaimed lemons:`, startingLemons)
-        console.log(`unapplied Hangman wins:`, hangmanWins)
+        console.log(Object.keys(commonNicknames).length, `unapplied nicknames:`, commonNicknames)
+        console.log(Object.keys(startingLemons).length, `unclaimed lemons:`, startingLemons)
+        console.log(Object.keys(hangmanWins).length, `unapplied Hangman wins:`, hangmanWins)
     },
 
     'channel': (props) => {
