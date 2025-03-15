@@ -50,7 +50,7 @@ module.exports = {
     async getDefinition(props) {
         const { bot, chatroom, args, channel } = props
         logMessage([`> getDefinition(chatroom: ${chatroom}, args:`, args, `)`])
-        const str = args.join(` `)
+        const str = args.join(` `).replace(/[\\{`}%^|]/g, ``)
         if (!str) { return bot.say(chatroom, `Please give me a word to define! :)`) }
 
         const endpoint = `https://api.api-ninjas.com/v1/dictionary?word=${str}`
@@ -86,7 +86,7 @@ module.exports = {
     },
     async getPokemon(props) {
         const { bot, chatroom, args, channel } = props
-        const pokemon = args[0]?.toLowerCase()
+        const pokemon = args[0]?.toLowerCase().replace(/[\\{`}%^|]/g, ``)
         logMessage([`> getPokemon(chatroom: ${chatroom}, pokemon: ${pokemon})`])
 
         if (!pokemon) { return logMessage([`-> No Pokemon provided`]) }
@@ -211,7 +211,7 @@ module.exports = {
     },
     async getPokemonAbility(props) {
         const { bot, chatroom, args, channel } = props
-        const abilityName = args.join(`-`).toLowerCase().replace(/'/g, ``)
+        const abilityName = args.join(`-`).toLowerCase().replace(/[\\{`}%^|']/g, ``)
         const negativeEmote = getContextEmote(`negative`, channel)
 
         logMessage([`> getPokemonAbility(chatroom: ${chatroom}, abilityName: '${abilityName}')`])
