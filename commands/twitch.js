@@ -8,12 +8,12 @@ const { lemonyFresh, mods, users } = require(`../data`)
 const { getContextEmote, resetCooldownTimer, getToUser, renderObj, pluralize, logMessage } = require(`../utils`)
 
 async function getBotToken(props, replyWanted = true) {
-    const { bot, chatroom, username, channel, isLemonyFreshMember } = props
+    const { bot, chatroom, username, channel, isModOrVIP } = props
     logMessage([`> getBotToken(channel: '${channel}')`])
 
-    // Streamers and mods only
-    if (!isLemonyFreshMember && !(username in mods)) {
-        logMessage([`-> ${username} isn't a streamer or mod, ignoring`])
+    // VIPs only
+    if (!isModOrVIP) {
+        logMessage([`-> ${username} isn't a VIP or mod, ignoring`])
         return
     }
 
