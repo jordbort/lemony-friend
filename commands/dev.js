@@ -25,7 +25,7 @@ module.exports = {
         await dumpMemory(props)
         const byeEmote = getContextEmote(`bye`, channel)
         bot.say(chatroom, `Bye for now! ${byeEmote}`)
-        logMessage([`> Done`])
+        await logMessage([`> Done`])
         process.exit(0)
     },
     'dump': dumpMemory,
