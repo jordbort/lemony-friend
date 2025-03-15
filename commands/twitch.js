@@ -9,7 +9,7 @@ const { getContextEmote, resetCooldownTimer, getToUser, renderObj, pluralize, lo
 
 async function getBotToken(props, replyWanted = true) {
     const { bot, chatroom, username, channel, isModOrVIP } = props
-    logMessage([`> getBotToken(channel: '${channel}')`])
+    logMessage([`> getBotToken(channel: '${channel}', replyWanted: ${replyWanted})`])
 
     // VIPs only
     if (!isModOrVIP) {
@@ -53,7 +53,7 @@ async function getTwitchUser(props) {
 
     const negativeEmote = getContextEmote(`negative`, channel)
     if (response.status !== 200) {
-        if (twitchData.error === `Unauthorized`) {
+        if (response.status === 401) {
             logMessage([`-> Unauthorized from getTwitchUser(), attempting to refresh bot's token...`])
             await getBotToken(props, false)
             options.headers.authorization = `Bearer ${settings.botAccessToken}`
@@ -524,7 +524,7 @@ module.exports = {
 
         // Stop if neither the channel nor a mod has an access token
         if (!token) {
-            logMessage([`-> ${channel} has no access token, can't make announcement`])
+            logMessage([`-> ${channel} has no access token, can't ban users`])
             return
         }
 
