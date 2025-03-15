@@ -36,10 +36,10 @@ async function getBotToken(props, replyWanted = true) {
 }
 
 async function getTwitchUser(props) {
-    const { bot, chatroom, channel, username } = props
-    logMessage([`> getTwitchUser(chatroom: '${chatroom}', username: '${username}')`])
+    const { bot, chatroom, channel, toUser } = props
+    logMessage([`> getTwitchUser(chatroom: '${chatroom}', toUser: '${toUser}')`])
 
-    const endpoint = `https://api.twitch.tv/helix/users?login=${username}`
+    const endpoint = `https://api.twitch.tv/helix/users?login=${toUser}`
     const options = {
         headers: {
             authorization: `Bearer ${settings.botAccessToken}`,
@@ -68,7 +68,7 @@ async function getTwitchUser(props) {
             }
         }
     } else if (twitchData.data.length === 0) {
-        bot.say(chatroom, `No user ${username} was found! ${negativeEmote}`)
+        bot.say(chatroom, `No user ${toUser} was found! ${negativeEmote}`)
     } else {
         return twitchData.data[0]
     }
@@ -282,8 +282,8 @@ module.exports = {
             resetCooldownTimer(channel, `!so`)
 
             // Stop if user doesn't exist
-            const twitchUser = await getTwitchUser({ ...props, username: toUser })
-            if (!twitchUser) {
+            const twitchUser = await getTwitchUser(props)
+            if (!twitchUser || `error` in twitchUser) {
                 logMessage([`-> No user '${toUser}' found, exiting handleShoutOut function`])
                 return
             }
@@ -547,7 +547,7 @@ module.exports = {
             const userToBan = getToUser(arg)
             const twitchUser = userToBan in users
                 ? users[userToBan]
-                : await getTwitchUser({ ...props, username: userToBan })
+                : await getTwitchUser({ ...props, toUser: userToBan })
 
             if (!twitchUser?.id) {
                 logMessage([`-> Error: '${userToBan}' does not have a user ID`])

@@ -55,8 +55,8 @@ module.exports = {
         bot.say(channel, settings.joinMessage || joinMessage)
     },
     async handleJoin(props) {
-        const { bot, chatroom, args, channel } = props
-        logMessage([`> handleJoin(chatroom: ${chatroom}, args:`, args, `)`])
+        const { bot, chatroom, args } = props
+        logMessage([`> handleJoin(chatroom: ${chatroom}, args: '${args.join(`', '`)}')`])
 
         const validUsers = args.map(arg => getUsername(arg)).filter(user => user)
         const alreadyJoined = validUsers.filter(channel => bot.channels.includes(`#${channel}`))
@@ -65,8 +65,7 @@ module.exports = {
         // Verify channels exist before attempting to join
         const successfullyJoined = []
         for (const channel of notYetJoined) {
-            props.username = channel
-            const twitchUser = await getTwitchUser(props)
+            const twitchUser = await getTwitchUser({ ...props, toUser: channel })
             if (!twitchUser?.id) {
                 logMessage([`-> Error: '${channel}' does not have a user ID`])
             } else {
