@@ -5,11 +5,11 @@ const { convert } = require(`./convert`)
 const { sayGoals } = require(`./sayGoals`)
 const { countdown } = require(`./countdown`)
 const { rockPaperScissors } = require(`./rps`)
+const { getDocs, getStats } = require(`./help`)
 const { lemonTopThree } = require(`./lemonRank`)
 const { handleLemonify } = require(`./lemonify`)
 const { makeMultiTwitchLink } = require(`./multitwitch`)
 const { handleLemCmd, getLemCmds } = require(`./lemCmds`)
-const { sayCommands, getDocs, getStats } = require(`./help`)
 const { manageHangman, joinHangman } = require(`../patterns/hangman`)
 const { insultUser, manageVerbs, manageNouns, manageAdjectives } = require(`./insult`)
 const { getDadJoke, getPokemon, getDefinition, getPokemonAbility } = require(`./external`)
@@ -63,7 +63,6 @@ module.exports = {
     '!lemoncommands': getLemCmds,
     '!lemcmds': getLemCmds,
 
-    '!commands': sayCommands,
     '!docs': getDocs,
     '!mystats': getStats,
 
