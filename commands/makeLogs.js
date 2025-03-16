@@ -9,7 +9,7 @@ const REDIRECT_URI = process.env.REDIRECT_URI
 const API_KEY = process.env.API_KEY
 
 const { settings } = require(`../config`)
-const { lemonyFresh, mods, users, knownTags, lemCmds, wordBank } = require(`../data`)
+const { lemonyFresh, mods, users, knownTags, lemCmds, wordBank, commonNicknames, startingLemons, hangmanWins } = require(`../data`)
 
 function renderObj(obj, objName, indentation = ``) {
     const tab = `${indentation}\t`
@@ -36,6 +36,15 @@ function renderObj(obj, objName, indentation = ``) {
     return data.join(``)
 }
 
+function createCSV(obj) {
+    const listCSV = Object.keys(obj)
+        .map(key => { return [key, obj[key]] })
+        .filter(el => el[1])
+        .sort()
+        .join()
+    return listCSV
+}
+
 function makeEnv(arr) {
     const newEnv = `BOT_USERNAME='${BOT_USERNAME}'
 BOT_ID='${BOT_ID}'
@@ -46,7 +55,6 @@ OAUTH_TOKEN='${OAUTH_TOKEN}'
 
 CLIENT_ID='${CLIENT_ID}'
 CLIENT_SECRET='${CLIENT_SECRET}'
-BOT_ACCESS_TOKEN='${settings.botAccessToken}'
 
 REDIRECT_URI='${REDIRECT_URI}'
 
@@ -70,7 +78,13 @@ WORDBANK_NOUNS='${JSON.stringify(wordBank.nouns)}'
 
 WORDBANK_VERBS='${JSON.stringify(wordBank.verbs)}'
 
-WORDBANK_ADJECTIVES='${JSON.stringify(wordBank.adjectives)}'\n`
+WORDBANK_ADJECTIVES='${JSON.stringify(wordBank.adjectives)}'
+
+COMMON_NICKNAMES='${createCSV(commonNicknames)}'
+
+STARTING_LEMONS='${createCSV(startingLemons)}'
+
+HANGMAN_WINS='${createCSV(hangmanWins)}'\n`
 
     return newEnv
 }
