@@ -53,10 +53,13 @@ module.exports = {
             [lemonyFresh, `lemonyFresh`],
             [mods, `mods`],
             [users, `users`],
-            [knownTags, 'knownTags'],
+            [knownTags, `knownTags`],
             [settings, `settings`],
             [wordBank, `wordBank`],
-            [lemCmds, `lemCmds`]
+            [lemCmds, `lemCmds`],
+            [commonNicknames, `commonNicknames`],
+            [startingLemons, `startingLemons`],
+            [hangmanWins, `hangmanWins`]
         ]
         for (const [obj, objName] of objectsToLog) {
             logs += `${renderObj(obj, objName)}\n\n`
