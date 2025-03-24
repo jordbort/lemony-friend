@@ -8,8 +8,9 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Sanitized inputs for external API fetches`,
-            `Fixed bot token auto-refresh bug`
+            `Implemented new memory file`,
+            `Updated CLI`,
+            `Removed !goals command`
         ]
 
         const timeOptions = {
