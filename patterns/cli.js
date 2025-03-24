@@ -63,23 +63,29 @@ function updateArr(bot, chatroom, obj, message, name, args) {
     if (/^delete$|^d$/i.test(args[0])) {
         args.shift()
         const removals = []
+        const notFound = []
         for (const element of args) {
             if (obj[name].includes(element)) {
                 obj[name].splice(obj[name].indexOf(element), 1)
                 removals.push(element)
+            } else {
+                if (!notFound.includes(element)) { notFound.push(element) }
             }
         }
-        return bot.say(chatroom, `/me ${message} (${pluralize(obj[name].length, `item`, `items`)}), removed ${removals.length}${removals.length ? `: ${removals.join(` `)}` : ``}`)
+        return bot.say(chatroom, `/me ${message} (${pluralize(obj[name].length, `item`, `items`)}), removed ${removals.length}${removals.length ? `: ${removals.join(` `)}` : ``}${ignored.length ? `, not found: ${ignored.join(` `)}` : ``}`)
     }
 
     const additions = []
+    const alreadyExisted = []
     for (const element of args) {
         if (!obj[name].includes(element)) {
             obj[name].push(element)
             additions.push(element)
+        } else {
+            if (!alreadyExisted.includes(element)) { alreadyExisted.push(element) }
         }
     }
-    bot.say(chatroom, `/me ${message} (${pluralize(obj[name].length, `item`, `items`)}), added ${additions.length}${additions.length ? `: ${additions.join(` `)}` : ``}`)
+    bot.say(chatroom, `/me ${message} (${pluralize(obj[name].length, `item`, `items`)}), added ${additions.length}${additions.length ? `: ${additions.join(` `)}` : ``}${alreadyExisted.length ? `, already existed: ${alreadyExisted.join(` `)}` : ``}`)
 }
 
 function updatePhraseArr(bot, chatroom, obj, message, name, args) {
