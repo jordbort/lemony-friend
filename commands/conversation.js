@@ -446,7 +446,7 @@ module.exports = {
         }, settings.maxWelcomeBackMinutes * 1000)
     },
     reportAway(props) {
-        const { bot, chatroom, args, message, channel, username, currentTime } = props
+        const { bot, chatroom, message, channel, username, currentTime } = props
 
         for (const targetName of Object.keys(users)) {
             const target = users[targetName]
@@ -461,9 +461,6 @@ module.exports = {
                 else { logMessage([`-> ${username} has been away for less than one-minute grace period`]) }
             }
         }
-
-        // End of onChatHandler logic
-        logMessage([`MESSAGE DID NOT MATCH REGEX PATTERNS`])
     },
     hypeReact(props) {
         const { bot, chatroom, channel } = props

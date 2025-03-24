@@ -1,5 +1,5 @@
 // Global settings
-const settings = JSON.parse(process.env.SETTINGS)
+const { settings } = require(`./memory.json`)
 settings.firstConnection = true
 settings.startDate = new Date()
 

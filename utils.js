@@ -4,9 +4,9 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 
 const fs = require(`fs/promises`)
 
-const { makeLogs, makeEnv } = require(`./commands/makeLogs`)
-const { lemonyFresh, users, commonNicknames, startingLemons, hangmanWins, mods, knownTags, lemCmds } = require(`./data`)
+const { makeLogs, printMemory } = require(`./commands/makeLogs`)
 const { settings, resetTxt, grayTxt, whiteTxt, yellowBg, chatColors } = require(`./config`)
+const { lemonyFresh, mods, users, knownTags, commonNicknames, startingLemons, hangmanWins } = require(`./data`)
 
 const twitchUsernamePattern = /^[a-z0-9_]{4,25}$/i
 
@@ -87,13 +87,6 @@ async function logMessage(messages, time, channel, username, color, self) {
         })
         if (settings.debug) { console.log(`${grayTxt}${log}${resetTxt}`) }
     }
-}
-
-async function printEnv(arr) {
-    const newEnv = makeEnv(arr)
-    await fs.writeFile(`.env`, newEnv, (err) => {
-        if (err) { console.log(`Error creating .env:`, err) }
-    })
 }
 
 const numbers = [
@@ -1106,9 +1099,8 @@ module.exports = {
     pluralize,
     renderObj,
     logMessage,
-    printEnv,
     async handleUncaughtException(bot, err, location) {
-        await printEnv(bot.channels)
+        await printMemory(bot.channels)
         await logMessage([`> handleUncaughtException(err.message: '${err.message}', location: '${location}')`])
 
         const emote = users[BOT_USERNAME]?.jpegstripes?.sub ? `jpegstBroken` : users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Heat` : users[BOT_USERNAME]?.domonintendo1?.sub ? `domoni6Sneeze` : `>(`
@@ -1177,6 +1169,27 @@ module.exports = {
                     bot.join(newUsername)
                 }
             }
+        }
+
+        // Apply nickname
+        if (newUsername in commonNicknames) {
+            users[newUsername].nickname = commonNicknames[newUsername]
+            delete commonNicknames[newUsername]
+            logMessage([`-> ${newUsername}'s nickname has been restored (${users[newUsername].nickname}), ${Object.keys(commonNicknames).length} remain`])
+        }
+
+        // Restore lemons
+        if (newUsername in startingLemons) {
+            users[newUsername].lemons += startingLemons[newUsername]
+            delete startingLemons[newUsername]
+            logMessage([`-> ${newUsername}'s lemons have been restored (${users[newUsername].lemons}), ${Object.keys(startingLemons).length} remain`])
+        }
+
+        // Restore Hangman wins
+        if (newUsername in hangmanWins) {
+            users[newUsername].hangmanWins += hangmanWins[newUsername]
+            delete hangmanWins[newUsername]
+            logMessage([`-> ${newUsername}'s hangmanWins have been restored (${users[newUsername].hangmanWins}), ${Object.keys(hangmanWins).length} remain`])
         }
     },
     initUserChannel(tags, username, channel) {
@@ -1321,7 +1334,9 @@ module.exports = {
                 if (knownTags[tag].types.length > 0) { logMessage([`> New type for message tag '${tag}' added: '${type}'`]) }
                 knownTags[tag].types.push(type)
             }
-            knownTags[tag].lastValue = tags[tag]
+            knownTags[tag].lastValue = typeof tags[tag] === `string`
+                ? tags[tag].replace(/'/g, `’`)
+                : tags[tag]
         }
     },
     getUsername(str) {

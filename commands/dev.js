@@ -4,9 +4,10 @@ const { settings } = require(`../config`)
 const { lemonyFresh, users, mods, commonNicknames, startingLemons, hangmanWins } = require(`../data`)
 
 const { getSubs } = require(`./help`)
-const { logMessage, dumpMemory, getContextEmote, printEnv } = require(`../utils`)
+const { printMemory } = require(`./makeLogs`)
 const { rollFunNumber } = require(`./funNumber`)
 const { handleJoin, handlePart } = require(`./joinPart`)
+const { logMessage, dumpMemory, getContextEmote } = require(`../utils`)
 
 function checkPoints(props) {
     const { bot, chatroom, args, channel } = props
@@ -21,11 +22,11 @@ module.exports = {
     '_crash': function kms(props) { throw Error(`Error${props.args.length ? ` with value${props.args.length === 1 ? `` : `s`} '${props.args.join(`', '`)}'` : ``}`) },
     '_shutdown': async (props) => {
         const { bot, chatroom, channel } = props
-        await printEnv(bot.channels)
+        await printMemory(bot.channels)
         await dumpMemory(props)
         const byeEmote = getContextEmote(`bye`, channel)
         bot.say(chatroom, `Bye for now! ${byeEmote}`)
-        logMessage([`> Done`])
+        await logMessage([`> Done`])
         process.exit(0)
     },
     'dump': dumpMemory,
@@ -33,9 +34,9 @@ module.exports = {
     'tags': (props) => { console.log(props.tags) },
 
     'unknown': () => {
-        console.log(`unapplied nicknames:`, commonNicknames)
-        console.log(`unclaimed lemons:`, startingLemons)
-        console.log(`unapplied Hangman wins:`, hangmanWins)
+        console.log(Object.keys(commonNicknames).length, `unapplied nicknames:`, commonNicknames)
+        console.log(Object.keys(startingLemons).length, `unclaimed lemons:`, startingLemons)
+        console.log(Object.keys(hangmanWins).length, `unapplied Hangman wins:`, hangmanWins)
     },
 
     'channel': (props) => {

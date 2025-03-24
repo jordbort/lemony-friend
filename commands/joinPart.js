@@ -52,11 +52,11 @@ module.exports = {
         ]
         const joinMessage = joinMessages[Math.floor(Math.random() * joinMessages.length)]
 
-        bot.say(channel, settings.joinMessage || joinMessage)
+        bot.say(chatroom, settings.joinMessage || joinMessage)
     },
     async handleJoin(props) {
-        const { bot, chatroom, args, channel } = props
-        logMessage([`> handleJoin(chatroom: ${chatroom}, args:`, args, `)`])
+        const { bot, chatroom, args } = props
+        logMessage([`> handleJoin(chatroom: ${chatroom}, args: '${args.join(`', '`)}')`])
 
         const validUsers = args.map(arg => getUsername(arg)).filter(user => user)
         const alreadyJoined = validUsers.filter(channel => bot.channels.includes(`#${channel}`))
@@ -65,8 +65,7 @@ module.exports = {
         // Verify channels exist before attempting to join
         const successfullyJoined = []
         for (const channel of notYetJoined) {
-            props.username = channel
-            const twitchUser = await getTwitchUser(props)
+            const twitchUser = await getTwitchUser({ ...props, toUser: channel })
             if (!twitchUser?.id) {
                 logMessage([`-> Error: '${channel}' does not have a user ID`])
             } else {
@@ -78,13 +77,13 @@ module.exports = {
 
         successfullyJoined.length
             ? alreadyJoined.length
-                ? bot.say(channel, `Joined channel${successfullyJoined.length === 1 ? `` : `s`}: ${successfullyJoined.join(`, `)} - Already joined: ${alreadyJoined.join(`, `)}`)
-                : bot.say(channel, `Joined channel${successfullyJoined.length === 1 ? `` : `s`}: ${successfullyJoined.join(`, `)}`)
-            : bot.say(channel, `All active users: ${bot.channels.map(channel => channel.substring(1)).join(`, `)}`)
+                ? bot.say(chatroom, `Joined channel${successfullyJoined.length === 1 ? `` : `s`}: ${successfullyJoined.join(`, `)} - Already joined: ${alreadyJoined.join(`, `)}`)
+                : bot.say(chatroom, `Joined channel${successfullyJoined.length === 1 ? `` : `s`}: ${successfullyJoined.join(`, `)}`)
+            : bot.say(chatroom, `Joined channels: ${bot.channels.map(channel => channel.substring(1)).join(`, `)}`)
     },
     handlePart(props) {
         const { bot, chatroom, args, channel } = props
-        logMessage([`> handlePart(chatroom: ${chatroom}, args:`, args, `)`])
+        logMessage([`> handlePart(chatroom: ${chatroom}, args: '${args.join(`', '`)}')`])
 
         const validUsers = args.map(arg => getUsername(arg)).filter(user => user)
         const needToPart = validUsers.filter(user => bot.channels.includes(`#${user}`))
@@ -97,8 +96,8 @@ module.exports = {
         })
         needToPart.length
             ? notInChannel.length
-                ? bot.say(channel, `Parted from channel${needToPart.length === 1 ? `` : `s`}: ${needToPart.join(`, `)} - Not already in: ${notInChannel.join(`, `)}`)
-                : bot.say(channel, `Parted from channel${needToPart.length === 1 ? `` : `s`}: ${needToPart.join(`, `)}`)
+                ? bot.say(chatroom, `Parted from channel${needToPart.length === 1 ? `` : `s`}: ${needToPart.join(`, `)} - Not already in: ${notInChannel.join(`, `)}`)
+                : bot.say(chatroom, `Parted from channel${needToPart.length === 1 ? `` : `s`}: ${needToPart.join(`, `)}`)
             : bot.say(chatroom, `All active users: ${bot.channels.map(channel => channel.substring(1)).join(`, `)}`)
     }
 }

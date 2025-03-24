@@ -8,9 +8,9 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Fixed imagineLemons bug`,
-            `Updated Oh_Artemis's channel`,
-            `Handled username changes`
+            `Implemented new memory file`,
+            `Updated CLI`,
+            `Removed !goals command`
         ]
 
         const timeOptions = {
