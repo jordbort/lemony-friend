@@ -2,7 +2,6 @@ const { getTime } = require(`./time`)
 const { useList } = require(`./list`)
 const { useCount } = require(`./count`)
 const { convert } = require(`./convert`)
-const { sayGoals } = require(`./sayGoals`)
 const { countdown } = require(`./countdown`)
 const { rockPaperScissors } = require(`./rps`)
 const { getDocs, getStats } = require(`./help`)
@@ -49,9 +48,6 @@ module.exports = {
 
     '!countdown': countdown,
     '!timer': countdown,
-
-    '!goal': sayGoals,
-    '!goals': sayGoals,
 
     '!rps': rockPaperScissors,
 
