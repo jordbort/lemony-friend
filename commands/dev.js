@@ -4,7 +4,7 @@ const { settings } = require(`../config`)
 const { lemonyFresh, users, mods, commonNicknames, startingLemons, hangmanWins } = require(`../data`)
 
 const { getSubs } = require(`./help`)
-const { printMemory } = require(`./makeLogs`)
+const { printMemory } = require(`../utils`)
 const { rollFunNumber } = require(`./funNumber`)
 const { handleJoin, handlePart } = require(`./joinPart`)
 const { logMessage, dumpMemory, getContextEmote } = require(`../utils`)
