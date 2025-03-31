@@ -1422,7 +1422,7 @@ module.exports = {
             .filter(key => typeof users[BOT_USERNAME][key] === `object` && users.lemony_friend[key].sub === false)
             .map(channel => lemonyFresh[channel].emotes)
             .flat()
-        if (inaccessibleEmotes.some(emote => message.includes(emote))) {
+        if (inaccessibleEmotes.some(emote => str.includes(emote))) {
             logMessage([`> containsInaccessibleEmotes(str: '${str}')`])
             return true
         }
