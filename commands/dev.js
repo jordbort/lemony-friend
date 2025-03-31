@@ -29,6 +29,7 @@ module.exports = {
         await logMessage([`> Done`])
         process.exit(0)
     },
+    '_print': async (props) => { await printMemory(props.bot.channels) },
     'dump': dumpMemory,
     '!test': checkPoints,
     'tags': (props) => { console.log(props.tags) },
