@@ -1358,5 +1358,25 @@ module.exports = {
         return str in nicknames
             ? nicknames[str]
             : null
+    },
+    containsInaccessibleEmotes(str) {
+        const inaccessibleEmotes = Object.keys(users[BOT_USERNAME])
+            .filter(key => typeof users[BOT_USERNAME][key] === `object` && users.lemony_friend[key].sub === false)
+            .map(channel => lemonyFresh[channel].emotes)
+            .flat()
+        if (inaccessibleEmotes.some(emote => message.includes(emote))) {
+            logMessage([`> containsInaccessibleEmotes(str: '${str}')`])
+            return true
+        }
+        return false
+    },
+    containsUnrecognizedEmotes(str) {
+        if (emotePattern.test(str)) {
+            const allEmotes = Object.keys(lemonyFresh).map(channel => lemonyFresh[channel].emotes).flat()
+            const unrecognizedEmotes = str.split(emotePattern).filter((emote, idx) => !allEmotes.includes(emote) && (idx + 1) % 2 === 0)
+            if (unrecognizedEmotes.length) logMessage([`> containsUnrecognizedEmotes(str: '${str}')\n->`, unrecognizedEmotes.join(`, `)])
+            return true
+        }
+        return false
     }
 }

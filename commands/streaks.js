@@ -2,7 +2,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings } = require(`../config`)
 const { users, lemonyFresh } = require(`../data`)
-const { pluralize, resetCooldownTimer, logMessage } = require(`../utils`)
+const { pluralize, resetCooldownTimer, logMessage, containsInaccessibleEmotes, containsUnrecognizedEmotes } = require(`../utils`)
 
 function checkStreak(bot, chatroom, message) {
     const channel = chatroom.substring(1)
@@ -16,6 +16,8 @@ function checkStreak(bot, chatroom, message) {
             if (streakCount >= 2) { logMessage([`> checkStreak("${message}")`, streakCount, `/ ${settings.streakThreshold} - ${streakUsers.join(`, `)}`]) }
         }
         if (streakCount >= settings.streakThreshold) {
+            if (containsInaccessibleEmotes(message)) { return logMessage([`-> Not participating in streak because it contains inaccessible emotes`]) }
+            if (containsUnrecognizedEmotes(message)) { return logMessage([`--> Not participating in streak because it may contain unrecognized emotes`]) }
             resetCooldownTimer(channel, `streak`)
             return setTimeout(() => { bot.say(chatroom, message) }, 1000)
         }
