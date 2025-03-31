@@ -2,7 +2,7 @@ const { getContextEmote, logMessage, arrToList } = require(`../utils`)
 
 const units = {
     [/\bf\b|\bfahrenheit\b/i]: { name: `Fahrenheit`, plural: `Fahrenheit`, type: `temperature` },
-    [/\bc\b|\bcelcius\b/i]: { name: `Celcius`, plural: `Celcius`, type: `temperature` },
+    [/\bc\b|\bcelsius\b/i]: { name: `Celsius`, plural: `Celsius`, type: `temperature` },
     [/\bk\b|\bkelvin\b/i]: { name: `Kelvin`, plural: `Kelvin`, type: `temperature` },
     [/\bmms?\b|\bmillimeters?\b/i]: { name: `millimeter`, plural: `millimeters`, type: `length` },
     [/\bcms?\b|\bcentimeters?\b/i]: { name: `centimeter`, plural: `centimeters`, type: `length` },
@@ -35,16 +35,16 @@ const units = {
 const conversionTypes = {
     temperature: {
         Fahrenheit: {
-            Celcius: (num) => ((num - 32) * 5) / 9,
+            Celsius: (num) => ((num - 32) * 5) / 9,
             Kelvin: (num) => ((num - 32) * 5) / 9 + 273.15
         },
-        Celcius: {
+        Celsius: {
             Fahrenheit: (num) => ((9 * num) / 5) + 32,
             Kelvin: (num) => num + 273.15
         },
         Kelvin: {
             Fahrenheit: (num) => ((9 * (num - 273.15)) / 5) + 32,
-            Celcius: (num) => num - 273.15
+            Celsius: (num) => num - 273.15
         }
     },
     length: {
