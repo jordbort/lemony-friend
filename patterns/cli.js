@@ -72,7 +72,7 @@ function updateArr(bot, chatroom, obj, message, name, args) {
                 if (!notFound.includes(element)) { notFound.push(element) }
             }
         }
-        return bot.say(chatroom, `/me ${message} (${pluralize(obj[name].length, `item`, `items`)}), removed ${removals.length}${removals.length ? `: ${removals.join(` `)}` : ``}${ignored.length ? `, not found: ${ignored.join(` `)}` : ``}`)
+        return bot.say(chatroom, `/me ${message} (${pluralize(obj[name].length, `item`, `items`)}), removed ${removals.length}${removals.length ? `: ${removals.join(` `)}` : ``}${notFound.length ? `, not found: ${notFound.join(` `)}` : ``}`)
     }
 
     const additions = []
@@ -202,7 +202,7 @@ function updateContextEmotes(bot, chatroom, obj, message, name, args) {
         if (regex.test(args[0])) {
             logMessage([`-> Channel "${channel}" option "${args[0]}" matched:`, regex, `[Function: ${options[regex].func.name}]`])
             args.shift()
-            return options[regex].func(bot, chatroom, obj.contextEmotes, `Channel ${channel} contextEmotes "${options[regex].name}"`, options[regex].name, args)
+            return options[regex].func(bot, chatroom, obj.contextEmotes, `${message.replace(`"`, ``)} "${options[regex].name}"`, options[regex].name, args)
         }
     }
 
@@ -495,11 +495,11 @@ function updateTimer(bot, chatroom, obj, message, name, args) {
         const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
         if (regex.test(setting)) {
             logMessage([`-> Timer "${timer}" setting "${setting}" matched:`, regex, `[Function: ${options[regex].func.name}]`])
-            return options[regex].func(bot, chatroom, obj[name][timer], `${message} ${timer} "${options[regex].name}"`, options[regex].name, args)
+            return options[regex].func(bot, chatroom, obj[name][timer], `${message.replace(`"timers"`, `timer`)} ${timer} "${options[regex].name}"`, options[regex].name, args)
         }
     }
 
-    bot.say(chatroom, `/me Options for ${channel} timer "${timer}": cooldown (cd), listening (l)`)
+    bot.say(chatroom, `/me Options for timer "${timer}": cooldown (cd), listening (l)`)
 }
 
 module.exports = {
