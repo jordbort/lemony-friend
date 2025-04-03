@@ -86,7 +86,10 @@ module.exports = {
     },
     async getPokemon(props) {
         const { bot, chatroom, args, channel } = props
-        const pokemon = args[0]?.toLowerCase().replace(/[\\{`}%^|]/g, ``)
+        const pokemon = args
+            .join(`-`)
+            .toLowerCase()
+            .replace(/[\\{`}%^|]/g, ``)
         logMessage([`> getPokemon(chatroom: ${chatroom}, pokemon: ${pokemon})`])
 
         if (!pokemon) { return logMessage([`-> No Pokemon provided`]) }
