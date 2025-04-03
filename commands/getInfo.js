@@ -8,8 +8,8 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Corrected !convert spelling of "celsius"`,
-            `Implemented checks for inaccessible and potentially unrecognized emotes`
+            `Updated emote recognition pattern`,
+            `Fixed bug with looking up recognized emotes`
         ]
 
         const timeOptions = {
