@@ -8,7 +8,7 @@ const { settings, resetTxt, grayTxt, whiteTxt, yellowBg, chatColors } = require(
 const { lemonyFresh, mods, users, knownTags, lemCmds, wordBank, commonNicknames, startingLemons, hangmanWins } = require(`./data`)
 
 const twitchUsernamePattern = /^[a-z0-9_]{4,25}$/i
-const emotePattern = /\b([a-z0-9]{3,10}[A-Z0-9][a-zA-Z0-9]{0,19})\b/
+const emotePattern = /\b([a-z][a-z0-9]{2,9}[A-Z0-9][a-zA-Z0-9]{0,19})\b/
 
 function makeLogs(arr) {
     let logs = `🍋️ LEMONY LOGS 🍋️\n`
@@ -1430,9 +1430,14 @@ module.exports = {
     },
     containsUnrecognizedEmotes(str) {
         if (emotePattern.test(str)) {
-            const allEmotes = Object.keys(lemonyFresh).map(channel => lemonyFresh[channel].emotes).flat()
-            const unrecognizedEmotes = str.split(emotePattern).filter((emote, idx) => !allEmotes.includes(emote) && (idx + 1) % 2 === 0)
-            if (unrecognizedEmotes.length) logMessage([`> containsUnrecognizedEmotes(str: '${str}')\n->`, unrecognizedEmotes.join(`, `)])
+            const allEmotes = [
+                ...Object.keys(lemonyFresh).map(channel => lemonyFresh[channel].emotes),
+                ...Object.keys(lemonyFresh).map(channel => lemonyFresh[channel].bttvEmotes)
+            ].flat()
+            const unrecognizedEmotes = str
+                .split(emotePattern)
+                .filter((emote, idx) => !allEmotes.includes(emote) && (idx + 1) % 2 === 0)
+            if (unrecognizedEmotes.length) logMessage([`> containsUnrecognizedEmotes: ${unrecognizedEmotes.join(`, `)}`])
             return true
         }
         return false
