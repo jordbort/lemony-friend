@@ -4,6 +4,12 @@ const { lemonyFresh, users } = require(`../data`)
 const { validTimeZones, validLocales } = require(`../commands/time`)
 const { getContextEmote, getToUser, pluralize, logMessage } = require(`../utils`)
 
+const makeList = (obj) => Object.keys(obj)
+    .map(pattern => pattern.split(/\^([^?]+)\??\$\|\^([^?]+)\$/i)
+        .slice(1, 3))
+    .map(arr => `${arr[0]} (${arr[1]})`)
+    .join(`, `)
+
 function updateTimeZone(bot, chatroom, obj, message, name, args) {
     logMessage([`> updateTimeZone(chatroom: '${chatroom}', name: '${name}', args:`, args.join(`, `), `)`])
     const input = args.join(` `)
@@ -245,7 +251,7 @@ function updateChannelDev(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for channel "${toUser}": timers (t), rollFunNumber (rfn), emotes (e), bttvEmotes (bttv), contextEmotes (ce), subRaidMessage (srm), noSubRaidMessage (nsrm), funnyCommands (fc), redeems (r), funTimerGuesser (ftg)`)
+    bot.say(chatroom, `/me Options for channel "${toUser}": ${makeList(options)}`)
 }
 
 function updateChannel(props, args) {
@@ -272,7 +278,7 @@ function updateChannel(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for channel "${channel}": timers (t), rollFunNumber (rfn), emotes (e), bttvEmotes (bttv), subRaidMessage (srm), noSubRaidMessage (nsrm)`)
+    bot.say(chatroom, `/me Options for channel "${channel}": ${makeList(options)}`)
 }
 
 function updateUserDev(props, args) {
@@ -322,7 +328,7 @@ function updateUserDev(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for user "${toUser}": displayName (dn), nickname (nn), lemons (l), hangmanWins (hw), away (a), awayMessage (am), delete (d)`)
+    bot.say(chatroom, `/me Options for user "${toUser}": ${makeList(options)}`)
 }
 
 function updateUser(props, args) {
@@ -370,6 +376,7 @@ function updateUser(props, args) {
         }
     }
 
+    bot.say(chatroom, `/me Options for user "${toUser}": ${makeList(options)}`)
 }
 
 function updateGlobalEmotes(bot, chatroom, obj, message, name, args) {
@@ -403,29 +410,30 @@ function updateSettingsDev(props, args) {
     const options = {
         [/^debug$|^d$/i]: { name: `debug`, func: updateBool },
         [/^autoBan$|^ab$/i]: { name: `autoBan`, func: updatePhraseArr },
-        [/^ignoredBots$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
         [/^playPCG$|^pcg$/i]: { name: `playPCG`, func: updateBool },
         [/^pokeballQuantity$|^pq$/i]: { name: `pokeballQuantity`, func: updateNum },
         [/^usedPokeball$|^up$/i]: { name: `usedPokeball`, func: updateStr },
-        [/^maxCountdownDuration$|^mcd$/i]: { name: `maxCountdownDuration`, func: updateLargeNum },
+        [/^ignoredBots?$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
         [/^timeZone$|^tz$/i]: { name: `timeZone`, func: updateTimeZone },
         // [/^timeLocale$|^tl$/i]: { name: `timeLocale`, func: updateTimeLocale },
         // [/^joinMessage$|^jm$/i]: { name: `joinMessage`, func: updateStr },
+        // [/^maxCountdownDuration$|^mcd$/i]: { name: `maxCountdownDuration`, func: updateLargeNum },
+        // [/^sayJoinMessage$|^sjm$/i]: { name: `sayJoinMessage`, func: updateBool },
+        // [/^sayPartMessage$|^spm$/i]: { name: `sayPartMessage`, func: updateBool },
         // [/^highlightBotMessage$|^hbm$/i]: { name: `highlightBotMessage`, func: updateBool },
         // [/^logTime$|^lt$/i]: { name: `logTime`, func: updateBool },
         // [/^hideNonDevChannel$|^hndc$/i]: { name: `hideNonDevChannel`, func: updateBool },
-        // [/^sayJoinMessage$|^sjm$/i]: { name: `sayJoinMessage`, func: updateBool },
-        // [/^sayPartMessage$|^spm$/i]: { name: `sayPartMessage`, func: updateBool },
-        [/^realRPS$|^rps$/i]: { name: `realRPS`, func: updateBool },
         [/^funNumberCount$|^fnc$/i]: { name: `funNumberCount`, func: updateNum },
         [/^funNumberTotal$|^fnt$/i]: { name: `funNumberTotal`, func: updateNum },
         [/^streakThreshold$|^st$/i]: { name: `streakThreshold`, func: updateNum },
         [/^streamerEmoteStreakThreshold$|^sest$/i]: { name: `streamerEmoteStreakThreshold`, func: updateNum },
         // [/^hangmanSignupSeconds$|^hss$/i]: { name: `hangmanSignupSeconds`, func: updateNum },
-        // [/^hangmanChances$|^hc$/i]: { name: `hangmanChances`, func: updateNum },
+        // [/^hangmanChances?$|^hc$/i]: { name: `hangmanChances`, func: updateNum },
         // [/^hangmanLemonThreshold$|^hlt$/i]: { name: `hangmanLemonThreshold`, func: updateNum },
-        [/^chantCount$|^cc$/i]: { name: `chantCount`, func: updateNum },
+        // [/^chantCount$|^cc$/i]: { name: `chantCount`, func: updateNum },
         [/^chantEmote$|^ce$/i]: { name: `chantEmote`, func: updateStr },
+        [/^realRPS$|^rps$/i]: { name: `realRPS`, func: updateBool },
+        [/^globalEmotes$|^ge$/i]: { name: `globalEmotes`, func: updateGlobalEmotes },
         [/^botMood$|^m$/i]: { name: `botMood`, func: updateStr }
     }
 
@@ -438,7 +446,7 @@ function updateSettingsDev(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for "settings": debug (d), autoBan (ab), ignoredBots (ib), playPCG (pcg), pokeballQuantity (pq), usedPokeball (up), maxCountdownDuration (mcd), timeZone (tz), realRPS (rps), funNumberCount (fnc), funNumberTotal (fnt), streakThreshold (st), streamerEmoteStreakThreshold (sest), chantCount (cc), chantEmote (ce), baseEmotes (be), botMood (m)`)
+    bot.say(chatroom, `/me Options for "settings": ${makeList(options)}`)
 }
 
 function updateSettings(props, args) {
@@ -448,7 +456,7 @@ function updateSettings(props, args) {
 
     const options = {
         [/^autoBan$|^ab$/i]: { name: `autoBan`, func: updatePhraseArr },
-        [/^ignoredBots$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
+        [/^ignoredBots?$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
         [/^playPCG$|^pcg$/i]: { name: `playPCG`, func: updateBool },
         [/^pokeballQuantity$|^pq$/i]: { name: `pokeballQuantity`, func: updateNum },
         [/^usedPokeball$|^up$/i]: { name: `usedPokeball`, func: updateStr },
@@ -465,22 +473,22 @@ function updateSettings(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for "settings": autoBan (ab), ignoredBots (ib), playPCG (pcg), pokeballQuantity (pq), usedPokeball (up), chantEmote (ce)`)
+    bot.say(chatroom, `/me Options for "settings": ${makeList(options)}`)
 }
 
 function updateBaseEmotesDev(bot, chatroom, args) {
     logMessage([`> updateBaseEmotesDev(args:`, args.join(`, `), `)`])
 
     const options = {
-        [/^lemon(Emotes)?$|^lem$/i]: { name: `lemonEmotes`, func: updateArr },
-        [/^neutral(Emotes)?$|^neu$/i]: { name: `neutralEmotes`, func: updateArr },
-        [/^hype(Emotes)?$/i]: { name: `hypeEmotes`, func: updateArr },
-        [/^positive(Emotes)?$|^pos$/i]: { name: `positiveEmotes`, func: updateArr },
-        [/^upset(Emotes)?$|^up$/i]: { name: `upsetEmotes`, func: updateArr },
-        [/^negative(Emotes)?$|^neg$/i]: { name: `negativeEmotes`, func: updateArr },
-        [/^greeting(Emotes)?$|^greet$/i]: { name: `greetingEmotes`, func: updateArr },
-        [/^bye(Emotes)?$/i]: { name: `byeEmotes`, func: updateArr },
-        [/^dumb(Emotes)?$|^dumb?$/i]: { name: `dumbEmotes`, func: updateArr }
+        [/^lemon$|^lem$/i]: { name: `lemonEmotes`, func: updateArr },
+        [/^neutral$|^neu$/i]: { name: `neutralEmotes`, func: updateArr },
+        [/^hype$|^h$/i]: { name: `hypeEmotes`, func: updateArr },
+        [/^positive$|^p$/i]: { name: `positiveEmotes`, func: updateArr },
+        [/^upset$|^up$/i]: { name: `upsetEmotes`, func: updateArr },
+        [/^negative$|^neg$/i]: { name: `negativeEmotes`, func: updateArr },
+        [/^greeting$|^g$/i]: { name: `greetingEmotes`, func: updateArr },
+        [/^bye$|^b$/i]: { name: `byeEmotes`, func: updateArr },
+        [/^dumb$|^d$/i]: { name: `dumbEmotes`, func: updateArr }
     }
 
     for (const option in options) {
@@ -492,7 +500,7 @@ function updateBaseEmotesDev(bot, chatroom, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for setting "baseEmotes": lemon (lem), neutral (neu), hype, positive (pos), upset (up), negative (neg), greeting (greet), bye, dumb (dum)`)
+    bot.say(chatroom, `/me Options for setting "baseEmotes": ${makeList(options)}`)
 }
 
 function updateTimer(bot, chatroom, obj, message, name, args) {
@@ -516,7 +524,7 @@ function updateTimer(bot, chatroom, obj, message, name, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for timer "${timer}": cooldown (cd), listening (l)`)
+    bot.say(chatroom, `/me Options for timer "${timer}": ${makeList(options)}`)
 }
 
 module.exports = {
