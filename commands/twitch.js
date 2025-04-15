@@ -665,6 +665,6 @@ module.exports = {
             }
         }
 
-        // delete users[username]
+        delete users[username]
     }
 }
