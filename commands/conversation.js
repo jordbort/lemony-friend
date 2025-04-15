@@ -392,20 +392,24 @@ module.exports = {
         const { bot, chatroom, args } = props
         logMessage([`> chant(chatroom: '${chatroom}', args:`, args, `)`])
 
-        const emotes = Object.keys(lemonyFresh)
-            .filter(key => typeof lemonyFresh[key] === `object` && `emotes` in lemonyFresh[key])
-            .map(channel => lemonyFresh[channel].emotes)
-            .flat()
+        const emotes = [
+            ...Object.keys(lemonyFresh).map(channel => lemonyFresh[channel].emotes),
+            ...Object.keys(lemonyFresh).map(channel => lemonyFresh[channel].bttvEmotes),
+            ...settings.globalEmotes.twitch,
+            ...settings.globalEmotes.bttv
+        ].flat()
 
         const chant = args.map((word) => {
-            return !emotes.includes(word)
-                && !settings.globalEmotes.twitch.includes(word)
-                && !settings.globalEmotes.bttv.includes(word)
-                ? word.toUpperCase()
-                : word
-        })
-        const response = Array(settings.chantCount).fill(`${chant.join(` `)} ${settings.chantEmote}`)
-        return bot.say(chatroom, `📣️ ${response.join(` `)}`)
+            return emotes.includes(word)
+                ? word
+                : word.toUpperCase()
+        }).join(` `)
+
+        const response = Array(settings.chantCount)
+            .fill(`${chant} ${settings.chantEmote}`)
+            .join(` `)
+
+        return bot.say(chatroom, `📣️ ${response}`)
     },
     yell(props) {
         const { bot, message, userNickname, currentTime } = props
