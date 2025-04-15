@@ -6,18 +6,16 @@ const { pluralize, resetCooldownTimer, logMessage, containsInaccessibleEmotes, c
 
 function checkStreak(bot, chatroom, message) {
     const channel = chatroom.substring(1)
-    let streakCount = 0
-    const streakUsers = []
 
+    const streakUsers = []
     for (const username in users) {
         if (username !== BOT_USERNAME && users[username][channel]?.lastMessage === message) {
-            streakCount++
             streakUsers.push(users[username].displayName)
-            if (streakCount >= 2) { logMessage([`> checkStreak("${message}")`, streakCount, `/ ${settings.streakThreshold} - ${streakUsers.join(`, `)}`]) }
+            if (streakUsers.length >= 2) { logMessage([`> checkStreak("${message}")`, streakUsers.length, `/ ${settings.streakThreshold} - ${streakUsers.join(`, `)}`]) }
         }
-        if (streakCount >= settings.streakThreshold) {
+        if (streakUsers.length >= settings.streakThreshold) {
             if (containsInaccessibleEmotes(message)) { return logMessage([`-> Not participating in streak because it contains inaccessible emotes`]) }
-            if (containsUnrecognizedEmotes(message)) { return logMessage([`--> Not participating in streak because it may contain unrecognized emotes`]) }
+            if (containsUnrecognizedEmotes(message)) { return logMessage([`-> Not participating in streak because it may contain unrecognized emotes`]) }
             resetCooldownTimer(channel, `streak`)
             return setTimeout(() => { bot.say(chatroom, message) }, 1000)
         }
