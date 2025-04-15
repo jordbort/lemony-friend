@@ -370,7 +370,24 @@ function updateUser(props, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for user "${toUser}": nickname (nn), away (a), awayMessage (am)`)
+}
+
+function updateGlobalEmotes(bot, chatroom, obj, message, name, args) {
+    const options = {
+        [/^twitch$|^t$/i]: { name: `twitch`, func: updateArr },
+        [/^bttv$|^b$/i]: { name: `bttv`, func: updateArr }
+    }
+
+    for (const option in options) {
+        const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
+        if (regex.test(args[0])) {
+            logMessage([`-> Setting "${name}" option "${args[0]}" matched:`, regex, `[Function: ${options[regex].func.name}]`])
+            args.shift()
+            return options[regex].func(bot, chatroom, obj[name], `Setting globalEmotes "${options[regex].name}"`, options[regex].name, args)
+        }
+    }
+
+    bot.say(chatroom, `/me Options for setting "globalEmotes": twitch (t), bttv (b)`)
 }
 
 function updateSettingsDev(props, args) {
