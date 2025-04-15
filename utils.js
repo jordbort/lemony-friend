@@ -1437,6 +1437,8 @@ module.exports = {
             const unrecognizedEmotes = str
                 .split(emotePattern)
                 .filter((emote, idx) => !allEmotes.includes(emote) && (idx + 1) % 2 === 0)
+                .filter((el, idx, self) => self.indexOf(el) === idx)
+
             if (unrecognizedEmotes.length) logMessage([`> containsUnrecognizedEmotes: ${unrecognizedEmotes.join(`, `)}`])
             return true
         }
