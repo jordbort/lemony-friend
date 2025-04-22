@@ -75,7 +75,7 @@ module.exports = {
         const sharedChat = `source-room-id` in tags
         const isOriginChannel = sharedChat && tags[`room-id`] === tags[`source-room-id`]
         const sourceChannel = sharedChat
-            ? Object.keys(lemonyFresh).filter(key => lemonyFresh[key].id && lemonyFresh[key].id === tags[`source-room-id`])[0]
+            ? Object.keys(lemonyFresh).filter(key => lemonyFresh[key].id && lemonyFresh[key].id === Number(tags[`source-room-id`]))[0]
             : null
         sharedChat
             ? isOriginChannel
