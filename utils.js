@@ -10,6 +10,8 @@ const { lemonyFresh, mods, users, knownTags, lemCmds, wordBank, commonNicknames,
 const twitchUsernamePattern = /^[a-z0-9_]{4,25}$/i
 const emotePattern = /\b([a-z][a-z0-9]{2,9}[A-Z0-9][a-zA-Z0-9]{0,19})\b/
 
+const formatMegabytes = (num) => Math.round(num / 1024 / 1024 * 100) / 100
+
 function makeLogs(arr) {
     let logs = `🍋️ LEMONY LOGS 🍋️\n`
 
@@ -1174,6 +1176,13 @@ module.exports = {
         const { bot, channel, username } = props
         await logMessage([`> dumpMemory(channel: ${channel}, username: ${username})`, `\n`])
         await logMessage([makeLogs(bot.channels)])
+    },
+    getMemoryUsage(props) {
+        const { bot, chatroom } = props
+        const obj = process.memoryUsage()
+        const totalUsage = Object.keys(obj).map(key => obj[key]).reduce((a, b) => a + b)
+        const list = Object.keys(obj).map(key => `${key}: ${formatMegabytes(obj[key])} MB`)
+        bot.say(chatroom, `Currently using ${formatMegabytes(totalUsage)} MB (${list.join(`, `)})`)
     },
     getToUser(str) {
         return str

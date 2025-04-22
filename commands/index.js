@@ -3,6 +3,7 @@ const { useList } = require(`./list`)
 const { useCount } = require(`./count`)
 const { convert } = require(`./convert`)
 const { countdown } = require(`./countdown`)
+const { getMemoryUsage } = require(`../utils`)
 const { rockPaperScissors } = require(`./rps`)
 const { getDocs, getStats } = require(`./help`)
 const { lemonTopThree } = require(`./lemonRank`)
@@ -122,4 +123,6 @@ module.exports = {
     '!define': getDefinition,
     '!definition': getDefinition,
     '!meaning': getDefinition,
+
+    '!usage': getMemoryUsage
 }
