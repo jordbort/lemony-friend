@@ -8,9 +8,7 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Updated Pokemon lookup method`,
-            `Updated emote recognition pattern`,
-            `Fixed bug with looking up recognized emotes`
+            `Improved shared chat logging method`
         ]
 
         const timeOptions = {
