@@ -73,11 +73,16 @@ module.exports = {
 
         // Log incoming message and capture message tags
         const sharedChat = `source-room-id` in tags
-        const originChannel = tags[`room-id`] === tags[`source-room-id`]
+        const isOriginChannel = sharedChat && tags[`room-id`] === tags[`source-room-id`]
+        const sourceChannel = sharedChat
+            ? Object.keys(lemonyFresh).filter(key => lemonyFresh[key].id && lemonyFresh[key].id === tags[`source-room-id`])[0]
+            : null
         sharedChat
-            ? originChannel
+            ? isOriginChannel
                 ? logMessage([msg], time, channel, username, color, self)
-                : logMessage([`${username}'s message also posted in ${channel}'s channel`])
+                : sourceChannel
+                    ? logMessage([`${username}'s message also posted in ${channel}'s channel`])
+                    : logMessage([msg], time, `ID: ${tags[`source-room-id`]}`, username, color, self)
             : logMessage([msg], time, channel, username, color, self)
         tagsListener(tags)
 
@@ -102,7 +107,7 @@ module.exports = {
             : user[channel].sentAt = currentTime
 
         // If shared chat, stop listening here if not the origin channel
-        if (!self && sharedChat && !originChannel) { return }
+        if (!self && sharedChat && !isOriginChannel) { return }
 
         const args = msg.split(` `)
         const command = args.shift().toLowerCase()
