@@ -234,7 +234,10 @@ function givePoints(props) {
     logMessage([`> givePoints(channel: '${channel}', username: '${username}', msgCount: ${msgCount}, points: ${users[BOT_USERNAME][channel]?.points})`])
 
     if (lemonyFresh[channel].viewers.includes(`streamelements`)) {
-        if (users[BOT_USERNAME][channel]?.points <= 0) { return bot.say(chatroom, `!points`) }
+        if (users[BOT_USERNAME][channel]?.points <= 0) {
+            bot.say(chatroom, `!points`)
+            return
+        }
 
         const pointsToGive = `points` in Object(users[BOT_USERNAME][channel])
             ? msgCount * 25 >= users[BOT_USERNAME][channel].points
@@ -389,7 +392,10 @@ function getLurker(props) {
 
     const lurker = notChatted[Math.floor(Math.random() * notChatted.length)]
     logMessage([`> getLurker(channel: '${channel}', lurker: '${lurker}', notChatted.length: ${notChatted.length})`])
-    if (!notChatted.length) { return logMessage([`-> No lurkers found!`]) }
+    if (!notChatted.length) {
+        logMessage([`-> No lurkers found!`])
+        return
+    }
 
     const dumbEmote = getContextEmote(`dumb`, channel)
     bot.say(chatroom, `Has anyone heard from ${lurker}? ${dumbEmote}`)

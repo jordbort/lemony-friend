@@ -14,10 +14,17 @@ function checkStreak(bot, chatroom, message) {
             if (streakUsers.length >= 2) { logMessage([`> checkStreak("${message}")`, streakUsers.length, `/ ${settings.streakThreshold} - ${streakUsers.join(`, `)}`]) }
         }
         if (streakUsers.length >= settings.streakThreshold) {
-            if (containsInaccessibleEmotes(message)) { return logMessage([`-> Not participating in streak because it contains inaccessible emotes`]) }
-            if (containsUnrecognizedEmotes(message)) { return logMessage([`-> Not participating in streak because it may contain unrecognized emotes`]) }
+            if (containsInaccessibleEmotes(message)) {
+                logMessage([`-> Not participating in streak because it contains inaccessible emotes`])
+                return
+            }
+            if (containsUnrecognizedEmotes(message)) {
+                logMessage([`-> Not participating in streak because it may contain unrecognized emotes`])
+                return
+            }
             resetCooldownTimer(channel, `streak`)
-            return setTimeout(() => { bot.say(chatroom, message) }, 1000)
+            setTimeout(() => { bot.say(chatroom, message) }, 1000)
+            break
         }
     }
 }
@@ -41,7 +48,7 @@ function checkStreamerEmoteStreak(bot, chatroom, emoteOwner) {
 
     if (emoteStreakUsers.length >= settings.streamerEmoteStreakThreshold) {
         resetCooldownTimer(channel, `streak`)
-        return emoteReply(bot, chatroom, emoteOwner)
+        emoteReply(bot, chatroom, emoteOwner)
     }
 }
 

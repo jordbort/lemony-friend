@@ -51,7 +51,10 @@ module.exports = {
         const { bot, chatroom, args, channel } = props
         logMessage([`> getDefinition(chatroom: ${chatroom}, args:`, args, `)`])
         const str = args.join(` `).replace(/[\\{`}%^|]/g, ``)
-        if (!str) { return bot.say(chatroom, `Please give me a word to define! :)`) }
+        if (!str) {
+            bot.say(chatroom, `Please give me a word to define! :)`)
+            return
+        }
 
         const endpoint = `https://api.api-ninjas.com/v1/dictionary?word=${str}`
         const options = {
@@ -65,7 +68,7 @@ module.exports = {
         logMessage([`getDefinition`, response.status, renderObj(data, `data`)])
 
         const negativeEmote = getContextEmote(`negative`, channel)
-        if ('error' in data) {
+        if (`error` in data) {
             bot.say(chatroom, `Error: ${data.error} ${negativeEmote}`)
         } else if (!data.valid || !data.definition) {
             bot.say(chatroom, `I don't think "${data.word}" is a word! ${negativeEmote}`)
@@ -92,13 +95,17 @@ module.exports = {
             .replace(/[\\{`}%^|]/g, ``)
         logMessage([`> getPokemon(chatroom: ${chatroom}, pokemon: ${pokemon})`])
 
-        if (!pokemon) { return logMessage([`-> No Pokemon provided`]) }
+        if (!pokemon) {
+            logMessage([`-> No Pokemon provided`])
+            return
+        }
 
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`)
         const negativeEmote = getContextEmote(`negative`, channel)
         if (response.status !== 200) {
             logMessage([`-> ${response.status}: ${response.statusText}`])
-            return bot.say(chatroom, `Pokémon "${pokemon}" was not found! ${negativeEmote}`)
+            bot.say(chatroom, `Pokémon "${pokemon}" was not found! ${negativeEmote}`)
+            return
         }
         const data = await response.json()
 
@@ -218,22 +225,28 @@ module.exports = {
         const negativeEmote = getContextEmote(`negative`, channel)
 
         logMessage([`> getPokemonAbility(chatroom: ${chatroom}, abilityName: '${abilityName}')`])
-        if (!abilityName) { return logMessage([`-> No ability provided`]) }
+        if (!abilityName) {
+            logMessage([`-> No ability provided`])
+            return
+        }
 
         // Special cases
         if (abilityName === `as-one`) {
             const message = `Combines Unnerve (Makes the foe nervous and unable to eat Berries) and Chilling Neigh (Boosts Attack after knocking out a Pokémon)/Grim Neigh (Boosts Special Attack after knocking out a Pokémon)`
-            return bot.say(chatroom, message)
+            bot.say(chatroom, message)
+            return
         }
         if (abilityName === `forewarn`) {
             const message = `When this Pokémon enters battle, it reveals the move with the highest base power known by any opposing Pokémon to all participating trainers. In the event of a tie, one is chosen at random. Moves without a listed base power are assigned one as follows: One-hit KO moves (160), Counter moves (120), Variable power or set damage (80), Any such move not listed (0)`
-            return bot.say(chatroom, message)
+            bot.say(chatroom, message)
+            return
         }
 
         const response = await fetch(`https://pokeapi.co/api/v2/ability/${abilityName}`)
         if (response.status !== 200) {
             logMessage([`-> ${response.status}: ${response.statusText}`])
-            return bot.say(chatroom, `Ability "${args.join(` `)}" not found! ${negativeEmote}`)
+            bot.say(chatroom, `Ability "${args.join(` `)}" not found! ${negativeEmote}`)
+            return
         }
 
         const data = await response.json()

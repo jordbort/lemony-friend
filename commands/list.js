@@ -29,9 +29,7 @@ function addItem(bot, chatroom, args, isModOrVIP) {
     if (newItem) {
         lemonyFresh[channel].list.push(newItem)
         bot.say(chatroom, `Added #${lemonyFresh[channel].list.length - 1} to ${listName}! ${positiveEmote}`)
-    } else {
-        bot.say(chatroom, `Nothing added to ${listName}! ${dumbEmote}`)
-    }
+    } else { bot.say(chatroom, `Nothing added to ${listName}! ${dumbEmote}`) }
 }
 
 function editItem(bot, chatroom, args, isModOrVIP) {
@@ -49,11 +47,17 @@ function editItem(bot, chatroom, args, isModOrVIP) {
 
     const idx = Number(args[1])
     // Index is NaN, zero, or doesn't exist in array
-    if (!idx || !lemonyFresh[channel].list[idx]) { return bot.say(chatroom, `${args[1] ? `#${args[1]}` : `Item`} not found in ${listName}! ${negativeEmote}`) }
+    if (!idx || !lemonyFresh[channel].list[idx]) {
+        bot.say(chatroom, `${args[1] ? `#${args[1]}` : `Item`} not found in ${listName}! ${negativeEmote}`)
+        return
+    }
 
     const updatedItem = args.slice(2).join(` `)
     // No replacement text passed in
-    if (!updatedItem) { return bot.say(chatroom, `#${idx} in ${listName} was not updated! Did you mean to delete it? ${dumbEmote}`) }
+    if (!updatedItem) {
+        bot.say(chatroom, `#${idx} in ${listName} was not updated! Did you mean to delete it? ${dumbEmote}`)
+        return
+    }
 
     lemonyFresh[channel].list[idx] = updatedItem
     bot.say(chatroom, `Updated #${idx} in ${listName} to: "${updatedItem}" ${positiveEmote}`)
@@ -73,7 +77,10 @@ function deleteItem(bot, chatroom, args, isModOrVIP) {
 
     const idx = Number(args[1])
     // Index is NaN, zero, or doesn't exist in array
-    if (!idx || !lemonyFresh[channel].list[idx]) { return bot.say(chatroom, `${args[1] ? `#${args[1]}` : `Item`} not found in ${listName}! ${negativeEmote}`) }
+    if (!idx || !lemonyFresh[channel].list[idx]) {
+        bot.say(chatroom, `${args[1] ? `#${args[1]}` : `Item`} not found in ${listName}! ${negativeEmote}`)
+        return
+    }
 
     lemonyFresh[channel].list.splice(idx, 1)
     bot.say(chatroom, `Deleted #${idx} from ${listName}! ${positiveEmote}`)
@@ -100,8 +107,14 @@ function swapItems(bot, chatroom, args, isModOrVIP) {
     const idxOne = Number(args[1])
     const idxTwo = Number(args[2])
     // Either index is NaN, zero, or doesn't exist in array
-    if (!idxOne || !lemonyFresh[channel].list[idxOne]) { return bot.say(chatroom, `${args[1] ? `#${args[1]}` : `Item`} not found in ${listName}! ${negativeEmote}`) }
-    if (!idxTwo || !lemonyFresh[channel].list[idxTwo]) { return bot.say(chatroom, `${args[2] ? `#${args[2]}` : `Item`} not found in ${listName}! ${negativeEmote}`) }
+    if (!idxOne || !lemonyFresh[channel].list[idxOne]) {
+        bot.say(chatroom, `${args[1] ? `#${args[1]}` : `Item`} not found in ${listName}! ${negativeEmote}`)
+        return
+    }
+    if (!idxTwo || !lemonyFresh[channel].list[idxTwo]) {
+        bot.say(chatroom, `${args[2] ? `#${args[2]}` : `Item`} not found in ${listName}! ${negativeEmote}`)
+        return
+    }
 
     const value = lemonyFresh[channel].list[idxOne]
     lemonyFresh[channel].list[idxOne] = lemonyFresh[channel].list[idxTwo]
@@ -131,8 +144,14 @@ function moveItems(bot, chatroom, args, isModOrVIP) {
     const idxOne = Number(args[1])
     const idxTwo = Number(args[2])
     // Either index is NaN, zero, or doesn't exist in array
-    if (!idxOne || !lemonyFresh[channel].list[idxOne]) { return bot.say(chatroom, `${args[1] ? `#${args[1]}` : `Item`} not found in ${listName}! ${negativeEmote}`) }
-    if (!idxTwo || !lemonyFresh[channel].list[idxTwo]) { return bot.say(chatroom, `${args[2] ? `#${args[2]}` : `Item`} not found in ${listName}! ${negativeEmote}`) }
+    if (!idxOne || !lemonyFresh[channel].list[idxOne]) {
+        bot.say(chatroom, `${args[1] ? `#${args[1]}` : `Item`} not found in ${listName}! ${negativeEmote}`)
+        return
+    }
+    if (!idxTwo || !lemonyFresh[channel].list[idxTwo]) {
+        bot.say(chatroom, `${args[2] ? `#${args[2]}` : `Item`} not found in ${listName}! ${negativeEmote}`)
+        return
+    }
 
     if (idxOne > idxTwo) {
         const value = lemonyFresh[channel].list[idxOne]
@@ -161,7 +180,10 @@ function renameList(bot, chatroom, args, isModOrVIP) {
 
     const currentName = lemonyFresh[channel].list[0]
     const newName = args.slice(1).join(` `)
-    if (currentName === newName) { return bot.say(chatroom, `List name is already ${currentName ? `"${currentName}"` : `blank`}! ${neutralEmote}`) }
+    if (currentName === newName) {
+        bot.say(chatroom, `List name is already ${currentName ? `"${currentName}"` : `blank`}! ${neutralEmote}`)
+        return
+    }
     lemonyFresh[channel].list[0] = newName
     bot.say(chatroom, `List name ${newName ? `updated ${currentName ? `from "${currentName}" ` : ``}to "${newName}"` : `has been reset from "${currentName}"`}! ${positiveEmote}`)
 }
@@ -200,37 +222,70 @@ module.exports = {
         logMessage([`> useList(channel: '${channel}', listName: '${lemonyFresh[channel].list[0]}', items: ${lemonyFresh[channel].list.slice(1).length}, args:`, `'${args.join(`', '`)}')`])
 
         // Get list of all methods
-        if (/^help$/i.test(args[0])) { return getListMethods(bot, chatroom, isModOrVIP) }
+        if (/^help$/i.test(args[0])) {
+            getListMethods(bot, chatroom, isModOrVIP)
+            return
+        }
 
         // Get item by number
-        if (/^-?\d+$/i.test(args[0])) { return getItem(bot, chatroom, Number(args[0])) }
+        if (/^-?\d+$/i.test(args[0])) {
+            getItem(bot, chatroom, Number(args[0]))
+            return
+        }
 
         // Get random item
-        if (/^random$/i.test(args[0])) { return getItem(bot, chatroom, Math.ceil(Math.random() * (lemonyFresh[channel].list.length - 1))) }
+        if (/^random$/i.test(args[0])) {
+            getItem(bot, chatroom, Math.ceil(Math.random() * (lemonyFresh[channel].list.length - 1)))
+            return
+        }
 
         // Add item to list
-        if (/^add$/i.test(args[0])) { return addItem(bot, chatroom, args, isModOrVIP) }
+        if (/^add$/i.test(args[0])) {
+            addItem(bot, chatroom, args, isModOrVIP)
+            return
+        }
 
         // Edit item in list
-        if (/^edit$/i.test(args[0])) { return editItem(bot, chatroom, args, isModOrVIP) }
+        if (/^edit$/i.test(args[0])) {
+            editItem(bot, chatroom, args, isModOrVIP)
+            return
+        }
 
         // Delete item from list
-        if (/^delete$/i.test(args[0])) { return deleteItem(bot, chatroom, args, isModOrVIP) }
+        if (/^delete$/i.test(args[0])) {
+            deleteItem(bot, chatroom, args, isModOrVIP)
+            return
+        }
 
         // Swap/switch items in list
-        if (/^swap$|^switch$/i.test(args[0])) { return swapItems(bot, chatroom, args, isModOrVIP) }
+        if (/^swap$|^switch$/i.test(args[0])) {
+            swapItems(bot, chatroom, args, isModOrVIP)
+            return
+        }
 
         // Move items in list
-        if (/^move$/i.test(args[0])) { return moveItems(bot, chatroom, args, isModOrVIP) }
+        if (/^move$/i.test(args[0])) {
+            moveItems(bot, chatroom, args, isModOrVIP)
+            return
+        }
 
         // Name/rename list
-        if (/^(re)?name$/i.test(args[0])) { return renameList(bot, chatroom, args, isModOrVIP) }
+        if (/^(re)?name$/i.test(args[0])) {
+            renameList(bot, chatroom, args, isModOrVIP)
+            return
+        }
 
         // Clear list contents
-        if (/^clear$/i.test(args[0])) { return clearList(bot, chatroom, false, isModOrVIP) }
+        if (/^clear$/i.test(args[0])) {
+            clearList(bot, chatroom, false, isModOrVIP)
+            return
+        }
 
         // Clear list contents and reset name
-        if (/^reset$/i.test(args[0])) { return clearList(bot, chatroom, true, isModOrVIP) }
+        if (/^reset$/i.test(args[0])) {
+            clearList(bot, chatroom, true, isModOrVIP)
+            return
+        }
 
         // No args, or keyword not recognized
         const listContents = lemonyFresh[channel].list.map((el, idx) => `${idx}) ${el}`)

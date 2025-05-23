@@ -173,6 +173,7 @@ function lemonify(str) {
             && words[i + 1]
             && !reservedKeywords.includes(words[i + 1])
         ) { words[i + 1] = /[^s][s]$/i.test(words[i + 1]) ? `lemons${append.join(``)}` : `lemon${append.join(``)}` }
+
         else if (words[i + 1]) { words[i + 1] = `${words[i + 1]}${append.join(``)}` }
     }
 
@@ -186,7 +187,11 @@ module.exports = {
         const { bot, chatroom, channel, target } = props
         const lemonEmote = getContextEmote(`lemon`, channel)
         const positiveEmote = getContextEmote(`positive`, channel)
-        if (!target) { return bot.say(chatroom, `${lemonEmote}${lemonEmote}${lemonEmote} ${positiveEmote}`) }
+
+        if (!target) {
+            bot.say(chatroom, `${lemonEmote}${lemonEmote}${lemonEmote} ${positiveEmote}`)
+            return
+        }
         const channelMsg = target[channel]?.lastMessage || getRandomChannelMessage(target)
         const lemonMsg = lemonify(channelMsg)
         bot.say(chatroom, lemonMsg)

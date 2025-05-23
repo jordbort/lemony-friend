@@ -86,7 +86,8 @@ module.exports = {
                 hangman.listening = false
                 clearTimeout(hangman.signup)
                 hangman.signup = false
-                return bot.say(chatroom, `Hangman ended! The answer was "${hangman.answer}" ${neutralEmote}`)
+                bot.say(chatroom, `Hangman ended! The answer was "${hangman.answer}" ${neutralEmote}`)
+                return
             }
 
             // Mod can skip the current player
@@ -102,7 +103,7 @@ module.exports = {
             }
 
             const currentPlayer = hangman.players[hangman.currentPlayer]
-            return hangman.signup
+            hangman.signup
                 ? bot.say(chatroom, `A game of Hangman is starting, type !play to join!`)
                 : bot.say(chatroom,
                     `A game of Hangman is already in progress! It's currently ${username === currentPlayer
@@ -110,6 +111,7 @@ module.exports = {
                         : `${users[currentPlayer].displayName}'s`
                     } turn.`
                 )
+            return
         }
 
         hangmanInit(channel, username)
@@ -148,7 +150,7 @@ module.exports = {
 
         // Already guessed letter
         if (hangman.guessedLetters.includes(guess)) {
-            return bot.say(chatroom,
+            bot.say(chatroom,
                 `${userNickname}, the letter${hangman.guessedLetters.length === 1
                     ? ``
                     : `s`
@@ -156,6 +158,7 @@ module.exports = {
                     ? `has`
                     : `have`} already been guessed - try again!`
             )
+            return
         }
         hangman.guessedLetters.push(guess)
 
@@ -171,7 +174,10 @@ module.exports = {
                 if (letter === guess.toLowerCase()) { hangman.spaces[i] = guess }
             }
             // If no spaces left, puzzle has been solved
-            if (!hangman.spaces.includes(`_`)) { return solvePuzzle(bot, chatroom, username) }
+            if (!hangman.spaces.includes(`_`)) {
+                solvePuzzle(bot, chatroom, username)
+                return
+            }
             bot.say(chatroom, `Good job ${userNickname}, ${guess} was in the word! ${hypeEmote} Now it's your turn, ${users[hangman.players[hangman.currentPlayer]].displayName}!`)
         } else {
             // Wrong answer, check for game over
@@ -179,7 +185,8 @@ module.exports = {
             if (hangman.chances === 0) {
                 hangman.listening = false
                 const upsetEmote = getContextEmote(`upset`, channel)
-                return bot.say(chatroom, `Sorry ${userNickname}, ${guess} wasn't in the word! The answer was "${hangman.answer}". Game over! ${upsetEmote}`)
+                bot.say(chatroom, `Sorry ${userNickname}, ${guess} wasn't in the word! The answer was "${hangman.answer}". Game over! ${upsetEmote}`)
+                return
             }
             bot.say(chatroom, `Sorry ${userNickname}, ${guess} wasn't in the word! ${pluralize(hangman.chances, `chance left...`, `chances left!`)} ${negativeEmote} Now it's your turn, ${users[hangman.players[hangman.currentPlayer]].displayName}!`)
         }
@@ -196,14 +203,18 @@ module.exports = {
         const hangman = lemonyFresh[channel].hangman
 
         // Correct guess
-        if (guess === hangman.answer) { return solvePuzzle(bot, chatroom, username) }
+        if (guess === hangman.answer) {
+            solvePuzzle(bot, chatroom, username)
+            return
+        }
 
         // Wrong answer, check for game over
         hangman.chances--
         if (hangman.chances === 0) {
             hangman.listening = false
             const upsetEmote = getContextEmote(`upset`, channel)
-            return bot.say(chatroom, `Sorry ${userNickname}, "${guess}" wasn't the answer! The answer was "${hangman.answer}". Game over! ${upsetEmote}`)
+            bot.say(chatroom, `Sorry ${userNickname}, "${guess}" wasn't the answer! The answer was "${hangman.answer}". Game over! ${upsetEmote}`)
+            return
         }
 
         // Set up for next round

@@ -73,9 +73,7 @@ module.exports = {
             .filter(channel => typeof userObj[channel] === `object`)
             .map(channel => `${pluralize(userObj[channel].msgCount, `message`, `messages`)} in ${channel}'s chat`)
 
-        if (channels.length > 1) {
-            channels[channels.length - 1] = `and ${channels[channels.length - 1]}`
-        }
+        if (channels.length > 1) { channels[channels.length - 1] = `and ${channels[channels.length - 1]}` }
         response += `${channels.length > 2 ? channels.join(`, `) : channels.join(` `)}!`
         bot.say(chatroom, response)
     },

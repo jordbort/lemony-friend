@@ -18,7 +18,8 @@ function updateTimeZone(bot, chatroom, obj, message, name, args) {
         const regex = new RegExp(timeZone.split(`/`).slice(1, timeZone.split(`/`).length - 1).join(`/`), timeZone.split(`/`)[timeZone.split(`/`).length - 1])
         if (regex.test(input)) {
             obj[name] = validTimeZones[regex]
-            return bot.say(chatroom, `/me ${message} set to: ${obj[name]}`)
+            bot.say(chatroom, `/me ${message} set to: ${obj[name]}`)
+            return
         }
     }
 
@@ -33,7 +34,8 @@ function updateTimeLocale(bot, chatroom, obj, message, name, args) {
         const regex = new RegExp(locale.split(`/`).slice(1, locale.split(`/`).length - 1).join(`/`), locale.split(`/`)[locale.split(`/`).length - 1])
         if (regex.test(input)) {
             obj[name] = validLocales[regex]
-            return bot.say(chatroom, `/me ${message} set to: ${obj[name]}`)
+            bot.say(chatroom, `/me ${message} set to: ${obj[name]}`)
+            return
         }
     }
 
@@ -45,12 +47,14 @@ function updateBool(bot, chatroom, obj, message, name, args) {
 
     if (/^true$|^t$/i.test(args[0])) {
         obj[name] = true
-        return bot.say(chatroom, `/me ${message} set to: ${obj[name]}`)
+        bot.say(chatroom, `/me ${message} set to: ${obj[name]}`)
+        return
     }
 
     if (/^false$|^f$/i.test(args[0])) {
         obj[name] = false
-        return bot.say(chatroom, `/me ${message} set to: ${obj[name]}`)
+        bot.say(chatroom, `/me ${message} set to: ${obj[name]}`)
+        return
     }
 
     bot.say(chatroom, `/me ${message} must be "true (t)" or "false (f)" (currently: ${obj[name]})`)
@@ -59,11 +63,15 @@ function updateBool(bot, chatroom, obj, message, name, args) {
 function updateArr(bot, chatroom, obj, message, name, args) {
     logMessage([`> updateArr(chatroom: '${chatroom}', name: '${name}', args:`, args.join(`, `), `)`])
 
-    if (!args.length) { return bot.say(chatroom, `/me ${message} (${pluralize(obj[name].length, `item`, `items`)}): ${obj[name].join(` `)} - Add more, "delete (d)" some, or "clear (c)" all`) }
+    if (!args.length) {
+        bot.say(chatroom, `/me ${message} (${pluralize(obj[name].length, `item`, `items`)}): ${obj[name].join(` `)} - Add more, "delete (d)" some, or "clear (c)" all`)
+        return
+    }
 
     if (/^clear$|^c$/i.test(args[0])) {
         obj[name].length = 0
-        return bot.say(chatroom, `/me ${message} has been cleared`)
+        bot.say(chatroom, `/me ${message} has been cleared`)
+        return
     }
 
     if (/^delete$|^d$/i.test(args[0])) {
@@ -78,7 +86,8 @@ function updateArr(bot, chatroom, obj, message, name, args) {
                 if (!notFound.includes(element)) { notFound.push(element) }
             }
         }
-        return bot.say(chatroom, `/me ${message} (${pluralize(obj[name].length, `item`, `items`)}), removed ${removals.length}${removals.length ? `: ${removals.join(` `)}` : ``}${notFound.length ? `, not found: ${notFound.join(` `)}` : ``}`)
+        bot.say(chatroom, `/me ${message} (${pluralize(obj[name].length, `item`, `items`)}), removed ${removals.length}${removals.length ? `: ${removals.join(` `)}` : ``}${notFound.length ? `, not found: ${notFound.join(` `)}` : ``}`)
+        return
     }
 
     const additions = []
@@ -99,29 +108,39 @@ function updatePhraseArr(bot, chatroom, obj, message, name, args) {
 
     if (/^add$|^a$/i.test(args[0])) {
         args.shift()
-        if (!args.length) { return bot.say(chatroom, `/me ${message}: Nothing to add`) }
+        if (!args.length) {
+            bot.say(chatroom, `/me ${message}: Nothing to add`)
+            return
+        }
         const phrase = args.join(` `)
         obj[name].push(phrase)
-        return bot.say(chatroom, `/me ${message}: Added "${phrase}"`)
+        bot.say(chatroom, `/me ${message}: Added "${phrase}"`)
+        return
     }
 
     if (/^delete$|^d$/i.test(args[0])) {
         args.shift()
-        if (!args.length) { return bot.say(chatroom, `/me ${message}: Nothing to delete`) }
+        if (!args.length) {
+            bot.say(chatroom, `/me ${message}: Nothing to delete`)
+            return
+        }
         const phrase = args.join(` `)
         const regex = new RegExp(`^${phrase}$`, `i`)
         for (const [i, entry] of obj[name].entries()) {
             if (regex.test(entry)) {
                 obj[name].splice(i, 1)
-                return bot.say(chatroom, `/me ${message}: Removed "${entry}" (${obj[name].length} remaining)${obj[name].length ? ` - "${obj[name].join(`", "`)}"` : ``}`)
+                bot.say(chatroom, `/me ${message}: Removed "${entry}" (${obj[name].length} remaining)${obj[name].length ? ` - "${obj[name].join(`", "`)}"` : ``}`)
+                return
             }
         }
-        return bot.say(chatroom, `/me ${message}: Could not find "${phrase}" (${pluralize(obj[name].length, `phrase exists`, `phrases exist`)})${obj[name].length ? ` - "${obj[name].join(`", "`)}"` : ``}`)
+        bot.say(chatroom, `/me ${message}: Could not find "${phrase}" (${pluralize(obj[name].length, `phrase exists`, `phrases exist`)})${obj[name].length ? ` - "${obj[name].join(`", "`)}"` : ``}`)
+        return
     }
 
     if (/^clear$|^c$/i.test(args[0])) {
         obj[name].length = 0
-        return bot.say(chatroom, `/me ${message} has been cleared`)
+        bot.say(chatroom, `/me ${message} has been cleared`)
+        return
     }
 
     bot.say(chatroom, `/me ${message} (${pluralize(obj[name].length, `phrase`, `phrases`)})${obj[name].length ? `: "${obj[name].join(`", "`)}"` : ``} - Use "add (a)" to add one, use "delete (d)" to delete one, or use "clear (c)" to remove all`)
@@ -130,11 +149,15 @@ function updatePhraseArr(bot, chatroom, obj, message, name, args) {
 function updateStr(bot, chatroom, obj, message, name, args) {
     logMessage([`> updateStr(chatroom: '${chatroom}', name: '${name}', args:`, args.join(`, `), `)`])
 
-    if (!args[0]) { return bot.say(chatroom, `/me ${message} is currently: ${obj[name] || `(not set)`} - change it, or use "clear (c)"`) }
+    if (!args[0]) {
+        bot.say(chatroom, `/me ${message} is currently: ${obj[name] || `(not set)`} - change it, or use "clear (c)"`)
+        return
+    }
 
     if (/^clear$|^c$/i.test(args[0])) {
         obj[name] = ``
-        return bot.say(chatroom, `/me ${message} has been cleared`)
+        bot.say(chatroom, `/me ${message} has been cleared`)
+        return
     }
 
     const toUser = getToUser(args[0])
@@ -150,7 +173,8 @@ function updateNum(bot, chatroom, obj, message, name, args) {
 
     if (Number(args[0]) >= 1 && Number(args[0]) <= 100) {
         obj[name] = Math.round(Number(args[0]))
-        return bot.say(chatroom, `/me ${message} set to: ${obj[name]}`)
+        bot.say(chatroom, `/me ${message} set to: ${obj[name]}`)
+        return
     }
 
     bot.say(chatroom, `/me ${message} must be between 1-100 (currently: ${obj[name]})`)
@@ -161,7 +185,8 @@ function updateDuration(bot, chatroom, obj, message, name, args) {
 
     if (Number(args[0]) >= 0 && Number(args[0]) <= 120) {
         obj[name] = Math.round(Number(args[0]))
-        return bot.say(chatroom, `/me ${message} set to: ${obj[name]}`)
+        bot.say(chatroom, `/me ${message} set to: ${obj[name]}`)
+        return
     }
 
     bot.say(chatroom, `/me ${message} must be between 0-120 (currently: ${obj[name]} seconds)`)
@@ -172,7 +197,8 @@ function updateLargeNum(bot, chatroom, obj, message, name, args) {
 
     if (Number(args[0]) >= 1 && Number(args[0]) <= 9999999) {
         obj[name] = Math.round(Number(args[0]))
-        return bot.say(chatroom, `/me ${message} set to: ${obj[name]}`)
+        bot.say(chatroom, `/me ${message} set to: ${obj[name]}`)
+        return
     }
 
     bot.say(chatroom, `/me ${message} must be between 1-9999999 (currently: ${obj[name]})`)
@@ -208,7 +234,8 @@ function updateContextEmotes(bot, chatroom, obj, message, name, args) {
         if (regex.test(args[0])) {
             logMessage([`-> Channel "${channel}" option "${args[0]}" matched:`, regex, `[Function: ${options[regex].func.name}]`])
             args.shift()
-            return options[regex].func(bot, chatroom, obj.contextEmotes, `${message.replace(`"`, ``)} "${options[regex].name}"`, options[regex].name, args)
+            options[regex].func(bot, chatroom, obj.contextEmotes, `${message.replace(`"`, ``)} "${options[regex].name}"`, options[regex].name, args)
+            return
         }
     }
 
@@ -227,7 +254,10 @@ function updateChannelDev(props, args) {
     logMessage([`> updateChannel(username, '${username}', channel, '${channel}', args:`, args.join(`, `), `)`])
 
     const toUser = getToUser(args.shift())
-    if (!(toUser in lemonyFresh)) { return bot.say(chatroom, `/me Please specify a valid channel: ${Object.keys(lemonyFresh).join(`, `)}`) }
+    if (!(toUser in lemonyFresh)) {
+        bot.say(chatroom, `/me Please specify a valid channel: ${Object.keys(lemonyFresh).join(`, `)}`)
+        return
+    }
 
     const options = {
         [/^timers?$|^t$/i]: { name: `timers`, func: updateTimer },
@@ -247,7 +277,8 @@ function updateChannelDev(props, args) {
         if (regex.test(args[0])) {
             logMessage([`-> Channel ${toUser} option "${args[0]}" matched:`, regex, `[Function: ${options[regex].func.name}]`])
             args.shift()
-            return options[regex].func(bot, chatroom, lemonyFresh[toUser], `Channel ${toUser} "${options[regex].name}"`, options[regex].name, args)
+            options[regex].func(bot, chatroom, lemonyFresh[toUser], `Channel ${toUser} "${options[regex].name}"`, options[regex].name, args)
+            return
         }
     }
 
@@ -274,7 +305,8 @@ function updateChannel(props, args) {
         if (regex.test(args[0])) {
             logMessage([`-> Channel "${channel}" option "${args[0]}" matched:`, regex, `[Function: ${options[regex].func.name}]`])
             args.shift()
-            return options[regex].func(bot, chatroom, lemonyFresh[channel], `Channel ${channel} "${options[regex].name}"`, options[regex].name, args)
+            options[regex].func(bot, chatroom, lemonyFresh[channel], `Channel ${channel} "${options[regex].name}"`, options[regex].name, args)
+            return
         }
     }
 
@@ -287,7 +319,10 @@ function updateUserDev(props, args) {
     logMessage([`> updateUserDev(username, '${username}', args:`, args.join(`, `), `)`])
 
     const toUser = getToUser(args[0])
-    if (!(toUser in users)) { return bot.say(chatroom, `/me Please specify one of ${(Object.keys(users).length).toLocaleString(settings.timeLocale)} valid users`) }
+    if (!(toUser in users)) {
+        bot.say(chatroom, `/me Please specify one of ${(Object.keys(users).length).toLocaleString(settings.timeLocale)} valid users`)
+        return
+    }
 
     const options = {
         [/^displayName$|^dn$/i]: { name: `displayName`, func: updateStr },
@@ -337,7 +372,10 @@ function updateUser(props, args) {
     logMessage([`> updateUser(username, '${username}', args:`, args.join(`, `), `)`])
 
     const toUser = getToUser(args[0])
-    if (!(toUser in users)) { return bot.say(chatroom, `/me Please specify one of ${(Object.keys(users).length).toLocaleString(settings.timeLocale)} valid users`) }
+    if (!(toUser in users)) {
+        bot.say(chatroom, `/me Please specify one of ${(Object.keys(users).length).toLocaleString(settings.timeLocale)} valid users`)
+        return
+    }
 
     const options = {
         [/^nickname$|^nn$/i]: { name: `nickname`, func: updateStr },
@@ -390,7 +428,8 @@ function updateGlobalEmotes(bot, chatroom, obj, message, name, args) {
         if (regex.test(args[0])) {
             logMessage([`-> Setting "${name}" option "${args[0]}" matched:`, regex, `[Function: ${options[regex].func.name}]`])
             args.shift()
-            return options[regex].func(bot, chatroom, obj[name], `Setting globalEmotes "${options[regex].name}"`, options[regex].name, args)
+            options[regex].func(bot, chatroom, obj[name], `Setting globalEmotes "${options[regex].name}"`, options[regex].name, args)
+            return
         }
     }
 
@@ -442,7 +481,8 @@ function updateSettingsDev(props, args) {
         if (regex.test(args[0])) {
             logMessage([`-> Setting "${args[0]}" matched:`, regex, `[Function: ${options[regex].func.name}]`])
             args.shift()
-            return options[regex].func(bot, chatroom, settings, `Setting "${options[regex].name}"`, options[regex].name, args)
+            options[regex].func(bot, chatroom, settings, `Setting "${options[regex].name}"`, options[regex].name, args)
+            return
         }
     }
 
@@ -469,7 +509,8 @@ function updateSettings(props, args) {
         if (regex.test(args[0])) {
             logMessage([`-> Setting "${args[0]}" matched:`, regex, `[Function: ${options[regex].func.name}]`])
             args.shift()
-            return options[regex].func(bot, chatroom, settings, `Setting "${options[regex].name}"`, options[regex].name, args)
+            options[regex].func(bot, chatroom, settings, `Setting "${options[regex].name}"`, options[regex].name, args)
+            return
         }
     }
 
@@ -496,7 +537,8 @@ function updateBaseEmotesDev(bot, chatroom, args) {
         if (regex.test(args[0])) {
             logMessage([`-> Emotes option "${args[0]}" matched:`, regex, `[Function: ${options[regex].func.name}]`])
             args.shift()
-            return options[regex].func(bot, chatroom, settings.baseEmotes, `Setting baseEmotes "${options[regex].name}"`, options[regex].name, args)
+            options[regex].func(bot, chatroom, settings.baseEmotes, `Setting baseEmotes "${options[regex].name}"`, options[regex].name, args)
+            return
         }
     }
 
@@ -508,7 +550,10 @@ function updateTimer(bot, chatroom, obj, message, name, args) {
     logMessage([`> updateTimer(channel, ${channel}, args:`, args.join(`, `), `)`])
 
     const timer = args.shift()
-    if (!(timer in obj[name])) { return bot.say(chatroom, `/me Please specify a valid timer: ${Object.keys(obj[name]).join(`, `)}`) }
+    if (!(timer in obj[name])) {
+        bot.say(chatroom, `/me Please specify a valid timer: ${Object.keys(obj[name]).join(`, `)}`)
+        return
+    }
 
     const options = {
         [/^cooldown$|^cd$/i]: { name: `cooldown`, func: updateDuration },
@@ -520,7 +565,8 @@ function updateTimer(bot, chatroom, obj, message, name, args) {
         const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
         if (regex.test(setting)) {
             logMessage([`-> Timer "${timer}" setting "${setting}" matched:`, regex, `[Function: ${options[regex].func.name}]`])
-            return options[regex].func(bot, chatroom, obj[name][timer], `${message.replace(`"timers"`, `timer`)} ${timer} "${options[regex].name}"`, options[regex].name, args)
+            options[regex].func(bot, chatroom, obj[name][timer], `${message.replace(`"timers"`, `timer`)} ${timer} "${options[regex].name}"`, options[regex].name, args)
+            return
         }
     }
 
@@ -544,7 +590,8 @@ module.exports = {
                 const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
                 if (regex.test(args[0])) {
                     logMessage([`-> Dev ${username} matched:`, regex, `[Function: ${options[regex].name}]`])
-                    return options[regex](props, args)
+                    options[regex](props, args)
+                    return
                 }
             }
         }
@@ -559,7 +606,8 @@ module.exports = {
                 const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
                 if (regex.test(args[0])) {
                     logMessage([`-> Streamer/mod ${username} matched:`, regex, `[Function: ${options[regex].name}]`])
-                    return options[regex](props, args)
+                    options[regex](props, args)
+                    return
                 }
             }
         }
@@ -575,7 +623,8 @@ module.exports = {
                 if (regex.test(args[0])) {
                     logMessage([`-> Streamer ${username} matched:`, regex, `[Function: ${options[regex].name}]`])
                     props.channel = username
-                    return options[regex](props, args)
+                    options[regex](props, args)
+                    return
                 }
             }
         }

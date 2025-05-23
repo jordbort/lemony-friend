@@ -54,7 +54,10 @@ module.exports = {
         }
     },
     onWhisperHandler(fromRoom, tags, message, err) {
-        if (err) { return console.log(err) }
+        if (err) {
+            console.log(err)
+            return
+        }
         logMessage([`> ${BOT_USERNAME} received a whisper from ${fromRoom}: ${message}`])
         if (/^tags$/i.test(message)) { console.log(tags) }
     },
@@ -96,7 +99,7 @@ module.exports = {
             : user[channel].sentAt = currentTime
 
         // If shared chat, stop listening here if not the origin channel
-        if (!self && sharedChat && !isOriginChannel) { return }
+        if (`source-room-id` in tags && tags[`room-id`] !== tags[`source-room-id`]) { return }
 
         const args = msg.split(` `)
         const command = args.shift().toLowerCase()
@@ -137,7 +140,10 @@ module.exports = {
         if (self) { return }
 
         // Acknowledge color change
-        if (colorChange) { return handleColorChange(props) }
+        if (colorChange) {
+            handleColorChange(props)
+            return
+        }
 
         // Acknowledge gigantified emote
         if (tags[`msg-id`] === `gigantified-emote-message`) {
@@ -155,13 +161,15 @@ module.exports = {
         if (username === DEV) {
             if (command in dev) {
                 logMessage([`MATCHED DEV COMMAND:`, command, `[Function: ${dev[command].name}]`])
-                return dev[command](props)
+                dev[command](props)
+                return
             }
         }
         if (msg.startsWith(`!`)) {
             if (command in commands) {
                 logMessage([`MATCHED COMMAND:`, command, `[Function: ${commands[command].name}]`])
-                return commands[command](props)
+                commands[command](props)
+                return
             } else if (!(command in lemCmds)) { logMessage([`COMMAND NOT RECOGNIZED`]) }
         }
 
@@ -169,7 +177,10 @@ module.exports = {
         if (tags[`first-msg`]) { return handleNewChatter(props) }
 
         // User is the funTimerGuesser and making an attempt
-        if (lemonyFresh[channel].funTimerGuesser === username && /\b\d+\b/.test(msg)) { return funTimerGuess(props) }
+        if (lemonyFresh[channel].funTimerGuesser === username && /\b\d+\b/.test(msg)) {
+            funTimerGuess(props)
+            return
+        }
 
         /***********\
         REGEX PARSERS
@@ -179,7 +190,8 @@ module.exports = {
             const regex = new RegExp(pattern.split(`/`)[1], pattern.split(`/`)[2])
             if (regex.test(msg)) {
                 logMessage([`MESSAGE MATCHED REGEX PATTERN:`, regex, `[Function: ${patterns[regex].name}]`])
-                return patterns[regex](props, msg.split(regex))
+                patterns[regex](props, msg.split(regex))
+                return
             }
         }
 
@@ -190,14 +202,16 @@ module.exports = {
                     const regex = new RegExp(pattern.split(`/`)[1], pattern.split(`/`)[2])
                     if (regex.test(msg)) {
                         logMessage([`${username.toUpperCase()} MATCHED REGEX PATTERN:`, regex, `[Function: ${botInteraction[regex].name}]`])
-                        return botInteraction[regex](props, msg.split(regex))
+                        botInteraction[regex](props, msg.split(regex))
+                        return
                     }
                 }
                 logMessage([`${username.toUpperCase()} DID NOT MATCH REGEX PATTERNS`])
             }
             if (!(`points` in Object(users[BOT_USERNAME][channel])) && username === `streamelements`) {
                 users[BOT_USERNAME][channel].points = 0
-                return this.say(chatroom, `!points`)
+                this.say(chatroom, `!points`)
+                return
             }
         }
 
@@ -207,7 +221,8 @@ module.exports = {
                 const regex = new RegExp(pattern.split(`/`)[1], pattern.split(`/`)[2])
                 if (regex.test(msg)) {
                     logMessage([`BOT MENTION MATCHED REGEX PATTERN:`, regex, `[Function: ${botMention[regex].name}]`])
-                    return botMention[regex](props, msg.split(regex))
+                    botMention[regex](props, msg.split(regex))
+                    return
                 }
             }
             logMessage([`BOT MENTION DID NOT MATCH REGEX PATTERNS`])
@@ -216,29 +231,50 @@ module.exports = {
         // If hangman has started, and it's the current player's turn
         const hangman = lemonyFresh[channel].hangman
         if (hangman.listening && !hangman.signup && username === hangman.players[hangman.currentPlayer]) {
-            if (/^[a-z]$/i.test(msg)) { return checkLetter(props) }
-            if (/^[a-z]{2,}$/i.test(msg) && msg.length === hangman.answer.length) { return checkWord(props) }
+            if (/^[a-z]$/i.test(msg)) {
+                checkLetter(props)
+                return
+            }
+            if (/^[a-z]{2,}$/i.test(msg) && msg.length === hangman.answer.length) {
+                checkWord(props)
+                return
+            }
             logMessage([`NOT A HANGMAN GUESS`])
         }
 
         // Check for lemonCommand
-        if (command in lemCmds) { return useLemCmd(props) }
+        if (command in lemCmds) {
+            useLemCmd(props)
+            return
+        }
 
         // Listening for a message to be repeated by at least two other users
         if (lemonyFresh[channel].timers.streak.listening) { streakListener(props) }
         else { logMessage([`> checkStreak must wait for 'streak' cooldown`]) }
 
         // *** FUN NUMBER! ***
-        if (user[channel].msgCount % settings.funNumberCount === 0) { return rollFunNumber(props, Math.floor(Math.random() * settings.funNumberTotal)) }
+        if (user[channel].msgCount % settings.funNumberCount === 0) {
+            rollFunNumber(props, Math.floor(Math.random() * settings.funNumberTotal))
+            return
+        }
 
         if (minutesSinceLastMsg > 1
             && minutesSinceLastMsg >= settings.minWelcomeBackMinutes
             && minutesSinceLastMsg < settings.maxWelcomeBackMinutes
-            && ![channel, ...settings.ignoredBots].includes(username)) { return welcomeBack(props) }
+            && ![channel, ...settings.ignoredBots].includes(username)) {
+            welcomeBack(props)
+            return
+        }
 
-        if (user[channel].away && minutesSinceLastMsg > 1) { return welcomeBack(props) }
+        if (user[channel].away && minutesSinceLastMsg > 1) {
+            welcomeBack(props)
+            return
+        }
 
         // In case a user who isn't a bot mentions a user who is away
-        if (!settings.ignoredBots.includes(username)) { reportAway(props) }
+        if (!settings.ignoredBots.includes(username)) {
+            reportAway(props)
+            return
+        }
     }
 }

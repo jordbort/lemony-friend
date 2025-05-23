@@ -20,10 +20,14 @@ module.exports = {
             if (/^set$/i.test(args[0])) {
                 const num = Number(args[1])
 
-                if (isNaN(num)) { return bot.say(chatroom, `${counter ? counter.substring(0, 1).toUpperCase() + counter.substring(1) : `The counter`} cannot be set to "${num}"! ${negativeEmote}`) }
+                if (isNaN(num)) {
+                    bot.say(chatroom, `${counter ? counter.substring(0, 1).toUpperCase() + counter.substring(1) : `The counter`} cannot be set to "${num}"! ${negativeEmote}`)
+                    return
+                }
                 lemonyFresh[channel].count.value = num
 
-                return bot.say(chatroom, `${counter ? counter.substring(0, 1).toUpperCase() + counter.substring(1) : `The counter`} has been set to: ${lemonyFresh[channel].count.value} ${positiveEmote}`)
+                bot.say(chatroom, `${counter ? counter.substring(0, 1).toUpperCase() + counter.substring(1) : `The counter`} has been set to: ${lemonyFresh[channel].count.value} ${positiveEmote}`)
+                return
             }
 
             // NAME the count
@@ -33,9 +37,10 @@ module.exports = {
                     ? args.join(` `)
                     : ""
 
-                return bot.say(chatroom, `The counter ${lemonyFresh[channel].count.name
+                bot.say(chatroom, `The counter ${lemonyFresh[channel].count.name
                     ? `has been renamed "${lemonyFresh[channel].count.name}"!`
                     : `name has been reset!`} ${positiveEmote}`)
+                return
             }
 
             // RESET the count
@@ -43,11 +48,15 @@ module.exports = {
                 lemonyFresh[channel].count.value = 0
                 lemonyFresh[channel].count.name = ""
 
-                return bot.say(chatroom, `The counter has been reset to zero! ${positiveEmote}`)
+                bot.say(chatroom, `The counter has been reset to zero! ${positiveEmote}`)
+                return
             }
 
             // REPORT the count
-            if (!!!args[0]) { return bot.say(chatroom, `Current ${counter || `count`} is: ${count} ${neutralEmote}`) }
+            if (!!!args[0]) {
+                bot.say(chatroom, `Current ${counter || `count`} is: ${count} ${neutralEmote}`)
+                return
+            }
 
             // ADD to the count
             const num = args[0] === `+`
@@ -56,7 +65,10 @@ module.exports = {
                     ? -1
                     : Number(args[0])
 
-            if (isNaN(num)) { return bot.say(chatroom, `"${args.join(` `)}" cannot be added to ${counter || `the count`}! ${negativeEmote}`) }
+            if (isNaN(num)) {
+                bot.say(chatroom, `"${args.join(` `)}" cannot be added to ${counter || `the count`}! ${negativeEmote}`)
+                return
+            }
 
             lemonyFresh[channel].count.value += num
 

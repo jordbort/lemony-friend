@@ -6,15 +6,14 @@ const { getContextEmote, logMessage, renderObj } = require(`../utils`)
 function renderData(obj, objName) {
     const data = [`${objName ? `${objName}: ` : ``}{`]
     if (Object.keys(obj).length) {
-        const keys = Object.keys(obj).map((key) => {
-            return typeof obj[key] === `string`
-                ? `${key}: '${obj[key]}'`
-                : typeof obj[key] === `object`
-                    ? obj[key] === null
-                        ? `${key}: ${obj[key]}`
-                        : `${key}: ${renderData(obj[key], ``)}`
-                    : `${key}: ${obj[key]}`
-        }).join(`, `)
+        const keys = Object.keys(obj).map((key) => typeof obj[key] === `string`
+            ? `${key}: '${obj[key]}'`
+            : typeof obj[key] === `object`
+                ? obj[key] === null
+                    ? `${key}: ${obj[key]}`
+                    : `${key}: ${renderData(obj[key], ``)}`
+                : `${key}: ${obj[key]}`)
+            .join(`, `)
         data.push(keys)
         data.push(`}`)
     } else { data[0] += `}` }

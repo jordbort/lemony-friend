@@ -42,8 +42,7 @@ module.exports = {
 
         if (modStatus) {
             self
-                ? setTimeout(() => bot.say(chatroom, `Thank you for modding me! ${positiveEmote}`)
-                    , 2000)
+                ? setTimeout(() => bot.say(chatroom, `Thank you for modding me! ${positiveEmote}`), 2000)
                 : bot.say(chatroom, `Wow, ${userNickname} became a mod! ${positiveEmote}`)
         } else {
             while (mods[username].isModIn.includes(chatroom)) {
@@ -61,8 +60,7 @@ module.exports = {
 
         if (vipStatus) {
             self
-                ? setTimeout(() => bot.say(chatroom, `Thank you for giving me VIP! ${positiveEmote}`)
-                    , 2000)
+                ? setTimeout(() => bot.say(chatroom, `Thank you for giving me VIP! ${positiveEmote}`), 2000)
                 : bot.say(chatroom, `Wow, ${userNickname} became a VIP! ${positiveEmote}`)
         }
     }

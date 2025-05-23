@@ -80,15 +80,15 @@ module.exports = {
         }, duration))
 
         if (duration > 10000) {
-            lemonyFresh[channel].countdown.lastTen = Number(setTimeout(() => {
-                bot.say(chatroom, `10 seconds remaining!`)
-            }, duration - 10000))
+            lemonyFresh[channel].countdown.lastTen = Number(
+                setTimeout(() => bot.say(chatroom, `10 seconds remaining!`), duration - 10000)
+            )
         }
 
         if (duration >= 30000) {
-            lemonyFresh[channel].countdown.half = Number(setTimeout(() => {
-                bot.say(chatroom, `${duration / 2000} seconds remaining!`)
-            }, duration / 2))
+            lemonyFresh[channel].countdown.half = Number(
+                setTimeout(() => bot.say(chatroom, `${duration / 2000} seconds remaining!`), duration / 2)
+            )
         }
     }
 }

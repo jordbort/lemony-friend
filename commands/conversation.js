@@ -25,14 +25,11 @@ function handleGreetOne(props) {
             `Hey there`
         ]
         const greeting = Math.floor(Math.random() * greetings.length)
-
         let response = `${greetings[greeting]} ${command === `!greet` ? targetNickname || userNickname : userNickname}`
         const greetingEmote = getContextEmote(`greeting`, channel)
 
         // If the greeting is "Howdy"
-        if (greeting === 0) {
-            response += `! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Ram` : greetingEmote}`
-        }
+        if (greeting === 0) { response += `! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Ram` : greetingEmote}` }
         // If there's a comma after the greeting
         else if (greeting < greetings.indexOf(`Hello`)) {
             const appends = [
@@ -58,6 +55,7 @@ function handleGreetOne(props) {
             response += `, ${appends[Math.floor(Math.random() * appends.length)]} ${greetingEmote}`
         }
         bot.say(chatroom, response)
+
     } else { logMessage([`-> Timer in ${channel} 'greet' is not currently listening`]) }
 }
 
@@ -85,6 +83,7 @@ function handleGreetMany(bot, chatroom, arr) {
                 : response.push(`${randomGreeting} ${str} ${greetingEmote}`)
         }
         bot.say(chatroom, response.join(` `))
+
     } else { logMessage([`-> Timer in ${channel} 'massGreet' is not currently listening`]) }
 }
 
@@ -103,12 +102,14 @@ function handleGreetAll(bot, chatroom, username) {
                 const lastChattedAtMins = Number(((currentTime - users[user][channel].sentAt) / 60000).toFixed(2))
                 if (lastChattedAtMins < 60) {
                     usersToGreet.push(users[user].nickname || users[user].displayName)
-                } else {
-                    logMessage([`${user} has not chatted in the past 60 minutes, ignoring...`, lastChattedAtMins])
                 }
             }
         }
-        if (!usersToGreet.length) { return logMessage([`-> No users to greet!`]) }
+
+        if (!usersToGreet.length) {
+            logMessage([`-> No users to greet!`])
+            return
+        }
 
         const greetings = [
             `hello`,
@@ -117,10 +118,10 @@ function handleGreetAll(bot, chatroom, username) {
             `hi`
         ]
         const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)]
-
         const greetingEmote = getContextEmote(`greeting`, channel)
         const response = usersToGreet.map((user) => `${randomGreeting} ${user} ${greetingEmote}`)
         bot.say(chatroom, response.join(` `))
+
     } else { logMessage([`-> Timer in ${channel} 'greetAll' is not currently listening`]) }
 }
 
@@ -135,7 +136,8 @@ module.exports = {
             const regex = new RegExp(phrase, `i`)
             if (regex.test(message)) {
                 logMessage([`${username.toUpperCase()} MATCHED AUTO-BAN PATTERN:`, regex])
-                return autoBanUser(bot, chatroom, username)
+                autoBanUser(bot, chatroom, username)
+                return
             }
         }
 
@@ -155,9 +157,9 @@ module.exports = {
                 `@${user.displayName} welcome 2 ${channelNickname} strem`,
             ]
             const greeting = greetings[Math.floor(Math.random() * greetings.length)]
-
             const greetingEmote = getContextEmote(`greeting`, channel)
             setTimeout(() => bot.say(chatroom, `${greeting} ${greetingEmote}`), 5000)
+
         } else { logMessage([`-> Timer in ${channel} 'newChatter' is not currently listening`]) }
     },
     handleGreet(props) {
@@ -182,7 +184,10 @@ module.exports = {
             resetCooldownTimer(channel, `say-goodnight`)
 
             // In case unknown user is mentioned
-            if (!targetNickname && toUser && !/\b(@?lemony_friend|l+e+m+o+n+y*|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)\b/i.test(message)) { return bot.say(chatroom, `see ya ${args[0]}`) }
+            if (!targetNickname && toUser && !/\b(@?lemony_friend|l+e+m+o+n+y*|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)\b/i.test(message)) {
+                bot.say(chatroom, `see ya ${args[0]}`)
+                return
+            }
 
             const greetings = [
                 `Bye`,
@@ -202,10 +207,10 @@ module.exports = {
                 ]
                 response += `, ${appends[Math.floor(Math.random() * appends.length)]}`
             }
-
             const byeEmote = getContextEmote(`bye`, channel)
             response += `! ${byeEmote}`
             bot.say(chatroom, response)
+
         } else { logMessage([`-> Timer in ${channel} 'sayGoodnight' is not currently listening`]) }
     },
     sayYoureWelcome(props) {
@@ -232,10 +237,10 @@ module.exports = {
                 ]
                 response += ` ${appends[Math.floor(Math.random() * appends.length)]}`
             }
-
             const positiveEmote = getContextEmote(`positive`, channel)
             response += `! ${positiveEmote}`
             bot.say(chatroom, response)
+
         } else { logMessage([`-> Timer in ${channel} 'sayYoureWelcome' is not currently listening`]) }
     },
     sayThanks(props) {
@@ -268,10 +273,10 @@ module.exports = {
                 ]
                 response += ` ${appends[Math.floor(Math.random() * appends.length)]}`
             }
-
             const positiveEmote = getContextEmote(`positive`, channel)
             response += `! ${positiveEmote}`
             bot.say(chatroom, response)
+
         } else { logMessage([`-> Timer in ${channel} 'sayThanks' is not currently listening`]) }
     },
     sayMood(props) {
@@ -329,6 +334,7 @@ module.exports = {
 
             reply += ` ${botMoods[settings.botMood].emote}`
             bot.say(chatroom, reply)
+
         } else { logMessage([`-> Timer in ${channel} 'sayMood' is not currently listening`]) }
     },
     handleRaid(props) {
@@ -360,6 +366,7 @@ module.exports = {
                     bot.say(chatroom, `Thanks for sticking around for the raid! If you're subscribed to the channel, you can use the first raid message, otherwise you can use the second raid message! ${appendEmote}`)
                 }, delay * 2)
             }
+
         } else { logMessage([`-> Timer in ${channel} '!raid' is not currently listening`]) }
     },
     welcomeBack(props) {
@@ -399,17 +406,15 @@ module.exports = {
             ...settings.globalEmotes.bttv
         ].flat()
 
-        const chant = args.map((word) => {
-            return emotes.includes(word)
-                ? word
-                : word.toUpperCase()
-        }).join(` `)
+        const chant = args
+            .map((word) => emotes.includes(word) ? word : word.toUpperCase())
+            .join(` `)
 
         const response = Array(settings.chantCount)
             .fill(`${chant} ${settings.chantEmote}`)
             .join(` `)
 
-        return bot.say(chatroom, `📣️ ${response}`)
+        bot.say(chatroom, `📣️ ${response}`)
     },
     yell(props) {
         const { bot, message, userNickname, currentTime } = props
@@ -427,9 +432,7 @@ module.exports = {
         const recentChannels = Object.keys(mostRecentMessages).filter(channel => currentTime - mostRecentMessages[channel] < 3600000)
         logMessage([`> yell(userNickname: '${userNickname}', recentChannels:`, recentChannels, `)`])
 
-        for (const chatroom of recentChannels) {
-            bot.say(chatroom, `${userNickname} says: ${message.substring(6)}`)
-        }
+        recentChannels.forEach(channel => bot.say(`#${channel}`, `${userNickname} says: ${message.substring(6)}`))
     },
     setAway(props) {
         const { bot, chatroom, args, command, channel, username, user, userNickname } = props
@@ -437,12 +440,14 @@ module.exports = {
 
         user[channel].away = true
         if (args.length) { user[channel].awayMessage = args.join(` `) }
+
         const byeEmote = getContextEmote(`bye`, channel)
         if (command !== `!lurk`) {
             user[channel].awayMessage
                 ? bot.say(chatroom, `See you later, ${userNickname}! I'll pass along your away message if they mention you! ${byeEmote}`)
                 : bot.say(chatroom, `See you later, ${userNickname}! I'll let people know you're away if they mention you! ${byeEmote}`)
         }
+
         // This helps prevent users from being welcomed back in the distant future
         setTimeout(() => {
             user[channel].away = false
@@ -461,8 +466,9 @@ module.exports = {
                 logMessage([`> reportAway(chatroom: '${chatroom}', targetNickname: '${targetNickname}')`])
                 const elapsedTime = Math.round((currentTime - target[channel].sentAt) / 60000)
                 const reply = `${targetNickname} has been away for ~${pluralize(elapsedTime, `minute`, `minutes`)}!${target[channel].awayMessage ? ` Their away message: "${target[channel].awayMessage}"` : ``}`
-                if (elapsedTime > 1) { return bot.say(chatroom, reply) }
-                else { logMessage([`-> ${username} has been away for less than one-minute grace period`]) }
+                elapsedTime > 1
+                    ? bot.say(chatroom, reply)
+                    : logMessage([`-> ${username} has been away for less than one-minute grace period`])
             }
         }
     },

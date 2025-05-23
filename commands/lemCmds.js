@@ -75,20 +75,44 @@ module.exports = {
 
         const positiveEmote = getContextEmote(`positive`, channel)
         const neutralEmote = getContextEmote(`neutral`, channel)
-        if (!args[1]) { return bot.say(chatroom, `Hey ${userNickname}, say "!lemcmd <command_name> <command_response>..." to add/edit a command, or say "!lemcmd delete <command_name>" to delete a command. You can also use !lemcmds to view all of them! ${neutralEmote}`) }
+        if (!args[1]) {
+            bot.say(chatroom, `Hey ${userNickname}, say "!lemcmd <command_name> <command_response>..." to add/edit a command, or say "!lemcmd delete <command_name>" to delete a command. You can also use !lemcmds to view all of them! ${neutralEmote}`)
+            return
+        }
+
 
         const negativeEmote = getContextEmote(`negative`, channel)
         if (/^delete$/i.test(args[0])) {
-            if (!(args[1].toLowerCase() in lemCmds)) { return bot.say(chatroom, `No command "${args[1].toLowerCase()}" was found! ${negativeEmote}`) }
+            if (!(args[1].toLowerCase() in lemCmds)) {
+                bot.say(chatroom, `No command "${args[1].toLowerCase()}" was found! ${negativeEmote}`)
+                return
+            }
+
             delete lemCmds[args[1].toLowerCase()]
             bot.say(chatroom, `Command "${args[1].toLowerCase()}" has been deleted! ${positiveEmote}`)
         } else if (/^check$/i.test(args[0])) {
-            if (!(args[1].toLowerCase() in lemCmds)) { return bot.say(chatroom, `No command "${args[1].toLowerCase()}" was found! ${negativeEmote}`) }
+            if (!(args[1].toLowerCase() in lemCmds)) {
+                bot.say(chatroom, `No command "${args[1].toLowerCase()}" was found! ${negativeEmote}`)
+                return
+            }
+
             bot.say(chatroom, `Command "${args[1].toLowerCase()}" => ${lemCmds[args[1].toLowerCase()]}`)
         } else if (/^rename$/i.test(args[0])) {
-            if (!(args[1].toLowerCase() in lemCmds)) { return bot.say(chatroom, `No command "${args[1].toLowerCase()}" was found! ${negativeEmote}`) }
-            if (!args[2]) { return bot.say(chatroom, `Hey ${userNickname}, I need to know what you want me to rename ${args[1].toLowerCase()} to! :O`) }
-            if (args[2].toLowerCase() in lemCmds) { return bot.say(chatroom, `A command called ${args[2].toLowerCase()} already exists! Try deleting or editing it! ${negativeEmote}`) }
+            if (!(args[1].toLowerCase() in lemCmds)) {
+                bot.say(chatroom, `No command "${args[1].toLowerCase()}" was found! ${negativeEmote}`)
+                return
+            }
+
+            if (!args[2]) {
+                bot.say(chatroom, `Hey ${userNickname}, I need to know what you want me to rename ${args[1].toLowerCase()} to! :O`)
+                return
+            }
+
+            if (args[2].toLowerCase() in lemCmds) {
+                bot.say(chatroom, `A command called ${args[2].toLowerCase()} already exists! Try deleting or editing it! ${negativeEmote}`)
+                return
+            }
+
             lemCmds[args[2].toLowerCase()] = lemCmds[args[1].toLowerCase()]
             delete lemCmds[args[1].toLowerCase()]
             bot.say(chatroom, `Command "${args[1].toLowerCase()}" has been renamed to "${args[2].toLowerCase()}"! ${positiveEmote}`)

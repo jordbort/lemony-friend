@@ -28,10 +28,8 @@ async function getBotToken(props, replyWanted = true) {
     if (response.status === 200) {
         settings.botAccessToken = twitchData.access_token
         if (replyWanted) { bot.say(chatroom, `Updated! My new token expires in ~${Math.round(twitchData.expires_in / 1000 / 60)} minutes! ${hypeEmote}`) }
-    } else {
-        if (replyWanted) {
-            bot.say(chatroom, `Error updating app access token! ${negativeEmote}${twitchData?.message || ``}`)
-        }
+    } else if (replyWanted) {
+        bot.say(chatroom, `Error updating app access token! ${negativeEmote}${twitchData?.message || ``}`)
     }
 }
 
@@ -60,6 +58,7 @@ async function getTwitchUser(props) {
             const finalAttempt = await fetch(endpoint, options)
             const finalAttemptData = await finalAttempt.json()
             logMessage([`getTwitchUser`, finalAttempt.status, `data` in finalAttemptData ? finalAttemptData.data.length ? renderObj(finalAttemptData.data[0], `finalAttemptData.data[0]`) : `finalAttemptData.data: []` : renderObj(finalAttemptData, `finalAttemptData`)])
+
             if (finalAttempt.status === 200) {
                 return finalAttemptData.data[0]
             } else {
@@ -81,7 +80,10 @@ async function refreshToken(props, replyWanted = true) {
 
     const refreshToken = userOrChannel === channel ? lemonyFresh[userOrChannel].refreshToken : mods[userOrChannel]?.refreshToken || lemonyFresh[userOrChannel]?.refreshToken
     const neutralEmote = getContextEmote(`neutral`, channel)
-    if (!refreshToken && replyWanted) { return bot.say(chatroom, `${userOrChannel} is unauthorized! Please use !access and follow the instructions ${neutralEmote}`) }
+    if (!refreshToken && replyWanted) {
+        bot.say(chatroom, `${userOrChannel} is unauthorized! Please use !access and follow the instructions ${neutralEmote}`)
+        return
+    }
 
     const endpoint = `https://id.twitch.tv/oauth2/token`
     const requestBody = `grant_type=refresh_token&refresh_token=${refreshToken}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`
@@ -132,7 +134,10 @@ async function getTwitchChannel(bot, chatroom, broadcaster_id) {
 
     const channel = chatroom.substring(1)
     const negativeEmote = getContextEmote(`negative`, channel)
-    if (response.status !== 200) { return bot.say(chatroom, `${twitchData?.message || `There was a problem getting the channel info!`} ${negativeEmote}`) }
+    if (response.status !== 200) {
+        bot.say(chatroom, `${twitchData?.message || `There was a problem getting the channel info!`} ${negativeEmote}`)
+        return
+    }
     return twitchData.data[0]
 }
 
@@ -153,9 +158,15 @@ module.exports = {
         }
 
         const negativeEmote = getContextEmote(`negative`, channel)
-        if (!lemonyFresh[channel].pollId) { return bot.say(chatroom, `There is no active poll! ${negativeEmote}`) }
+        if (!lemonyFresh[channel].pollId) {
+            bot.say(chatroom, `There is no active poll! ${negativeEmote}`)
+            return
+        }
         const positiveEmote = getContextEmote(`positive`, channel)
-        if (!status) { return bot.say(chatroom, `Use !stoppoll to finish and show the results, or !cancelpoll to remove it! ${positiveEmote}`) }
+        if (!status) {
+            bot.say(chatroom, `Use !stoppoll to finish and show the results, or !cancelpoll to remove it! ${positiveEmote}`)
+            return
+        }
 
         const endpoint = `https://api.twitch.tv/helix/polls?broadcaster_id=${lemonyFresh[channel].id}&id=${lemonyFresh[channel].pollId}&status=${status}`
         const options = {
@@ -189,7 +200,10 @@ module.exports = {
         }
 
         const negativeEmote = getContextEmote(`negative`, channel)
-        if (lemonyFresh[channel].pollId) { return bot.say(chatroom, `There is already a poll in progress! ${negativeEmote}`) }
+        if (lemonyFresh[channel].pollId) {
+            bot.say(chatroom, `There is already a poll in progress! ${negativeEmote}`)
+            return
+        }
 
         const params = str.split(new RegExp(/ ?\/ ?/))
 
@@ -200,21 +214,27 @@ module.exports = {
             const regex = /^<(\d+)>$/
             if (!seconds.match(regex)) {
                 const neutralEmote = getContextEmote(`neutral`, channel)
-                return bot.say(chatroom, `Error: Please don't use angle brackets in the seconds! ${neutralEmote}`)
+                bot.say(chatroom, `Error: Please don't use angle brackets in the seconds! ${neutralEmote}`)
+                return
             } else {
                 duration = Number(seconds.split(regex)[1])
             }
+
         }
         if (isNaN(duration)
             || duration < 15
             || duration > 1800) {
-            return bot.say(chatroom, `Error: Duration should be a number between 15 and 1800, followed by a slash. Try: !poll <seconds> / Title of poll / First choice / Second choice ...`)
+            bot.say(chatroom, `Error: Duration should be a number between 15 and 1800, followed by a slash. Try: !poll <seconds> / Title of poll / First choice / Second choice ...`)
+            return
         }
 
         // Get title and choices
         const title = params.shift()
         // Params length should be more than 2, and shouldn't be longer than 6
-        if (params.length < 2 || params.length > 5) { return bot.say(chatroom, `Error: Between 2-5 choices are allowed. Try: !poll <seconds> / Title of poll / First choice / Second choice ...`) }
+        if (params.length < 2 || params.length > 5) {
+            bot.say(chatroom, `Error: Between 2-5 choices are allowed. Try: !poll <seconds> / Title of poll / First choice / Second choice ...`)
+            return
+        }
         const choices = params.map(choice => { return { title: choice } })
 
         const requestBody = {
@@ -254,8 +274,11 @@ module.exports = {
             if (finalAttempt.status === 200) {
                 bot.say(chatroom, `Poll created, go vote! ${positiveEmote}`)
                 lemonyFresh[channel].pollId = finalAttemptData.data[0].id
-                return setTimeout(() => { lemonyFresh[channel].pollId = `` }, duration * 1000)
-            } else {
+                setTimeout(() => {
+                    lemonyFresh[channel].pollId = ``
+                }, duration * 1000)
+            }
+            else {
                 logMessage([`--> pollStart() failed a second time:`])
                 bot.say(chatroom, `Error${finalAttempt?.message ? `: ${finalAttempt?.message}` : ` creating poll!`} ${negativeEmote}`)
             }
@@ -360,7 +383,10 @@ module.exports = {
         logMessage([`> makeAnnouncement(chatroom: '${chatroom}', commandSuffix: '${[`blue`, `green`, `orange`, `purple`].includes(commandSuffix) ? commandSuffix : `primary`}', username: '${username}', str: '${str}')`])
 
         const negativeEmote = getContextEmote(`negative`, channel)
-        if (!str) { return bot.say(chatroom, `No announcement message provided! ${negativeEmote}`) }
+        if (!str) {
+            bot.say(chatroom, `No announcement message provided! ${negativeEmote}`)
+            return
+        }
 
         const color = [`blue`, `green`, `orange`, `purple`].includes(commandSuffix) ? commandSuffix : `primary`
         const requestBody = {
@@ -426,7 +452,8 @@ module.exports = {
         const accessToken = userOrChannel === channel ? lemonyFresh[userOrChannel].accessToken : mods[userOrChannel]?.accessToken || lemonyFresh[userOrChannel]?.accessToken
         if (!accessToken) {
             const neutralEmote = getContextEmote(`neutral`, channel)
-            return bot.say(chatroom, `${userOrChannel} is unauthorized! Please use !access and follow the instructions ${neutralEmote}`)
+            bot.say(chatroom, `${userOrChannel} is unauthorized! Please use !access and follow the instructions ${neutralEmote}`)
+            return
         }
 
         const endpoint = `https://id.twitch.tv/oauth2/validate`
@@ -579,11 +606,13 @@ module.exports = {
                     const finalAttempt = await fetch(endpoint, options)
                     const finalAttemptData = await finalAttempt.json()
                     logMessage([`banUsers`, finalAttempt.status, `data` in finalAttemptData ? finalAttemptData.data.length ? renderObj(finalAttemptData.data[0], `finalAttemptData.data[0]`) : `finalAttemptData.data: []` : renderObj(finalAttemptData, `finalAttemptData`)])
+
                     if (finalAttempt.status === 400 && finalAttemptData.message === `The user specified in the user_id field is already banned.`) {
                         alreadyBanned.push(userToBan)
                     } else if (finalAttempt.status !== 200) {
                         logMessage([`--> banUsers() failed a second time:`])
-                        return bot.say(chatroom, `Failed to ban user! ${finalAttemptData?.message || `Please update your token scope by using !access again, ${modHasToken ? username : channel}!`} ${negativeEmote}`)
+                        bot.say(chatroom, `Failed to ban user! ${finalAttemptData?.message || `Please update your token scope by using !access again, ${modHasToken ? username : channel}!`} ${negativeEmote}`)
+                        return
                     } else {
                         banned.push(userToBan)
                     }
@@ -613,10 +642,8 @@ module.exports = {
         // Stop if the channel doesn't have an access token
         if (!lemonyFresh[channel].accessToken) {
             logMessage([`-> ${channel} has no access token, can't ban user '${username}'`])
-            return bot.say(chatroom, `Hi, ${users[username].displayName}... ${lemonyFresh[channel].bttvEmotes.includes(`modCheck`)
-                ? `modCheck`
-                : `${greetingEmote}`
-                } Any mods in chat?`)
+            bot.say(chatroom, `Hi, ${users[username].displayName}... ${lemonyFresh[channel].bttvEmotes.includes(`modCheck`) ? `modCheck` : `${greetingEmote}`} Any mods in chat?`)
+            return
         }
 
         const endpoint = `https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${lemonyFresh[channel].id}&moderator_id=${lemonyFresh[channel].id}`
@@ -649,7 +676,8 @@ module.exports = {
             if (finalAttempt.status !== 200) {
                 logMessage([`-> autoBanUser`, finalAttempt.status, renderObj(finalAttemptData, `finalAttemptData`)])
                 logMessage([`--> autoBanUser() failed a second time:`])
-                return bot.say(chatroom, `Failed to ban user! ${finalAttemptData?.message || `Please update your token scope by using !access again!`} ${negativeEmote}`)
+                bot.say(chatroom, `Failed to ban user! ${finalAttemptData?.message || `Please update your token scope by using !access again!`} ${negativeEmote}`)
+                return
             }
             else {
                 logMessage([`-> autoBanUser`, finalAttempt.status, renderObj(finalAttemptData.data[0], `finalAttemptData.data[0]`)])

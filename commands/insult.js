@@ -1,31 +1,27 @@
 const { wordBank } = require(`../data`)
 const { logMessage, pluralize, getContextEmote } = require(`../utils`)
 
-function getIndefiniteArticle(nextWord) { return /^[aeiou]/i.test(nextWord) ? `an ${nextWord}` : `a ${nextWord}` }
+const getIndefiniteArticle = (nextWord) => /^[aeiou]/i.test(nextWord) ? `an ${nextWord}` : `a ${nextWord}`
 
-function makePlural(noun) {
-    return /[^aeiou]y$/i.test(noun)
-        ? `${noun.substring(0, noun.length - 1)}ies`
-        : /(s|z|x|ch|sh)$/i.test(noun)
-            ? `${noun}es`
-            : `${noun}s`
-}
+const makePlural = (noun) => /[^aeiou]y$/i.test(noun)
+    ? `${noun.substring(0, noun.length - 1)}ies`
+    : /(s|z|x|ch|sh)$/i.test(noun)
+        ? `${noun}es`
+        : `${noun}s`
 
-function addVerbSuffix(verb, suffix) {
-    return suffix === `s`
-        ? /(o|s|z|x|ch|sh)$/i.test(verb)
-            ? `${verb}e${suffix}`
-            : /y$/i.test(verb)
-                ? `${verb.substring(0, verb.length - 1)}ie${suffix}`
-                : `${verb}${suffix}`
-        : /[aeiou][^aeiouwxy]$/i.test(verb)
-            ? verb[verb.length - 3] === verb[verb.length - 2]
-                ? `${verb}${suffix}`
-                : `${verb}${verb[verb.length - 1]}${suffix}`
-            : /e$/i.test(verb)
-                ? `${verb.substring(0, verb.length - 1)}${suffix}`
-                : `${verb}${suffix}`
-}
+const addVerbSuffix = (verb, suffix) => suffix === `s`
+    ? /(o|s|z|x|ch|sh)$/i.test(verb)
+        ? `${verb}e${suffix}`
+        : /y$/i.test(verb)
+            ? `${verb.substring(0, verb.length - 1)}ie${suffix}`
+            : `${verb}${suffix}`
+    : /[aeiou][^aeiouwxy]$/i.test(verb)
+        ? verb[verb.length - 3] === verb[verb.length - 2]
+            ? `${verb}${suffix}`
+            : `${verb}${verb[verb.length - 1]}${suffix}`
+        : /e$/i.test(verb)
+            ? `${verb.substring(0, verb.length - 1)}${suffix}`
+            : `${verb}${suffix}`
 
 module.exports = {
     manageVerbs(props) {
@@ -34,11 +30,15 @@ module.exports = {
 
         const neutralEmote = getContextEmote(`neutral`, channel)
         const positiveEmote = getContextEmote(`positive`, channel)
-        if (!args.length) { return bot.say(chatroom, `I know ${pluralize(wordBank.verbs.length, `verb`, `verbs`)}${wordBank.verbs.length ? `: ${wordBank.verbs.join(`, `)} -` : `!`} Please give me more verbs to remember, or say "!verbs delete <list of verbs>" for me to forget some, or "!verbs clear" for me to forget all, ${userNickname}! ${neutralEmote}`) }
+        if (!args.length) {
+            bot.say(chatroom, `I know ${pluralize(wordBank.verbs.length, `verb`, `verbs`)}${wordBank.verbs.length ? `: ${wordBank.verbs.join(`, `)} -` : `!`} Please give me more verbs to remember, or say "!verbs delete <list of verbs>" for me to forget some, or "!verbs clear" for me to forget all, ${userNickname}! ${neutralEmote}`)
+            return
+        }
 
         if (/^clear$|^c$/i.test(args[0])) {
             wordBank.verbs.length = 0
-            return bot.say(chatroom, `Now I know ${wordBank.verbs.length} verbs! ${positiveEmote}`)
+            bot.say(chatroom, `Now I know ${wordBank.verbs.length} verbs! ${positiveEmote}`)
+            return
         }
 
         if (/^delete$|^d$/i.test(args[0])) {
@@ -50,7 +50,8 @@ module.exports = {
                     removals.push(element)
                 }
             }
-            return bot.say(chatroom, `I forgot ${pluralize(removals.length, `verb`, `verbs`)}${removals.length ? `: ${removals.join(`, `)}` : `!`} ${neutralEmote}`)
+            bot.say(chatroom, `I forgot ${pluralize(removals.length, `verb`, `verbs`)}${removals.length ? `: ${removals.join(`, `)}` : `!`} ${neutralEmote}`)
+            return
         }
 
         for (const word of args) { wordBank.verbs.push(word.toLowerCase()) }
@@ -62,11 +63,15 @@ module.exports = {
 
         const neutralEmote = getContextEmote(`neutral`, channel)
         const positiveEmote = getContextEmote(`positive`, channel)
-        if (!args.length) { return bot.say(chatroom, `I know ${pluralize(wordBank.nouns.length, `noun`, `nouns`)}${wordBank.nouns.length ? `: ${wordBank.nouns.join(`, `)} -` : `!`} Please give me more nouns to remember, or say "!nouns delete <list of nouns>" for me to forget some, or "!nouns clear" for me to forget all, ${userNickname}! ${neutralEmote}`) }
+        if (!args.length) {
+            bot.say(chatroom, `I know ${pluralize(wordBank.nouns.length, `noun`, `nouns`)}${wordBank.nouns.length ? `: ${wordBank.nouns.join(`, `)} -` : `!`} Please give me more nouns to remember, or say "!nouns delete <list of nouns>" for me to forget some, or "!nouns clear" for me to forget all, ${userNickname}! ${neutralEmote}`)
+            return
+        }
 
         if (/^clear$|^c$/i.test(args[0])) {
             wordBank.nouns.length = 0
-            return bot.say(chatroom, `Now I know ${wordBank.nouns.length} nouns! ${positiveEmote}`)
+            bot.say(chatroom, `Now I know ${wordBank.nouns.length} nouns! ${positiveEmote}`)
+            return
         }
 
         if (/^delete$|^d$/i.test(args[0])) {
@@ -78,7 +83,8 @@ module.exports = {
                     removals.push(element)
                 }
             }
-            return bot.say(chatroom, `I forgot ${pluralize(removals.length, `noun`, `nouns`)}${removals.length ? `: ${removals.join(`, `)}` : `!`} ${neutralEmote}`)
+            bot.say(chatroom, `I forgot ${pluralize(removals.length, `noun`, `nouns`)}${removals.length ? `: ${removals.join(`, `)}` : `!`} ${neutralEmote}`)
+            return
         }
 
         for (const word of args) { wordBank.nouns.push(word.toLowerCase()) }
@@ -90,11 +96,15 @@ module.exports = {
 
         const neutralEmote = getContextEmote(`neutral`, channel)
         const positiveEmote = getContextEmote(`positive`, channel)
-        if (!args.length) { return bot.say(chatroom, `I know ${pluralize(wordBank.adjectives.length, `adjective`, `adjectives`)}${wordBank.adjectives.length ? `: ${wordBank.adjectives.join(`, `)} -` : `!`} Please give me more adjectives to remember, or say "!adjectives delete <list of adjectives>" for me to forget some, or "!adjectives clear" for me to forget all, ${userNickname}! ${neutralEmote}`) }
+        if (!args.length) {
+            bot.say(chatroom, `I know ${pluralize(wordBank.adjectives.length, `adjective`, `adjectives`)}${wordBank.adjectives.length ? `: ${wordBank.adjectives.join(`, `)} -` : `!`} Please give me more adjectives to remember, or say "!adjectives delete <list of adjectives>" for me to forget some, or "!adjectives clear" for me to forget all, ${userNickname}! ${neutralEmote}`)
+            return
+        }
 
         if (/^clear$|^c$/i.test(args[0])) {
             wordBank.adjectives.length = 0
-            return bot.say(chatroom, `Now I know ${wordBank.adjectives.length} adjectives! ${positiveEmote}`)
+            bot.say(chatroom, `Now I know ${wordBank.adjectives.length} adjectives! ${positiveEmote}`)
+            return
         }
 
         if (/^delete$|^d$/i.test(args[0])) {
@@ -106,7 +116,8 @@ module.exports = {
                     removals.push(element)
                 }
             }
-            return bot.say(chatroom, `I forgot ${pluralize(removals.length, `adjective`, `adjectives`)}${removals.length ? `: ${removals.join(`, `)}` : `!`} ${neutralEmote}`)
+            bot.say(chatroom, `I forgot ${pluralize(removals.length, `adjective`, `adjectives`)}${removals.length ? `: ${removals.join(`, `)}` : `!`} ${neutralEmote}`)
+            return
         }
 
         for (const word of args) { wordBank.adjectives.push(word.toLowerCase()) }

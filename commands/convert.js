@@ -329,24 +329,40 @@ module.exports = {
 
         const num = Number(args[0])
         if (isNaN(num)) {
-            return bot.say(chatroom, `Please give me a number and two units of measurement! ${args.length
+            bot.say(chatroom, `Please give me a number and two units of measurement! ${args.length
                 ? `${/,/.test(args[0])
                     ? `Try removing the commas from "${args[0]}"`
                     : `"${args[0]}" isn't a number`
                 } ${dumbEmote}`
                 : `I can do ${arrToList(Object.keys(conversionTypes))} ${neutralEmote}`}`)
+            return
         }
 
-        if (args.length < 3) { return bot.say(chatroom, `Please give me a number and two units of measurement! ${dumbEmote}`) }
+        if (args.length < 3) {
+            bot.say(chatroom, `Please give me a number and two units of measurement! ${dumbEmote}`)
+            return
+        }
 
         const fromUnit = validateUnit(args[1])
-        if (!fromUnit) { return bot.say(chatroom, `I don't recognize "${args[1]}", please use a one-word unit or abbreviation! ${dumbEmote}`) }
+        if (!fromUnit) {
+            bot.say(chatroom, `I don't recognize "${args[1]}", please use a one-word unit or abbreviation! ${dumbEmote}`)
+            return
+        }
 
         const toUnit = validateUnit(args[2])
-        if (!toUnit) { return bot.say(chatroom, `I don't recognize "${args[2]}", please use a one-word unit or abbreviation! ${dumbEmote}`) }
+        if (!toUnit) {
+            bot.say(chatroom, `I don't recognize "${args[2]}", please use a one-word unit or abbreviation! ${dumbEmote}`)
+            return
+        }
 
-        if (fromUnit.name === toUnit.name) { return bot.say(chatroom, `${args.slice(0, 3).join(` `)}`) }
-        if (fromUnit.type !== toUnit.type) { return bot.say(chatroom, `I can't convert ${fromUnit.type} to ${toUnit.type}! ${dumbEmote}`) }
+        if (fromUnit.name === toUnit.name) {
+            bot.say(chatroom, `${args.slice(0, 3).join(` `)}`)
+            return
+        }
+        if (fromUnit.type !== toUnit.type) {
+            bot.say(chatroom, `I can't convert ${fromUnit.type} to ${toUnit.type}! ${dumbEmote}`)
+            return
+        }
 
         const conversion = conversionTypes[fromUnit.type][fromUnit.name][toUnit.name](num)
         const roundedFloat = Math.round((conversion + Number.EPSILON) * 1000) / 1000
