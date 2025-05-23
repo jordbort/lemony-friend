@@ -452,6 +452,7 @@ function updateSettingsDev(props, args) {
         [/^playPCG$|^pcg$/i]: { name: `playPCG`, func: updateBool },
         [/^pokeballQuantity$|^pq$/i]: { name: `pokeballQuantity`, func: updateNum },
         [/^usedPokeball$|^up$/i]: { name: `usedPokeball`, func: updateStr },
+        [/^lemonLeaderCount$|^llc$/i]: { name: `lemonLeaderCount`, func: updateNum },
         [/^ignoredBots?$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
         [/^timeZone$|^tz$/i]: { name: `timeZone`, func: updateTimeZone },
         // [/^timeLocale$|^tl$/i]: { name: `timeLocale`, func: updateTimeLocale },
