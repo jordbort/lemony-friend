@@ -19,7 +19,7 @@ const { sayJoinMessage } = require(`./commands/joinPart`)
 const { checkWord, checkLetter } = require(`./patterns/hangman`)
 const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
-const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, logMessage } = require(`./utils`)
+const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, logMessage, acknowledgeGigantifiedEmote, appendLogs } = require(`./utils`)
 
 module.exports = {
     onConnectedHandler(addr, port) {
@@ -72,18 +72,7 @@ module.exports = {
         const color = tags.color || ``
 
         // Log incoming message and capture message tags
-        const sharedChat = `source-room-id` in tags
-        const isOriginChannel = sharedChat && tags[`room-id`] === tags[`source-room-id`]
-        const sourceChannel = sharedChat
-            ? Object.keys(lemonyFresh).filter(key => lemonyFresh[key].id && lemonyFresh[key].id === Number(tags[`source-room-id`]))[0]
-            : null
-        sharedChat
-            ? isOriginChannel
-                ? logMessage([msg], time, channel, username, color, self)
-                : sourceChannel
-                    ? logMessage([`${username}'s message also posted in ${channel}'s channel`])
-                    : logMessage([msg], time, `ID: ${tags[`source-room-id`]}`, username, color, self)
-            : logMessage([msg], time, channel, username, color, self)
+        appendLogs(chatroom, tags, msg, self, time, username, color)
         tagsListener(tags)
 
         // Initialize new user
@@ -152,11 +141,8 @@ module.exports = {
 
         // Acknowledge gigantified emote
         if (tags[`msg-id`] === `gigantified-emote-message`) {
-            const emoteUsed = msg.split(` `)[msg.split(` `).length - 1]
-            const emoteOwner = Object.keys(lemonyFresh).filter(key => `emotes` in lemonyFresh[key] && lemonyFresh[key].emotes.includes(emoteUsed))[0]
-                || null
-            logMessage([`> Gigantified ${emoteUsed} owner: ${emoteOwner || `unknown`}, ${BOT_USERNAME} subbed? ${!!users[BOT_USERNAME]?.[emoteOwner]?.sub}`])
-            if (users[BOT_USERNAME]?.[emoteOwner]?.sub) { this.say(chatroom, `BEEG ${emoteUsed}`) }
+            acknowledgeGigantifiedEmote(this, chatroom, msg)
+            return
         }
 
         // Acknowledge highlighted message
