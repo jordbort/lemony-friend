@@ -3,7 +3,7 @@ const { settings } = require(`../config`)
 const { getContextEmote, pluralize } = require(`../utils`)
 
 module.exports = {
-    lemonTopThree(props) {
+    lemonRank(props) {
         const { bot, chatroom, channel } = props
         const lemonEmote = getContextEmote(`lemon`, channel)
         const leaders = Object.keys(users)

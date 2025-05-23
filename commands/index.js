@@ -6,7 +6,7 @@ const { countdown } = require(`./countdown`)
 const { getMemoryUsage } = require(`../utils`)
 const { rockPaperScissors } = require(`./rps`)
 const { getDocs, getStats } = require(`./help`)
-const { lemonTopThree } = require(`./lemonRank`)
+const { lemonRank } = require(`./lemonRank`)
 const { handleLemonify } = require(`./lemonify`)
 const { makeMultiTwitchLink } = require(`./multitwitch`)
 const { handleLemCmd, getLemCmds } = require(`./lemCmds`)
@@ -100,8 +100,8 @@ module.exports = {
     '!lemon': getLemons,
     '!lemons': getLemons,
 
-    '!lemonboard': lemonTopThree,
-    '!lemonrank': lemonTopThree,
+    '!lemonboard': lemonRank,
+    '!lemonrank': lemonRank,
 
     '!friend': sayFriends,
     '!friends': sayFriends,
