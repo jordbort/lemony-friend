@@ -93,6 +93,7 @@ function updateArr(bot, chatroom, obj, message, name, args) {
     const additions = []
     const alreadyExisted = []
     for (const element of args) {
+        if ([`a`, `add`].includes(element.toLowerCase())) { continue }
         if (!obj[name].includes(element)) {
             obj[name].push(element)
             additions.push(element)
