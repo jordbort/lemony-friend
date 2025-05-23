@@ -455,7 +455,7 @@ module.exports = {
         }, settings.maxWelcomeBackMinutes * 1000)
     },
     reportAway(props) {
-        const { bot, chatroom, message, channel, username, currentTime } = props
+        const { bot, chatroom, message, channel, currentTime } = props
 
         for (const targetName of Object.keys(users)) {
             const target = users[targetName]
@@ -468,7 +468,7 @@ module.exports = {
                 const reply = `${targetNickname} has been away for ~${pluralize(elapsedTime, `minute`, `minutes`)}!${target[channel].awayMessage ? ` Their away message: "${target[channel].awayMessage}"` : ``}`
                 elapsedTime > 1
                     ? bot.say(chatroom, reply)
-                    : logMessage([`-> ${username} has been away for less than one-minute grace period`])
+                    : logMessage([`-> ${targetName} has been away for less than one-minute grace period`])
             }
         }
     },
