@@ -74,7 +74,7 @@ function acceptDuel(props) {
 module.exports = {
     [/lost (every|it)/i]: handleLoseAllPoints,
     [/now ha(?:s|ve) \[*(\d*)/i]: handleSetPoints,
-    [/ lemony_friend has ([^a-z]\d*)/i]: handleSetPoints,
+    [/lemony_friend has ([^a-z]\d*)/i]: handleSetPoints,
     [/set lemony_friend .* to /i]: handleSetPoints,
     [/^@?lemony_friend, you only have ([^a-z]\d*)/i]: handleSetPoints,
     [/^(?!lemony_friend).* gave (\d*)/i]: handleGivenPoints,
