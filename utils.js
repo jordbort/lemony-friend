@@ -88,7 +88,7 @@ function getContextEmote(type, channel) {
     if (type === `lemon` && emotes.length > 1) { emotes.shift() }
     // logMessage([`> getContextEmote(type: '${type}', channel: '${channel}', emotes: '${emotes.join(`', '`)}')`])
 
-    const emote = emotes[Math.floor(Math.random() * emotes.length)]
+    const emote = emotes[Math.floor(Math.random() * emotes.length)] || ``
     return emote
 }
 
