@@ -8,9 +8,8 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Implemented lemonLeaderCount setting`,
-            `Updating CLI emote lists prevents accidentally adding "add"`,
-            `Minor bug fixes`
+            `Updated bot responses`,
+            `Minor bog fixes`
         ]
 
         const timeOptions = {
