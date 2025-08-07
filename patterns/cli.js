@@ -235,7 +235,7 @@ function updateContextEmotes(bot, chatroom, obj, message, name, args) {
         if (regex.test(args[0])) {
             logMessage([`-> Channel "${channel}" option "${args[0]}" matched:`, regex, `[Function: ${options[regex].func.name}]`])
             args.shift()
-            options[regex].func(bot, chatroom, obj.contextEmotes, `${message.replace(`"`, ``)} "${options[regex].name}"`, options[regex].name, args)
+            options[regex].func(bot, chatroom, obj.contextEmotes, `${message.replace(/"/g, ``)} "${options[regex].name}"`, options[regex].name, args)
             return
         }
     }
