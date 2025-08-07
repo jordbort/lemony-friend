@@ -19,8 +19,8 @@ module.exports = {
     [/\b(n+j+)+\b/i]: sayThanks,
     // wd
     [/\b(w+d+)+\b/i]: sayThanks,
-    // good/nice job/work
-    [/\b(g+o{2,}d+|n+i+c+e+)\b.*\b(j+o+b+|w+o+r+k+)/i]: sayThanks,
+    // good/nice/great job/work/one
+    [/\b(g+o{2,}d+|n+i+c+e+|g+r+e+a+t+)\b.*\b(j+o+b+|w+o+r+k+|o+n+e+)/i]: sayThanks,
     // well done
     [/\bw+e+l{2,}\b.*\bd+o+n+e+/i]: sayThanks,
     // congrat(ulation)s
