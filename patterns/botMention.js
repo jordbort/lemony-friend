@@ -4,8 +4,8 @@ const { checkSentiment } = require(`../commands/external`)
 const { handleGreetOne, sayGoodnight, sayThanks, sayYoureWelcome, sayMood, dumbReact, neutralReact, negativeReact, hypeReact } = require(`../commands/conversation`)
 
 module.exports = {
-    // good night
-    [/\bg+o{2,}d+\b.*\b(n+i+g+h+t+|^n+i+t+e+)/i]: sayGoodnight,
+    // good( something? )night
+    [/\bg+o{2,}d+\s?(.*\s)?(n+i+g+h+t+|n+i+t+e+)/i]: sayGoodnight,
     // gn
     [/\b(g+n+)+\b/i]: sayGoodnight,
     // bye (includes good bye)
