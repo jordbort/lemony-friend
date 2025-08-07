@@ -2,12 +2,15 @@ const { sayButt } = require(`./sayButt`)
 const { useLemon } = require(`./useLemon`)
 const { catchPokemon } = require(`./pokemon`)
 const { commandLemonInterface } = require(`./cli`)
+const { hypeReact } = require(`../commands/conversation`)
 const { checkSelfSub, checkSelfMod, checkSelfVIP, checkEmotes, checkTargetSub, checkTargetMod, checkTargetVIP } = require(`./checkChannelInfo`)
 
 module.exports = {
     [/^cli ?\b/i]: commandLemonInterface,
 
     [/^!([a-z]+)lemon([a-z]*)/i]: useLemon,
+
+    [/^good bot$/i]: hypeReact,
 
     [/\bbut([a-s|u-z]+)\b/i]: sayButt,
 
