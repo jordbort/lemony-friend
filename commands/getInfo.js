@@ -44,8 +44,8 @@ module.exports = {
             : null
 
         const timeDiff = otherChannel in userObj
-            ? currentTime - userObj[otherChannel].sentAt
-            : currentTime - userObj[channel].sentAt
+            ? currentTime - userObj[otherChannel]?.sentAt
+            : currentTime - userObj[channel]?.sentAt
 
         const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
         const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24)
@@ -58,8 +58,10 @@ module.exports = {
         if (minutes) { duration.push(pluralize(minutes, `minute`, `minutes`)) }
         if (seconds) { duration.push(pluralize(seconds, `second`, `seconds`)) }
 
-        otherChannel in userObj
-            ? bot.say(chatroom, `${userObjNickname} last said: "${userObj[otherChannel].lastMessage}" in ${otherChannelNickname}'s chat ${arrToList(duration)}${!duration.length ? `just now` : ` ago`}!`)
+        otherChannel in lemonyFresh
+            ? otherChannel in userObj
+                ? bot.say(chatroom, `${userObjNickname} last said: "${userObj[otherChannel].lastMessage}" in ${otherChannelNickname}'s chat ${arrToList(duration)}${!duration.length ? `just now` : ` ago`}!`)
+                : bot.say(chatroom, `${userObjNickname} hasn't spoken in ${otherChannelNickname}'s chat!`)
             : channel in userObj
                 ? bot.say(chatroom, `${userObjNickname} last said: "${userObj[channel].lastMessage}" in ${channelNickname}'s chat ${arrToList(duration)}${!duration.length ? `just now` : ` ago`}!`)
                 : bot.say(chatroom, `${userObjNickname} hasn't spoken in ${channelNickname}'s chat!`)
