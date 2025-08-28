@@ -1332,6 +1332,7 @@ module.exports = {
             'new-chatter': { cooldown: 0, listening: true },
             'greet': { cooldown: 0, listening: true },
             'mass-greet': { cooldown: 0, listening: true },
+            'say-butt': { cooldown: 120, listening: true },
             'say-goodnight': { cooldown: 0, listening: true },
             'say-thanks': { cooldown: 0, listening: true },
             'say-youre-welcome': { cooldown: 0, listening: true },
