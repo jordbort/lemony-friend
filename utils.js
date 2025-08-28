@@ -1211,29 +1211,40 @@ module.exports = {
         }
 
         // Check if user ID already exists, and merge their data
-        for (const user of Object.keys(users)) {
-            if (users[newUsername].id === users[user].id && user !== newUsername) {
-                logMessage([`-> Merging '${user}' (ID: ${users[user].id}) into '${newUsername}'`])
+        for (const oldUsername of Object.keys(users)) {
+            if (users[newUsername].id === users[oldUsername].id && oldUsername !== newUsername) {
+                logMessage([`-> Merging '${oldUsername}' (ID: ${users[oldUsername].id}) into '${newUsername}'`])
                 users[newUsername] = {
-                    ...users[user],
+                    ...users[oldUsername],
                     displayName: tags[`display-name`],
                     nickname: '',
                     color: tags.color || ``
                 }
-                bot.say(chatroom, `Wow, ${users[user].nickname || users[user].displayName} changed their name to ${users[newUsername].displayName}!`)
-                delete users[user]
+                bot.say(chatroom, `Wow, ${users[oldUsername].nickname || users[oldUsername].displayName} changed their name to ${users[newUsername].displayName}!`)
+                delete users[oldUsername]
 
-                // Update if mod
-                if (user in mods) {
-                    mods[newUsername] = { ...mods[user] }
-                    delete mods[user]
+                // Update if user is a mod anywhere
+                if (oldUsername in mods) {
+                    logMessage([`-> Merging mod '${oldUsername}' into '${newUsername}'`])
+                    mods[newUsername] = { ...mods[oldUsername] }
+                    delete mods[oldUsername]
                 }
 
-                // Update if in channel
-                if (user in lemonyFresh) {
-                    lemonyFresh[newUsername] = { ...lemonyFresh[user] }
-                    delete lemonyFresh[user]
+                // Update if bot is in also channel
+                if (oldUsername in lemonyFresh) {
+                    logMessage([`-> Merging channel '${oldUsername}' into '${newUsername}' and re-joining`])
+                    lemonyFresh[newUsername] = { ...lemonyFresh[oldUsername] }
+                    delete lemonyFresh[oldUsername]
                     bot.join(newUsername)
+
+                    // Update potential channel data for all users
+                    for (const user of Object.keys(users)) {
+                        if (oldUsername in users[user]) {
+                            logMessage([`-> Merging user ${user}'s '${oldUsername}' data into '${newUsername}'`])
+                            users[user][newUsername] = { ...users[user][oldUsername] }
+                            delete users[user][oldUsername]
+                        }
+                    }
                 }
             }
         }
