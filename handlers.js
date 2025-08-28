@@ -87,9 +87,13 @@ module.exports = {
         // Initialize user in a new chatroom
         if (!(channel in users[username])) { initUserChannel(tags, username, channel) }
 
+        // Update user if message sent in origin chat room
         const user = users[username]
-        user[channel].msgCount++
-        user[channel].lastMessage = msg
+        if (!(`source-room-id` in tags)
+            || (`source-room-id` in tags && tags[`room-id`] === tags[`source-room-id`])) {
+            user[channel].msgCount++
+            user[channel].lastMessage = msg
+        }
 
         // Checking time comparisons
         const currentTime = Number(tags[`tmi-sent-ts`])
@@ -170,7 +174,7 @@ module.exports = {
                 logMessage([`MATCHED COMMAND:`, command, `[Function: ${commands[command].name}]`])
                 commands[command](props)
                 return
-            } else if (!(command in lemCmds)) { logMessage([`COMMAND NOT RECOGNIZED`]) }
+            } else if (/!.+lemon/i.test(command) in lemCmds) { logMessage([`COMMAND NOT RECOGNIZED`]) }
         }
 
         // Check user's first message in a given channel
