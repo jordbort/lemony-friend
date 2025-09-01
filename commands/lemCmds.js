@@ -129,7 +129,9 @@ module.exports = {
         logMessage([`> getLemCmds(chatroom: ${chatroom}, args:`, `'${args.join(`', '`)}'`, `)`])
 
         const negativeEmote = getContextEmote(`negative`, channel)
-        const commands = Object.keys(lemCmds)
+        const commands = /^a$|^alpha$|^alpabetical$/i.test(args[0])
+            ? Object.keys(lemCmds).sort()
+            : Object.keys(lemCmds)
         bot.say(chatroom, `There ${commands.length === 1 ? `is` : `are`} ${pluralize(commands.length, `lemon command`, `lemon commands`)}${commands.length === 0 ? `! ${negativeEmote}` : `: ${commands.join(`, `)}`}`)
     },
     useLemCmd(props) {
