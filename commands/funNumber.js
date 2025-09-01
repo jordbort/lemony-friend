@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings } = require(`../config`)
-const { lemonyFresh, users } = require(`../data`)
+const { lemonyFresh, users, lemCmds } = require(`../data`)
 
 const { lemonify } = require(`./lemonify`)
 const { getTwitchChannel } = require(`./twitch`)
@@ -521,6 +521,26 @@ function imagineLemons(props) {
     bot.say(chatroom, `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${numbers[randNum + 1] || `one thousand`} lemons... ${lemonEmote}`)
 }
 
+function reportRandomLemCmdUsage(props) {
+    const { bot, chatroom, channel } = props
+    const neutralEmote = getContextEmote(`neutral`, channel)
+    const negativeEmote = getContextEmote(`negative`, channel)
+    const positiveEmote = getContextEmote(`positive`, channel)
+    const hypeEmote = getContextEmote(`hype`, channel)
+    const dumbEmote = getContextEmote(`dumb`, channel)
+
+    const randomCommand = Object.keys(lemCmds)[Math.floor(Math.random() * Object.keys(lemCmds).length)]
+    bot.say(chatroom, Object.keys(lemCmds).length === 0
+        ? `No lemon commands have been used! ${negativeEmote}`
+        : `Lemon command "${randomCommand}" has been used ${pluralize(lemCmds[randomCommand].uses, `time`, `times`)}! ${lemCmds[randomCommand].uses === 0
+            ? dumbEmote
+            : lemCmds[randomCommand].uses < 50
+                ? neutralEmote
+                : lemCmds[randomCommand].uses < 100
+                    ? positiveEmote
+                    : hypeEmote}`)
+}
+
 module.exports = {
     rollFunNumber(props, funNumber) {
         const { tags, message, channel, username } = props
@@ -553,7 +573,8 @@ module.exports = {
             18: awardLemonToRecentChatters,
             19: useTwoEmotes,
             20: useFunnyCommand,
-            21: imagineLemons
+            21: imagineLemons,
+            22: reportRandomLemCmdUsage
         }
 
         if (funNumber in outcomes) {

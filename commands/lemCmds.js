@@ -9,7 +9,7 @@ const regexQuote = /"(.+?)"/
 
 function applyVariables(str, props) {
     const { args, channel, username, toUser } = props
-    logMessage([`-> applyVariables(str: ${str}, args:`, `'${args.join(`', '`)}'`, `)`])
+    logMessage([`-> applyVariables(str: ${str}, args: '${args.join(`', '`)}')`])
 
     const viewers = lemonyFresh[channel].viewers.filter(viewer => !settings.ignoredBots.includes(viewer))
     const randomViewerOne = viewers[Math.floor(Math.random() * viewers.length)]
@@ -71,7 +71,7 @@ function applyVariables(str, props) {
 module.exports = {
     handleLemCmd(props) {
         const { bot, chatroom, args, channel, userNickname } = props
-        logMessage([`> handleLemCmd(chatroom: ${chatroom}, args:`, `'${args.join(`', '`)}'`, `)`])
+        logMessage([`> handleLemCmd(chatroom: ${chatroom}, args: '${args.join(`', '`)}')`])
 
         const positiveEmote = getContextEmote(`positive`, channel)
         const neutralEmote = getContextEmote(`neutral`, channel)
@@ -96,7 +96,7 @@ module.exports = {
                 return
             }
 
-            bot.say(chatroom, `Command "${args[1].toLowerCase()}" => ${lemCmds[args[1].toLowerCase()]}`)
+            bot.say(chatroom, `Command "${args[1].toLowerCase()}" => ${lemCmds[args[1].toLowerCase()].response}`)
         } else if (/^rename$/i.test(args[0])) {
             if (!(args[1].toLowerCase() in lemCmds)) {
                 bot.say(chatroom, `No command "${args[1].toLowerCase()}" was found! ${negativeEmote}`)
@@ -117,10 +117,14 @@ module.exports = {
             delete lemCmds[args[1].toLowerCase()]
             bot.say(chatroom, `Command "${args[1].toLowerCase()}" has been renamed to "${args[2].toLowerCase()}"! ${positiveEmote}`)
         } else if (args[0].toLowerCase() in lemCmds) {
-            lemCmds[args[0].toLowerCase()] = args.slice(1).join(` `)
+            lemCmds[args[0].toLowerCase()].response = args.slice(1).join(` `)
             bot.say(chatroom, `Command "${args[0].toLowerCase()}" has been edited! ${positiveEmote}`)
         } else {
-            lemCmds[args[0].toLowerCase()] = args.slice(1).join(` `)
+            lemCmds[args[0].toLowerCase()] = {
+                response: args.slice(1).join(` `),
+                origin: channel,
+                uses: 0
+            }
             bot.say(chatroom, `Lemon command "${args[0].toLowerCase()}" has been added! ${positiveEmote}`)
         }
     },
@@ -136,9 +140,10 @@ module.exports = {
     },
     useLemCmd(props) {
         const { bot, chatroom, command } = props
-        logMessage([`> useLemCmd(command: ${command}, response: ${lemCmds[command]})`])
+        logMessage([`> useLemCmd(command: ${command}, response: '${lemCmds[command].response}', origin: '${lemCmds[command].origin}', uses: ${lemCmds[command].uses})`])
 
-        const response = applyVariables(lemCmds[command], props)
+        const response = applyVariables(lemCmds[command].response, props)
+        lemCmds[command].uses++
         bot.say(chatroom, response)
     }
 }

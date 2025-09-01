@@ -3,7 +3,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 const { settings } = require(`../config`)
 const { getTwitchUser } = require(`./twitch`)
 const { lemonyFresh, users, lemCmds } = require(`../data`)
-const { getUsername, getContextEmote, logMessage, pluralize, numbers } = require(`../utils`)
+const { getUsername, getContextEmote, logMessage, pluralize, arrToList, numbers } = require(`../utils`)
 
 module.exports = {
     sayJoinMessage(bot, chatroom) {
@@ -18,6 +18,8 @@ module.exports = {
         const dumbEmote = getContextEmote(`dumb`, channel)
         const numUsers = Object.keys(users).length
         const numLemCmds = Object.keys(lemCmds).length
+        const maxUses = Math.max(...Object.keys(lemCmds).map(cmd => lemCmds[cmd].uses))
+        const mostUsedLemcmd = Object.keys(lemCmds).filter(cmd => lemCmds[cmd].uses === maxUses)
         const randNum = Math.floor(Math.random() * numbers.length)
 
         const joinMessages = [
@@ -48,7 +50,14 @@ module.exports = {
             `${BOT_USERNAME} has entered the chat ${lemonEmote}`,
             `${BOT_USERNAME in users
                 ? `I have ${pluralize(users[BOT_USERNAME].lemons, `lemon`, `lemons`)}! ${lemonEmote}`
-                : `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${numbers[randNum + 1] || `one thousand`} lemons... ${lemonEmote}`}`
+                : `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${numbers[randNum + 1] || `one thousand`} lemons... ${lemonEmote}`}`,
+            Object.keys(lemCmds).length === 0 || maxUses === 0
+                ? `No lemon commands have been used! ${dumbEmote}`
+                : `Most-used lemon command${mostUsedLemcmd.length === 1 ? `` : `s`} ${arrToList(mostUsedLemcmd)} ${mostUsedLemcmd.length === 1 ? `has` : `have`} been used ${pluralize(maxUses, `time`, `times`)}! ${maxUses < 50
+                    ? neutralEmote
+                    : maxUses < 100
+                        ? positiveEmote
+                        : hypeEmote}`
         ]
         const joinMessage = joinMessages[Math.floor(Math.random() * joinMessages.length)]
 
