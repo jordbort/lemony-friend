@@ -1,4 +1,5 @@
-const { logMessage, pluralize } = require(`../utils`)
+const BOT_USERNAME = process.env.BOT_USERNAME
+const { lemonyFresh, users } = require(`../data`)
 
 function stealLemon(bot, chatroom, user, suffix, target) {
     const allLemons = [`s`, `z`].includes(suffix)
@@ -1363,6 +1364,158 @@ function touchLemon(bot, chatroom, user, suffix, target) {
         }
     }
 }
+function exchangeLemon(bot, chatroom, user, suffix, target) {
+    const channel = chatroom.substring(1)
+    const streamelementsInChat = lemonyFresh[channel].viewers.includes(`streamelements`)
+    const lemonIsMod = users[BOT_USERNAME][channel].mod || channel === BOT_USERNAME
+
+    const randNum = Math.ceil(Math.random() * 50) * 100
+    const exchangeRates = Array(50).fill(randNum)
+    exchangeRates.push(-100)
+    exchangeRates.push(0)
+    exchangeRates.push(500000)
+    const exchangeRate = exchangeRates[Math.floor(Math.random() * exchangeRates.length)]
+    logMessage([`--> streamelementsInChat: ${streamelementsInChat}, lemonIsMod: ${lemonIsMod}, exchangeRate: ${exchangeRate}`])
+
+    const coinFlip = Math.floor(Math.random() * 2)
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName || null
+    const username = Object.keys(users).filter(userData => users[userData] === user)[0]
+    const targetUsername = Object.keys(users).filter(userData => users[userData] === target)[0]
+
+    if (streamelementsInChat && lemonIsMod) {
+        if (allLemons) {
+            if (target) {
+                bot.say(chatroom, `${userNickname} exchanged their ${pluralize(user.lemons, `lemon`, `lemons`)} for ${pluralize(exchangeRate, `point`, `points`)} each to give to ${targetNickname}!`)
+                bot.say(chatroom, `!bonus ${targetUsername} ${user.lemons * exchangeRate}`)
+            } else {
+                bot.say(chatroom, `${userNickname} exchanged their ${pluralize(user.lemons, `lemon`, `lemons`)} for ${pluralize(exchangeRate, `point`, `points`)} each!`)
+                bot.say(chatroom, `!bonus ${username} ${user.lemons * exchangeRate}`)
+            }
+            user.lemons = 0
+        } else {
+            if (target) {
+                bot.say(chatroom, `${userNickname} exchanged a lemon to give ${targetNickname} ${pluralize(exchangeRate, `point`, `points`)}!}`)
+                bot.say(chatroom, `!bonus ${targetUsername} ${exchangeRate}`)
+            } else {
+                bot.say(chatroom, `${userNickname} exchanged a lemon for ${pluralize(exchangeRate, `point`, `points`)}!`)
+                bot.say(chatroom, `!bonus ${username} ${exchangeRate}`)
+            }
+            user.lemons--
+        }
+    } else {
+        if (allLemons) {
+            user.lemons = 0
+            if (target) {
+                coinFlip
+                    ? bot.say(chatroom, `${targetNickname} traded all of ${userNickname}'s lemons for a hug! :)`)
+                    : bot.say(chatroom, `${targetNickname} traded all of ${userNickname}'s lemons for a firm handshake! :)`)
+            } else {
+                coinFlip
+                    ? bot.say(chatroom, `${userNickname} traded all their lemons for a warm smile! :)`)
+                    : bot.say(chatroom, `${userNickname} traded all their lemons for a friendly nod! :)`)
+            }
+        } else {
+            user.lemons--
+            if (target) {
+                coinFlip
+                    ? bot.say(chatroom, `${targetNickname} traded one of ${userNickname}'s lemons for a hug! :)`)
+                    : bot.say(chatroom, `${targetNickname} traded one of ${userNickname}'s lemons for a firm handshake! :)`)
+            } else {
+                coinFlip
+                    ? bot.say(chatroom, `${userNickname} traded a lemon for a warm smile! :)`)
+                    : bot.say(chatroom, `${userNickname} traded a lemon for a friendly nod! :)`)
+            }
+        }
+    }
+}
+function tuckInLemon(bot, chatroom, user, suffix, target) {
+    const coinFlip = () => Math.floor(Math.random() * 2)
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName
+    allLemons
+        ? target
+            ? coinFlip()
+                ? bot.say(chatroom, `${targetNickname} watched ${userNickname} tuck in each of their lemons goodnight!`)
+                : bot.say(chatroom, `${targetNickname} watched as ${userNickname} put their lemons to bed and gave all ${user.lemons} of them a kiss!`)
+            : coinFlip()
+                ? bot.say(chatroom, `${userNickname} tucked in each of their lemons goodnight!`)
+                : bot.say(chatroom, `${userNickname} put their lemons to bed and gave all ${user.lemons} of them a kiss!`)
+        : target
+            ? coinFlip()
+                ? bot.say(chatroom, `${targetNickname} watched ${userNickname} tuck one of their lemons in goodnight!`)
+                : bot.say(chatroom, `${targetNickname} watched as ${userNickname} put one of their lemons to bed and gave it a kiss!`)
+            : coinFlip()
+                ? bot.say(chatroom, `${userNickname} tucked ${user.lemons === 1 ? `their lemon` : `one of their lemons`} in goodnight!`)
+                : bot.say(chatroom, `${userNickname} put one of their lemons to bed and gave it a kiss!`)
+}
+function loseLemon(bot, chatroom, user, suffix, target) {
+    const coinFlip = () => Math.floor(Math.random() * 2)
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
+                ? bot.say(chatroom, `${targetNickname} saw ${userNickname} lose all their lemons!`)
+                : bot.say(chatroom, `${targetNickname} watched ${userNickname} lose all their lemons!`)
+            : coinFlip()
+                ? bot.say(chatroom, `${userNickname} lost all their lemons!`)
+                : bot.say(chatroom, `${userNickname} misplaced all their lemons!`)
+        : (user.lemons--, target)
+            ? coinFlip()
+                ? bot.say(chatroom, `${targetNickname} saw ${userNickname} lose a lemon!`)
+                : bot.say(chatroom, `${targetNickname} watched ${userNickname} lose a lemon!`)
+            : coinFlip()
+                ? bot.say(chatroom, `${userNickname} lost a lemon!`)
+                : bot.say(chatroom, `${userNickname} misplaced a lemon!`)
+}
+function bowlLemon(bot, chatroom, user, suffix, target) {
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName
+    const lostLemons = Math.floor(Math.random() * 11)
+    const pins = Math.ceil(Math.random() * 10)
+    allLemons
+        ? target
+            ? user.lemons >= 10
+                ? (user.lemons -= lostLemons,
+                    lostLemons === 0
+                        ? bot.say(chatroom, `${targetNickname} watched ${userNickname} line up 10 lemons and not bowl over any of them!`)
+                        : bot.say(chatroom, `${targetNickname} watched ${userNickname} line up 10 lemons and bowl over ${lostLemons === 10 ? `all 10` : lostLemons} of them!`)
+                )
+                : (bot.say(chatroom, `${targetNickname} watched ${userNickname} toss all ${user.lemons} of their lemons down the bowling lane!`), user.lemons = 0)
+            : user.lemons >= 10
+                ? (user.lemons -= lostLemons,
+                    lostLemons === 0
+                        ? bot.say(chatroom, `${userNickname} lined up 10 lemons, and didn't bowl over any of them!`)
+                        : bot.say(chatroom, `${userNickname} lined up 10 lemons, and bowled over ${lostLemons === 10 ? `all 10` : lostLemons} of them!`)
+                )
+                : (bot.say(chatroom, `${userNickname} tossed all ${user.lemons} of their lemons down the bowling lane!`), user.lemons = 0)
+        : (user.lemons--, target)
+            ? coinFlip()
+                ? bot.say(chatroom, `${targetNickname} watched ${userNickname} bowl a lemon down the gutter!`)
+                : bot.say(chatroom, `${targetNickname} watched ${userNickname} bowl a lemon. It knocked down ${pluralize(pins, `pin`, `pins`)}${pins === 10
+                    ? ` and got a strike`
+                    : pins === 6 || pins === 7 || pins === 8
+                        ? coinFlip()
+                            ? ` and got a split`
+                            : ``
+                        : ``}!`
+                )
+            : coinFlip()
+                ? bot.say(chatroom, `${userNickname} bowled a lemon, and it went in the gutter!`)
+                : bot.say(chatroom, `${userNickname} bowled a lemon, and knocked down ${pluralize(pins, `pin`, `pins`)}${pins === 10
+                    ? ` and got a strike`
+                    : pins === 6 || pins === 7 || pins === 8
+                        ? coinFlip()
+                            ? ` and got a split`
+                            : ``
+                        : ``}!`
+                )
+}
 function nullVerb(bot, chatroom, user, suffix, target, verb) {
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
@@ -1406,7 +1559,7 @@ module.exports = {
 
         // Stop if user doesn't have lemons, or doesn't try to steal from someone who does, or doesn't try and create one
         const theftVerbs = [`steal`, `take`, `grab`, `thieve`, `nab`, `pickpocket`, `purloin`, `abscondwith`, `loot`, `pilfer`, `runawaywith`, `runoffwith`, `makeoffwith`]
-        const creationVerbs = [`create`, `manufacture`, `generate`, `manifest`, `find`, `givemea`, `build`, `conceive`, `construct`, `devise`, `discover`, `forge`, `form`, `invent`, `produce`, `setup`, `spawn`, `actualize`, `beget`, `compose`, `concoct`, `constitute`, `contrive`, `effect`, `erect`, `fabricate`, `fashion`, `formulate`, `imagine`, `institute`, `procreate`]
+        const creationVerbs = [`create`, `manufacture`, `generate`, `manifest`, `farm`, `find`, `giveme`, `givemea`, `build`, `conceive`, `construct`, `devise`, `discover`, `forge`, `form`, `invent`, `produce`, `setup`, `spawn`, `actualize`, `beget`, `compose`, `concoct`, `constitute`, `contrive`, `effect`, `erect`, `fabricate`, `fashion`, `formulate`, `imagine`, `institute`, `procreate`]
         const cleanVerbs = [`clean`, `cleanup`, `cleanse`, `bathe`, `disinfect`, `rinse`, `soak`, `wash`, `washup`, `douse`, `drench`, `hose`, `shower`, `wet`]
         const touchVerbs = [`touch`, `feel`, `fiddle`, `fiddlewith`, `play`, `playwith`, `fidget`, `fidgetwith`, `tinker`, `tinkerwith`, `mess`, `messwith`, `toy`, `toywith`, `trifle`, `triflewith`, `grope`, `brush`, `finger`, `paw`, `thumb`, `poke`, `pokeat`, `pick`, `pickat`]
         if (user.lemons === 0
@@ -1510,7 +1663,9 @@ module.exports = {
             'manufacture': createLemon,
             'generate': createLemon,
             'manifest': createLemon,
+            'farm': createLemon,
             'find': createLemon,
+            'giveme': createLemon,
             'givemea': createLemon,
             'build': createLemon,
             'conceive': createLemon,
@@ -1773,6 +1928,29 @@ module.exports = {
             'pokeat': touchLemon,
             'pick': touchLemon,
             'pickat': touchLemon,
+
+            'currencyexchange': exchangeLemon,
+            'exchange': exchangeLemon,
+            'change': exchangeLemon,
+            'convert': exchangeLemon,
+            'trade': exchangeLemon,
+            'swap': exchangeLemon,
+            'barter': exchangeLemon,
+            'sell': exchangeLemon,
+            'resell': exchangeLemon,
+            'retail': exchangeLemon,
+            'merchandise': exchangeLemon,
+
+            'tuck': tuckInLemon,
+            'tuckin': tuckInLemon,
+
+            'lose': loseLemon,
+            'misplace': loseLemon,
+            'miss': loseLemon,
+            'mislay': loseLemon,
+
+            'bowl': bowlLemon,
+            'tenpin': bowlLemon,
         }
         if (verb in keyVerbs) {
             logMessage([`-> Matched: ${verb} lemon${suffix}:`, `[Function: ${keyVerbs[verb].name}]`])
