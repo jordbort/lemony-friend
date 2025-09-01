@@ -1,5 +1,6 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 const { lemonyFresh, users } = require(`../data`)
+const { logMessage, pluralize, coinFlip } = require(`../utils`)
 
 function stealLemon(bot, chatroom, user, suffix, target) {
     const allLemons = [`s`, `z`].includes(suffix)
@@ -15,16 +16,13 @@ function stealLemon(bot, chatroom, user, suffix, target) {
             const randomChance = Math.floor(Math.random() * 50)
             if (randomChance) {
                 bot.say(chatroom, `${userNickname} tried to steal ${targetNickname}'s lemons, but it didn't work!`)
-                return
             } else {
                 user.lemons += target.lemons
                 target.lemons = 0
                 bot.say(chatroom, `${userNickname} managed to steal ALL of ${targetNickname}'s lemons!`)
-                return
             }
         } else {
             bot.say(chatroom, `${userNickname} ran off with all ${user.lemons} of their own lemons! What a steal!`)
-            return
         }
     } else {
         if (target) {
@@ -35,51 +33,39 @@ function stealLemon(bot, chatroom, user, suffix, target) {
             const randomChance = Math.floor(Math.random() * 20)
             if (randomChance) {
                 bot.say(chatroom, `${userNickname} tried to steal a lemon from ${targetNickname}, but it didn't work!`)
-                return
             } else {
                 user.lemons++
                 target.lemons--
                 bot.say(chatroom, `${userNickname} managed to steal a lemon from ${targetNickname}!`)
-                return
             }
         } else {
             bot.say(chatroom, `${userNickname} very stealthily ran off with a lemon... It was their own lemon.`)
-            return
         }
     }
 }
 function createLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const userNickname = user.nickname || user.displayName
-    const targetNickname = target?.nickname || target?.displayName || null
+    const targetNickname = target?.nickname || target?.displayName
 
     const randomChance = Math.floor(Math.random() * 20)
-    if (randomChance) {
-        if (target) {
-            coinFlip
+    randomChance
+        ? target
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} tried to create a lemon for ${targetNickname}, but it didn't work!`)
                 : bot.say(chatroom, `${userNickname} tried to generate a lemon for ${targetNickname}, but it didn't work!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} tried to make a lemon out of thin air, but it didn't work!`)
                 : bot.say(chatroom, `${userNickname} tried to manifest a lemon, but it didn't work!`)
-        }
-    } else {
-        if (target) {
-            target.lemons++
-            coinFlip
+        : target
+            ? (target.lemons++, coinFlip())
                 ? bot.say(chatroom, `${userNickname} somehow managed to create a lemon for ${targetNickname}!`)
                 : bot.say(chatroom, `${userNickname} somehow managed to generate a lemon for ${targetNickname}!`)
-        } else {
-            user.lemons++
-            coinFlip
+            : (user.lemons++, coinFlip())
                 ? bot.say(chatroom, `${userNickname} somehow managed to create a lemon out of thin air!`)
-                : bot.say(chatroom, `${userNickname} somehow managed to manifest a lemon!`)
-        }
-    }
+                : bot.say(chatroom, `${userNickname} suser.lemons--
+        targetomehow managed to manifest a lemon!`)
 }
 function giveLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
@@ -92,7 +78,7 @@ function giveLemon(bot, chatroom, user, suffix, target) {
             return
         } else {
             user.lemons = 0
-            coinFlip
+            coinFlip()
                 ? bot.say(chatroom, `${userNickname} gave away all their lemons!`)
                 : bot.say(chatroom, `${userNickname} lost all their lemons into the void!`)
         }
@@ -100,48 +86,38 @@ function giveLemon(bot, chatroom, user, suffix, target) {
         user.lemons--
         if (target) {
             target.lemons++
-            coinFlip
+            coinFlip()
                 ? bot.say(chatroom, `${userNickname} gave a lemon to ${targetNickname}!`)
                 : bot.say(chatroom, `${userNickname} gave ${targetNickname} a lemon!`)
         } else {
-            coinFlip
+            coinFlip()
                 ? bot.say(chatroom, `${userNickname} gave away a lemon!`)
                 : bot.say(chatroom, `${userNickname} gave a lemon to nobody.`)
         }
     }
 }
 function eatLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        if (target) {
-            coinFlip
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} ate all the lemons while ${targetNickname} watched!`)
                 : bot.say(chatroom, `${userNickname} fed all their lemons to ${targetNickname}!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} ate all their lemons and became powerful.`)
                 : bot.say(chatroom, `${userNickname} ate all their lemons to gain their strength.`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            coinFlip
+        : (user.lemons--, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} ate a whole lemon while ${targetNickname} watched.`)
                 : bot.say(chatroom, `${userNickname} fed a whole lemon to ${targetNickname}.`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} ate a whole lemon. Ack, sour!`)
                 : bot.say(chatroom, `${userNickname} ate a whole lemon. Eww, bitter!`)
-        }
-    }
 }
 function makeLemon(bot, chatroom, user, suffix, target, verb) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const plural = suffix.endsWith(`s`) || suffix.endsWith(`z`)
     const userNickname = user.nickname || user.displayName
@@ -149,47 +125,21 @@ function makeLemon(bot, chatroom, user, suffix, target, verb) {
 
     if (!suffix || allLemons) {
         if (allLemons) {
-            if (target) {
-                if (coinFlip) {
-                    user.lemons = 0
-                    bot.say(chatroom, `${userNickname} went to ${verb} all ${user.lemons} of their lemons into little ${targetNickname}s. They marched away!`)
-                    return
-                } else {
-                    bot.say(chatroom, `${targetNickname} tried to ${verb} all of ${userNickname}'s lemons into... lemons. They gave them back!`)
-                    return
-                }
-            } else {
-                if (coinFlip) {
-                    user.lemons = 0
-                    bot.say(chatroom, `${userNickname} tried to ${verb} with their lemons. And now they're all used up?`)
-                    return
-                }
-                else {
-                    bot.say(chatroom, `${userNickname} went to ${verb} their lemons into... more lemons. Nothing changed!`)
-                    return
-                }
-            }
+            target
+                ? coinFlip()
+                    ? (user.lemons = 0, bot.say(chatroom, `${userNickname} went to ${verb} all ${user.lemons} of their lemons into little ${targetNickname}s. They marched away!`))
+                    : bot.say(chatroom, `${targetNickname} tried to ${verb} all of ${userNickname}'s lemons into... lemons. They gave them back!`)
+                : coinFlip()
+                    ? (user.lemons = 0, bot.say(chatroom, `${userNickname} tried to ${verb} with their lemons. And now they're all used up?`))
+                    : bot.say(chatroom, `${userNickname} went to ${verb} their lemons into... more lemons. Nothing changed!`)
         } else if (!suffix) {
-            if (target) {
-                if (coinFlip) {
-                    user.lemons--
-                    bot.say(chatroom, `${userNickname} went to ${verb} a lemon into a little ${targetNickname}. It said "goodbye"!`)
-                    return
-                } else {
-                    bot.say(chatroom, `${targetNickname} tried to ${verb} a lemon out of ${userNickname}'s lemon. They handed it back!`)
-                    return
-                }
-            } else {
-                if (coinFlip) {
-                    user.lemons--
-                    bot.say(chatroom, `${userNickname} spent one lemon to "${verb}". And now it's gone?`)
-                    return
-                }
-                else {
-                    bot.say(chatroom, `${userNickname} successfully tried to ${verb} a lemon out of their lemon. It is the perpetual lemon cycle.`)
-                    return
-                }
-            }
+            target
+                ? coinFlip()
+                    ? (user.lemons--, bot.say(chatroom, `${userNickname} went to ${verb} a lemon into a little ${targetNickname}. It said "goodbye"!`))
+                    : bot.say(chatroom, `${targetNickname} tried to ${verb} a lemon out of ${userNickname}'s lemon. They handed it back!`)
+                : coinFlip()
+                    ? (user.lemons--, bot.say(chatroom, `${userNickname} spent one lemon to "${verb}". And now it's gone?`))
+                    : bot.say(chatroom, `${userNickname} successfully tried to ${verb} a lemon out of their lemon. It is the perpetual lemon cycle.`)
         }
     } else {
         user.lemons--
@@ -212,23 +162,17 @@ function makeLemon(bot, chatroom, user, suffix, target, verb) {
         ]
         const yummySound = yummySounds[Math.floor(Math.random() * yummySounds.length)]
         if (foodPatterns.test(suffix)) {
-            if (target) {
-                coinFlip
+            target
+                ? coinFlip()
                     ? bot.say(chatroom, `${userNickname} made ${plural ? `` : `a `}lemon ${suffix}, and ${targetNickname} watched them eat ${plural ? `them` : `it`}. ${yummySound}!`)
                     : bot.say(chatroom, `${userNickname} made ${plural ? `` : `a `}lemon ${suffix}, and ${targetNickname} ate ${plural ? `them` : `it`}. ${yummySound}!`)
-            } else {
-                bot.say(chatroom, `${userNickname} made ${plural ? `` : `a `}lemon ${suffix}, and ate ${plural ? `them` : `it`}. ${yummySound}!`)
-                return
-            }
+                : bot.say(chatroom, `${userNickname} made ${plural ? `` : `a `}lemon ${suffix}, and ate ${plural ? `them` : `it`}. ${yummySound}!`)
         } else if (drinkPatterns.test(suffix)) {
-            if (target) {
-                coinFlip
+            target
+                ? coinFlip()
                     ? bot.say(chatroom, `${userNickname} made lemon ${suffix}, and ${targetNickname} watched them drink it. ${yummySound}!`)
                     : bot.say(chatroom, `${userNickname} made lemon ${suffix}, and ${targetNickname} drank it. ${yummySound}!`)
-            } else {
-                bot.say(chatroom, `${userNickname} made lemon ${suffix}, and drank it. ${yummySound}!`)
-                return
-            }
+                : bot.say(chatroom, `${userNickname} made lemon ${suffix}, and drank it. ${yummySound}!`)
         } else if (/^ade$/.test(suffix)) {
             target
                 ? bot.say(chatroom, `${userNickname} made lemonade from lemons, and ${targetNickname} drank it. Such is life.`)
@@ -238,364 +182,248 @@ function makeLemon(bot, chatroom, user, suffix, target, verb) {
                 ? bot.say(chatroom, `${userNickname} blind baked a pie crust, beat some egg yolks, cooked them with sugar, lemon juice and zest, beat the egg whites to stiff peaks, filled the pie crust with the lemon curd, topped it with meringue, and browned it in the oven. ${targetNickname.substring(0, 1).toUpperCase() + targetNickname.substring(1)} ate it. ${yummySound}!`)
                 : bot.say(chatroom, `${userNickname} blind baked a pie crust, beat some egg yolks, cooked them with sugar, lemon juice and zest, beat the egg whites to stiff peaks, filled the pie crust with the lemon curd, topped it with meringue, and browned it in the oven. Then they ate it. ${yummySound}!`)
         } else {
-            if (target) {
-                coinFlip
+            target
+                ? coinFlip()
                     ? bot.say(chatroom, `${userNickname} made ${plural ? `` : `a `}lemon ${suffix}, and ${targetNickname} consumed ${plural ? `them` : `it`}. ${yummySound}!`)
                     : bot.say(chatroom, `${userNickname} made ${plural ? `` : `a `}lemon ${suffix}, and ${targetNickname} watched them consume ${plural ? `them` : `it`}. ${yummySound}!`)
-            } else {
-                coinFlip
+                : coinFlip()
                     ? bot.say(chatroom, `${userNickname} made ${plural ? `` : `a `}lemon ${suffix}, and consumed ${plural ? `them` : `it`}. ${yummySound}!`)
                     : bot.say(chatroom, `${userNickname} made ${plural ? `` : `a `}lemon ${suffix}, but ${plural ? `they` : `it`} fell on the floor... ${yummySound}!`)
-            }
         }
     }
 }
 function throwLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
-    const targetNickname = target?.nickname || target?.displayName || null
+    const targetNickname = target?.nickname || target?.displayName
 
-    if (allLemons) {
-        user.lemons = 0
-        if (target) {
-            coinFlip
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} threw all their lemons at ${targetNickname}! Ouch!`)
                 : bot.say(chatroom, `${userNickname} pelted all their lemons at ${targetNickname} as hard as they could!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} threw away their lemons!`)
                 : bot.say(chatroom, `${userNickname} yeeted all their lemons away! Goodbye!`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            coinFlip
+        : (user.lemons--, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} threw a lemon at ${targetNickname}'s head! Ouch!`)
                 : bot.say(chatroom, `${userNickname} threw a lemon at the back of ${targetNickname}'s head! Ouch!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} threw a lemon as far as they could!`)
                 : bot.say(chatroom, `${userNickname} yeeted a lemon! Goodbye!`)
-        }
-    }
 }
 function discardLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
-    const targetNickname = target?.nickname || target?.displayName || null
+    const targetNickname = target?.nickname || target?.displayName
 
-    if (allLemons) {
-        user.lemons = 0
-        if (target) {
-            coinFlip
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} made ${targetNickname} watch them toss all their lemons into the trash!`)
                 : bot.say(chatroom, `${userNickname} made all their lemons magically disappear - ${targetNickname} looks amazed.`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} tossed all their lemons in to a garbage can!`)
                 : bot.say(chatroom, `${userNickname} said "Ctrl+A, Delete" to all their lemons.`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            coinFlip
+        : (user.lemons--, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} made ${targetNickname} watch them dispose of a lemon.`)
                 : bot.say(chatroom, `${userNickname} threw away a lemon like it meant nothing to them - ${targetNickname} looks on.`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} tossed a lemon into the trash!`)
                 : bot.say(chatroom, `${userNickname} discarded a lemon.`)
-        }
-    }
 }
 function smashLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
-    const targetNickname = target?.nickname || target?.displayName || null
+    const targetNickname = target?.nickname || target?.displayName
 
-    if (allLemons) {
-        user.lemons = 0
-        if (target) {
-            coinFlip
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${targetNickname} destroyed all of ${userNickname}'s lemons!`)
                 : bot.say(chatroom, `${targetNickname} pulverized all of ${userNickname}'s lemons!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} destroyed all their lemons!`)
                 : bot.say(chatroom, `${userNickname} pulverized all their lemons!`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            coinFlip
+        : (user.lemons--, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${targetNickname} obliterated ${userNickname}'s lemon!`)
                 : bot.say(chatroom, `${targetNickname} busted ${userNickname}'s lemon!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} obliterated a lemon!`)
                 : bot.say(chatroom, `${userNickname} busted a lemon!`)
-        }
-    }
 }
 function flattenLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        if (target) {
-            coinFlip
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${targetNickname} flattened all of ${userNickname}'s lemons!`)
                 : bot.say(chatroom, `${targetNickname} smooshed all of ${userNickname}'s lemons!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} steamrolled all their lemons!`)
                 : bot.say(chatroom, `${userNickname} flattened all their lemons with a rolling pin!`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            coinFlip
+        : (user.lemons--, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${targetNickname} sat on ${userNickname}'s lemon!`)
                 : bot.say(chatroom, `${targetNickname} squashed ${userNickname}'s lemon!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} flattened a lemon!`)
                 : bot.say(chatroom, `${userNickname} smooshed a lemon!`)
-        }
-    }
 }
 function sliceLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        if (target) {
-            coinFlip
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} sliced up all their lemons, and showered ${targetNickname} with them!`)
                 : bot.say(chatroom, `${targetNickname} chopped up all ${userNickname}'s lemons!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} sliced up all their lemons into wheels and threw them like frisbees!`)
                 : bot.say(chatroom, `${userNickname} cut up all their lemons into tiny pieces!`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            coinFlip
+        : (user.lemons--, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} sliced a lemon into multiple pieces, but ${targetNickname} knocked them on the floor!`)
                 : bot.say(chatroom, `${targetNickname} chopped up ${userNickname}'s lemon into tiny pieces!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} sliced a lemon into several pieces. They fell on the floor!`)
                 : bot.say(chatroom, `${userNickname} cut up lemon into tiny pieces!`)
-        }
-    }
 }
 function juiceLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        if (target) {
-            coinFlip
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} juiced all their lemons and ${targetNickname} drank them. Eww, bitter!`)
                 : bot.say(chatroom, `${userNickname} juiced all their lemons and ${targetNickname} drank them. Mmm, refreshing!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} juiced all their lemons and drank them. Eww, bitter!`)
                 : bot.say(chatroom, `${userNickname} juiced all their lemons and drank them. Mmm, refreshing!`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            coinFlip
+        : (user.lemons--, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} juiced a lemon and ${targetNickname} drank it. Ack, sour!`)
                 : bot.say(chatroom, `${userNickname} juiced a lemon and ${targetNickname} drank it. Mmm, sweet!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} juiced a lemon and drank it. Ack, sour!`)
                 : bot.say(chatroom, `${userNickname} juiced a lemon and drank it. Mmm, sweet!`)
-        }
-    }
 }
 function zestLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        if (target) {
-            coinFlip
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} zested all their lemons onto ${targetNickname} until they were burined underneath. Nice!`)
                 : bot.say(chatroom, `${targetNickname} grated up all ${userNickname}'s lemons!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} zested all their lemons, and threw them away!`)
                 : bot.say(chatroom, `${userNickname} grated up all their lemons!`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            coinFlip
+        : (user.lemons--, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} zested a lemon onto ${targetNickname}'s head. Cute!`)
                 : bot.say(chatroom, `${targetNickname} grated up ${userNickname}'s lemon.`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} zested a lemon, and threw the rest away.`)
                 : bot.say(chatroom, `${userNickname} grated up a lemon until it was all gone.`)
-        }
-    }
 }
 function peelLemon(bot, chatroom, user, suffix, target) {
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        target
+    allLemons
+        ? (user.lemons = 0, target)
             ? bot.say(chatroom, `${userNickname} peeled all their lemons and gave them to ${targetNickname}! They threw them away.`)
             : bot.say(chatroom, `${userNickname} peeled all their lemons, and threw them away!`)
-    } else {
-        user.lemons--
-        target
+        : (user.lemons--, target)
             ? bot.say(chatroom, `${userNickname} peeled a lemon and gave it to ${targetNickname}. They threw it away.`)
             : bot.say(chatroom, `${userNickname} peeled a lemon, and threw the rest away.`)
-    }
 }
 function wearLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        if (target) {
-            if (coinFlip) {
-                user.lemons = 0
-                bot.say(chatroom, `${userNickname} put all their lemons on ${targetNickname}'s head. Oh no, they fell everywhere and rolled away!`)
-                return
-            } else {
-                bot.say(chatroom, `${userNickname} put all their lemons on their head! ${targetNickname} said they look stylish!`)
-                return
-            }
-        } else {
-            if (coinFlip) {
-                user.lemons = 0
-                bot.say(chatroom, `${userNickname} put all their lemons on their head. Oops, they fell off and rolled away!`)
-                return
-            } else {
-                bot.say(chatroom, `${userNickname} put all their lemons on their head! Fancy!`)
-                return
-            }
-        }
-    } else {
-        if (target) {
-            if (coinFlip) {
-                user.lemons--
-                bot.say(chatroom, `${userNickname} tried to balance a lemon on ${targetNickname}'s head. It fell off and rolled away...`)
-                return
-            } else {
-                bot.say(chatroom, `${userNickname} put a lemon on ${targetNickname}'s head for a quick photo! They gave it back`)
-                return
-            }
-        } else {
-            if (coinFlip) {
-                user.lemons--
-                bot.say(chatroom, `${userNickname} tried to wear a lemon like a shoe, but they crushed it...`)
-                return
-            } else {
-                bot.say(chatroom, `${userNickname} wore a lemon on their head like a hat!`)
-                return
-            }
-        }
-    }
+    allLemons
+        ? target
+            ? coinFlip()
+                ? (user.lemons = 0,
+                    bot.say(chatroom, `${userNickname} put all their lemons on ${targetNickname}'s head. Oh no, they fell everywhere and rolled away!`)
+                )
+                : bot.say(chatroom, `${userNickname} put all their lemons on their head! ${targetNickname} said they look stylish!`)
+            : coinFlip()
+                ? (user.lemons = 0,
+                    bot.say(chatroom, `${userNickname} put all their lemons on their head. Oops, they fell off and rolled away!`)
+                )
+                : bot.say(chatroom, `${userNickname} put all their lemons on their head! Fancy!`)
+        : target
+            ? coinFlip()
+                ? (user.lemons--,
+                    bot.say(chatroom, `${userNickname} tried to balance a lemon on ${targetNickname}'s head. It fell off and rolled away...`)
+                )
+                : bot.say(chatroom, `${userNickname} put a lemon on ${targetNickname}'s head for a quick photo! They gave it back`)
+            : coinFlip()
+                ? (user.lemons--,
+                    bot.say(chatroom, `${userNickname} tried to wear a lemon like a shoe, but they crushed it...`)
+                )
+                : bot.say(chatroom, `${userNickname} wore a lemon on their head like a hat!`)
 }
 function sexLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        if (target) {
-            user.lemons = 0
-            coinFlip
+    allLemons
+        ? target
+            ? (user.lemons = 0, coinFlip())
                 ? bot.say(chatroom, `${userNickname} invited ${targetNickname} to have intercourse with their lemons. They said "no thanks".`)
                 : bot.say(chatroom, `${userNickname} invited ${targetNickname} to have intercourse with their lemons. They said "no thanks" (the lemons).`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} tried to screw their lemons. One by one, the lemons awkwardly departed.`)
                 : bot.say(chatroom, `${userNickname} tried to screw their lemons. The lemons said "no thanks!" and flew away.`)
-        }
-    } else {
-        if (target) {
-            user.lemons--
-            coinFlip
+        : target
+            ? (user.lemons--, coinFlip())
                 ? bot.say(chatroom, `${userNickname} invited ${targetNickname} to have intercourse with their lemon. They said "no thanks".`)
                 : bot.say(chatroom, `${userNickname} invited ${targetNickname} to have intercourse with their lemon. It said "no thanks".`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} tried to screw a lemon. The lemon declined and left.`)
                 : bot.say(chatroom, `${userNickname} tried to screw a lemon. The lemon said "no thanks!" and flew away.`)
-        }
-    }
 }
 function dateLemon(bot, chatroom, user, suffix, target) {
     const singular = user.lemons === 1
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        if (target) {
-            user.lemons = 0
-            bot.say(chatroom, `${userNickname} tried to enter a polygamous relationship with their lemons and ${targetNickname}. It didn't work out.`)
-            return
-        } else {
-            if (coinFlip) {
-                user.lemons = 0
-                bot.say(chatroom, `${userNickname} proposed a relationship with their ${singular ? `lemon and a stranger` : `lemons`}. ${singular ? `The lemon` : `They`} giggled and ran away!`)
-                return
-            } else {
-                bot.say(chatroom, `${userNickname} tried to enter a polygamous relationship with their ${singular ? `lemon and a stranger` : `lemons`}. The lemon${singular ? `` : `s`} suggested you should just stay friends.`)
-                return
-            }
-        }
-    } else {
-        if (target) {
-            user.lemons--
-            bot.say(chatroom, `${userNickname} tried to enter a polygamous relationship with a lemon and ${targetNickname}. It didn't work out.`)
-            return
-        } else {
-            if (coinFlip) {
-                user.lemons--
-                bot.say(chatroom, `${userNickname} tried to ask a lemon out. It giggled and ran away!`)
-                return
-            } else {
-                bot.say(chatroom, `${userNickname} asked out their lemon. It suggested you just stay friends.`)
-                return
-            }
-        }
-    }
+    allLemons
+        ? target
+            ? (user.lemons = 0,
+                bot.say(chatroom, `${userNickname} tried to enter a polygamous relationship with their lemons and ${targetNickname}. It didn't work out.`))
+            : coinFlip()
+                ? (user.lemons = 0, bot.say(chatroom, `${userNickname} proposed a relationship with their ${singular ? `lemon and a stranger` : `lemons`}. ${singular ? `The lemon` : `They`} giggled and ran away!`))
+                : bot.say(chatroom, `${userNickname} tried to enter a polygamous relationship with their ${singular ? `lemon and a stranger` : `lemons`}. The lemon${singular ? `` : `s`} suggested you should just stay friends.`)
+        : target
+            ? (user.lemons--,
+                bot.say(chatroom, `${userNickname} tried to enter a polygamous relationship with a lemon and ${targetNickname}. It didn't work out.`))
+            : coinFlip()
+                ? (user.lemons--,
+                    bot.say(chatroom, `${userNickname} tried to ask a lemon out. It giggled and ran away!`))
+                : bot.say(chatroom, `${userNickname} asked out their lemon. It suggested you just stay friends.`)
 }
 function investLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
@@ -605,47 +433,31 @@ function investLemon(bot, chatroom, user, suffix, target) {
         user.lemons = 0
         if (target) {
             const sharedLemons = Math.ceil(randLemons / 2)
-            if (coinFlip) {
-                user.lemons += sharedLemons
-                target.lemons += sharedLemons
-                bot.say(chatroom, `${userNickname} invested all their lemons into ${targetNickname}'s growing business. They both got back ${sharedLemons} each!`)
-                return
-            } else {
-                bot.say(chatroom, `${userNickname} invested all their lemons into ${targetNickname}'s growing business! They didn't get anything back.`)
-                return
-            }
+            coinFlip()
+                ? (user.lemons += sharedLemons,
+                    target.lemons += sharedLemons,
+                    bot.say(chatroom, `${userNickname} invested all their lemons into ${targetNickname}'s growing business. They both got back ${sharedLemons} each!`))
+                : bot.say(chatroom, `${userNickname} invested all their lemons into ${targetNickname}'s growing business! They didn't get anything back.`)
         } else {
-            if (coinFlip) {
-                user.lemons += randLemons
-                bot.say(chatroom, `${userNickname} put all their lemons into the stock market. They got ${randLemons} back!`)
-                return
-            } else {
-                bot.say(chatroom, `${userNickname} put all their lemons into the stock market! They didn't get anything back.`)
-                return
-            }
+            coinFlip()
+                ? (user.lemons += randLemons,
+                    bot.say(chatroom, `${userNickname} put all their lemons into the stock market. They got ${randLemons} back!`))
+                : bot.say(chatroom, `${userNickname} put all their lemons into the stock market! They didn't get anything back.`)
         }
     } else {
         const randLemons = Math.ceil(Math.random() * 3)
         user.lemons--
         if (target) {
-            if (coinFlip) {
-                user.lemons++
-                target.lemons++
-                bot.say(chatroom, `${userNickname} invested a lemon into ${targetNickname}'s growing business. They each got one lemon back in return!`)
-                return
-            } else {
-                bot.say(chatroom, `${userNickname} invested a lemon into ${targetNickname}'s growing business! They didn't get anything back.`)
-                return
-            }
+            coinFlip()
+                ? (user.lemons++,
+                    target.lemons++,
+                    bot.say(chatroom, `${userNickname} invested a lemon into ${targetNickname}'s growing business. They each got one lemon back in return!`))
+                : bot.say(chatroom, `${userNickname} invested a lemon into ${targetNickname}'s growing business! They didn't get anything back.`)
         } else {
-            if (coinFlip) {
-                user.lemons += randLemons
-                bot.say(chatroom, `${userNickname} put a lemon into the stock market. They got ${randLemons} back!`)
-                return
-            } else {
-                bot.say(chatroom, `${userNickname} put a lemon into the stock market! They didn't get anything back.`)
-                return
-            }
+            coinFlip()
+                ? (user.lemons += randLemons,
+                    bot.say(chatroom, `${userNickname} put a lemon into the stock market. They got ${randLemons} back!`))
+                : bot.say(chatroom, `${userNickname} put a lemon into the stock market! They didn't get anything back.`)
         }
     }
 }
@@ -654,471 +466,334 @@ function carveLemon(bot, chatroom, user, suffix, target) {
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        target
+    allLemons
+        ? (user.lemons = 0, target)
             ? bot.say(chatroom, `${targetNickname} carved all ${userNickname}'s lemons into jack-o'-lemons! 🎃️`)
             : bot.say(chatroom, `${userNickname} carved all their lemons into cute jack-o'-lemons! 🎃️`)
-    } else {
-        user.lemons--
-        target
+        : (user.lemons--, target)
             ? bot.say(chatroom, `${userNickname} carved ${targetNickname}'s face into a jack-o'-lemon! 🎃️`)
             : bot.say(chatroom, `${userNickname} carved a lemon into a cute jack-o'-lemon! 🎃️`)
-    }
 }
 function smokeLemon(bot, chatroom, user, suffix, target) {
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        target
+    allLemons
+        ? (user.lemons = 0, target)
             ? bot.say(chatroom, `${targetNickname} smoked all of ${userNickname}'s lemons!`)
             : bot.say(chatroom, `${userNickname} loaded all their lemons into a bong and smoked them. Cool!`)
-    } else {
-        user.lemons--
-        target
+        : (user.lemons--, target)
             ? bot.say(chatroom, `${userNickname} smoked out of a lemon and passed it to ${targetNickname}.`)
             : bot.say(chatroom, `${userNickname} carved a lemon into a pipe and smoked out of it. Wow!`)
-    }
 }
 function kickLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        if (target) {
-            coinFlip
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} kicked all their lemons at ${targetNickname}!`)
                 : bot.say(chatroom, `${userNickname} kicked their lemons one by one far over ${targetNickname}'s head. Amazing!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} kicked all their lemons in one big explosion!`)
                 : bot.say(chatroom, `${userNickname} set up and kicked all their lemons away one by one!`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            coinFlip
+        : (user.lemons--, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} kicked a lemon at ${targetNickname}. Ouch!`)
                 : bot.say(chatroom, `${userNickname} punted a lemon over ${targetNickname}'s head. Wow!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} punted a lemon across the room!`)
                 : bot.say(chatroom, `${userNickname} kicked a lemon out the window!`)
-        }
-    }
 }
 function biteLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        if (target) {
-            coinFlip
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} made ${targetNickname} taste each of their lemons. They were all sour!`)
                 : bot.say(chatroom, `${userNickname} made ${targetNickname} taste each of their lemons. They were all sweet!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} took a small nibble from each of their lemons. They were all sour!`)
                 : bot.say(chatroom, `${userNickname} took a small nibble from each of their lemons. They were all sweet!`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            coinFlip
+        : (user.lemons--, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} made ${targetNickname} take a bite out of their lemon. Ack, sour!`)
                 : bot.say(chatroom, `${userNickname} made ${targetNickname} take a bite out of their lemon. Eww, bitter!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} took a bite out of a lemon. Ack, sour!`)
                 : bot.say(chatroom, `${userNickname} took a bite out of a lemon. Eww, bitter!`)
-        }
-    }
 }
 function punchLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        if (target) {
-            coinFlip
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} struck away all their lemons while ${targetNickname} watched!`)
                 : bot.say(chatroom, `${targetNickname} beat each of ${userNickname}'s lemons into pulp!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} struck each of their lemons away while maniacally laughing!`)
                 : bot.say(chatroom, `${userNickname} beat all their lemons into pulp!`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            coinFlip
+        : (user.lemons--, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} hit a lemon at ${targetNickname}, and it rolled onto the floor.`)
                 : bot.say(chatroom, `${targetNickname} hit ${userNickname}'s lemon, and it rolled onto the floor.`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} hit a lemon. It rolled away.`)
                 : bot.say(chatroom, `${userNickname} struck a lemon, and it ran away in tears.`)
-        }
-    }
 }
 function keepLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        if (target) {
-            coinFlip
+    allLemons
+        ? target
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} is holding onto all their lemons and making ${targetNickname} jealous!`)
                 : bot.say(chatroom, `${userNickname} is making sure ${targetNickname} doesn't get their lemons!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} is guarding all their lemons with their life!`)
                 : bot.say(chatroom, `${userNickname} is safeguarding all their lemons for future investment!`)
-        }
-    } else {
-        if (target) {
-            coinFlip
+        : target
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} is holding on to their lemon and making ${targetNickname} jealous.`)
                 : bot.say(chatroom, `${userNickname} is making sure ${targetNickname} doesn't get their lemon.`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} decided to keep their lemon. They'll cherish it forever.`)
                 : bot.say(chatroom, `${userNickname} is keeping their lemon safe and sound.`)
-        }
-    }
 }
 function showLemon(bot, chatroom, user, suffix, target) {
     const singular = user.lemons === 1
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        if (target) {
-            coinFlip
+    allLemons
+        ? target
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} flaunts their ${singular ? `` : `${user.lemons} `}lemon${singular ? `` : `s`} at ${targetNickname}!`)
                 : bot.say(chatroom, `${userNickname} shows off their ${singular ? `` : `${user.lemons} `}lemon${singular ? `` : `s`} to ${targetNickname}!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} flaunts their ${singular ? `` : `${user.lemons} `}lemon${singular ? `` : `s`} at everyone!`)
                 : bot.say(chatroom, `${userNickname} puts their ${singular ? `` : `${user.lemons} `}lemon${singular ? `` : `s`} on display for all to see!`)
-        }
-    } else {
-        if (target) {
-            coinFlip
+        : target
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} waves a lemon at ${targetNickname}!`)
                 : bot.say(chatroom, `${userNickname} shows ${targetNickname} a lemon.`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} shows everyone their lemon!`)
                 : bot.say(chatroom, `${userNickname} waves a lemon wildly in the air!`)
-        }
-    }
 }
 function forgetLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        if (target) {
-            coinFlip
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} asked ${targetNickname} to watch their lemons, but they neglected them. They all disappeared!`)
                 : bot.say(chatroom, `${userNickname} asked ${targetNickname} to watch their lemons, but they misplaced them!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} neglected their lemons, and they vanished into thin air!`)
                 : bot.say(chatroom, `${userNickname} neglected their lemons, and they disappeared!`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            coinFlip
+        : (user.lemons--, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} asked ${targetNickname} to watch their lemon, and they forgot to. It disappeared.`)
                 : bot.say(chatroom, `${userNickname} asked ${targetNickname} to watch their lemon, but they misplaced it.`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} forgot about their lemon. It vanished into thin air.`)
                 : bot.say(chatroom, `${userNickname} forgot their lemon. It disappeared.`)
-        }
-    }
 }
 function dropLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        if (target) {
-            coinFlip
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} dropped their lemons on ${targetNickname}'s feet, and they rolled away!`)
                 : bot.say(chatroom, `${userNickname}'s lemons spilled out of ${targetNickname}'s arms!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} dropped all their lemons onto the floor, and they rolled away!`)
                 : bot.say(chatroom, `${userNickname} spilled all the lemons out of their wallet!`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            coinFlip
+        : (user.lemons--, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} dropped a lemon on ${targetNickname}'s foot, and it rolled away.`)
                 : bot.say(chatroom, `${targetNickname} fumbled ${userNickname}'s lemon, and it rolled away.`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} dropped a lemon on the floor, and it rolled away.`)
                 : bot.say(chatroom, `${userNickname} released a lemon into the wild. Bye lemon!`)
-        }
-    }
 }
 function burnLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        if (target) {
-            coinFlip
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} set fire to their lemon collection and watched along with ${targetNickname}!`)
                 : bot.say(chatroom, `${targetNickname} helped ${userNickname} burn up all their lemons!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} set up all their lemons and started a bonfire!`)
                 : bot.say(chatroom, `${userNickname} burned all their lemons in a massive inferno!`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            coinFlip
+        : (user.lemons--, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} set fire to a lemon and watched it burn with ${targetNickname}.`)
                 : bot.say(chatroom, `${targetNickname} burned ${userNickname}'s lemon into ashes.`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} set fire to a lemon and watched it burn to the ground.`)
                 : bot.say(chatroom, `${userNickname} lit a lemon on fire, and it burned to a crisp.`)
-        }
-    }
 }
 function killLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        if (target) {
-            coinFlip
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} killed each of their lemons, and ${targetNickname} looked on nervously.`)
                 : bot.say(chatroom, `${targetNickname} murdered all of ${userNickname}'s lemons!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} slaughtered all their lemons!`)
                 : bot.say(chatroom, `${userNickname} assassinated all their lemons!`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            coinFlip
+        : (user.lemons--, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} killed a lemon, and ${targetNickname} decided not to call the police.`)
                 : bot.say(chatroom, `${targetNickname} murdered ${userNickname}'s lemon!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} killed a lemon, and it died.`)
                 : bot.say(chatroom, `${userNickname} murdered a lemon!`)
-        }
-    }
 }
 function donateLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        if (target) {
-            target.lemons += user.lemons
-            user.lemons = 0
-            coinFlip
+    allLemons
+        ? target
+            ? (target.lemons += user.lemons,
+                user.lemons = 0,
+                coinFlip())
                 ? bot.say(chatroom, `${userNickname} donated all their lemons to ${targetNickname}!`)
                 : bot.say(chatroom, `${userNickname} gifted all their lemons to ${targetNickname}!`)
-        } else {
-            user.lemons = 0
-            coinFlip
+            : (user.lemons = 0, coinFlip())
                 ? bot.say(chatroom, `${userNickname} donated all their lemons to a good cause!`)
                 : bot.say(chatroom, `${userNickname} gifted all their lemons to a hungry family!`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            target.lemons++
-            coinFlip
+        : (user.lemons--, target)
+            ? (target.lemons++, coinFlip())
                 ? bot.say(chatroom, `${userNickname} donated a lemon to ${targetNickname} in their time of need.`)
                 : bot.say(chatroom, `${userNickname} gifted a lemon to ${targetNickname}!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} donated a lemon to a charitable cause.`)
                 : bot.say(chatroom, `${userNickname} gifted a lemon to someone in their time of need.`)
-        }
-    }
 }
 function teachLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        if (target) {
-            coinFlip
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} and ${targetNickname} raised a family of lemons! They left the nest and lived fulfilling lives.`)
                 : bot.say(chatroom, `${userNickname} and ${targetNickname} brought up a strong family of lemons! They went on to become productive members of society.`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} educated a lemon about the ways of life. It went off to study at a prestigious university.`)
                 : bot.say(chatroom, `${userNickname} gave life advice to their lemon. It grew to become a strong, independent lemon.`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            coinFlip
+        : (user.lemons--, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} and ${targetNickname} raised a lemon. It left the nest and lived a fulfilling life.`)
                 : bot.say(chatroom, `${userNickname} and ${targetNickname} taught a lemon about the ways of life. It went on to become president.`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} educated a lemon about the ways of life. It went off to study at a prestigious university.`)
                 : bot.say(chatroom, `${userNickname} gave life advice to their lemon. It grew to become a strong, independent lemon.`)
-        }
-    }
 }
 function plantLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        if (target) {
-            coinFlip
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} enlisted ${targetNickname}'s help to plant all their lemons into lemon trees!`)
                 : bot.say(chatroom, `${targetNickname} buried all of ${userNickname}'s lemons underground, fertilizing the soil!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} planted a lemon in the ground, in hopes that it would grow into a tree.`)
                 : bot.say(chatroom, `${userNickname} buried a lemon into the earth.`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            coinFlip
+        : (user.lemons--, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} and ${targetNickname} planted a lemon in the ground, in hopes that it would grow into a tree.`)
                 : bot.say(chatroom, `${targetNickname} buried ${userNickname}'s lemon underground. Nothing happened.`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} planted a lemon in the ground, in hopes that it would grow into a tree.`)
                 : bot.say(chatroom, `${userNickname} buried a lemon into the earth.`)
-        }
-    }
 }
 function scoldLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        if (target) {
-            coinFlip
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} mocked all their lemons until they evaporated, despite ${targetNickname} pleading them to stop!`)
                 : bot.say(chatroom, `${targetNickname} bullied all of ${userNickname}'s lemons! They rolled away in shame.`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} bullied a lemon. It rolled away in tears.`)
                 : bot.say(chatroom, `${userNickname} mocked a lemon. It shrank until it disappeared.`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            coinFlip
+        : (user.lemons--, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} and ${targetNickname} ganged up on a lemon. It rolled away in shame.`)
                 : bot.say(chatroom, `${targetNickname} made fun of ${userNickname}'s lemon. It shrank until it disappeared.`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} bullied a lemon. It rolled away in tears.`)
                 : bot.say(chatroom, `${userNickname} mocked a lemon. It shrank until it disappeared.`)
-        }
-    }
 }
 function smellLemon(bot, chatroom, user, suffix, target) {
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        target
+    allLemons
+        ? (user.lemons = 0,
+            target)
             ? bot.say(chatroom, `${userNickname} made a nice fragrance out of all their lemons for ${targetNickname} to smell!`)
             : bot.say(chatroom, `All of ${userNickname}'s lemons melted into a puddle, which smelled very citrusy!`)
-    } else {
-        user.lemons--
-        target
+        : (user.lemons--,
+            target)
             ? bot.say(chatroom, `${userNickname} and ${targetNickname} smelled a lemon. It nebulized into the air like a fine perfume.`)
             : bot.say(chatroom, `${userNickname} smelled a lemon. It nebulized into the air like a fine perfume.`)
-    }
 }
 function gambleLemon(bot, chatroom, user, suffix) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
 
-    if (allLemons) {
-        if (coinFlip) {
-            user.lemons *= 2
-            bot.say(chatroom, `${userNickname} gambled all their lemons, and doubled them for a total of ${user.lemons}!`)
-            return
-        } else {
-            user.lemons = 0
-            bot.say(chatroom, `${userNickname} gambled all their lemons, and lost them all!`)
-            return
-        }
-    } else {
-        user.lemons--
-        if (coinFlip) {
-            user.lemons += 2
-            bot.say(chatroom, `${userNickname} gambled a lemon, and got two back!`)
-            return
-        } else {
-            bot.say(chatroom, `${userNickname} gambled a lemon, and lost it!`)
-            return
-        }
-    }
+    allLemons
+        ? coinFlip()
+            ? (user.lemons *= 2,
+                bot.say(chatroom, `${userNickname} gambled all their lemons, and doubled them for a total of ${user.lemons}!`))
+            : (user.lemons = 0,
+                bot.say(chatroom, `${userNickname} gambled all their lemons, and lost them all!`))
+        : (user.lemons--, coinFlip())
+            ? (user.lemons += 2,
+                bot.say(chatroom, `${userNickname} gambled a lemon, and got two back!`))
+            : bot.say(chatroom, `${userNickname} gambled a lemon, and lost it!`)
 }
 function cleanLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
@@ -1127,7 +802,6 @@ function cleanLemon(bot, chatroom, user, suffix, target) {
         if (target) {
             if (target.lemons === 0) {
                 bot.say(chatroom, `${targetNickname} does not have any lemons!`)
-                return
             }
             coinFlip
                 ? bot.say(chatroom, `${userNickname} and ${targetNickname} made all their lemons squeaky clean!`)
@@ -1141,7 +815,6 @@ function cleanLemon(bot, chatroom, user, suffix, target) {
         if (target) {
             if (target.lemons === 0) {
                 bot.say(chatroom, `${targetNickname} does not have any lemons!`)
-                return
             }
             coinFlip
                 ? bot.say(chatroom, `${userNickname} and ${targetNickname} polished a lemon to a sparking sheen!`)
@@ -1154,66 +827,49 @@ function cleanLemon(bot, chatroom, user, suffix, target) {
     }
 }
 function drinkLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        user.lemons = 0
-        if (target) {
-            coinFlip
+    allLemons
+        ? (user.lemons = 0, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} tried to swallow all their lemons whole while ${targetNickname} watched.`)
                 : bot.say(chatroom, `${userNickname} juiced all their lemons for ${targetNickname} to drink!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} put all their lemons in a bowl and slurped them up.`)
                 : bot.say(chatroom, `${userNickname} blended all their lemons up and sucked it through a straw.`)
-        }
-    } else {
-        user.lemons--
-        if (target) {
-            coinFlip
+        : (user.lemons--, target)
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} cracked open an ice-cold lemon with ${targetNickname}.`)
                 : bot.say(chatroom, `${userNickname} juiced a whole lemon for ${targetNickname} to drink!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} stuck a straw into a lemon and drank it.`)
                 : bot.say(chatroom, `${userNickname} cracked open an ice-cold lemon and drank it.`)
-        }
-    }
 }
 function viewLemon(bot, chatroom, user, suffix, target) {
     const singular = user.lemons === 1
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
 
-    if (allLemons) {
-        if (target) {
-            coinFlip
+    allLemons
+        ? target
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} looks at their ${singular ? `` : `${user.lemons} `}lemon${singular ? `` : `s`} with ${targetNickname}!`)
                 : bot.say(chatroom, `${userNickname} observes their ${singular ? `` : `${user.lemons} `}lemon${singular ? `` : `s`} alongside ${targetNickname}!`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} stares at their ${singular ? `` : `${user.lemons} `}lemon${singular ? `` : `s`}.`)
                 : bot.say(chatroom, `${userNickname} looks very closely at their ${singular ? `` : `${user.lemons} `}lemon${singular ? `` : `s`}.`)
-        }
-    } else {
-        if (target) {
-            coinFlip
+        : target
+            ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} and ${targetNickname} look at a lemon.`)
                 : bot.say(chatroom, `${userNickname} looks at ${targetNickname}'s lemon.`)
-        } else {
-            coinFlip
+            : coinFlip()
                 ? bot.say(chatroom, `${userNickname} holds up their lemon and examines it.`)
                 : bot.say(chatroom, `${userNickname} stares unblinkingly at their lemon.`)
-        }
-    }
 }
 function bounceLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
@@ -1223,19 +879,15 @@ function bounceLemon(bot, chatroom, user, suffix, target) {
             if (coinFlip) {
                 user.lemons = 0
                 bot.say(chatroom, `${userNickname} threw all their lemons on the ground, and ${targetNickname} watched them explode on impact.`)
-                return
             } else {
                 bot.say(chatroom, `${targetNickname} watched ${userNickname} bounce each of their lemons off the ground and catch them.`)
-                return
             }
         } else {
             if (coinFlip) {
                 user.lemons = 0
                 bot.say(chatroom, `${userNickname} threw all their lemons on the ground, and they burst open.`)
-                return
             } else {
                 bot.say(chatroom, `${userNickname} bounced each of their lemons off the ground and caught them!`)
-                return
             }
         }
     } else {
@@ -1243,25 +895,20 @@ function bounceLemon(bot, chatroom, user, suffix, target) {
             if (coinFlip) {
                 user.lemons--
                 bot.say(chatroom, `${userNickname} threw a lemon at the ground, and ${targetNickname} watched it burst.`)
-                return
             } else {
                 bot.say(chatroom, `${userNickname} dribbled a lemon like a basketball! ${targetNickname} is playing defense.`)
-                return
             }
         } else {
             if (coinFlip) {
                 user.lemons--
                 bot.say(chatroom, `${userNickname} threw a lemon at the ground, and it busted open.`)
-                return
             } else {
                 bot.say(chatroom, `${userNickname} dribbled a lemon like a basketball!`)
-                return
             }
         }
     }
 }
 function juggleLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
@@ -1272,10 +919,9 @@ function juggleLemon(bot, chatroom, user, suffix, target) {
                 bot.say(chatroom, `${userNickname} tried to juggle their lemons, but ${pluralize(user.lemons, `lemon isn't`, `lemons aren't`)} enough to juggle with. ${targetNickname} is disappointed.`)
                 return
             }
-            if (coinFlip) {
+            if (coinFlip()) {
                 bot.say(chatroom, `${userNickname} juggled their lemons, but dropped all ${user.lemons} of them on the floor! ${targetNickname} says, "Embarrassing!"`)
                 user.lemons = 0
-                return
             } else {
                 bot.say(chatroom, `${userNickname} juggled all ${user.lemons} of their lemons! ${targetNickname} says, "${user.lemons > 14
                     ? `Astounding`
@@ -1289,17 +935,15 @@ function juggleLemon(bot, chatroom, user, suffix, target) {
                                     ? `Cool`
                                     : `Wow`
                     }!"`)
-                return
             }
         } else {
             if (user.lemons < 3) {
                 bot.say(chatroom, `${userNickname} tried to juggle their lemons, but ${pluralize(user.lemons, `lemon isn't`, `lemons aren't`)} enough to juggle with.`)
                 return
             }
-            if (coinFlip) {
+            if (coinFlip()) {
                 bot.say(chatroom, `${userNickname} juggled their lemons, but dropped all ${user.lemons} of them on the floor! Embarrassing!`)
                 user.lemons = 0
-                return
             } else {
                 bot.say(chatroom, `${userNickname} juggled all ${user.lemons} of their lemons! ${user.lemons > 14
                     ? `Astounding`
@@ -1313,23 +957,21 @@ function juggleLemon(bot, chatroom, user, suffix, target) {
                                     ? `Cool`
                                     : `Wow`
                     }!`)
-                return
             }
         }
     } else {
         if (target) {
-            coinFlip
+            coinFlip()
                 ? bot.say(chatroom, `${targetNickname} watched ${userNickname} try to juggle one lemon.`)
                 : bot.say(chatroom, `${targetNickname} watched ${userNickname} try to juggle one lemon.It wasn't very interesting.`)
         } else {
-            coinFlip
+            coinFlip()
                 ? bot.say(chatroom, `${userNickname} tried to juggle one lemon.`)
                 : bot.say(chatroom, `${userNickname} tried to juggle just one lemon, but it wasn't enough.`)
         }
     }
 }
 function touchLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
@@ -1340,11 +982,11 @@ function touchLemon(bot, chatroom, user, suffix, target) {
                 bot.say(chatroom, `${targetNickname} does not have any lemons!`)
                 return
             }
-            coinFlip
+            coinFlip()
                 ? bot.say(chatroom, `${userNickname} brushed their hand over ${targetNickname}'s lemons!`)
                 : bot.say(chatroom, `${userNickname} idly fidgeted with ${targetNickname}'s lemons.`)
         } else {
-            coinFlip
+            coinFlip()
                 ? bot.say(chatroom, `${userNickname} fiddled with their lemons.`)
                 : bot.say(chatroom, `${userNickname} played with their lemons.`)
         }
@@ -1354,11 +996,11 @@ function touchLemon(bot, chatroom, user, suffix, target) {
                 bot.say(chatroom, `${targetNickname} does not have any lemons!`)
                 return
             }
-            coinFlip
+            coinFlip()
                 ? bot.say(chatroom, `${userNickname} poked one of ${targetNickname}'s lemons.`)
                 : bot.say(chatroom, `${userNickname} picked at one of ${targetNickname}'s lemons.`)
         } else {
-            coinFlip
+            coinFlip()
                 ? bot.say(chatroom, `${userNickname} fidgeted with their lemon.`)
                 : bot.say(chatroom, `${userNickname} idly played with a lemon.`)
         }
@@ -1377,7 +1019,6 @@ function exchangeLemon(bot, chatroom, user, suffix, target) {
     const exchangeRate = exchangeRates[Math.floor(Math.random() * exchangeRates.length)]
     logMessage([`--> streamelementsInChat: ${streamelementsInChat}, lemonIsMod: ${lemonIsMod}, exchangeRate: ${exchangeRate}`])
 
-    const coinFlip = Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
@@ -1386,55 +1027,47 @@ function exchangeLemon(bot, chatroom, user, suffix, target) {
 
     if (streamelementsInChat && lemonIsMod) {
         if (allLemons) {
-            if (target) {
-                bot.say(chatroom, `${userNickname} exchanged their ${pluralize(user.lemons, `lemon`, `lemons`)} for ${pluralize(exchangeRate, `point`, `points`)} each to give to ${targetNickname}!`)
-                bot.say(chatroom, `!bonus ${targetUsername} ${user.lemons * exchangeRate}`)
-            } else {
-                bot.say(chatroom, `${userNickname} exchanged their ${pluralize(user.lemons, `lemon`, `lemons`)} for ${pluralize(exchangeRate, `point`, `points`)} each!`)
-                bot.say(chatroom, `!bonus ${username} ${user.lemons * exchangeRate}`)
-            }
+            target
+                ? (bot.say(chatroom, `${userNickname} exchanged their ${pluralize(user.lemons, `lemon`, `lemons`)} for ${pluralize(exchangeRate, `point`, `points`)} each to give to ${targetNickname}!`),
+                    bot.say(chatroom, `!bonus ${targetUsername} ${user.lemons * exchangeRate}`))
+                : (bot.say(chatroom, `${userNickname} exchanged their ${pluralize(user.lemons, `lemon`, `lemons`)} for ${pluralize(exchangeRate, `point`, `points`)} each!`),
+                    bot.say(chatroom, `!bonus ${username} ${user.lemons * exchangeRate}`))
             user.lemons = 0
         } else {
-            if (target) {
-                bot.say(chatroom, `${userNickname} exchanged a lemon to give ${targetNickname} ${pluralize(exchangeRate, `point`, `points`)}!}`)
-                bot.say(chatroom, `!bonus ${targetUsername} ${exchangeRate}`)
-            } else {
-                bot.say(chatroom, `${userNickname} exchanged a lemon for ${pluralize(exchangeRate, `point`, `points`)}!`)
-                bot.say(chatroom, `!bonus ${username} ${exchangeRate}`)
-            }
+            target
+                ? (bot.say(chatroom, `${userNickname} exchanged a lemon to give ${targetNickname} ${pluralize(exchangeRate, `point`, `points`)}!}`),
+                    bot.say(chatroom, `!bonus ${targetUsername} ${exchangeRate}`))
+                : (bot.say(chatroom, `${userNickname} exchanged a lemon for ${pluralize(exchangeRate, `point`, `points`)}!`),
+                    bot.say(chatroom, `!bonus ${username} ${exchangeRate}`))
             user.lemons--
         }
     } else {
         if (allLemons) {
             user.lemons = 0
-            if (target) {
-                coinFlip
+            target
+                ? coinFlip()
                     ? bot.say(chatroom, `${targetNickname} traded all of ${userNickname}'s lemons for a hug! :)`)
                     : bot.say(chatroom, `${targetNickname} traded all of ${userNickname}'s lemons for a firm handshake! :)`)
-            } else {
-                coinFlip
+                : coinFlip()
                     ? bot.say(chatroom, `${userNickname} traded all their lemons for a warm smile! :)`)
                     : bot.say(chatroom, `${userNickname} traded all their lemons for a friendly nod! :)`)
-            }
         } else {
             user.lemons--
-            if (target) {
-                coinFlip
+            target
+                ? coinFlip()
                     ? bot.say(chatroom, `${targetNickname} traded one of ${userNickname}'s lemons for a hug! :)`)
                     : bot.say(chatroom, `${targetNickname} traded one of ${userNickname}'s lemons for a firm handshake! :)`)
-            } else {
-                coinFlip
+                : coinFlip()
                     ? bot.say(chatroom, `${userNickname} traded a lemon for a warm smile! :)`)
                     : bot.say(chatroom, `${userNickname} traded a lemon for a friendly nod! :)`)
-            }
         }
     }
 }
 function tuckInLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = () => Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName
+
     allLemons
         ? target
             ? coinFlip()
@@ -1452,10 +1085,10 @@ function tuckInLemon(bot, chatroom, user, suffix, target) {
                 : bot.say(chatroom, `${userNickname} put one of their lemons to bed and gave it a kiss!`)
 }
 function loseLemon(bot, chatroom, user, suffix, target) {
-    const coinFlip = () => Math.floor(Math.random() * 2)
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName
+
     allLemons
         ? (user.lemons = 0, target)
             ? coinFlip()

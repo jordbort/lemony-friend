@@ -1170,13 +1170,13 @@ module.exports = {
 
         await logMessage([makeLogs(bot.channels)])
         await logMessage([err.stack])
-
     },
     async dumpMemory(props) {
         const { bot, channel, username } = props
         await logMessage([`> dumpMemory(channel: ${channel}, username: ${username})`, `\n`])
         await logMessage([makeLogs(bot.channels)])
     },
+    coinFlip() { return Math.floor(Math.random() * 2) },
     getMemoryUsage(props) {
         const { bot, chatroom } = props
         const obj = process.memoryUsage()
