@@ -3,8 +3,8 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 const { settings } = require(`../config`)
 const { users, lemonyFresh } = require(`../data`)
 
-const { getContextEmote, pluralize, resetCooldownTimer, logMessage } = require(`../utils`)
 const { autoBanUser } = require(`./twitch`)
+const { getContextEmote, pluralize, resetCooldownTimer, logMessage, superscript } = require(`../utils`)
 
 function handleGreetOne(props) {
     const { bot, chatroom, channel, command, userNickname, targetNickname } = props
@@ -471,6 +471,11 @@ module.exports = {
                     : logMessage([`-> ${targetName} has been away for less than one-minute grace period`])
             }
         }
+    },
+    tiny(props) {
+        const { bot, chatroom, args } = props
+        const message = superscript(args.join(` `))
+        bot.say(chatroom, message)
     },
     hypeReact(props) {
         const { bot, chatroom, channel } = props

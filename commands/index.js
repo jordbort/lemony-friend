@@ -2,18 +2,18 @@ const { getTime } = require(`./time`)
 const { useList } = require(`./list`)
 const { useCount } = require(`./count`)
 const { convert } = require(`./convert`)
+const { lemonRank } = require(`./lemonRank`)
 const { countdown } = require(`./countdown`)
 const { getMemoryUsage } = require(`../utils`)
 const { rockPaperScissors } = require(`./rps`)
 const { getDocs, getStats } = require(`./help`)
-const { lemonRank } = require(`./lemonRank`)
 const { handleLemonify } = require(`./lemonify`)
 const { makeMultiTwitchLink } = require(`./multitwitch`)
 const { handleLemCmd, getLemCmds } = require(`./lemCmds`)
 const { manageHangman, joinHangman } = require(`../patterns/hangman`)
 const { insultUser, manageVerbs, manageNouns, manageAdjectives } = require(`./insult`)
 const { getDadJoke, getPokemon, getDefinition, getPokemonAbility } = require(`./external`)
-const { sayGoodnight, handleGreet, chant, handleRaid, setAway, yell } = require(`./conversation`)
+const { sayGoodnight, handleGreet, chant, handleRaid, setAway, yell, tiny } = require(`./conversation`)
 const { getLastMessage, getMessageCount, sayOnlineTime, sayFriends, getColor, getLemons } = require(`./getInfo`)
 const { handleShoutOut, getBotToken, validateToken, refreshToken, makeAnnouncement, pollStart, pollEnd, getOAUTHToken, authorizeToken, banUsers } = require(`./twitch`)
 
@@ -53,6 +53,8 @@ module.exports = {
     '!rps': rockPaperScissors,
 
     '!lemonify': handleLemonify,
+
+    '!tiny': tiny,
 
     '!lemoncommand': handleLemCmd,
     '!lemcmd': handleLemCmd,
