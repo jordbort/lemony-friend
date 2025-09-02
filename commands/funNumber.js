@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings } = require(`../config`)
-const { lemonyFresh, users, lemCmds } = require(`../data`)
+const { lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
 
 const { lemonify } = require(`./lemonify`)
 const { getTwitchChannel } = require(`./twitch`)
@@ -521,6 +521,38 @@ function imagineLemons(props) {
     bot.say(chatroom, `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${numbers[randNum + 1] || `one thousand`} lemons... ${lemonEmote}`)
 }
 
+function makeInsultSentence(props) {
+    const { bot, chatroom } = props
+
+    const nouns = [...wordBank.nouns]
+    const verbs = [...wordBank.verbs]
+    const filteredNouns = nouns.filter((el, idx) => nouns.indexOf(el) === idx)
+    const filteredVerbs = verbs.filter((el, idx) => verbs.indexOf(el) === idx)
+
+    logMessage([`> makeInsultSentence(filteredNouns: ['${filteredNouns.join(`', '`)}'], filteredVerbs: ['${filteredVerbs.join(`', '`)}'])`])
+    if (filteredNouns.length < 1 || filteredVerbs.length < 2) {
+        logMessage([`-> Not enough words to make a sentence`])
+        return
+    }
+
+    const noun = filteredNouns[Math.floor(Math.random() * filteredNouns.length)]
+
+    const verb1 = filteredVerbs[Math.floor(Math.random() * filteredVerbs.length)]
+
+    let verb2 = filteredVerbs[Math.floor(Math.random() * filteredVerbs.length)]
+    if (filteredVerbs.length > 1) {
+        while (verb2 === verb1) {
+            logMessage([`-> Verb 1: '${verb1}', verb 2: '${verb2}', re-rolling verb 2...`])
+            verb2 = filteredVerbs[Math.floor(Math.random() * filteredVerbs.length)]
+        }
+    }
+
+    const pronoun = [`she`, `he`, `they`][Math.floor(Math.random() * 3)]
+    const message = `${pronoun} ${verb1} on my ${noun} till i ${verb2}`
+
+    bot.say(chatroom, message)
+}
+
 function reportRandomLemCmdUsage(props) {
     const { bot, chatroom, channel } = props
     const neutralEmote = getContextEmote(`neutral`, channel)
@@ -576,7 +608,8 @@ module.exports = {
             19: useTwoEmotes,
             20: useFunnyCommand,
             21: imagineLemons,
-            22: reportRandomLemCmdUsage
+            22: makeInsultSentence,
+            23: reportRandomLemCmdUsage
         }
 
         if (funNumber in outcomes) {
