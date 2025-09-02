@@ -530,6 +530,8 @@ function reportRandomLemCmdUsage(props) {
     const dumbEmote = getContextEmote(`dumb`, channel)
 
     const randomCommand = Object.keys(lemCmds)[Math.floor(Math.random() * Object.keys(lemCmds).length)]
+    logMessage([`> reportRandomLemCmdUsage(randomCommand: '${randomCommand}', uses: ${lemCmds[randomCommand].uses})`])
+
     bot.say(chatroom, Object.keys(lemCmds).length === 0
         ? `No lemon commands have been used! ${negativeEmote}`
         : `Lemon command "${randomCommand}" has been used ${pluralize(lemCmds[randomCommand].uses, `time`, `times`)}! ${lemCmds[randomCommand].uses === 0
