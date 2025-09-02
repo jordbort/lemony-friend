@@ -8,8 +8,13 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Updated bot responses`,
-            `Minor bog fixes`
+            `Created more uses for lemons`,
+            `Added !tiny command`,
+            `Added !lemcmds alphabetical sort feature`,
+            `Retrospectively added lemon commands usage count`,
+            `Implemented say-butt cooldown timer for each channel`,
+            `Stopped logging non-origin messages from shared chat`,
+            `Minor bug fixes`
         ]
 
         const timeOptions = {
