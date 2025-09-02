@@ -475,6 +475,10 @@ module.exports = {
     tiny(props) {
         const { bot, chatroom, args } = props
         const message = superscript(args.join(` `))
+        if (!message) {
+            bot.say(chatroom, `ᵗᶦⁿʸ`)
+            return
+        }
         bot.say(chatroom, message)
     },
     hypeReact(props) {
