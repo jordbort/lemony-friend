@@ -45,7 +45,7 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!verbs` (or `!verb` or `!v`) - Use this command to add to the list of verbs Lemony Friend knows.
 - `!nouns` (or `!noun` or `!n`) - Use this command to add to the list of nouns Lemony Friend knows.
 - `!adjectives` (or `!adjective` or `!adj` or `!a`) - Use this command to add to the list of adjectives Lemony Friend knows.
-- `!lemoncommands` (or `!lemcmds`) - This command lists all existing lemon commands.
+- `!lemoncommands` (or `!lemcmds`) - This command lists all existing lemon commands. You can optionally add `alphabetical`, `alpha`, or just `a` to list them in alphabetical order.
 - `!greet` - This command can be used to greet one or more users. Use `!greet <user>` to greet another user, `!greet <user1> <user2>...` to greet multiple users, or `!greet all` to greet all known users in the current channel who have chatted in the past hour, other than the user of the command.
 - `!goodbye` (or `!bye` or `!gn` or `!goodnight`) - This command can be used to say good night to a user leaving chat.
 - `!dadjoke` - This command gets a random joke from a [Dad Joke API](https://icanhazdadjoke.com/api).
