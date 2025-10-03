@@ -490,19 +490,9 @@ module.exports = {
         }
         bot.say(chatroom, message)
     },
-    neutralReact(props) {
+    contextReact(props, context) {
         const { bot, chatroom, channel } = props
-        const neutralEmote = getContextEmote(`neutral`, channel)
-        bot.say(chatroom, neutralEmote)
-    },
-    negativeReact(props) {
-        const { bot, chatroom, channel } = props
-        const negativeEmote = getContextEmote(`negative`, channel)
-        bot.say(chatroom, negativeEmote)
-    },
-    dumbReact(props) {
-        const { bot, chatroom, channel } = props
-        const dumbEmote = getContextEmote(`dumb`, channel)
-        bot.say(chatroom, dumbEmote)
+        const emote = getContextEmote(context, channel)
+        bot.say(chatroom, emote)
     }
 }

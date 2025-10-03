@@ -1,7 +1,7 @@
 const BOT_NICKNAME_REGEX = process.env.BOT_NICKNAME_REGEX
 
 const { checkSentiment } = require(`../commands/external`)
-const { handleGreetOne, sayGoodnight, sayThanks, sayYoureWelcome, sayMood, dumbReact, neutralReact, negativeReact, hypeReact } = require(`../commands/conversation`)
+const { handleGreetOne, sayGoodnight, sayThanks, sayYoureWelcome, sayMood, contextReact } = require(`../commands/conversation`)
 
 module.exports = {
     // good( something? )night
@@ -11,7 +11,7 @@ module.exports = {
     // bye (includes good bye)
     [/\b(b+y+e+)+/i]: sayGoodnight,
     // goodbye
-    [/g+o{2,}d+ ?b+y+e+/i]: sayGoodnight,
+    [/g+o{2,}d+\s?b+y+e+/i]: sayGoodnight,
 
     // gj
     [/\b(g+j+)+\b/i]: sayThanks,
@@ -64,14 +64,14 @@ module.exports = {
     [/\b(y+o+)+\b/i]: handleGreetOne,
 
     // "ok(ay) lemon"/"lemon ok(ay)"
-    [RegExp(`^o+k+(a*y+)?\\s${BOT_NICKNAME_REGEX}$|^${BOT_NICKNAME_REGEX}\\so+k+(a*y+)?$`, `i`)]: dumbReact,
+    [RegExp(`^o+k+(a*y+)?\\s${BOT_NICKNAME_REGEX}$|^${BOT_NICKNAME_REGEX}\\so+k+(a*y+)?$`, `i`)]: (props) => contextReact(props, `dumb`),
     // "yes lemon"/"lemon yes"
-    [RegExp(`^y+e+s+\\s${BOT_NICKNAME_REGEX}$|^${BOT_NICKNAME_REGEX}\\sy+e+s+$`, `i`)]: neutralReact,
+    [RegExp(`^y+e+s+\\s${BOT_NICKNAME_REGEX}$|^${BOT_NICKNAME_REGEX}\\sy+e+s+$`, `i`)]: (props) => contextReact(props, `neutral`),
     // "no lemon"/"lemon no"
-    [RegExp(`^n+o+\\s${BOT_NICKNAME_REGEX}$|^${BOT_NICKNAME_REGEX}\\sn+o+$`, `i`)]: negativeReact,
+    [RegExp(`^n+o+\\s${BOT_NICKNAME_REGEX}$|^${BOT_NICKNAME_REGEX}\\sn+o+$`, `i`)]: (props) => contextReact(props, `negative`),
 
     // good bot
-    [/\bg+o{2,}d+ b+ot+\b/i]: hypeReact,
+    [/\bg+o{2,}d+\sb+ot+\b/i]: (props) => contextReact(props, `hype`),
 
     // Contains "you" or "u"
     [/\b(you|u)['"]*r*e*\b/i]: checkSentiment
