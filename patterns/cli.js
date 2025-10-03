@@ -114,8 +114,12 @@ function updatePhraseArr(bot, chatroom, obj, message, name, args) {
             return
         }
         const phrase = args.join(` `)
-        obj[name].push(phrase)
-        bot.say(chatroom, `/me ${message}: Added "${phrase}"`)
+        if (obj[name].includes(phrase)) {
+            bot.say(chatroom, `/me ${message}: Already contains "${phrase}" (${pluralize(obj[name].length, `phrase exists`, `phrases exist`)})${obj[name].length ? ` - "${obj[name].join(`", "`)}"` : ``}`)
+        } else {
+            obj[name].push(phrase)
+            bot.say(chatroom, `/me ${message}: Added "${phrase}"`)
+        }
         return
     }
 
