@@ -1,8 +1,9 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings } = require(`../config`)
-const { getTwitchUser } = require(`./twitch`)
 const { lemonyFresh, users, lemCmds } = require(`../data`)
+
+const { apiGetTwitchUser } = require(`./twitch`)
 const { getUsername, getContextEmote, logMessage, pluralize, arrToList, numbers } = require(`../utils`)
 
 module.exports = {
@@ -77,9 +78,9 @@ module.exports = {
         // Verify channels exist before attempting to join
         const successfullyJoined = []
         for (const channel of notYetJoined) {
-            const twitchUser = await getTwitchUser({ ...props, toUser: channel })
-            if (!twitchUser?.id) {
-                logMessage([`-> Error: '${channel}' does not have a user ID`])
+            const twitchUser = await apiGetTwitchUser(channel)
+            if (!twitchUser.id) {
+                bot.say(chatroom, `Error: User "${channel}" not found! :O`)
             } else {
                 successfullyJoined.push(channel)
                 lemonyFresh[channel] = { ...lemonyFresh[channel], id: Number(twitchUser.id) }
@@ -89,9 +90,9 @@ module.exports = {
 
         const reply = successfullyJoined.length
             ? alreadyJoined.length
-                ? `Joined channel${successfullyJoined.length === 1 ? `` : `s`}: ${successfullyJoined.join(`, `)} - Already joined: ${alreadyJoined.join(`, `)}`
-                : `Joined channel${successfullyJoined.length === 1 ? `` : `s`}: ${successfullyJoined.join(`, `)}`
-            : `Active in channels: ${bot.channels.map(channel => channel.substring(1)).join(`, `)}`
+                ? `Joined ${pluralize(successfullyJoined.length, `channel`, `channels`)}: ${successfullyJoined.join(`, `)} - Already joined: ${alreadyJoined.join(`, `)}`
+                : `Joined ${pluralize(successfullyJoined.length, `channel`, `channels`)}: ${successfullyJoined.join(`, `)}`
+            : `Active in ${pluralize(bot.channels.length, `channel`, `channels`)}: ${bot.channels.map(channel => channel.substring(1)).join(`, `)}`
         bot.say(chatroom, reply)
     },
     handlePart(props) {

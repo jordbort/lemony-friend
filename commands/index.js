@@ -15,12 +15,11 @@ const { insultUser, manageVerbs, manageNouns, manageAdjectives } = require(`./in
 const { getDadJoke, getPokemon, getDefinition, getPokemonAbility } = require(`./external`)
 const { getLastMessage, getMessageCount, sayOnlineTime, sayFriends, getColor, getLemons } = require(`./getInfo`)
 const { sayGoodnight, handleGreet, chant, handleRaid, setAway, yell, tiny, makeCursive } = require(`./conversation`)
+const { handleShoutout, getBotToken, makeAnnouncement, accessInstructions, authorizeToken, banUsers, startPoll, endPoll } = require(`./twitch`)
 
 module.exports = {
-    '!so': handleShoutOut,
+    '!so': handleShoutout,
     '!token': getBotToken,
-    '!validate': validateToken,
-    '!refresh': refreshToken,
 
     '!announce': makeAnnouncement,
     '!announceblue': makeAnnouncement,
@@ -28,12 +27,12 @@ module.exports = {
     '!announceorange': makeAnnouncement,
     '!announcepurple': makeAnnouncement,
 
-    '!poll': pollStart,
-    '!endpoll': pollEnd,
-    '!cancelpoll': pollEnd,
-    '!stoppoll': pollEnd,
+    '!poll': startPoll,
+    '!endpoll': endPoll,
+    '!cancelpoll': endPoll,
+    '!stoppoll': endPoll,
 
-    '!access': getOAUTHToken,
+    '!access': accessInstructions,
     '!authorize': authorizeToken,
 
     '!banuser': banUsers,

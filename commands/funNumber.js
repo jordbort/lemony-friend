@@ -4,7 +4,7 @@ const { settings } = require(`../config`)
 const { lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
 
 const { lemonify } = require(`./lemonify`)
-const { getTwitchChannel } = require(`./twitch`)
+const { apiGetTwitchChannel } = require(`./twitch`)
 const { getRandomUser, getRandomChannelMessage } = require(`./getInfo`)
 const { getContextEmote, pluralize, logMessage, numbers } = require(`../utils`)
 
@@ -296,18 +296,21 @@ function sayTime(props) {
 
 async function askAboutGame(props) {
     const { bot, chatroom, channel } = props
-    const broadcaster_id = lemonyFresh[channel].id
-    const twitchChannel = await getTwitchChannel(bot, chatroom, broadcaster_id)
-    const game = twitchChannel.game_name
-    logMessage([`> askAboutGame(channel: '${channel}', game: '${game}', game_id: '${twitchChannel.game_id}')`])
+    const broadcasterId = lemonyFresh[channel].id
+    const twitchChannel = await apiGetTwitchChannel(broadcasterId)
+    if (!twitchChannel) {
+        logMessage([`-> Failed to fetch Twitch channel`])
+        return
+    }
+
+    const { game_name, game_id } = twitchChannel
+    logMessage([`> askAboutGame(channel: '${channel}', game_name: '${game_name}', game_id: '${game_id}')`])
 
     const neutralEmote = getContextEmote(`neutral`, channel)
-    bot.say(
-        chatroom,
-        game === `Just Chatting`
-            ? `How is everyone doing? ${neutralEmote}`
-            : `How are you enjoying ${game || `the game`}? ${neutralEmote}`
-    )
+    const reply = game_name === `Just Chatting`
+        ? `How is everyone doing? ${neutralEmote}`
+        : `How are you enjoying ${game_name || `the game`}? ${neutralEmote}`
+    bot.say(chatroom, reply)
 }
 
 function awardLemon(props) {
