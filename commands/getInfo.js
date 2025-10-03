@@ -8,13 +8,10 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Created more uses for lemons`,
-            `Added !tiny command`,
-            `Added !lemcmds alphabetical sort feature`,
-            `Retrospectively added lemon commands usage count`,
-            `Implemented say-butt cooldown timer for each channel`,
-            `Stopped logging non-origin messages from shared chat`,
-            `Minor bug fixes`
+            `Added !cursive command`,
+            `CLI phrase arrays now reject duplicates`,
+            `Rewrote Twitch API code for reusability`,
+            `Cleaned up code and RegEx`
         ]
 
         const timeOptions = {
@@ -34,7 +31,10 @@ module.exports = {
         }
 
         const neutralEmote = getContextEmote(`neutral`, channel)
-        bot.say(chatroom, `I've been online since ${settings.startDate.toLocaleDateString(settings.timeLocale, dateOptions)} at ${settings.startDate.toLocaleTimeString(settings.timeLocale, timeOptions)}! ${neutralEmote}${newFeatures.length ? ` Updates: ${newFeatures.join(`, `)}` : ``}`)
+        const reply = `I've been online since ${settings.startDate.toLocaleDateString(settings.timeLocale, dateOptions)} at ${settings.startDate.toLocaleTimeString(settings.timeLocale, timeOptions)}! ${neutralEmote}${newFeatures.length
+            ? ` Updates: ${newFeatures.join(`, `)}`
+            : ``}`
+        bot.say(chatroom, reply)
     },
     getLastMessage(props) {
         const { bot, chatroom, args, currentTime, channel, username, user, userNickname, toUser, target, targetNickname } = props
