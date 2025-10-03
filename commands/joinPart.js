@@ -8,60 +8,63 @@ const { getUsername, getContextEmote, logMessage, pluralize, arrToList, numbers 
 module.exports = {
     sayJoinMessage(bot, chatroom) {
         logMessage([`> sayJoinMessage(chatroom: '${chatroom}'${settings.joinMessage ? `, '${settings.joinMessage}'` : ``})`])
+        if (settings.joinMessage) {
+            bot.say(chatroom, settings.joinMessage)
+        } else {
+            const channel = chatroom.substring(1)
+            const lemonEmote = getContextEmote(`lemon`, channel)
+            const neutralEmote = getContextEmote(`neutral`, channel)
+            const positiveEmote = getContextEmote(`positive`, channel)
+            const hypeEmote = getContextEmote(`hype`, channel)
+            const greetingEmote = getContextEmote(`greeting`, channel)
+            const dumbEmote = getContextEmote(`dumb`, channel)
+            const numUsers = Object.keys(users).length
+            const numLemCmds = Object.keys(lemCmds).length
+            const maxUses = Math.max(...Object.keys(lemCmds).map(cmd => lemCmds[cmd].uses))
+            const mostUsedLemcmd = Object.keys(lemCmds).filter(cmd => lemCmds[cmd].uses === maxUses)
+            const randNum = Math.floor(Math.random() * numbers.length)
 
-        const channel = chatroom.substring(1)
-        const lemonEmote = getContextEmote(`lemon`, channel)
-        const neutralEmote = getContextEmote(`neutral`, channel)
-        const positiveEmote = getContextEmote(`positive`, channel)
-        const hypeEmote = getContextEmote(`hype`, channel)
-        const greetingEmote = getContextEmote(`greeting`, channel)
-        const dumbEmote = getContextEmote(`dumb`, channel)
-        const numUsers = Object.keys(users).length
-        const numLemCmds = Object.keys(lemCmds).length
-        const maxUses = Math.max(...Object.keys(lemCmds).map(cmd => lemCmds[cmd].uses))
-        const mostUsedLemcmd = Object.keys(lemCmds).filter(cmd => lemCmds[cmd].uses === maxUses)
-        const randNum = Math.floor(Math.random() * numbers.length)
-
-        const joinMessages = [
-            `Let's see how long before I crash ${dumbEmote}`,
-            `* ${BOT_USERNAME.substring(0, 1).toUpperCase() + BOT_USERNAME.substring(1)} blocks the way! ${positiveEmote}`,
-            `Hi ${channel}, I'm ${BOT_USERNAME}! ${greetingEmote} ${lemonEmote}`,
-            `(Windows XP startup sound plays)`,
-            `I'm onl`,
-            `I have ${numUsers <= 999
-                ? `${numbers[numUsers]} (${numUsers}) friend${numUsers === 1 ? `` : `s`}`
-                : pluralize(numUsers, `friend`, `friends`)}! ${numUsers === 0
+            const joinMessages = [
+                `Let's see how long before I crash ${dumbEmote}`,
+                `* ${BOT_USERNAME.substring(0, 1).toUpperCase() + BOT_USERNAME.substring(1)} blocks the way! ${positiveEmote}`,
+                `Hi ${channel}, I'm ${BOT_USERNAME}! ${greetingEmote} ${lemonEmote}`,
+                `(Windows XP startup sound plays)`,
+                `I'm onl`,
+                `I have ${numUsers <= 999
+                    ? `${numbers[numUsers]} (${numUsers}) friend${numUsers === 1 ? `` : `s`}`
+                    : pluralize(numUsers, `friend`, `friends`)}! ${numUsers === 0
+                        ? dumbEmote
+                        : numUsers < 25
+                            ? neutralEmote
+                            : numUsers < 50
+                                ? positiveEmote
+                                : hypeEmote}`,
+                `There ${numLemCmds === 1 ? `is` : `are`} ${pluralize(numLemCmds, `lemon command`, `lemon commands`)}! ${numLemCmds === 0
                     ? dumbEmote
-                    : numUsers < 25
+                    : numLemCmds < 10
                         ? neutralEmote
-                        : numUsers < 50
+                        : numLemCmds < 100
                             ? positiveEmote
                             : hypeEmote}`,
-            `There ${numLemCmds === 1 ? `is` : `are`} ${pluralize(numLemCmds, `lemon command`, `lemon commands`)}! ${numLemCmds === 0
-                ? dumbEmote
-                : numLemCmds < 3
-                    ? neutralEmote
-                    : numLemCmds < 5
-                        ? positiveEmote
-                        : hypeEmote}`,
-            `Let's play Hangman! ${positiveEmote}`,
-            `I know ${pluralize(lemonyFresh[channel].emotes.length, `emote`, `emotes`)} in ${channel}'s channel! ${neutralEmote}`,
-            `It has been ${Date.now().toLocaleString(`en-US`)} milliseconds since January 1, 1970, 12:00:00 AM UTC ${lemonEmote}`,
-            `${BOT_USERNAME} has entered the chat ${lemonEmote}`,
-            `${BOT_USERNAME in users
-                ? `I have ${pluralize(users[BOT_USERNAME].lemons, `lemon`, `lemons`)}! ${lemonEmote}`
-                : `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${numbers[randNum + 1] || `one thousand`} lemons... ${lemonEmote}`}`,
-            Object.keys(lemCmds).length === 0 || maxUses === 0
-                ? `No lemon commands have been used! ${dumbEmote}`
-                : `Most-used lemon command${mostUsedLemcmd.length === 1 ? `` : `s`} ${arrToList(mostUsedLemcmd)} ${mostUsedLemcmd.length === 1 ? `has` : `have`} been used ${pluralize(maxUses, `time`, `times`)}! ${maxUses < 50
-                    ? neutralEmote
-                    : maxUses < 100
-                        ? positiveEmote
-                        : hypeEmote}`
-        ]
-        const joinMessage = joinMessages[Math.floor(Math.random() * joinMessages.length)]
+                `Let's play Hangman! ${positiveEmote}`,
+                `I know ${pluralize(lemonyFresh[channel].emotes.length, `emote`, `emotes`)} in ${channel}'s channel! ${neutralEmote}`,
+                `It has been ${Date.now().toLocaleString(`en-US`)} milliseconds since January 1, 1970, 12:00:00 AM UTC ${lemonEmote}`,
+                `${BOT_USERNAME} has entered the chat ${lemonEmote}`,
+                `${BOT_USERNAME in users
+                    ? `I have ${pluralize(users[BOT_USERNAME].lemons, `lemon`, `lemons`)}! ${lemonEmote}`
+                    : `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${numbers[randNum + 1] || `one thousand`} lemons... ${lemonEmote}`}`,
+                Object.keys(lemCmds).length === 0 || maxUses === 0
+                    ? `No lemon commands have been used! ${dumbEmote}`
+                    : `Most-used lemon command${mostUsedLemcmd.length === 1 ? `` : `s`} ${arrToList(mostUsedLemcmd)} ${mostUsedLemcmd.length === 1 ? `has` : `have`} been used ${pluralize(maxUses, `time`, `times`)}! ${maxUses < 50
+                        ? neutralEmote
+                        : maxUses < 100
+                            ? positiveEmote
+                            : hypeEmote}`
+            ]
 
-        bot.say(chatroom, settings.joinMessage || joinMessage)
+            const joinMessage = joinMessages[Math.floor(Math.random() * joinMessages.length)]
+            bot.say(chatroom, joinMessage)
+        }
     },
     async handleJoin(props) {
         const { bot, chatroom, args } = props
@@ -84,11 +87,12 @@ module.exports = {
             }
         }
 
-        successfullyJoined.length
+        const reply = successfullyJoined.length
             ? alreadyJoined.length
-                ? bot.say(chatroom, `Joined channel${successfullyJoined.length === 1 ? `` : `s`}: ${successfullyJoined.join(`, `)} - Already joined: ${alreadyJoined.join(`, `)}`)
-                : bot.say(chatroom, `Joined channel${successfullyJoined.length === 1 ? `` : `s`}: ${successfullyJoined.join(`, `)}`)
-            : bot.say(chatroom, `Joined channels: ${bot.channels.map(channel => channel.substring(1)).join(`, `)}`)
+                ? `Joined channel${successfullyJoined.length === 1 ? `` : `s`}: ${successfullyJoined.join(`, `)} - Already joined: ${alreadyJoined.join(`, `)}`
+                : `Joined channel${successfullyJoined.length === 1 ? `` : `s`}: ${successfullyJoined.join(`, `)}`
+            : `Active in channels: ${bot.channels.map(channel => channel.substring(1)).join(`, `)}`
+        bot.say(chatroom, reply)
     },
     handlePart(props) {
         const { bot, chatroom, args, channel } = props
@@ -103,10 +107,12 @@ module.exports = {
             if (settings.sayPartMessage) { bot.say(`#${user}`, `Bye for now! ${byeEmote}`) }
             bot.part(`#${user}`)
         })
-        needToPart.length
+
+        const reply = needToPart.length
             ? notInChannel.length
-                ? bot.say(chatroom, `Parted from channel${needToPart.length === 1 ? `` : `s`}: ${needToPart.join(`, `)} - Not already in: ${notInChannel.join(`, `)}`)
-                : bot.say(chatroom, `Parted from channel${needToPart.length === 1 ? `` : `s`}: ${needToPart.join(`, `)}`)
-            : bot.say(chatroom, `All active users: ${bot.channels.map(channel => channel.substring(1)).join(`, `)}`)
+                ? `Parted from channel${needToPart.length === 1 ? `` : `s`}: ${needToPart.join(`, `)} - Not already in: ${notInChannel.join(`, `)}`
+                : `Parted from channel${needToPart.length === 1 ? `` : `s`}: ${needToPart.join(`, `)}`
+            : `All active users: ${bot.channels.map(channel => channel.substring(1)).join(`, `)}`
+        bot.say(chatroom, reply)
     }
 }
