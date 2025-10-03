@@ -13,9 +13,8 @@ const { handleLemCmd, getLemCmds } = require(`./lemCmds`)
 const { manageHangman, joinHangman } = require(`../patterns/hangman`)
 const { insultUser, manageVerbs, manageNouns, manageAdjectives } = require(`./insult`)
 const { getDadJoke, getPokemon, getDefinition, getPokemonAbility } = require(`./external`)
-const { sayGoodnight, handleGreet, chant, handleRaid, setAway, yell, tiny } = require(`./conversation`)
 const { getLastMessage, getMessageCount, sayOnlineTime, sayFriends, getColor, getLemons } = require(`./getInfo`)
-const { handleShoutOut, getBotToken, validateToken, refreshToken, makeAnnouncement, pollStart, pollEnd, getOAUTHToken, authorizeToken, banUsers } = require(`./twitch`)
+const { sayGoodnight, handleGreet, chant, handleRaid, setAway, yell, tiny, makeCursive } = require(`./conversation`)
 
 module.exports = {
     '!so': handleShoutOut,
@@ -55,6 +54,7 @@ module.exports = {
     '!lemonify': handleLemonify,
 
     '!tiny': tiny,
+    '!cursive': makeCursive,
 
     '!lemoncommand': handleLemCmd,
     '!lemcmd': handleLemCmd,
