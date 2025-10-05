@@ -136,7 +136,7 @@ module.exports = {
             const regex = new RegExp(phrase, `i`)
             if (regex.test(message)) {
                 logMessage([`${username.toUpperCase()} MATCHED AUTO-BAN PATTERN:`, regex])
-                autoBanUser(bot, chatroom, username)
+                autoBanUser(props)
                 return
             }
         }
