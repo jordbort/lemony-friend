@@ -34,6 +34,7 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!chant` - Use this command to have lemony_friend chant a phrase in all caps in chat.
 - `!yell` - Use this command with a message to send that message across all channels where someone has chatted in the past hour.
 - `!define` (or `!definition` or `!meaning`) - This command can be used followed by a word to look up its definition using an API from [API Ninjas](https://api-ninjas.com/).
+- `!ud` - This command can be used followed by a word or phrase to look up its definition using the [Unofficial Urban Dictionary API]([https://api-ninjas.com](https://unofficialurbandictionaryapi.com)/).
 - `!lemon` (or `!lemons`) - This command can be used to check how many lemons the sender (or another user) has.
 - `!lemonboard` (or `!lemonrank`) - This command can be used to check who the top three users are that have the most lemons.
 - `![use]lemon[append?]` - This command is a wildcard that can be used. [Use] can be any verb (or verb phrase), and [append?] could be an optional suffix, if "lemon" is meant to be a descriptor, or possibly to pluralize "lemon" to all "lemons".
@@ -82,6 +83,7 @@ Lemon commands are custom commands that can be made on the fly by anyone, which 
 
 ### Lemon Command Variables
 There are also variables you can use in commands that will be replaced with arguments:
+- `{message}` or `{msg}` is everything typed after the command.
 - `{user}` is the display name of the user of the command.
 - `{usernn}` is the nickname of the user of the command (falling back on display name if there's no nickname defined).
 - `{touser}` is the display name of a specified user (falling back on whatever was input, if that user isn't known, or the user of the command if no input).
