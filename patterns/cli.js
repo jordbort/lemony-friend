@@ -325,7 +325,7 @@ function updateUserDev(props, args) {
 
     const toUser = getToUser(args[0])
     if (!(toUser in users)) {
-        bot.say(chatroom, `/me Please specify one of ${(Object.keys(users).length).toLocaleString(settings.timeLocale)} valid users`)
+        bot.say(chatroom, `/me Please specify one of ${Object.keys(users).length.toLocaleString(settings.timeLocale)} valid users`)
         return
     }
 
@@ -474,7 +474,7 @@ function updateSettingsDev(props, args) {
         [/^funNumberTotal$|^fnt$/i]: { name: `funNumberTotal`, func: updateNum },
         [/^streakThreshold$|^st$/i]: { name: `streakThreshold`, func: updateNum },
         [/^streamerEmoteStreakThreshold$|^sest$/i]: { name: `streamerEmoteStreakThreshold`, func: updateNum },
-        // [/^hangmanSignupSeconds$|^hss$/i]: { name: `hangmanSignupSeconds`, func: updateNum },
+        [/^hangmanSignupSeconds$|^hss$/i]: { name: `hangmanSignupSeconds`, func: updateNum },
         // [/^hangmanChances?$|^hc$/i]: { name: `hangmanChances`, func: updateNum },
         // [/^hangmanLemonThreshold$|^hlt$/i]: { name: `hangmanLemonThreshold`, func: updateNum },
         // [/^chantCount$|^cc$/i]: { name: `chantCount`, func: updateNum },
