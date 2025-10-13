@@ -61,12 +61,8 @@ function hangmanAnnounce(bot, chatroom, userNickname) {
         logMessage([`-> ${settings.hangmanSignupSeconds} seconds has elapsed, signup window closed - players: ${hangman.players.join(`, `)}`])
         hangman.players.sort(() => Math.random() - 0.5)
         const firstPlayer = users[hangman.players[0]].nickname || users[hangman.players[0]].displayName
-        bot.say(chatroom,
-            `${hangman.players.length} player${hangman.players.length === 1
-                ? ``
-                : `s`
-            } signed up for Hangman! It's a ${hangman.answer.length}-letter word. You go first, ${firstPlayer}! ${positiveEmote}`
-        )
+        const reply = `${pluralize(hangman.players.length, `player`, `players`)} signed up for Hangman! It's ${[8, 11].includes(hangman.answer.length) ? `an` : `a`} ${hangman.answer.length}-letter word. You go first, ${firstPlayer}! ${positiveEmote}`
+        bot.say(chatroom, reply)
         // First round
         const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
         const delay = setDelay(channel)
