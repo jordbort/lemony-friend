@@ -1,7 +1,7 @@
 const API_KEY = process.env.API_KEY
 
 const { settings } = require(`../config`)
-const { getContextEmote, renderObj, logMessage } = require(`../utils`)
+const { getContextEmote, renderObj, logMessage, pluralize } = require(`../utils`)
 
 module.exports = {
     async checkSentiment(props) {
@@ -260,5 +260,30 @@ module.exports = {
                 bot.say(chatroom, message)
             }
         }
+    },
+    async getUrbanDictionaryDefinition(props) {
+        const { bot, chatroom, args, channel } = props
+        const query = args.join(` `)
+        logMessage([`> getUrbanDictionaryDefinition(channel: ${channel}, query: '${query}')`])
+
+        if (!query) {
+            bot.say(chatroom, `No query provided! :O`)
+            return
+        }
+
+        const response = await fetch(`https://unofficialurbandictionaryapi.com/api/search?term=${query}`)
+        const data = await response.json()
+        logMessage([`getUrbanDictionaryDefinition`, response.status, renderObj(data, `data`)])
+
+        if (data.statusCode !== 200) {
+            bot.say(chatroom, `Error fetching definition! :O`)
+        }
+
+        const objDefinition = data.data[Math.floor(Math.random() * data.data.length)]
+        const reply = data.found
+            ? `"${query}" (${pluralize(data.data.length, `definition`, `definitions`)} found): ${objDefinition.meaning} - ex: "${objDefinition.example}" (${objDefinition.date})`
+            : `No definition found! :O`
+
+        bot.say(chatroom, reply)
     }
 }
