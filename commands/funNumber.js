@@ -2,11 +2,12 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings } = require(`../config`)
 const { lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
+const numbers = require(`../numbers`)
 
 const { lemonify } = require(`./lemonify`)
 const { apiGetTwitchChannel } = require(`./twitch`)
 const { getRandomUser, getRandomChannelMessage } = require(`./getInfo`)
-const { getContextEmote, pluralize, logMessage, numbers } = require(`../utils`)
+const { getContextEmote, pluralize, logMessage } = require(`../utils`)
 
 function makePyramid(props) {
     const { bot, chatroom, message, channel } = props

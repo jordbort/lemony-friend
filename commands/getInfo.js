@@ -1,6 +1,7 @@
 const { lemonyFresh, users } = require(`../data`)
 const { chatColors, settings } = require(`../config`)
-const { numbers, getContextEmote, pluralize, getToUser, logMessage, arrToList } = require(`../utils`)
+const numbers = require(`../numbers`)
+const { getContextEmote, pluralize, getToUser, logMessage, arrToList } = require(`../utils`)
 
 module.exports = {
     sayOnlineTime(props) {
@@ -127,8 +128,8 @@ module.exports = {
 
         bot.say(
             chatroom,
-            `I have ${numUsers <= 999
-                ? `${numbers[numUsers]} (${numUsers}) friend${numUsers === 1 ? `` : `s`}`
+            `I have ${numUsers < numbers.length
+                ? `${numbers[numUsers]} (${numUsers.toLocaleString(settings.timeLocale)}) friend${numUsers === 1 ? `` : `s`}`
                 : pluralize(numUsers, `friend`, `friends`)}! ${numUsers === 0
                     ? dumbEmote
                     : numUsers < 25
