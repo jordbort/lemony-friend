@@ -9,6 +9,10 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
+            `Added Urban Dictionary definitions`,
+            `Implement {message} variable in lemon commands`,
+            `Extended numbers list to 9999`,
+            `Reorganized code`,
             `Added new uses for lemons`,
             `Reworked !yell logic`,
             `Migrated user channels into a new 'channels' object`
