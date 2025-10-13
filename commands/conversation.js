@@ -419,18 +419,24 @@ module.exports = {
     yell(props) {
         const { bot, message, userNickname, currentTime } = props
 
+        // Collect channels bot is currently joined to
         const mostRecentMessages = {}
-        for (const channel in lemonyFresh) {
-            if (typeof lemonyFresh[channel] === `object` && !Array.isArray(lemonyFresh[channel])) { mostRecentMessages[channel] = 0 }
-        }
+        for (const channel of bot.channels) { mostRecentMessages[channel.substring(1)] = 0 }
+
+        // Create table of most recently-sent message times from non-bots
         for (const channel in mostRecentMessages) {
             for (const username in users) {
-                if (channel in users[username] && users[username][channel]?.sentAt > mostRecentMessages[channel]) { mostRecentMessages[channel] = users[username][channel].sentAt }
+                if (channel in users[username].channels
+                    && !settings.ignoredBots.includes(username)
+                    && users[username].channels[channel].sentAt > mostRecentMessages[channel]) {
+                    mostRecentMessages[channel] = users[username].channels[channel].sentAt
+                }
             }
         }
 
+        // Filter out channels that have had message activity more than an hour ago
         const recentChannels = Object.keys(mostRecentMessages).filter(channel => currentTime - mostRecentMessages[channel] < 3600000)
-        logMessage([`> yell(userNickname: '${userNickname}', recentChannels:`, recentChannels, `)`])
+        logMessage([`> yell(userNickname: '${userNickname}', recentChannels: '${recentChannels.join(`', '`)}'`])
 
         recentChannels.forEach(channel => bot.say(`#${channel}`, `${userNickname} says: ${message.substring(6)}`))
     },
