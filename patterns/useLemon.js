@@ -1149,6 +1149,94 @@ function bowlLemon(bot, chatroom, user, suffix, target) {
                         : ``}!`
                 )
 }
+function weighLemon(bot, chatroom, user, suffix, target) {
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName || null
+
+    allLemons
+        ? target
+            ? user.lemons === 1
+                ? bot.say(chatroom, `${userNickname} put all one of their lemons and ${targetNickname} on a scale. They weighed about one lemon and one ${targetNickname}.`)
+                : bot.say(chatroom, `${userNickname} put ${targetNickname} and all their lemons on a scale. They weighed about ${user.lemons} lemons and 1 ${targetNickname}.`)
+            : coinFlip()
+                ? bot.say(chatroom, `${userNickname} weighed their lemons. They weighed about ${pluralize(user.lemons, `lemon`, `lemons`)}.`)
+                : bot.say(chatroom, `${userNickname} put all their lemons on a scale. They weighed about ${pluralize(user.lemons, `lemon`, `lemons`)}.`)
+        : target
+            ? bot.say(chatroom, `${userNickname} put a lemon and ${targetNickname} on a scale. It weighed about one lemon and one ${targetNickname}.`)
+            : coinFlip()
+                ? bot.say(chatroom, `${userNickname} weighed their lemon. It weighed about 1 lemon.`)
+                : bot.say(chatroom, `${userNickname} put ${user.lemons === 1 ? `the` : `a`} lemon on a scale. It weighed about 1 lemon.`)
+}
+function kissLemon(bot, chatroom, user, suffix, target) {
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName || null
+
+    allLemons
+        ? target
+            ? coinFlip()
+                ? bot.say(chatroom, `${targetNickname} watched ${userNickname} kiss all ${user.lemons} of their lemons.`)
+                : bot.say(chatroom, `${targetNickname} watched ${userNickname} give each of their ${user.lemons} lemons a big smooch!`)
+            : user.lemons === 1
+                ? bot.say(chatroom, `${userNickname} gave all their lemon one kiss!`)
+                : coinFlip()
+                    ? bot.say(chatroom, `${userNickname} planted a big, wet kiss on each of their ${pluralize(user.lemons, `lemon`, `lemons`)}!`)
+                    : bot.say(chatroom, `${userNickname} gave each of their ${pluralize(user.lemons, `lemon`, `lemons`)} a big smooch!`)
+        : target
+            ? coinFlip()
+                ? bot.say(chatroom, `${userNickname} `)
+                : bot.say(chatroom, `${userNickname} `)
+            : coinFlip()
+                ? coinFlip()
+                    ? bot.say(chatroom, `${userNickname} planted a big, wet kiss on their lemon.`)
+                    : bot.say(chatroom, `${userNickname} gave their lemon a big smooch!`)
+                : coinFlip()
+                    ? bot.say(chatroom, `${userNickname} gave their own lemon a gentle peck.`)
+                    : bot.say(chatroom, `${userNickname} passionately kissed their lemon (with${coinFlip() ? `` : `out`} tongue).`)
+}
+function walkLemon(bot, chatroom, user, suffix, target) {
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName || null
+
+    allLemons
+        ? target
+            ? coinFlip()
+                ? bot.say(chatroom, `${userNickname} and ${targetNickname} took all ${user.lemons} of ${userNickname}'s lemons on a walk.`)
+                : bot.say(chatroom, `${userNickname} and ${targetNickname} took all ${user.lemons} of ${userNickname}'s lemons out for some exercise.`)
+            : coinFlip()
+                ? bot.say(chatroom, `${userNickname} took all ${user.lemons} of their lemons on a walk.`)
+                : bot.say(chatroom, `${userNickname} took all ${user.lemons} of their lemons out for some exercise.`)
+        : target
+            ? coinFlip()
+                ? bot.say(chatroom, `${userNickname} and ${targetNickname} took a lemon for a walk.`)
+                : bot.say(chatroom, `${userNickname} and ${targetNickname} took a lemon out for some exercise.`)
+            : coinFlip()
+                ? bot.say(chatroom, `${userNickname} took a lemon for a walk.`)
+                : bot.say(chatroom, `${userNickname} took a lemon out for some exercise.`)
+}
+function pickleLemon(bot, chatroom, user, suffix, target) {
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName || null
+
+    allLemons
+        ? target
+            ? coinFlip()
+                ? (bot.say(chatroom, `${userNickname} amalgamated each of their ${user.lemons} lemons into a pickle, and said "Look, I turned my lemon${user.lemons === 1 ? `` : `s`} into a pickle! It's pickle lemon!!" Then ${targetNickname} laughed hysterically.`), user.lemons = 0)
+                : (bot.say(chatroom, `${userNickname} and ${targetNickname} worked on cutting up each of ${userNickname}'s ${user.lemons} lemons, covering ${user.lemons === 1 ? `it` : `them`} in salt, and packing ${user.lemons === 1 ? `it` : `them each`} into a jar.`), user.lemons = 0)
+            : coinFlip()
+                ? (bot.say(chatroom, `${userNickname} turned all their lemons into preserves.`), user.lemons = 0)
+                : (bot.say(chatroom, `${userNickname} cut up each of their ${user.lemons} lemons, covered ${user.lemons === 1 ? `it` : `them`} in salt, and packed ${user.lemons === 1 ? `it` : `them all`} into a jar.`), user.lemons = 0)
+        : (user.lemons--, target)
+            ? coinFlip()
+                ? bot.say(chatroom, `${userNickname} turned a lemon into a pickle, and said "Look, I turned a lemon into a pickle! It's pickle lemon!!" Then ${targetNickname} laughed hysterically.`)
+                : bot.say(chatroom, `${userNickname} and ${targetNickname} cut up a lemon and preserved it in salt.`)
+            : coinFlip()
+                ? bot.say(chatroom, `${userNickname} turned a lemon into a pickle.`)
+                : bot.say(chatroom, `${userNickname} cut up a lemon and preserved it in salt.`)
+}
 function nullVerb(bot, chatroom, user, suffix, target, verb) {
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
@@ -1584,6 +1672,20 @@ module.exports = {
 
             'bowl': bowlLemon,
             'tenpin': bowlLemon,
+
+            'weigh': weighLemon,
+
+            'kiss': kissLemon,
+            'frenchkiss': kissLemon,
+            'smooch': kissLemon,
+            'peck': kissLemon,
+            'makeoutwith': kissLemon,
+
+            'walk': walkLemon,
+            'exercise': walkLemon,
+
+            'pickle': pickleLemon,
+            'preserve': pickleLemon
         }
         if (verb in keyVerbs) {
             logMessage([`-> Matched: ${verb} lemon${suffix}:`, `[Function: ${keyVerbs[verb].name}]`])
