@@ -29,6 +29,7 @@ function applyVariables(str, props) {
     }
 
     const newStr = str
+        .replace(/\{\s?(message|msg)\s?\}/gi, args.join(` `))
         .replace(/\{\s?user\s?\}/gi, users[username].displayName)
         .replace(/\{\s?touser\s?\}/gi, users[toUser]?.displayName || args[0] || users[username].displayName)
         .replace(/\{\s?usernn\s?\}/gi, users[username].nickname || users[username].displayName)
