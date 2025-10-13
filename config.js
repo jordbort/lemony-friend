@@ -2,6 +2,7 @@
 const { settings } = require(`./memory.json`)
 settings.firstConnection = true
 settings.startDate = new Date()
+settings.currentDate = new Date().toLocaleDateString(settings.timeLocale, { year: `numeric`, month: `long`, day: `numeric`, timeZone: settings.timeZone })
 
 // Terminal colors
 const resetTxt = `\x1b[0m`

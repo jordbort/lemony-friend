@@ -121,6 +121,17 @@ function renderObj(obj, objName, indentation = ``) {
 }
 
 async function logMessage(messages, time, channel, username, color, self) {
+    // Display date change
+    const currentDate = new Date().toLocaleDateString(settings.timeLocale, { year: `numeric`, month: `long`, day: `numeric`, timeZone: settings.timeZone })
+    if (currentDate !== settings.currentDate) {
+        settings.currentDate = currentDate
+        console.log(settings.currentDate)
+        await fs.appendFile(`lemony_logs.txt`, `${settings.currentDate}\n`, (err) => {
+            if (err) { console.log(`Error writing logs:`, err) }
+        })
+    }
+
+    // Log chat message or debug message
     const log = messages.join(` `)
     if (username) {
         await fs.appendFile(`lemony_logs.txt`, `[${time}] <${channel}> ${username}: ${log}\n`, (err) => {
