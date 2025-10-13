@@ -3,6 +3,8 @@ const { settings } = require(`../config`)
 const { lemonyFresh, users } = require(`../data`)
 const { pluralize, getContextEmote, logMessage, arrToList } = require(`../utils`)
 
+const setDelay = (channel) => users[BOT_USERNAME].channels[channel].mod || users[BOT_USERNAME].channels[channel].vip || channel === BOT_USERNAME ? 1000 : 2000
+
 async function getRandomWord() {
     logMessage([`> getRandomWord()`])
 
@@ -51,7 +53,7 @@ function hangmanAnnounce(bot, chatroom, userNickname) {
     const positiveEmote = getContextEmote(`positive`, channel)
     const hangman = lemonyFresh[channel].hangman
 
-    bot.say(chatroom, `${userNickname} has started a game of Hangman! Type !play in the next ${settings.hangmanSignupSeconds} seconds if you'd like to join in, too! ${hypeEmote}`)
+    bot.say(chatroom, `${userNickname} has started a game of Hangman! Type !play in the next ${pluralize(settings.hangmanSignupSeconds, `second`, `seconds`)} if you'd like to join in, too! ${hypeEmote}`)
 
     // After signup timer ID has expired, close signup window, shuffle players, and start game
     hangman.signup = Number(setTimeout(() => {
@@ -67,7 +69,7 @@ function hangmanAnnounce(bot, chatroom, userNickname) {
         )
         // First round
         const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
-        const delay = users[BOT_USERNAME].channels[channel].mod || users[BOT_USERNAME].channels[channel].vip || channel === BOT_USERNAME ? 1000 : 2000
+        const delay = setDelay(channel)
         setTimeout(() => bot.say(chatroom, statusMsg), delay)
     }, settings.hangmanSignupSeconds * 1000))
 }
@@ -97,7 +99,7 @@ module.exports = {
                 if (hangman.currentPlayer === hangman.players.length) { hangman.currentPlayer = 0 }
                 bot.say(chatroom, `Skipping ${skippedPlayer}! Now it's your turn, ${users[hangman.players[hangman.currentPlayer]].displayName}! ${neutralEmote}`)
                 const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
-                const delay = users[BOT_USERNAME].channels[channel].mod || users[BOT_USERNAME].channels[channel].vip || channel === BOT_USERNAME ? 1000 : 2000
+                const delay = setDelay(channel)
                 setTimeout(() => bot.say(chatroom, statusMsg), delay)
                 return
             }
@@ -193,7 +195,7 @@ module.exports = {
 
         // Next round
         const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
-        const delay = users[BOT_USERNAME].channels[channel].mod || users[BOT_USERNAME].channels[channel].vip || channel === BOT_USERNAME ? 1000 : 2000
+        const delay = setDelay(channel)
         setTimeout(() => bot.say(chatroom, statusMsg), delay)
     },
     checkWord(props) {
@@ -225,7 +227,7 @@ module.exports = {
         // Next round
         bot.say(chatroom, `Sorry ${userNickname}, "${guess}" wasn't the answer! ${pluralize(hangman.chances, `chance left...`, `chances left!`)} ${negativeEmote} Now it's your turn, ${users[hangman.players[hangman.currentPlayer]].displayName}!`)
         const statusMsg = `${hangman.spaces.join(` `)} (chances: ${hangman.chances})`
-        const delay = users[BOT_USERNAME].channels[channel].mod || users[BOT_USERNAME].channels[channel].vip || channel === BOT_USERNAME ? 1000 : 2000
+        const delay = setDelay(channel)
         setTimeout(() => bot.say(chatroom, statusMsg), delay)
     }
 }
