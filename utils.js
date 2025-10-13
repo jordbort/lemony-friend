@@ -94,8 +94,8 @@ function getContextEmote(type, channel) {
 
 function pluralize(num, singularForm, pluralForm) {
     return Number(num) === 1
-        ? `${Number(num)} ${singularForm}`
-        : `${Number(num)} ${pluralForm}`
+        ? `${Number(num).toLocaleString(settings.timeLocale)} ${singularForm}`
+        : `${Number(num).toLocaleString(settings.timeLocale)} ${pluralForm}`
 }
 
 function renderObj(obj, objName, indentation = ``) {
