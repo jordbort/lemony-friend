@@ -8,10 +8,9 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Added !cursive command`,
-            `CLI phrase arrays now reject duplicates`,
-            `Rewrote Twitch API code for reusability`,
-            `Cleaned up code and RegEx`
+            `Added new uses for lemons`,
+            `Reworked !yell logic`,
+            `Migrated user channels into a new 'channels' object`
         ]
 
         const timeOptions = {
