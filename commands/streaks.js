@@ -9,7 +9,7 @@ function checkStreak(bot, chatroom, message) {
 
     const streakUsers = []
     for (const username in users) {
-        if (username !== BOT_USERNAME && users[username][channel]?.lastMessage === message) {
+        if (username !== BOT_USERNAME && users[username].channels[channel]?.lastMessage === message) {
             streakUsers.push(users[username].displayName)
             if (streakUsers.length >= 2) { logMessage([`> checkStreak("${message}")`, streakUsers.length, `/ ${settings.streakThreshold} - ${streakUsers.join(`, `)}`]) }
         }
@@ -38,7 +38,7 @@ function checkStreamerEmoteStreak(bot, chatroom, emoteOwner) {
     const emoteStreakUsers = []
     for (const user in users) {
         for (const emote of emoteArr) {
-            if (user !== BOT_USERNAME && users[user][channel]?.lastMessage.includes(emote)) {
+            if (user !== BOT_USERNAME && users[user].channels[channel]?.lastMessage.includes(emote)) {
                 emoteStreakUsers.push(user)
                 if (emoteStreakUsers.length) { logMessage([`-> Found`, emoteStreakUsers.length, `out of`, settings.streamerEmoteStreakThreshold, `${emoteOwner} emotes: ${emoteStreakUsers.join(`, `)}`]) }
                 break
@@ -56,12 +56,12 @@ function emoteReply(bot, chatroom, emoteOwner) {
     const channel = chatroom.substring(1)
     logMessage([`> emoteReply(channel: '${channel}', emoteOwner: '${emoteOwner}')`])
 
-    const applicableUsers = Object.keys(users).filter(username => channel in users[username])
+    const applicableUsers = Object.keys(users).filter(username => channel in users[username].channels)
 
     const popularEmotes = lemonyFresh[emoteOwner].emotes.map(emote => {
         let usages = 0
         for (const username of applicableUsers) {
-            for (const word of users[username][channel].lastMessage.split(` `)) {
+            for (const word of users[username].channels[channel].lastMessage.split(` `)) {
                 if (word === emote) { usages++ }
             }
         }
@@ -86,8 +86,8 @@ module.exports = {
         // Same timer to avoid double message
         if (lemonyFresh[channel].timers.streak.listening) {
             // Listening for a messages containing known emotes from a specific streamer
-            const accessibleEmotes = Object.keys(users[BOT_USERNAME])
-                .filter(channel => typeof users[BOT_USERNAME][channel] === `object` && users[BOT_USERNAME][channel].sub)
+            const accessibleEmotes = Object.keys(users[BOT_USERNAME].channels)
+                .filter(channel => users[BOT_USERNAME].channels[channel].sub)
                 .map(channel => lemonyFresh[channel].emotes)
                 .flat()
             if (accessibleEmotes.some(emote => message.includes(emote))) {

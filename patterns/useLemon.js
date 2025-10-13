@@ -1009,7 +1009,7 @@ function touchLemon(bot, chatroom, user, suffix, target) {
 function exchangeLemon(bot, chatroom, user, suffix, target) {
     const channel = chatroom.substring(1)
     const streamelementsInChat = lemonyFresh[channel].viewers.includes(`streamelements`)
-    const lemonIsMod = users[BOT_USERNAME][channel].mod || channel === BOT_USERNAME
+    const lemonIsMod = users[BOT_USERNAME].channels[channel].mod || channel === BOT_USERNAME
 
     const randNum = Math.ceil(Math.random() * 50) * 100
     const exchangeRates = Array(50).fill(randNum)

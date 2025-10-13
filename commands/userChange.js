@@ -15,11 +15,11 @@ module.exports = {
             : bot.say(chatroom, `Acknowledging ${userNickname}'s color change ${neutralEmote}`)
     },
     handleSubChange(props) {
-        const { bot, chatroom, tags, self, channel, user, userNickname } = props
+        const { bot, chatroom, tags, self, channel, userChannel, userNickname } = props
         const subStatus = tags.subscriber
         logMessage([`> handleSubChange(chatroom: '${chatroom}', userNickname: '${userNickname}', subStatus: ${subStatus})`])
 
-        user[channel].sub = subStatus
+        userChannel.sub = subStatus
         const positiveEmote = getContextEmote(`positive`, channel)
         const negativeEmote = getContextEmote(`negative`, channel)
 
@@ -33,11 +33,11 @@ module.exports = {
         }
     },
     handleModChange(props) {
-        const { bot, chatroom, tags, self, channel, username, user, userNickname } = props
+        const { bot, chatroom, tags, self, channel, username, userChannel, userNickname } = props
         const modStatus = tags.mod
         logMessage([`> handleModChange(chatroom: '${chatroom}', userNickname: '${userNickname}', modStatus: ${modStatus})`])
 
-        user[channel].mod = modStatus
+        userChannel.mod = modStatus
         const positiveEmote = getContextEmote(`positive`, channel)
 
         if (modStatus) {
@@ -51,11 +51,11 @@ module.exports = {
         }
     },
     handleVIPChange(props) {
-        const { bot, chatroom, tags, self, channel, user, userNickname } = props
+        const { bot, chatroom, tags, self, channel, userChannel, userNickname } = props
         const vipStatus = !!tags.vip || !!tags.badges?.vip
         logMessage([`> handleVIPChange(chatroom: '${chatroom}', userNickname: '${userNickname}', vipStatus: ${vipStatus})`])
 
-        user[channel].vip = vipStatus
+        userChannel.vip = vipStatus
         const positiveEmote = getContextEmote(`positive`, channel)
 
         if (vipStatus) {

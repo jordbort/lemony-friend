@@ -85,22 +85,21 @@ module.exports = {
         if (tags.mod) { updateMod(chatroom, tags, self, username) }
 
         // Initialize user in a new chatroom
-        if (!(channel in users[username])) { initUserChannel(tags, username, channel) }
+        if (!(channel in users[username].channels)) { initUserChannel(tags, username, channel) }
 
         // Update user if message sent in origin chat room
-        const user = users[username]
-        if (!(`source-room-id` in tags)
-            || (`source-room-id` in tags && tags[`room-id`] === tags[`source-room-id`])) {
-            user[channel].msgCount++
-            user[channel].lastMessage = msg
+        const userChannel = users[username].channels[channel]
+        if (!(`source-room-id` in tags) || (`source-room-id` in tags && tags[`room-id`] === tags[`source-room-id`])) {
+            userChannel.msgCount++
+            userChannel.lastMessage = msg
         }
 
         // Checking time comparisons
         const currentTime = Number(tags[`tmi-sent-ts`])
-        const minutesSinceLastMsg = (currentTime - user[channel].sentAt) / 60000
+        const minutesSinceLastMsg = (currentTime - userChannel.sentAt) / 60000
         self
-            ? user[channel].sentAt = Date.now()
-            : user[channel].sentAt = currentTime
+            ? userChannel.sentAt = Date.now()
+            : userChannel.sentAt = currentTime
 
         // If shared chat, stop listening here if not the origin channel
         if (`source-room-id` in tags && tags[`room-id`] !== tags[`source-room-id`]) { return }
@@ -124,6 +123,7 @@ module.exports = {
             isModOrVIP: !!tags.badges?.vip || !!tags.vip || tags.mod || username === channel,
             isLemonyFreshMember: username in lemonyFresh,
             user: users[username],
+            userChannel: userChannel,
             userNickname: users[username].nickname || users[username].displayName,
             toUser: toUser,
             target: users?.[toUser] || null,
@@ -131,10 +131,10 @@ module.exports = {
         }
 
         // User attribute change detection
-        const colorChange = tags.color !== user.color && user.color !== ``
-        const subChange = user[channel].sub !== tags.subscriber
-        const modChange = user[channel].mod !== tags.mod
-        const vipChange = user[channel].vip !== (!!tags.vip || !!tags.badges?.vip)
+        const colorChange = tags.color !== users[username].color && users[username].color !== ``
+        const subChange = userChannel.sub !== tags.subscriber
+        const modChange = userChannel.mod !== tags.mod
+        const vipChange = userChannel.vip !== (!!tags.vip || !!tags.badges?.vip)
 
         if (subChange) { handleSubChange(props) }
         if (modChange) { handleModChange(props) }
@@ -212,8 +212,8 @@ module.exports = {
                 }
                 logMessage([`${username.toUpperCase()} DID NOT MATCH REGEX PATTERNS`])
             }
-            if (!(`points` in Object(users[BOT_USERNAME][channel])) && username === `streamelements`) {
-                users[BOT_USERNAME][channel].points = 0
+            if (!(`points` in Object(users[BOT_USERNAME].channels[channel])) && username === `streamelements`) {
+                users[BOT_USERNAME].channels[channel].points = 0
                 this.say(chatroom, `!points`)
                 return
             }
@@ -257,7 +257,7 @@ module.exports = {
         else { logMessage([`> checkStreak must wait for 'streak' cooldown`]) }
 
         // *** FUN NUMBER! ***
-        if (user[channel].msgCount % settings.funNumberCount === 0) {
+        if (userChannel.msgCount % settings.funNumberCount === 0) {
             rollFunNumber(props, Math.floor(Math.random() * settings.funNumberTotal))
             return
         }
@@ -270,7 +270,7 @@ module.exports = {
             return
         }
 
-        if (user[channel].away && minutesSinceLastMsg > 1) {
+        if (userChannel.away && minutesSinceLastMsg > 1) {
             welcomeBack(props)
             return
         }

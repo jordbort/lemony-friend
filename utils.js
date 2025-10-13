@@ -74,7 +74,7 @@ function getContextEmote(type, channel) {
     const bttvType = `bttv${type.substring(0, 1).toUpperCase()}${type.substring(1)}Emotes`
     const emotes = [...settings.baseEmotes[baseType]]
 
-    if (channel === `jpegstripes` && !users[BOT_USERNAME]?.jpegstripes?.sub) {
+    if (channel === `jpegstripes` && !users[BOT_USERNAME]?.channels.jpegstripes?.sub) {
         if (type === `hype`) { emotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
         if (type === `positive`) { emotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
         if (type === `greeting`) { emotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
@@ -82,7 +82,7 @@ function getContextEmote(type, channel) {
     }
 
     for (const member in lemonyFresh) {
-        if (users[BOT_USERNAME]?.[member]?.sub) { emotes.push(...lemonyFresh[member].contextEmotes[baseType]) }
+        if (users[BOT_USERNAME]?.channels[member]?.sub) { emotes.push(...lemonyFresh[member].contextEmotes[baseType]) }
         if (member === channel) { emotes.push(...lemonyFresh[member].contextEmotes[bttvType]) }
     }
     if (type === `lemon` && emotes.length > 1) { emotes.shift() }
@@ -1163,7 +1163,11 @@ module.exports = {
         await printMemory(bot.channels)
         await logMessage([`> handleUncaughtException(err.message: '${err.message}', location: '${location}')`])
 
-        const emote = users[BOT_USERNAME]?.jpegstripes?.sub ? `jpegstBroken` : users[BOT_USERNAME]?.sclarf?.sub ? `sclarfDead` : users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Heat` : users[BOT_USERNAME]?.domonintendo1?.sub ? `domoni6Sneeze` : `>(`
+        const emote = users[BOT_USERNAME]?.channels.jpegstripes?.sub ? `jpegstBroken`
+            : users[BOT_USERNAME]?.channels.sclarf?.sub ? `sclarfDead`
+                : users[BOT_USERNAME]?.channels.e1ectroma?.sub ? `e1ectr4Heat`
+                    : users[BOT_USERNAME]?.channels.domonintendo1?.sub ? `domoni6Sneeze`
+                        : `>(`
         for (const chatroom of bot.channels) {
             bot.say(chatroom, `Oops, I just crashed! ${emote} ${err.message} ${location}`)
         }
@@ -1380,10 +1384,10 @@ module.exports = {
 
                     // Update potential channel data for all users
                     for (const user of Object.keys(users)) {
-                        if (oldUsername in users[user]) {
+                        if (oldUsername in users[user].channels) {
                             logMessage([`-> Merging user ${user}'s '${oldUsername}' data into '${newUsername}'`])
-                            users[user][newUsername] = { ...users[user][oldUsername] }
-                            delete users[user][oldUsername]
+                            users[user].channels[newUsername] = { ...users[user].channels[oldUsername] }
+                            delete users[user].channels[oldUsername]
                         }
                     }
                 }
@@ -1413,7 +1417,7 @@ module.exports = {
     },
     initUserChannel(tags, username, channel) {
         logMessage([`> initUserChannel(username: '${username}', channel: '${channel}')`])
-        users[username][channel] = {
+        users[username].channels[channel] = {
             sub: tags.subscriber,
             mod: tags.mod,
             vip: !!tags.vip || !!tags.badges?.vip,
@@ -1580,8 +1584,8 @@ module.exports = {
             : null
     },
     containsInaccessibleEmotes(str) {
-        const inaccessibleEmotes = Object.keys(users[BOT_USERNAME])
-            .filter(key => typeof users[BOT_USERNAME][key] === `object` && users.lemony_friend[key].sub === false)
+        const inaccessibleEmotes = Object.keys(users[BOT_USERNAME].channels)
+            .filter(channel => users[BOT_USERNAME].channels[channel].sub === false)
             .map(channel => lemonyFresh[channel].emotes)
             .flat()
         if (inaccessibleEmotes.some(emote => str.includes(emote))) {
@@ -1610,8 +1614,8 @@ module.exports = {
         const emoteUsed = msg.split(` `)[msg.split(` `).length - 1]
         const emoteOwner = Object.keys(lemonyFresh).filter(key => `emotes` in lemonyFresh[key] && lemonyFresh[key].emotes.includes(emoteUsed))[0]
             || null
-        logMessage([`> Gigantified ${emoteUsed} owner: ${emoteOwner || `unknown`}, ${BOT_USERNAME} subbed? ${!!users[BOT_USERNAME]?.[emoteOwner]?.sub}`])
-        if (users[BOT_USERNAME]?.[emoteOwner]?.sub) { bot.say(chatroom, `BEEG ${emoteUsed}`) }
+        logMessage([`> Gigantified ${emoteUsed} owner: ${emoteOwner || `unknown`}, ${BOT_USERNAME} subbed? ${!!users[BOT_USERNAME]?.channels[emoteOwner]?.sub}`])
+        if (users[BOT_USERNAME]?.channels[emoteOwner]?.sub) { bot.say(chatroom, `BEEG ${emoteUsed}`) }
     },
     appendLogs(chatroom, tags, msg, self, time, username, color) {
         const channel = chatroom.substring(1)

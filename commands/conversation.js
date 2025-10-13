@@ -29,7 +29,7 @@ function handleGreetOne(props) {
         const greetingEmote = getContextEmote(`greeting`, channel)
 
         // If the greeting is "Howdy"
-        if (greeting === 0) { response += `! ${users[BOT_USERNAME]?.e1ectroma?.sub ? `e1ectr4Ram` : greetingEmote}` }
+        if (greeting === 0) { response += `! ${users[BOT_USERNAME].channels.e1ectroma?.sub ? `e1ectr4Ram` : greetingEmote}` }
         // If there's a comma after the greeting
         else if (greeting < greetings.indexOf(`Hello`)) {
             const appends = [
@@ -98,8 +98,8 @@ function handleGreetAll(bot, chatroom, username) {
 
         const usersToGreet = []
         for (const user in users) {
-            if (!settings.ignoredBots.includes(user) && user !== username && channel in users[user]) {
-                const lastChattedAtMins = Number(((currentTime - users[user][channel].sentAt) / 60000).toFixed(2))
+            if (!settings.ignoredBots.includes(user) && user !== username && channel in users[user].channels) {
+                const lastChattedAtMins = Number(((currentTime - users[user].channels[channel].sentAt) / 60000).toFixed(2))
                 if (lastChattedAtMins < 60) {
                     usersToGreet.push(users[user].nickname || users[user].displayName)
                 }
@@ -352,8 +352,8 @@ module.exports = {
 
             const subRaidMessage = lemonyFresh[channel].subRaidMessage
             const noSubRaidMessage = lemonyFresh[channel].noSubRaidMessage
-            const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip ? 1000 : 2000
-            const appendEmote = users[BOT_USERNAME][channel].sub ? lemonyFresh[channel].emotes[0] : getContextEmote(`positive`, channel)
+            const delay = users[BOT_USERNAME].channels[channel].mod || users[BOT_USERNAME].channels[channel].vip ? 1000 : 2000
+            const positiveEmote = getContextEmote(`positive`, channel)
 
             if (subRaidMessage) { bot.say(chatroom, subRaidMessage) }
             if (noSubRaidMessage) {
@@ -363,19 +363,19 @@ module.exports = {
             }
             if (subRaidMessage && noSubRaidMessage) {
                 setTimeout(() => {
-                    bot.say(chatroom, `Thanks for sticking around for the raid! If you're subscribed to the channel, you can use the first raid message, otherwise you can use the second raid message! ${appendEmote}`)
+                    bot.say(chatroom, `Thanks for sticking around for the raid! If you're subscribed to the channel, you can use the first raid message, otherwise you can use the second raid message! ${positiveEmote}`)
                 }, delay * 2)
             }
 
         } else { logMessage([`-> Timer in ${channel} '!raid' is not currently listening`]) }
     },
     welcomeBack(props) {
-        const { bot, chatroom, channel, user, userNickname } = props
+        const { bot, chatroom, channel, userChannel, userNickname } = props
         logMessage([`> welcomeBack(chatroom: '${chatroom}', userNickname: '${userNickname}')`])
 
         const greetingEmote = getContextEmote(`greeting`, channel)
-        user[channel].away = false
-        user[channel].awayMessage = ``
+        userChannel.away = false
+        userChannel.awayMessage = ``
         setTimeout(() => bot.say(chatroom, `Welcome back, ${userNickname}! ${greetingEmote}`), 5000)
     },
     funTimerGuess(props) {
@@ -435,23 +435,23 @@ module.exports = {
         recentChannels.forEach(channel => bot.say(`#${channel}`, `${userNickname} says: ${message.substring(6)}`))
     },
     setAway(props) {
-        const { bot, chatroom, args, command, channel, username, user, userNickname } = props
+        const { bot, chatroom, args, command, channel, username, userChannel, userNickname } = props
         logMessage([`> setAway(chatroom: '${chatroom}', username: '${username}', args:`, `'${args.join(`, `)}'`, `)`])
 
-        user[channel].away = true
-        if (args.length) { user[channel].awayMessage = args.join(` `) }
+        userChannel.away = true
+        if (args.length) { userChannel.awayMessage = args.join(` `) }
 
         const byeEmote = getContextEmote(`bye`, channel)
         if (command !== `!lurk`) {
-            user[channel].awayMessage
+            userChannel.awayMessage
                 ? bot.say(chatroom, `See you later, ${userNickname}! I'll pass along your away message if they mention you! ${byeEmote}`)
                 : bot.say(chatroom, `See you later, ${userNickname}! I'll let people know you're away if they mention you! ${byeEmote}`)
         }
 
         // This helps prevent users from being welcomed back in the distant future
         setTimeout(() => {
-            user[channel].away = false
-            user[channel].awayMessage = ``
+            userChannel.away = false
+            userChannel.awayMessage = ``
         }, settings.maxWelcomeBackMinutes * 1000)
     },
     reportAway(props) {
@@ -462,10 +462,10 @@ module.exports = {
             const targetNickname = target.nickname || target.displayName
             const regex = new RegExp(`\\b(@?${targetName}|${targetNickname})\\b`, `i`)
 
-            if (target[channel]?.away && regex.test(message)) {
+            if (target.channels[channel]?.away && regex.test(message)) {
                 logMessage([`> reportAway(chatroom: '${chatroom}', targetNickname: '${targetNickname}')`])
-                const elapsedTime = Math.round((currentTime - target[channel].sentAt) / 60000)
-                const reply = `${targetNickname} has been away for ~${pluralize(elapsedTime, `minute`, `minutes`)}!${target[channel].awayMessage ? ` Their away message: "${target[channel].awayMessage}"` : ``}`
+                const elapsedTime = Math.round((currentTime - target.channels[channel].sentAt) / 60000)
+                const reply = `${targetNickname} has been away for ~${pluralize(elapsedTime, `minute`, `minutes`)}!${target.channels[channel].awayMessage ? ` Their away message: "${target.channels[channel].awayMessage}"` : ``}`
                 elapsedTime > 1
                     ? bot.say(chatroom, reply)
                     : logMessage([`-> ${targetName} has been away for less than one-minute grace period`])

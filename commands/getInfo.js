@@ -39,18 +39,18 @@ module.exports = {
     getLastMessage(props) {
         const { bot, chatroom, args, currentTime, channel, username, user, userNickname, toUser, target, targetNickname } = props
         const otherChannel = getToUser(args[1])
-        const userObj = target || user
+        const userChannels = target ? target.channels : user.channels
         const userObjNickname = targetNickname || userNickname
-        logMessage([`> getLastMessage(chatroom: '${chatroom}', userObj: '${target ? toUser : username}, otherChannel: '${otherChannel}')`])
+        logMessage([`> getLastMessage(chatroom: '${chatroom}', userChannels: '${target ? toUser : username}, otherChannel: '${otherChannel}')`])
 
         const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
         const otherChannelNickname = otherChannel in lemonyFresh
             ? users[otherChannel]?.nickname || users[otherChannel]?.displayName || otherChannel
             : null
 
-        const timeDiff = otherChannel in userObj
-            ? currentTime - userObj[otherChannel]?.sentAt
-            : currentTime - userObj[channel]?.sentAt
+        const timeDiff = otherChannel in userChannels
+            ? currentTime - userChannels[otherChannel]?.sentAt
+            : currentTime - userChannels[channel]?.sentAt
 
         const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
         const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24)
@@ -64,22 +64,20 @@ module.exports = {
         if (seconds) { duration.push(pluralize(seconds, `second`, `seconds`)) }
 
         otherChannel in lemonyFresh
-            ? otherChannel in userObj
-                ? bot.say(chatroom, `${userObjNickname} last said: "${userObj[otherChannel].lastMessage}" in ${otherChannelNickname}'s chat ${arrToList(duration)}${!duration.length ? `just now` : ` ago`}!`)
+            ? otherChannel in userChannels
+                ? bot.say(chatroom, `${userObjNickname} last said: "${userChannels[otherChannel].lastMessage}" in ${otherChannelNickname}'s chat ${arrToList(duration)}${!duration.length ? `just now` : ` ago`}!`)
                 : bot.say(chatroom, `${userObjNickname} hasn't spoken in ${otherChannelNickname}'s chat!`)
-            : channel in userObj
-                ? bot.say(chatroom, `${userObjNickname} last said: "${userObj[channel].lastMessage}" in ${channelNickname}'s chat ${arrToList(duration)}${!duration.length ? `just now` : ` ago`}!`)
+            : channel in userChannels
+                ? bot.say(chatroom, `${userObjNickname} last said: "${userChannels[channel].lastMessage}" in ${channelNickname}'s chat ${arrToList(duration)}${!duration.length ? `just now` : ` ago`}!`)
                 : bot.say(chatroom, `${userObjNickname} hasn't spoken in ${channelNickname}'s chat!`)
     },
     getMessageCount(props) {
         const { bot, chatroom, username, user, userNickname, toUser, target, targetNickname } = props
-        const userObj = target || user
-        logMessage([`> getMessageCount(chatroom: '${chatroom}', userObj: '${target ? toUser : username}')`])
+        const userChannels = target ? target.channels : user.channels
+        logMessage([`> getMessageCount(chatroom: '${chatroom}', userChannels: '${target ? toUser : username}')`])
 
         let response = `${targetNickname || userNickname} has sent `
-        const channels = Object.keys(userObj)
-            .filter(channel => typeof userObj[channel] === `object`)
-            .map(channel => `${pluralize(userObj[channel].msgCount, `message`, `messages`)} in ${channel}'s chat`)
+        const channels = Object.keys(userChannels).map(channel => `${pluralize(userChannels[channel].msgCount, `message`, `messages`)} in ${channel}'s chat`)
 
         if (channels.length > 1) { channels[channels.length - 1] = `and ${channels[channels.length - 1]}` }
         response += `${channels.length > 2 ? channels.join(`, `) : channels.join(` `)}!`
@@ -112,10 +110,10 @@ module.exports = {
     },
     getRandomChannelMessage(user) {
         logMessage([`> getRandomChannelMessage(user: ${user.displayName})`])
-        const channels = Object.keys(user).filter(channel => typeof user[channel] === `object`)
+        const channels = Object.keys(user.channels)
         const channel = channels[Math.floor(Math.random() * channels.length)]
         logMessage([`-> channel: ${channel}`])
-        const randomMessage = user[channel].lastMessage
+        const randomMessage = user.channels[channel].lastMessage
         return randomMessage
     },
     sayFriends(props) {

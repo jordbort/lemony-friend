@@ -21,7 +21,7 @@ module.exports = {
         }
     },
     checkSelfSub(props, splitMessage) {
-        const { bot, chatroom, channel, user, userNickname } = props
+        const { bot, chatroom, channel, user, userChannel, userNickname } = props
         const currentChannelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
 
         // Possible other channel name or nickname
@@ -41,17 +41,17 @@ module.exports = {
         const dumbEmote = getContextEmote(`dumb`, channel)
 
         validatedOtherChannelName
-            ? validatedOtherChannelName in user
-                ? user[validatedOtherChannelName].sub
+            ? validatedOtherChannelName in user.channels
+                ? user.channels[validatedOtherChannelName].sub
                     ? bot.say(chatroom, `Yes ${userNickname}, you are subbed to ${otherChannelNickname}! ${hypeEmote}`)
                     : bot.say(chatroom, `No ${userNickname}, you are not subbed to ${otherChannelNickname}! ${negativeEmote}`)
                 : bot.say(chatroom, `I don't know whether you are subbed to ${otherChannelNickname}, ${userNickname}! ${dumbEmote}`)
-            : user[channel].sub
+            : userChannel.sub
                 ? bot.say(chatroom, `Yes ${userNickname}, you are subbed to ${currentChannelNickname}! ${hypeEmote}`)
                 : bot.say(chatroom, `No ${userNickname}, you are not subbed to ${currentChannelNickname}! ${negativeEmote}`)
     },
     checkSelfMod(props, splitMessage) {
-        const { bot, chatroom, channel, user, userNickname } = props
+        const { bot, chatroom, channel, user, userChannel, userNickname } = props
         const currentChannelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
 
         // Possible other channel name or nickname
@@ -71,17 +71,17 @@ module.exports = {
         const dumbEmote = getContextEmote(`dumb`, channel)
 
         validatedOtherChannelName
-            ? validatedOtherChannelName in user
-                ? user[validatedOtherChannelName].mod
+            ? validatedOtherChannelName in user.channels
+                ? user.channels[validatedOtherChannelName].mod
                     ? bot.say(chatroom, `Yes ${userNickname}, you are a mod in ${otherChannelNickname}'s chat! ${hypeEmote}`)
                     : bot.say(chatroom, `No ${userNickname}, you are not a mod in ${otherChannelNickname}'s chat! ${negativeEmote}`)
                 : bot.say(chatroom, `I don't know whether you are a mod in ${otherChannelNickname}'s chat, ${userNickname}! ${dumbEmote}`)
-            : user[channel].mod
+            : userChannel.mod
                 ? bot.say(chatroom, `Yes ${userNickname}, you are a mod in ${currentChannelNickname}'s chat! ${hypeEmote}`)
                 : bot.say(chatroom, `No ${userNickname}, you are not a mod in ${currentChannelNickname}'s chat! ${negativeEmote}`)
     },
     checkSelfVIP(props, splitMessage) {
-        const { bot, chatroom, channel, user, userNickname } = props
+        const { bot, chatroom, channel, user, userChannel, userNickname } = props
         const currentChannelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
 
         // Possible other channel name or nickname
@@ -101,12 +101,12 @@ module.exports = {
         const dumbEmote = getContextEmote(`dumb`, channel)
 
         validatedOtherChannelName
-            ? validatedOtherChannelName in user
-                ? user[validatedOtherChannelName].vip
+            ? validatedOtherChannelName in user.channels
+                ? user.channels[validatedOtherChannelName].vip
                     ? bot.say(chatroom, `Yes ${userNickname}, you are a VIP in ${otherChannelNickname}'s chat! ${hypeEmote}`)
                     : bot.say(chatroom, `No ${userNickname}, you are not a VIP in ${otherChannelNickname}'s chat! ${negativeEmote}`)
                 : bot.say(chatroom, `I don't know whether you are a VIP in ${otherChannelNickname}'s chat, ${userNickname}! ${dumbEmote}`)
-            : user[channel].vip
+            : userChannel.vip
                 ? bot.say(chatroom, `Yes ${userNickname}, you are a VIP in ${currentChannelNickname}'s chat! ${hypeEmote}`)
                 : bot.say(chatroom, `No ${userNickname}, you are not a VIP in ${currentChannelNickname}'s chat! ${negativeEmote}`)
     },
@@ -142,13 +142,13 @@ module.exports = {
 
         if (target) {
             validatedOtherChannelName
-                ? validatedOtherChannelName in target
-                    ? target[validatedOtherChannelName].sub
+                ? validatedOtherChannelName in target.channels
+                    ? target.channels[validatedOtherChannelName].sub
                         ? bot.say(chatroom, `Yes ${userNickname}, ${targetNickname} is subbed to ${otherChannelNickname}! ${hypeEmote}`)
                         : bot.say(chatroom, `No ${userNickname}, ${targetNickname} is not subbed to ${otherChannelNickname}! ${negativeEmote}`)
                     : bot.say(chatroom, `I don't know whether ${targetNickname} is subbed in ${otherChannelNickname}'s chat, ${userNickname}! ${dumbEmote}`)
-                : channel in target
-                    ? target[channel].sub
+                : channel in target.channels
+                    ? target.channels[channel].sub
                         ? bot.say(chatroom, `Yes ${userNickname}, ${targetNickname} is subbed to ${channelNickname}! ${hypeEmote}`)
                         : bot.say(chatroom, `No ${userNickname}, ${targetNickname} is not subbed to ${channelNickname}! ${negativeEmote}`)
                     : bot.say(chatroom, `I don't know whether ${targetNickname} is subbed in ${channelNickname}'s chat, ${userNickname}! ${dumbEmote}`)
@@ -186,13 +186,13 @@ module.exports = {
 
         if (target) {
             validatedOtherChannelName
-                ? validatedOtherChannelName in target
-                    ? target[validatedOtherChannelName].mod
+                ? validatedOtherChannelName in target.channels
+                    ? target.channels[validatedOtherChannelName].mod
                         ? bot.say(chatroom, `Yes ${userNickname}, ${targetNickname} is a mod in ${otherChannelNickname}'s chat! ${hypeEmote}`)
                         : bot.say(chatroom, `No ${userNickname}, ${targetNickname} is not a mod in ${otherChannelNickname}'s chat! ${negativeEmote}`)
                     : bot.say(chatroom, `I don't know whether ${targetNickname} is a mod in ${otherChannelNickname}'s chat, ${userNickname}! ${dumbEmote}`)
-                : channel in target
-                    ? target[channel].mod
+                : channel in target.channels
+                    ? target.channels[channel].mod
                         ? bot.say(chatroom, `Yes ${userNickname}, ${targetNickname} is a mod in ${channelNickname}'s chat! ${hypeEmote}`)
                         : bot.say(chatroom, `No ${userNickname}, ${targetNickname} is not a mod in ${channelNickname}'s chat! ${negativeEmote}`)
                     : bot.say(chatroom, `I don't know whether ${targetNickname} is a mod in ${channelNickname}'s chat, ${userNickname}! ${dumbEmote}`)
@@ -230,13 +230,13 @@ module.exports = {
 
         if (target) {
             validatedOtherChannelName
-                ? validatedOtherChannelName in target
-                    ? target[validatedOtherChannelName].vip
+                ? validatedOtherChannelName in target.channels
+                    ? target.channels[validatedOtherChannelName].vip
                         ? bot.say(chatroom, `Yes ${userNickname}, ${targetNickname} is a VIP in ${otherChannelNickname}'s chat! ${hypeEmote}`)
                         : bot.say(chatroom, `No ${userNickname}, ${targetNickname} is not a VIP in ${otherChannelNickname}'s chat! ${negativeEmote}`)
                     : bot.say(chatroom, `I don't know whether ${targetNickname} is a VIP in ${otherChannelNickname}'s chat, ${userNickname}! ${dumbEmote}`)
-                : channel in target
-                    ? target[channel].vip
+                : channel in target.channels
+                    ? target.channels[channel].vip
                         ? bot.say(chatroom, `Yes ${userNickname}, ${targetNickname} is a VIP in ${channelNickname}'s chat! ${hypeEmote}`)
                         : bot.say(chatroom, `No ${userNickname}, ${targetNickname} is not a VIP in ${channelNickname}'s chat! ${negativeEmote}`)
                     : bot.say(chatroom, `I don't know whether ${targetNickname} is a VIP in ${channelNickname}'s chat, ${userNickname}! ${dumbEmote}`)

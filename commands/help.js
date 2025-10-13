@@ -45,7 +45,7 @@ module.exports = {
         const { bot, chatroom, channel } = props
         logMessage([`> getSubs(chatroom: ${chatroom})`])
 
-        const subbedChannels = Object.keys(users[BOT_USERNAME]).filter(channel => typeof users[BOT_USERNAME][channel] === `object` && users[BOT_USERNAME][channel].sub)
+        const subbedChannels = Object.keys(users[BOT_USERNAME].channels).filter(channel => users[BOT_USERNAME].channels[channel].sub)
 
         const hypeEmote = getContextEmote(`hype`, channel)
         const positiveEmote = getContextEmote(`positive`, channel)

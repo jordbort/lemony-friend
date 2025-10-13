@@ -349,13 +349,14 @@ function updateUserDev(props, args) {
             const optCheck = args.shift()
 
             return /^away$|^a$/i.test(optCheck) || /^awayMessage$|^am$/i.test(optCheck)
-                ? channel in users[toUser]
+                ? channel in users[toUser].channels
                     ? options[regex].func(
                         bot,
                         chatroom,
-                        users[toUser][channel],
+                        users[toUser].channels[channel],
                         `User "${toUser}" in ${channel} "${options[regex].name}"`,
-                        options[regex].name, args
+                        options[regex].name,
+                        args
                     )
                     : bot.say(chatroom, `/me User "${toUser}" has no data in channel "${channel}", so "${options[regex].name}" cannot be changed here`)
                 : options[regex].func(
@@ -363,7 +364,8 @@ function updateUserDev(props, args) {
                     chatroom,
                     users[toUser],
                     `User ${toUser} "${options[regex].name}"`,
-                    options[regex].name, args
+                    options[regex].name,
+                    args
                 )
         }
     }
@@ -398,11 +400,11 @@ function updateUser(props, args) {
             const optCheck = args.shift()
 
             return /^away$|^a$/i.test(optCheck) || /^awayMessage$|^am$/i.test(optCheck)
-                ? channel in users[toUser]
+                ? channel in users[toUser].channels
                     ? options[regex].func(
                         bot,
                         chatroom,
-                        users[toUser][channel],
+                        users[toUser].channels[channel],
                         `User "${toUser}" in ${channel} "${options[regex].name}"`,
                         options[regex].name,
                         args

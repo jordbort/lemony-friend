@@ -10,11 +10,11 @@ const { handleJoin, handlePart } = require(`./joinPart`)
 const { logMessage, dumpMemory, getContextEmote } = require(`../utils`)
 
 function checkPoints(props) {
-    const { bot, chatroom, args, channel } = props
-    logMessage([`> checkPoints(chatroom: ${chatroom}, args:`, args, `)`])
+    const { bot, chatroom, channel } = props
+    logMessage([`> checkPoints(chatroom: ${chatroom})`])
 
-    users[BOT_USERNAME]?.[channel].points || users[BOT_USERNAME]?.[channel].points === 0
-        ? bot.say(chatroom, `I have ${users[BOT_USERNAME][channel].points} point${users[BOT_USERNAME][channel].points === 1 ? `` : `s`}!`)
+    users[BOT_USERNAME].channels?.[channel].points || users[BOT_USERNAME].channels?.[channel].points === 0
+        ? bot.say(chatroom, `I have ${users[BOT_USERNAME].channels[channel].points} point${users[BOT_USERNAME].channels[channel].points === 1 ? `` : `s`}!`)
         : bot.say(chatroom, `I don't know how many points I have!`)
 }
 

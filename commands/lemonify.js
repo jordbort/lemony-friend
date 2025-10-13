@@ -192,7 +192,7 @@ module.exports = {
             bot.say(chatroom, `${lemonEmote}${lemonEmote}${lemonEmote} ${positiveEmote}`)
             return
         }
-        const channelMsg = target[channel]?.lastMessage || getRandomChannelMessage(target)
+        const channelMsg = target.channels[channel]?.lastMessage || getRandomChannelMessage(target)
         const lemonMsg = lemonify(channelMsg)
         bot.say(chatroom, lemonMsg)
     }
