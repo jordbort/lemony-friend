@@ -14,7 +14,7 @@ function makePyramid(props) {
     const firstWord = message.split(` `)[0]
     logMessage([`> makePyramid(channel: '${channel}', firstWord: '${firstWord}')`])
 
-    const delay = users[BOT_USERNAME][channel].mod || users[BOT_USERNAME][channel].vip || channel === BOT_USERNAME
+    const delay = users[BOT_USERNAME].channels[channel].mod || users[BOT_USERNAME].channels[channel].vip || channel === BOT_USERNAME
         ? 1000
         : 2000
 
@@ -184,16 +184,16 @@ const currencies = [
     }
 ]
 function giveMeMoney(props) {
-    const { bot, chatroom, channel, username } = props
-    const msgCount = users[username][channel].msgCount
+    const { bot, chatroom, userChannel } = props
+    const msgCount = userChannel.msgCount
     const currency = currencies[Math.floor(Math.random() * currencies.length)]
     logMessage([`> giveMeMoney(msgCount: ${msgCount}, currency: '${currency.abbreviation.toUpperCase()}')`])
 
     bot.say(chatroom, `Give me ${currency.symbol}${msgCount}${currency.zeroes} ${currency.abbreviation.toUpperCase()}`)
 }
 function transferMeMoney(props) {
-    const { bot, chatroom, channel, username } = props
-    const msgCount = users[username][channel].msgCount
+    const { bot, chatroom, userChannel } = props
+    const msgCount = userChannel.msgCount
     const currency = currencies[Math.floor(Math.random() * currencies.length)]
     logMessage([`> transferMeMoney(msgCount: ${msgCount}, currency: '${currency.abbreviation.toUpperCase()}')`])
 
@@ -230,18 +230,18 @@ function useRedemption(props) {
 }
 
 function givePoints(props) {
-    const { bot, chatroom, channel, username } = props
-    const msgCount = users[username][channel].msgCount
-    logMessage([`> givePoints(channel: '${channel}', username: '${username}', msgCount: ${msgCount}, points: ${users[BOT_USERNAME][channel]?.points})`])
+    const { bot, chatroom, userChannel, channel, username } = props
+    const msgCount = userChannel.msgCount
+    logMessage([`> givePoints(channel: '${channel}', username: '${username}', msgCount: ${msgCount}, points: ${users[BOT_USERNAME].channels[channel]?.points})`])
 
     if (lemonyFresh[channel].viewers.includes(`streamelements`)) {
-        if (users[BOT_USERNAME][channel]?.points <= 0) {
+        if (users[BOT_USERNAME].channels[channel]?.points <= 0) {
             bot.say(chatroom, `!points`)
             return
         }
 
-        const pointsToGive = `points` in Object(users[BOT_USERNAME][channel])
-            ? msgCount * 25 >= users[BOT_USERNAME][channel].points
+        const pointsToGive = `points` in Object(users[BOT_USERNAME].channels[channel])
+            ? msgCount * 25 >= users[BOT_USERNAME].channels[channel].points
                 ? `all`
                 : `${msgCount * 25}`
             : `${msgCount * 25}`
@@ -412,7 +412,7 @@ function awardLemonToRecentChatters(props) {
     // Check if user has chatted in the past 10 minutes
     const recipients = []
     for (const username in users) {
-        if (channel in users[username] && currentTime - users[username][channel].sentAt <= 600000) {
+        if (channel in users[username] && currentTime - users[username].channels[channel].sentAt <= 600000) {
             users[username].lemons++
             recipients.push(username)
         }
@@ -432,7 +432,7 @@ function useTwoEmotes(props) {
         return
     }
 
-    if (!users[BOT_USERNAME][channel].sub) {
+    if (!users[BOT_USERNAME].channels[channel].sub) {
         logMessage([`-> ${BOT_USERNAME} is not subscribed to ${channel}, can't use emotes`])
         return
     }
@@ -498,7 +498,7 @@ function useFunnyCommand(props) {
             `!bog ${username}`,
             `!bong ${username}`,
             `!zeroth ${username}`,
-            `!duel ${username} ${users[username][channel].msgCount}`
+            `!duel ${username} ${users[username].channels[channel].msgCount}`
         )
     }
 
