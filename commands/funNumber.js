@@ -570,7 +570,7 @@ function reportRandomLemCmdUsage(props) {
 
     bot.say(chatroom, Object.keys(lemCmds).length === 0
         ? `No lemon commands have been used! ${negativeEmote}`
-        : `Lemon command "${randomCommand}" has been used ${pluralize(lemCmds[randomCommand].uses, `time`, `times`)}! ${lemCmds[randomCommand].uses === 0
+        : `Lemon command "${randomCommand}" from ${lemCmds[randomCommand].origin in users ? users[lemCmds[randomCommand].origin].nickname || users[lemCmds[randomCommand].origin].displayName : lemCmds[randomCommand].origin}'s channel has been used ${pluralize(lemCmds[randomCommand].uses, `time`, `times`)}! ${lemCmds[randomCommand].uses === 0
             ? dumbEmote
             : lemCmds[randomCommand].uses < 50
                 ? neutralEmote
