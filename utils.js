@@ -179,7 +179,7 @@ module.exports = {
             bot.say(chatroom, `Oops, I just crashed! ${emote} ${err.message} ${location}`)
         }
 
-        await logMessage([makeLogs(bot.channels)])
+        // await logMessage([makeLogs(bot.channels)])
         await logMessage([err.stack])
     },
     async dumpMemory(props) {
