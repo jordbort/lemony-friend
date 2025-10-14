@@ -359,7 +359,8 @@ module.exports = {
             nickname: '',
             color: tags.color || ``,
             lemons: 0,
-            hangmanWins: 0
+            hangmanWins: 0,
+            channels: {}
         }
 
         // Check if user ID already exists, and merge their data
