@@ -166,18 +166,22 @@ module.exports = {
         appendLogs(chatroom, tags, msg, self, time, username, color)
         tagsListener(tags)
 
-        // Initialize new user
-        if (!(username in users)) { initUser(this, chatroom, tags, self) }
+        // Initialize user if message sent in origin chat room
+        const originChat = !(`source-room-id` in tags) || (`source-room-id` in tags && tags[`room-id`] === tags[`source-room-id`])
+        if (originChat) {
+            // Initialize new user
+            if (!(username in users)) { initUser(this, chatroom, tags, self) }
 
-        // Add mod/update isModIn list
-        if (tags.mod) { updateMod(chatroom, tags, self, username) }
+            // Add mod/update isModIn list
+            if (tags.mod) { updateMod(chatroom, tags, self, username) }
 
-        // Initialize user in a new chatroom
-        if (!(channel in users[username].channels)) { initUserChannel(tags, username, channel) }
+            // Initialize user in a new chatroom
+            if (!(channel in users[username].channels)) { initUserChannel(tags, username, channel) }
+        }
 
         // Update user if message sent in origin chat room
         const userChannel = users[username].channels[channel]
-        if (!(`source-room-id` in tags) || (`source-room-id` in tags && tags[`room-id`] === tags[`source-room-id`])) {
+        if (originChat) {
             userChannel.msgCount++
             userChannel.lastMessage = msg
         }
