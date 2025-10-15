@@ -23,7 +23,7 @@ module.exports = {
     '_shutdown': async (props) => {
         const { bot, chatroom, channel } = props
         await printMemory(bot.channels)
-        await dumpMemory(props)
+        // await dumpMemory(props)
         const byeEmote = getContextEmote(`bye`, channel)
         bot.say(chatroom, `Bye for now! ${byeEmote}`)
         await logMessage([`> Done`])
