@@ -391,7 +391,7 @@ function getViewers(props) {
 
 function getLurker(props) {
     const { bot, chatroom, channel } = props
-    const notChatted = lemonyFresh[channel].viewers.filter(username => !(username in users) || !(channel in users[username]))
+    const notChatted = lemonyFresh[channel].viewers.filter(username => !(username in users) || !(channel in users[username].channels))
     if (notChatted.includes(channel)) { notChatted.splice(notChatted.indexOf(channel), 1) }
 
     const lurker = notChatted[Math.floor(Math.random() * notChatted.length)]
@@ -412,7 +412,7 @@ function awardLemonToRecentChatters(props) {
     // Check if user has chatted in the past 10 minutes
     const recipients = []
     for (const username in users) {
-        if (channel in users[username] && currentTime - users[username].channels[channel].sentAt <= 600000) {
+        if (channel in users[username].channels && currentTime - users[username].channels[channel].sentAt <= 600000) {
             users[username].lemons++
             recipients.push(username)
         }
