@@ -1,6 +1,5 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
-const { settings } = require(`../config`)
 const { users, lemonyFresh } = require(`../data`)
 const { pluralize, resetCooldownTimer, logMessage, containsInaccessibleEmotes, containsUnrecognizedEmotes } = require(`../utils`)
 
@@ -11,9 +10,9 @@ function checkStreak(bot, chatroom, message) {
     for (const username in users) {
         if (username !== BOT_USERNAME && users[username].channels[channel]?.lastMessage === message) {
             streakUsers.push(users[username].displayName)
-            if (streakUsers.length >= 2) { logMessage([`> checkStreak("${message}")`, streakUsers.length, `/ ${settings.streakThreshold} - ${streakUsers.join(`, `)}`]) }
+            if (streakUsers.length >= 2) { logMessage([`> checkStreak("${message}")`, streakUsers.length, `/ ${lemonyFresh[channel].streakThreshold} - ${streakUsers.join(`, `)}`]) }
         }
-        if (streakUsers.length >= settings.streakThreshold) {
+        if (streakUsers.length >= lemonyFresh[channel].streakThreshold) {
             if (containsInaccessibleEmotes(message)) {
                 logMessage([`-> Not participating in streak because it contains inaccessible emotes`])
                 return
@@ -40,13 +39,13 @@ function checkStreamerEmoteStreak(bot, chatroom, emoteOwner) {
         for (const emote of emoteArr) {
             if (user !== BOT_USERNAME && users[user].channels[channel]?.lastMessage.includes(emote)) {
                 emoteStreakUsers.push(user)
-                if (emoteStreakUsers.length) { logMessage([`-> Found`, emoteStreakUsers.length, `out of`, settings.streamerEmoteStreakThreshold, `${emoteOwner} emotes: ${emoteStreakUsers.join(`, `)}`]) }
+                if (emoteStreakUsers.length) { logMessage([`-> Found`, emoteStreakUsers.length, `out of`, lemonyFresh[channel].streamerEmoteStreakThreshold, `${emoteOwner} emotes: ${emoteStreakUsers.join(`, `)}`]) }
                 break
             }
         }
     }
 
-    if (emoteStreakUsers.length >= settings.streamerEmoteStreakThreshold) {
+    if (emoteStreakUsers.length >= lemonyFresh[channel].streamerEmoteStreakThreshold) {
         resetCooldownTimer(channel, `streak`)
         emoteReply(bot, chatroom, emoteOwner)
     }

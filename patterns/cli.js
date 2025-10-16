@@ -272,6 +272,8 @@ function updateChannelDev(props, args) {
         [/^contextEmotes?$|^ce$/i]: { name: `contextEmotes`, func: updateContextEmotes },
         [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
         [/^noSubRaidMessage$|^nsrm$/i]: { name: `noSubRaidMessage`, func: updateStr },
+        [/^streakThreshold$|^st$/i]: { name: `streakThreshold`, func: updateNum },
+        [/^streamerEmoteStreakThreshold$|^sest$/i]: { name: `streamerEmoteStreakThreshold`, func: updateNum },
         [/^funnyCommands?$|^fc$/i]: { name: `funnyCommands`, func: updateArr },
         [/^redeems?$|^r$/i]: { name: `redeems`, func: updateArr },
         [/^funTimerGuesser$|^ftg$/i]: { name: `funTimerGuesser`, func: updateStr }
@@ -302,7 +304,9 @@ function updateChannel(props, args) {
         [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
         [/^contextEmotes?$|^ce$/i]: { name: `contextEmotes`, func: updateContextEmotes },
         [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
-        [/^noSubRaidMessage$|^nsrm$/i]: { name: `noSubRaidMessage`, func: updateStr }
+        [/^noSubRaidMessage$|^nsrm$/i]: { name: `noSubRaidMessage`, func: updateStr },
+        [/^streakThreshold$|^st$/i]: { name: `streakThreshold`, func: updateNum },
+        [/^streamerEmoteStreakThreshold$|^sest$/i]: { name: `streamerEmoteStreakThreshold`, func: updateNum }
     }
 
     for (const option in options) {
@@ -472,8 +476,6 @@ function updateSettingsDev(props, args) {
         // [/^hideNonDevChannel$|^hndc$/i]: { name: `hideNonDevChannel`, func: updateBool },
         [/^funNumberCount$|^fnc$/i]: { name: `funNumberCount`, func: updateNum },
         [/^funNumberTotal$|^fnt$/i]: { name: `funNumberTotal`, func: updateNum },
-        [/^streakThreshold$|^st$/i]: { name: `streakThreshold`, func: updateNum },
-        [/^streamerEmoteStreakThreshold$|^sest$/i]: { name: `streamerEmoteStreakThreshold`, func: updateNum },
         [/^hangmanSignupSeconds$|^hss$/i]: { name: `hangmanSignupSeconds`, func: updateNum },
         // [/^hangmanChances?$|^hc$/i]: { name: `hangmanChances`, func: updateNum },
         // [/^hangmanLemonThreshold$|^hlt$/i]: { name: `hangmanLemonThreshold`, func: updateNum },
