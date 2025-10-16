@@ -68,6 +68,8 @@ module.exports = {
             : console.log(lemonyFresh[channel].viewers)
     },
 
+    'settings': () => { console.log(settings) },
+
     'channels': (props) => { console.log(props.bot.channels) },
 
     'test': (props) => { if (!isNaN(props.args[0])) { rollFunNumber(props, Number(props.args[0])) } },
