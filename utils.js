@@ -132,23 +132,24 @@ async function logMessage(messages, time, channel, username, color, self) {
     }
 
     // Log chat message or debug message
+    const channelName = settings.knownChannels[channel] || channel
     const log = messages.join(` `)
     if (username) {
-        await fs.appendFile(`lemony_logs.txt`, `[${time}] <${channel}> ${username}: ${log}\n`, (err) => {
+        await fs.appendFile(`lemony_logs.txt`, `[${time}] <${channelName}> ${username}: ${log}\n`, (err) => {
             if (err) { console.log(`Error writing logs:`, err) }
         })
-        if (!settings.hideNonDevChannel || channel === DEV) {
+        if (!settings.hideNonDevChannel || channelName === DEV) {
             self && settings.highlightBotMessage
                 ? console.log(`${yellowBg}${settings.logTime
                     ? `[${time}] `
                     : ``}${settings.hideNonDevChannel
                         ? ``
-                        : `<${channel}> `}${username}: ${log}${resetTxt}`)
+                        : `<${channelName}> `}${username}: ${log}${resetTxt}`)
                 : console.log(`${settings.logTime
                     ? `[${time}] `
                     : ``}${settings.hideNonDevChannel
                         ? ``
-                        : `<${channel}> `}${color in chatColors ? chatColors[color].terminalColor : whiteTxt}${username}: ${log}${resetTxt}`)
+                        : `<${channelName}> `}${color in chatColors ? chatColors[color].terminalColor : whiteTxt}${username}: ${log}${resetTxt}`)
         }
     }
     else {
@@ -638,7 +639,7 @@ module.exports = {
                 ? logMessage([msg], time, channel, username, color, self)
                 : sourceChannel
                     ? logMessage([`${username}'s message also posted in ${channel}'s channel`])
-                    : logMessage([msg], time, tags[`room-id`], username, color, self)
+                    : logMessage([msg], time, tags[`source-room-id`], username, color, self)
             : logMessage([msg], time, channel, username, color, self)
     }
 }

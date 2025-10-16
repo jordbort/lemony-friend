@@ -16,6 +16,7 @@ const { useLemCmd } = require(`./commands/lemCmds`)
 const { streakListener } = require(`./commands/streaks`)
 const { rollFunNumber } = require(`./commands/funNumber`)
 const { sayJoinMessage } = require(`./commands/joinPart`)
+const { apiGetTwitchChannel } = require(`./commands/twitch`)
 const { checkWord, checkLetter } = require(`./patterns/hangman`)
 const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
@@ -32,6 +33,7 @@ function devCommandUsed(props) {
     }
     return false
 }
+
 function commandUsed(props) {
     const { message, command } = props
     if (message.startsWith(`!`)) {
@@ -43,6 +45,7 @@ function commandUsed(props) {
     }
     return false
 }
+
 function regexMatch(props) {
     const { message } = props
     for (const pattern in patterns) {
@@ -55,6 +58,7 @@ function regexMatch(props) {
     }
     return false
 }
+
 function botMentionedByBot(props) {
     const { bot, chatroom, username, message, channel } = props
     if ([`streamelements`, `pokemoncommunitygame`].includes(username)) {
@@ -77,6 +81,7 @@ function botMentionedByBot(props) {
     }
     return false
 }
+
 function botMentioned(props) {
     const { message } = props
     if (RegExp(`\\b${BOT_NICKNAME_REGEX}\\b`, `i`).test(message)) {
@@ -92,6 +97,7 @@ function botMentioned(props) {
     }
     return false
 }
+
 function hangmanListener(props) {
     const { message, channel, username } = props
     const hangman = lemonyFresh[channel].hangman
@@ -107,6 +113,15 @@ function hangmanListener(props) {
         logMessage([`NOT A HANGMAN GUESS`])
     }
     return false
+}
+
+async function addToKnownChannels(broadcasterId) {
+    const twitchChannel = await apiGetTwitchChannel(broadcasterId)
+    if (!twitchChannel) {
+        logMessage([`-> Failed to fetch Twitch channel for knownChannels`])
+        return
+    }
+    settings.knownChannels[broadcasterId] = twitchChannel.broadcaster_login
 }
 
 module.exports = {
@@ -166,25 +181,29 @@ module.exports = {
         appendLogs(chatroom, tags, msg, self, time, username, color)
         tagsListener(tags)
 
-        // Initialize user if message sent in origin chat room
+        // If shared chat, check for unknown channel ID's name
         const originChat = !(`source-room-id` in tags) || (`source-room-id` in tags && tags[`room-id`] === tags[`source-room-id`])
-        if (originChat) {
-            // Initialize new user
-            if (!(username in users)) { initUser(this, chatroom, tags, self) }
-
-            // Add mod/update isModIn list
-            if (tags.mod) { updateMod(chatroom, tags, self, username) }
-
-            // Initialize user in a new chatroom
-            if (!(channel in users[username].channels)) { initUserChannel(tags, username, channel) }
+        if (!originChat
+            && !(tags[`source-room-id`] in settings.knownChannels)
+            && !(Object.keys(lemonyFresh).map(chan => chan.id).includes(Number(tags[`source-room-id`])))) {
+            addToKnownChannels(tags[`source-room-id`])
         }
 
-        // Update user if message sent in origin chat room
+        // If shared chat, stop listening here if not the origin channel
+        if (!originChat) { return }
+
+        // Initialize new user
+        if (!(username in users)) { initUser(this, chatroom, tags, self) }
+
+        // Add mod/update isModIn list
+        if (tags.mod) { updateMod(chatroom, tags, self, username) }
+
+        // Initialize user in a new chatroom
+        if (!(channel in users[username].channels)) { initUserChannel(tags, username, channel) }
+
         const userChannel = users[username].channels[channel]
-        if (originChat) {
-            userChannel.msgCount++
-            userChannel.lastMessage = msg
-        }
+        userChannel.msgCount++
+        userChannel.lastMessage = msg
 
         // Checking time comparisons
         const currentTime = Number(tags[`tmi-sent-ts`])
@@ -192,9 +211,6 @@ module.exports = {
         self
             ? userChannel.sentAt = Date.now()
             : userChannel.sentAt = currentTime
-
-        // If shared chat, stop listening here if not the origin channel
-        if (`source-room-id` in tags && tags[`room-id`] !== tags[`source-room-id`]) { return }
 
         const args = msg.split(` `)
         const command = args.shift().toLowerCase()
