@@ -532,14 +532,15 @@ module.exports = {
             mods[username].isModIn.push(chatroom)
         }
     },
-    resetCooldownTimer(channel, timer) {
-        logMessage([`> resetCooldownTimer(channel: '${channel}', timer: '${timer}', cooldown: ${pluralize(lemonyFresh[channel].timers[timer].cooldown, `second`, `seconds`)})`])
-        lemonyFresh[channel].timers[timer].listening = false
-        clearTimeout(lemonyFresh[channel].timers[timer].timerId)
-        lemonyFresh[channel].timers[timer].timerId = Number(setTimeout(() => {
-            lemonyFresh[channel].timers[timer].listening = true
-            logMessage([`-> Listening for '${timer}' again!`])
-        }, lemonyFresh[channel].timers[timer].cooldown * 1000))
+    resetCooldownTimer(channel, name) {
+        const timer = lemonyFresh[channel].timers[name]
+        logMessage([`> resetCooldownTimer(channel: '${channel}', timer: '${name}', cooldown: ${pluralize(timer.cooldown, `second`, `seconds`)})`])
+        timer.listening = false
+        clearTimeout(timer.timerId)
+        timer.timerId = Number(setTimeout(() => {
+            timer.listening = true
+            logMessage([`-> Listening for '${name}' again!`])
+        }, timer.cooldown * 1000))
     },
     // (For debugging/discovery) Add to list of known message tags
     tagsListener(tags) {
