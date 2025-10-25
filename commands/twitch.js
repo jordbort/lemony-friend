@@ -521,7 +521,7 @@ module.exports = {
     },
     async handleShoutout(props) {
         const { bot, chatroom, channel, username, toUser, isMod, isModOrVIP } = props
-        logMessage([`> newShoutOut(channel: '${channel}', username: ${username}, toUser: ${toUser}, isMod: ${isMod}, isModOrVIP: ${isModOrVIP})`])
+        logMessage([`> handleShoutout(channel: '${channel}', username: ${username}, toUser: ${toUser}, isMod: ${isMod}, isModOrVIP: ${isModOrVIP})`])
 
         if (!isModOrVIP) {
             logMessage([`-> ${username} isn't a mod or VIP, ignoring`])
@@ -539,14 +539,14 @@ module.exports = {
             // Stop if user doesn't exist
             const twitchUser = await apiGetTwitchUser(toUser)
             if (!twitchUser) {
-                logMessage([`-> No user '${toUser}' found, exiting newShoutOut function`])
+                logMessage([`-> No user '${toUser}' found, exiting handleShoutout function`])
                 bot.say(chatroom, `No user ${toUser} was found! :O`)
                 return
             }
 
             const stream = await apiGetTwitchChannel(twitchUser.id)
             if (!stream) {
-                logMessage([`-> Failed to fetch ${toUser}'s channel, exiting newShoutOut function`])
+                logMessage([`-> Failed to fetch ${toUser}'s channel, exiting handleShoutout function`])
                 bot.say(chatroom, `Failed to fetch ${toUser}'s stream information! :O`)
                 return
             }
