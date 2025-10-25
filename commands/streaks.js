@@ -2,7 +2,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings } = require(`../config`)
 const { users, lemonyFresh } = require(`../data`)
-const { pluralize, resetCooldownTimer, logMessage, containsInaccessibleEmotes, containsUnrecognizedEmotes } = require(`../utils`)
+const { pluralize, resetCooldownTimer, logMessage, containsInaccessibleEmotes, containsUnrecognizedEmotes, renderObj } = require(`../utils`)
 
 function checkStreak(bot, chatroom, message, currentTime) {
     const channel = chatroom.substring(1)
@@ -64,22 +64,24 @@ function emoteReply(bot, chatroom, emoteOwner) {
 
     const applicableUsers = Object.keys(users).filter(username => channel in users[username].channels)
 
-    const popularEmotes = lemonyFresh[emoteOwner].emotes.map(emote => {
-        let usages = 0
+    const usedEmotes = {}
+    for (const emote of lemonyFresh[emoteOwner].emotes) {
         for (const username of applicableUsers) {
             for (const word of users[username].channels[channel].lastMessage.split(` `)) {
-                if (word === emote) { usages++ }
+                if (word === emote) {
+                    emote in usedEmotes
+                        ? usedEmotes[emote]++
+                        : usedEmotes[emote] = 1
+                }
             }
         }
-        return usages
-    })
+    }
+    logMessage([renderObj(usedEmotes, `usedEmotes`)])
 
-    const mostUsages = Math.max(...popularEmotes)
-    const index = popularEmotes.indexOf(mostUsages)
-    const mostPopularEmote = lemonyFresh[emoteOwner].emotes[index]
-    logMessage([popularEmotes])
-    logMessage([`-> mostPopularEmote ${mostPopularEmote} at index ${index} was used ${pluralize(mostUsages, `time`, `times`)}`])
-    bot.say(chatroom, `${mostPopularEmote} ${mostPopularEmote} ${mostPopularEmote} ${mostPopularEmote}`)
+    const mostUsed = Math.max(...Object.keys(usedEmotes).map(emote => usedEmotes[emote]))
+    const mostPopularEmote = Object.keys(usedEmotes).filter(emote => usedEmotes[emote] === mostUsed)[0]
+    const reply = Array(mostUsed).fill(mostPopularEmote).join(` `)
+    bot.say(chatroom, reply)
 }
 
 module.exports = {
