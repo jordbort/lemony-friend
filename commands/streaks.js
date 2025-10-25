@@ -4,13 +4,16 @@ const { settings } = require(`../config`)
 const { users, lemonyFresh } = require(`../data`)
 const { pluralize, resetCooldownTimer, logMessage, containsInaccessibleEmotes, containsUnrecognizedEmotes } = require(`../utils`)
 
-function checkStreak(bot, chatroom, message) {
+function checkStreak(bot, chatroom, message, currentTime) {
     const channel = chatroom.substring(1)
 
     const streakUsers = []
     for (const username in users) {
-        if (username !== BOT_USERNAME && users[username].channels[channel]?.lastMessage === message) {
-            streakUsers.push(users[username].displayName)
+        if (username !== BOT_USERNAME
+            && channel in users[username].channels
+            && users[username].channels[channel].lastMessage === message) {
+            if (currentTime - users[username].channels[channel].sentAt <= settings.streakMinutesThreshold * 60000) { streakUsers.push(users[username].displayName) }
+            else { logMessage([`> checkStreak(message: '${message}') ${username}'s message was sent more than ${pluralize(settings.streakMinutesThreshold, `minute`, `minutes`)} ago`]) }
             if (streakUsers.length >= 2) { logMessage([`> checkStreak("${message}")`, streakUsers.length, `/ ${settings.streakThreshold} - ${streakUsers.join(`, `)}`]) }
         }
         if (streakUsers.length >= settings.streakThreshold) {
@@ -29,17 +32,20 @@ function checkStreak(bot, chatroom, message) {
     }
 }
 
-function checkStreamerEmoteStreak(bot, chatroom, emoteOwner) {
+function checkStreamerEmoteStreak(bot, chatroom, emoteOwner, currentTime) {
     const channel = chatroom.substring(1)
     logMessage([`> checkStreamerEmoteStreak(channel: '${channel}', emoteOwner: '${emoteOwner}')`])
 
     // Checking if message includes any of the provided emotes
     const emoteArr = lemonyFresh[emoteOwner].emotes
     const emoteStreakUsers = []
-    for (const user in users) {
+    for (const username in users) {
         for (const emote of emoteArr) {
-            if (user !== BOT_USERNAME && users[user].channels[channel]?.lastMessage.includes(emote)) {
-                emoteStreakUsers.push(user)
+            if (username !== BOT_USERNAME
+                && channel in users[username].channels
+                && users[username].channels[channel].lastMessage.includes(emote)
+                && currentTime - users[username].channels[channel].sentAt <= settings.streakMinutesThreshold * 60000) {
+                emoteStreakUsers.push(username)
                 if (emoteStreakUsers.length) { logMessage([`-> Found`, emoteStreakUsers.length, `out of`, settings.streamerEmoteStreakThreshold, `${emoteOwner} emotes: ${emoteStreakUsers.join(`, `)}`]) }
                 break
             }
@@ -78,10 +84,10 @@ function emoteReply(bot, chatroom, emoteOwner) {
 
 module.exports = {
     streakListener(props) {
-        const { bot, chatroom, message, channel } = props
+        const { bot, chatroom, message, currentTime, channel } = props
 
         // Listening for a message to be repeated by at least two other users
-        checkStreak(bot, chatroom, message)
+        checkStreak(bot, chatroom, message, currentTime)
 
         // Same timer to avoid double message
         if (lemonyFresh[channel].timers.streak.listening) {
@@ -93,7 +99,7 @@ module.exports = {
             if (accessibleEmotes.some(emote => message.includes(emote))) {
                 const emoteOwner = Object.keys(lemonyFresh).filter(channel => `emotes` in lemonyFresh[channel]
                     && lemonyFresh[channel].emotes.some(emote => message.includes(emote)))[0]
-                checkStreamerEmoteStreak(bot, chatroom, emoteOwner)
+                checkStreamerEmoteStreak(bot, chatroom, emoteOwner, currentTime)
             }
         } else { logMessage([`> Timer in ${channel} 'streak' is not currently listening`]) }
     }
