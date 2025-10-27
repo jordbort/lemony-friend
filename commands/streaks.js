@@ -11,10 +11,10 @@ function checkStreak(bot, chatroom, message, currentTime) {
     for (const username in users) {
         if (username !== BOT_USERNAME
             && channel in users[username].channels
-            && users[username].channels[channel].lastMessage === message) {
-            if (currentTime - users[username].channels[channel].sentAt <= settings.streakMinutesThreshold * 60000) { streakUsers.push(users[username].displayName) }
-            else { logMessage([`> checkStreak(message: '${message}') ${username}'s message was sent more than ${pluralize(settings.streakMinutesThreshold, `minute`, `minutes`)} ago`]) }
-            if (streakUsers.length >= 2) { logMessage([`> checkStreak("${message}")`, streakUsers.length, `/ ${settings.streakThreshold} - ${streakUsers.join(`, `)}`]) }
+            && users[username].channels[channel].lastMessage === message
+            && currentTime - users[username].channels[channel].sentAt <= settings.streakMinutesThreshold * 60000) {
+            streakUsers.push(users[username].displayName)
+            if (streakUsers.length > 1) { logMessage([`> checkStreak("${message}")`, streakUsers.length, `/ ${settings.streakThreshold} - ${streakUsers.join(`, `)}`]) }
         }
         if (streakUsers.length >= settings.streakThreshold) {
             if (containsInaccessibleEmotes(message)) {
