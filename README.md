@@ -93,6 +93,7 @@ There are also variables you can use in commands that will be replaced with argu
 - `{number#}` will choose a random number between 1 and `#`, where `#` is the number supplied by the user. Supplying a 0 or negative number will choose a number between that number and zero.
 - `{streamer}` is the nickname of whose chatroom the command is used in.
 - `{random "one" "two" "et cetera"}` can be used to provide a list (separate items with quotes) of words/phrases for lemony_friend to choose from at random.
+- `{n}` or `{noun}`, `{v}` or `{verb}`, `{adj}` or `{adjective}` will be replaced with a noun, verb, or adjective from the insult word bank.
 - `{1}` through `{9}` take whatever arguments are supplied, in order, falling back on an empty string if not used.
 - The 9 types of context emotes can also be used: `{lemon}` (or `{lem}`), `{neutral}` (or `{neu}`), `{positive}` (or `{pos}`), `{negative}` (or `{neg}`), `{hype}`, `{upset}` (or `{up}`), `{greeting}` (or `{greet}`), `{bye}`, and `{dumb}` (or `{dum}`)
 
