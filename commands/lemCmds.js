@@ -11,16 +11,15 @@ function applyVariables(str, props) {
     const { args, channel, username, toUser } = props
     logMessage([`-> applyVariables(str: ${str}, args: '${args.join(`', '`)}')`])
 
+    // Prepare viewers
     const viewers = lemonyFresh[channel].viewers.filter(viewer => !settings.ignoredBots.includes(viewer))
     const randomViewerOne = viewers[Math.floor(Math.random() * viewers.length)]
-
     let randomViewerTwo = viewers[Math.floor(Math.random() * viewers.length)]
     if (viewers.length > 1) {
         while (randomViewerTwo === randomViewerOne) {
             randomViewerTwo = viewers[Math.floor(Math.random() * viewers.length)]
         }
     }
-
     let randomViewerThree = viewers[Math.floor(Math.random() * viewers.length)]
     if (viewers.length > 2) {
         while (randomViewerThree === randomViewerOne || randomViewerThree === randomViewerTwo) {
@@ -28,9 +27,10 @@ function applyVariables(str, props) {
         }
     }
 
-    const nouns = [...wordBank.nouns]
-    const verbs = [...wordBank.verbs]
-    const adjectives = [...wordBank.adjectives]
+    // Prepare word bank choices
+    const nouns = wordBank.nouns.length ? [...wordBank.nouns] : [`lemon`, `friend`]
+    const verbs = wordBank.verbs.length ? [...wordBank.verbs] : [`squeeze`, `juice`]
+    const adjectives = wordBank.adjectives.length ? [...wordBank.adjectives] : [`lemony`, `fresh`]
 
     const newStr = str
         .replace(/\{\s?(message|msg)\s?\}/gi, args.join(` `))
