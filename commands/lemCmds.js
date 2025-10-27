@@ -1,5 +1,5 @@
 const { settings } = require(`../config`)
-const { lemonyFresh, users, lemCmds } = require(`../data`)
+const { lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
 const { getContextEmote, logMessage, pluralize } = require(`../utils`)
 
 const regexNumber = /\{\s?number\s?(-?\d+)\s?\}/gi
@@ -28,6 +28,10 @@ function applyVariables(str, props) {
         }
     }
 
+    const nouns = [...wordBank.nouns]
+    const verbs = [...wordBank.verbs]
+    const adjectives = [...wordBank.adjectives]
+
     const newStr = str
         .replace(/\{\s?(message|msg)\s?\}/gi, args.join(` `))
         .replace(/\{\s?user\s?\}/gi, users[username].displayName)
@@ -49,6 +53,9 @@ function applyVariables(str, props) {
         .replace(/\{\s?greet(ing)?\s?\}/gi, () => getContextEmote(`greeting`, channel))
         .replace(/\{\s?bye\s?\}/gi, () => getContextEmote(`bye`, channel))
         .replace(/\{\s?dumb?\s?\}/gi, () => getContextEmote(`dumb`, channel))
+        .replace(/\{\s?n(oun)?\s?\}/gi, () => nouns[Math.floor(Math.random() * nouns.length)])
+        .replace(/\{\s?v(erb)?\s?\}/gi, () => verbs[Math.floor(Math.random() * verbs.length)])
+        .replace(/\{\s?adj(ective)?\s?\}/gi, () => adjectives[Math.floor(Math.random() * adjectives.length)])
         .replace(/\{\s?1\s?\}/g, args[0] || ``)
         .replace(/\{\s?2\s?\}/g, args[1] || ``)
         .replace(/\{\s?3\s?\}/g, args[2] || ``)
