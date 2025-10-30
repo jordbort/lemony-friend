@@ -480,7 +480,7 @@ function updateSettingsDev(props, args) {
         // [/^hangmanLemonThreshold$|^hlt$/i]: { name: `hangmanLemonThreshold`, func: updateNum },
         // [/^chantCount$|^cc$/i]: { name: `chantCount`, func: updateNum },
         [/^chantEmote$|^ce$/i]: { name: `chantEmote`, func: updateStr },
-        [/^realRPS$|^rps$/i]: { name: `realRPS`, func: updateBool },
+        // [/^realRPS$|^rps$/i]: { name: `realRPS`, func: updateBool },
         [/^globalEmotes$|^ge$/i]: { name: `globalEmotes`, func: updateGlobalEmotes },
         [/^botMood$|^m$/i]: { name: `botMood`, func: updateStr }
     }
