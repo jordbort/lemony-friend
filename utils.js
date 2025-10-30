@@ -101,14 +101,20 @@ function pluralize(num, singularForm, pluralForm) {
 function renderObj(obj, objName, indentation = ``) {
     if (!Object.keys(obj).length) return `${objName}: {}`
     const tab = `${indentation}\t`
-    const data = [`${objName}: {`]
+    const data = [`${objName ? `${objName}: ` : ``}{`]
     const keys = `\n${Object.keys(obj).map((key) => {
         return typeof obj[key] === `string`
             ? `${tab}${key}: '${obj[key]}'`
             : typeof obj[key] === `object` && obj[key] !== null
                 ? Array.isArray(obj[key])
                     ? `${tab}${key}: [${obj[key].length
-                        ? obj[key].map((val) => { return typeof val === `string` ? `'${val}'` : val }).join(`, `)
+                        ? obj[key].map((val) => {
+                            return typeof val === `string`
+                                ? `'${val}'`
+                                : typeof val === `object` && val !== null && !Array.isArray(val)
+                                    ? renderObj(val, ``, tab)
+                                    : val
+                        }).join(`, `)
                         : ``
                     }]`
                     : `${tab}${renderObj(obj[key], key, tab)}`
