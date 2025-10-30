@@ -581,7 +581,7 @@ function reportRandomLemCmdUsage(props) {
 
 module.exports = {
     rollFunNumber(props, funNumber) {
-        const { tags, message, channel, username } = props
+        const { bot, chatroom, tags, message, channel, username, aprilFools } = props
         logMessage([`> rollFunNumber(channel: '${channel}', tags: ${Object.keys(tags).length}, username: '${username}', message: '${message}', funNumber: ${funNumber})`])
 
         if (!lemonyFresh[channel].rollFunNumber) {
@@ -618,8 +618,12 @@ module.exports = {
 
         if (funNumber in outcomes) {
             logMessage([`-> Fun number`, funNumber, `matched:`, `[Function: ${outcomes[funNumber].name}]`])
-            return outcomes[funNumber](props)
+            outcomes[funNumber](props)
+            return
         }
-        logMessage([`-> Fun number`, funNumber, `is unused`])
+
+        aprilFools
+            ? bot.say(chatroom, `${funNumber}`)
+            : logMessage([`-> Fun number`, funNumber, `is unused`])
     }
 }

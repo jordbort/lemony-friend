@@ -201,16 +201,11 @@ module.exports = {
         // Initialize user in a new chatroom
         if (!(channel in users[username].channels)) { initUserChannel(tags, username, channel) }
 
+        const currentTime = Number(tags[`tmi-sent-ts`]) || Date.now()
         const userChannel = users[username].channels[channel]
         userChannel.msgCount++
         userChannel.lastMessage = msg
-
-        // Checking time comparisons
-        const currentTime = Number(tags[`tmi-sent-ts`])
-        const minutesSinceLastMsg = (currentTime - userChannel.sentAt) / 60000
-        self
-            ? userChannel.sentAt = Date.now()
-            : userChannel.sentAt = currentTime
+        userChannel.sentAt = currentTime
 
         const args = msg.split(` `)
         const command = args.shift().toLowerCase()
@@ -235,7 +230,8 @@ module.exports = {
             userNickname: users[username].nickname || users[username].displayName,
             toUser: toUser,
             target: users?.[toUser] || null,
-            targetNickname: users?.[toUser]?.nickname || users?.[toUser]?.displayName || null
+            targetNickname: users?.[toUser]?.nickname || users?.[toUser]?.displayName || null,
+            aprilFools: new Date(currentTime).getMonth() === 3 && new Date(currentTime).getDate() === 1
         }
 
         // User attribute change detection
@@ -310,6 +306,8 @@ module.exports = {
             return
         }
 
+        // Checking whether enough time has passed to welcome back
+        const minutesSinceLastMsg = (currentTime - userChannel.sentAt) / 60000
         if (minutesSinceLastMsg > 1
             && minutesSinceLastMsg >= settings.minWelcomeBackMinutes
             && minutesSinceLastMsg < settings.maxWelcomeBackMinutes
