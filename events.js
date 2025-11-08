@@ -6,7 +6,7 @@ const WebSocket = require(`ws`)
 const { users, mods, lemonyFresh } = require(`./data`)
 
 const { apiRefreshToken, apiGetTokenScope } = require(`./commands/twitch`)
-const { logMessage, renderObj, getContextEmote, updateMod, pluralize } = require(`./utils`)
+const { logMessage, renderObj, getContextEmote, updateMod, pluralize, arrToList } = require(`./utils`)
 
 async function createWebSocket(bot, chatroom, channel, path = `wss://eventsub.wss.twitch.tv/ws`) {
     logMessage([`> createWebSocket(channel: '${channel}', path: '${path}')`])
@@ -140,6 +140,9 @@ async function createEventSubs(channel, arrScope) {
     if (arrScope.includes(`bits:read`)) {
         await createEventSub(channel, `channel.cheer`, `1`)
     }
+    if (arrScope.includes(`channel:read:hype_train`)) {
+        await createEventSub(channel, `channel.hype_train.begin`, `2`)
+    }
 }
 
 function handleEvent(bot, chatroom, channel, type, event) {
@@ -155,6 +158,7 @@ function handleEvent(bot, chatroom, channel, type, event) {
     else if (type === `channel.subscription.end`) { handleChannelSubscriptionEnd(bot, chatroom, channel, event) }
     else if (type === `channel.subscription.gift`) { handleChannelGiftSubs(bot, chatroom, channel, event) }
     else if (type === `channel.cheer`) { handleChannelCheer(bot, chatroom, channel, event) }
+    else if (type === `channel.hype_train.begin`) { handleChannelHypeTrainBegin(bot, chatroom, channel, event) }
 }
 
 async function handleStreamOnline(bot, chatroom, channel) {
@@ -354,6 +358,26 @@ function handleChannelCheer(bot, chatroom, channel, event) {
     bot.say(chatroom, reply)
 }
 
+function handleChannelHypeTrainBegin(bot, chatroom, channel, event) {
+    const streamer = channel in users
+        ? users[channel].nickname || users[channel].displayName
+        : channel
+
+    const contributors = event.top_contributions
+        .map(el => {
+            for (const user in users) {
+                if (users[user].id === el.user_id) {
+                    return users[user].nickname || users[user].displayName
+                }
+            }
+        })
+        .filter(el => el)
+
+    const hypeEmote = getContextEmote(`hype`, channel)
+    const reply = `A hype train just started for ${streamer}, thanks to ${arrToList(contributors)}! ${hypeEmote}`
+    bot.say(chatroom, reply)
+}
+
 async function apiGetEventSubs(channel, attempt = 1) {
     logMessage([`> apiGetEventSubs(channel: '${channel}', attempt: ${attempt})`])
     const endpoint = `https://api.twitch.tv/helix/eventsub/subscriptions`
@@ -463,6 +487,9 @@ async function refreshEventSubs(channel) {
         }
         if (arrScope.includes(`bits:read`)) {
             if (!enabled.includes(`channel.cheer`)) { await createEventSub(channel, `channel.cheer`, `1`) }
+        }
+        if (arrScope.includes(`channel:read:hype_train`)) {
+            if (!enabled.includes(`channel.hype_train.begin`)) { await createEventSub(channel, `channel.hype_train.begin`, `2`) }
         }
     }
 }
