@@ -348,10 +348,10 @@ module.exports = {
             ? str.replace(/^[@#]/g, ``).toLowerCase()
             : null
     },
-    arrToList(arr) {
+    arrToList(arr, conjunction = `and`) {
         return arr
             .map((element, idx) => idx !== 0 && idx + 1 === arr.length
-                ? `and ${element}`
+                ? `${conjunction} ${element}`
                 : element)
             .join(arr.length > 2
                 ? `, `
