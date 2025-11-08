@@ -707,7 +707,11 @@ module.exports = {
         } else { logMessage([`-> Timer in ${channel} '!so' is not currently listening`]) }
     },
     async updateStreamGame(props) {
-        const { bot, chatroom, args, channel } = props
+        const { bot, chatroom, args, channel, isMod } = props
+        if (!isMod) {
+            logMessage([`-> ${username} isn't a mod, ignoring`])
+            return
+        }
         const query = args.join(` `)
         logMessage([`> updateStreamGame(query: '${query}')`])
 
@@ -728,9 +732,7 @@ module.exports = {
             return
         }
 
-        const requestBody = {
-            game_id: game.id
-        }
+        const requestBody = { game_id: game.id }
         const success = await apiUpdateTwitchChannel(channel, requestBody)
 
         const reply = success
@@ -739,7 +741,11 @@ module.exports = {
         bot.say(chatroom, reply)
     },
     async updateStreamTitle(props) {
-        const { bot, chatroom, args, channel } = props
+        const { bot, chatroom, args, channel, isMod } = props
+        if (!isMod) {
+            logMessage([`-> ${username} isn't a mod, ignoring`])
+            return
+        }
         const title = args.join(` `)
         logMessage([`> updateStreamTitle(title: '${title}')`])
 
@@ -750,9 +756,7 @@ module.exports = {
             return
         }
 
-        const requestBody = {
-            title: title
-        }
+        const requestBody = { title: title }
         const success = await apiUpdateTwitchChannel(channel, requestBody)
 
         const reply = success
