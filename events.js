@@ -496,10 +496,19 @@ async function refreshEventSubs(channel) {
 
 module.exports = {
     createWebSocket,
-    async refreshAllChannels() {
-        for (const channel in lemonyFresh) {
-            if (lemonyFresh[channel].accessToken && lemonyFresh[channel].refreshToken) {
-                await refreshEventSubs(channel)
+    async refreshChannels(props) {
+        const { args } = props
+        if (args.length) {
+            for (const arg of args) {
+                if (arg in lemonyFresh && lemonyFresh[arg].accessToken && lemonyFresh[arg].refreshToken) {
+                    await refreshEventSubs(arg)
+                }
+            }
+        } else {
+            for (const channel in lemonyFresh) {
+                if (lemonyFresh[channel].accessToken && lemonyFresh[channel].refreshToken) {
+                    await refreshEventSubs(channel)
+                }
             }
         }
     },

@@ -7,7 +7,7 @@ const { getSubs } = require(`./help`)
 const { rollFunNumber } = require(`./funNumber`)
 const { handleJoin, handlePart } = require(`./joinPart`)
 const { logMessage, dumpMemory, getContextEmote, printMemory, pluralize } = require(`../utils`)
-const { deleteEventSubs, createWebSocket, refreshAllChannels } = require(`../events`)
+const { deleteEventSubs, createWebSocket, refreshChannels } = require(`../events`)
 
 function checkPoints(props) {
     const { bot, chatroom, channel } = props
@@ -45,7 +45,7 @@ module.exports = {
             }
         }
     },
-    '!refresh': refreshAllChannels,
+    '!refresh': refreshChannels,
     'dump': dumpMemory,
     '!test': checkPoints,
     'tags': (props) => { console.log(props.tags) },
