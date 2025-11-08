@@ -9,12 +9,7 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Implemented {noun}, {verb}, and {adj} variables in lemon commands`,
-            `Message streak checks only apply to messages sent within a recent amount of time`,
-            `Added Urban Dictionary definitions`,
-            `Implemented {message} variable in lemon commands`,
-            `Extended numbers list to 9999`,
-            `Added new uses for lemons`
+            `Implemented features to detect follows, subs, mod/vip, and bits (please update your token with !access) :)`
         ]
 
         const timeOptions = {
