@@ -147,9 +147,9 @@ function handleEvent(bot, chatroom, channel, type, event) {
     else if (type === `stream.offline`) { handleStreamOffline(bot, chatroom, channel) }
     else if (type === `channel.follow`) { handleChannelFollow(bot, chatroom, channel, event) }
     else if (type === `channel.vip.add`) { handleChannelAddVIP(bot, chatroom, channel, event) }
-    else if (type === `channel.vip.remove`) { handleChannelRemoveVIP(bot, chatroom, channel, event) }
+    else if (type === `channel.vip.remove`) { handleChannelRemoveVIP(channel, event) }
     else if (type === `channel.moderator.add`) { handleChannelAddModerator(bot, chatroom, channel, event) }
-    else if (type === `channel.moderator.remove`) { handleChannelRemoveModerator(bot, chatroom, channel, event) }
+    else if (type === `channel.moderator.remove`) { handleChannelRemoveModerator(chatroom, event) }
     else if (type === `channel.shoutout.receive`) { handleChannelReceiveShoutout(bot, chatroom, channel, event) }
     else if (type === `channel.subscribe`) { handleChannelSubscription(bot, chatroom, channel, event) }
     else if (type === `channel.subscription.end`) { handleChannelSubscriptionEnd(bot, chatroom, channel, event) }
@@ -244,15 +244,10 @@ function handleChannelAddVIP(bot, chatroom, channel, event) {
     bot.say(chatroom, reply)
 }
 
-function handleChannelRemoveVIP(bot, chatroom, channel, event) {
+function handleChannelRemoveVIP(channel, event) {
     const username = event.user_login
     if (username in users && channel in users[username].channels) {
         users[username].channels[channel].vip = false
-    }
-    if (username === BOT_USERNAME) {
-        const negativeEmote = getContextEmote(`negative`, channel)
-        const reply = `Aww, did I lose VIP status? ${negativeEmote}`
-        bot.say(chatroom, reply)
     }
 }
 
@@ -280,17 +275,12 @@ function handleChannelAddModerator(bot, chatroom, channel, event) {
     bot.say(chatroom, reply)
 }
 
-function handleChannelRemoveModerator(bot, chatroom, channel, event) {
+function handleChannelRemoveModerator(chatroom, event) {
     const username = event.user_login
     if (username in mods) {
         while (mods[username].isModIn.includes(chatroom)) {
             mods[username].isModIn.splice(mods[username].isModIn.indexOf(chatroom), 1)
         }
-    }
-    if (username === BOT_USERNAME) {
-        const negativeEmote = getContextEmote(`negative`, channel)
-        const reply = `Aww, did I lose mod status? ${negativeEmote}`
-        bot.say(chatroom, reply)
     }
 }
 
