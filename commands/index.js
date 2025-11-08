@@ -12,10 +12,10 @@ const { makeMultiTwitchLink } = require(`./multitwitch`)
 const { handleLemCmd, getLemCmds } = require(`./lemCmds`)
 const { manageHangman, joinHangman } = require(`../patterns/hangman`)
 const { insultUser, manageVerbs, manageNouns, manageAdjectives } = require(`./insult`)
-const { getDadJoke, getPokemon, getDefinition, getPokemonAbility, getUrbanDictionaryDefinition } = require(`./external`)
 const { getLastMessage, getMessageCount, sayOnlineTime, sayFriends, getColor, getLemons } = require(`./getInfo`)
 const { sayGoodnight, handleGreet, chant, handleRaid, setAway, yell, tiny, makeCursive } = require(`./conversation`)
-const { handleShoutout, getBotToken, makeAnnouncement, accessInstructions, authorizeToken, banUsers, startPoll, endPoll } = require(`./twitch`)
+const { getDadJoke, getPokemon, getDefinition, getPokemonAbility, getUrbanDictionaryDefinition } = require(`./external`)
+const { handleShoutout, getBotToken, makeAnnouncement, accessInstructions, authorizeToken, banUsers, startPoll, endPoll, updateStreamGame, updateStreamTitle } = require(`./twitch`)
 
 module.exports = {
     '!so': handleShoutout,
@@ -26,6 +26,11 @@ module.exports = {
     '!announcegreen': makeAnnouncement,
     '!announceorange': makeAnnouncement,
     '!announcepurple': makeAnnouncement,
+
+    '!setgame': updateStreamGame,
+    // '!game': updateStreamGame,
+    '!settitle': updateStreamTitle,
+    // '!title': updateStreamTitle,
 
     '!poll': startPoll,
     '!endpoll': endPoll,

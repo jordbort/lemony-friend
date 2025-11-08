@@ -138,6 +138,85 @@ async function apiGetTwitchChannel(broadcasterId, attempt = 1) {
     } else { return null }
 }
 
+async function apiUpdateTwitchChannel(channel, requestBody, attempt = 1) {
+    const key = Object.keys(requestBody)[0]
+    logMessage([`> apiUpdateTwitchChannel(channel: '${channel}', ${key}: '${requestBody[key]}', attempt: ${attempt})`])
+    const streamer = lemonyFresh[channel]
+    const endpoint = `https://api.twitch.tv/helix/channels?broadcaster_id=${streamer.id}`
+    const options = {
+        method: `PATCH`,
+        headers: {
+            authorization: `Bearer ${streamer.accessToken}`,
+            'Client-Id': CLIENT_ID,
+            'Content-Type': `application/json`
+        },
+        body: JSON.stringify(requestBody)
+    }
+    const response = await fetch(endpoint, options)
+
+    if (response.status !== 204) {
+        const twitchData = await response.json()
+        logMessage([
+            `apiUpdateTwitchChannel`,
+            response.status,
+            `data` in twitchData
+                ? twitchData.data.length
+                    ? renderObj(twitchData.data[0], `twitchData.data[0]`)
+                    : `twitchData.data: []`
+                : renderObj(twitchData, `twitchData`)
+        ])
+        if (response.status === 401 && twitchData.message === `Invalid OAuth token`) {
+            if (attempt < 3) {
+                logMessage([`-> Failed to update Twitch channel, attempting to get new access token...`])
+                const retry = await apiRefreshToken(channel, streamer.refreshToken)
+                if (retry) {
+                    attempt++
+                    return apiUpdateTwitchChannel(channel, requestBody, attempt)
+                }
+            } else {
+                logMessage([`-> Failed to update Twitch channel after ${pluralize(attempt, `attempt`, `attempts`)}`])
+                return null
+            }
+        } else { return null }
+    }
+    return true
+}
+
+async function apiGetGame(query, attempt = 1) {
+    logMessage([`> apiGetGame(query: '${query}')`])
+    const endpoint = isNaN(Number(query))
+        ? `https://api.twitch.tv/helix/games?name=${query}`
+        : `https://api.twitch.tv/helix/games?id=${query}`
+    const options = {
+        headers: {
+            authorization: `Bearer ${settings.botAccessToken}`,
+            'Client-Id': CLIENT_ID
+        }
+    }
+    const response = await fetch(endpoint, options)
+    const twitchData = await response.json()
+
+    if (response.status !== 200) {
+        logMessage([`apiGetGame`, response.status, renderObj(twitchData, `twitchData`)])
+        if (response.status !== 401) {
+            if (attempt < 3) {
+                logMessage([`-> Failed to get game info, attempting to get new access token...`])
+                const retry = await apiGetTwitchAppAccessToken()
+                if (retry) {
+                    attempt++
+                    return apiGetGame(query, attempt)
+                }
+            } else {
+                logMessage([`-> Failed to get game info after ${pluralize(attempt, `attempt`, `attempts`)}`])
+                return null
+            }
+        }
+    }
+    return twitchData.data.length
+        ? twitchData.data[0]
+        : (logMessage([`-> No game found`]), null)
+}
+
 async function apiRefreshToken(username, refreshToken) {
     logMessage([`> apiRefreshToken(username: ${username})`])
 
@@ -626,6 +705,60 @@ module.exports = {
             }
 
         } else { logMessage([`-> Timer in ${channel} '!so' is not currently listening`]) }
+    },
+    async updateStreamGame(props) {
+        const { bot, chatroom, args, channel } = props
+        const query = args.join(` `)
+        logMessage([`> updateStreamGame(query: '${query}')`])
+
+        const negativeEmote = getContextEmote(`negative`, channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
+        if (!query) {
+            const streamer = channel in users
+                ? users[channel].nickname || users[channel].displayName
+                : channel
+            const stream = await apiGetTwitchChannel(lemonyFresh[channel].id)
+            bot.say(chatroom, `${streamer} is currently playing ${stream.game_name}!`)
+            return
+        }
+
+        const game = await apiGetGame(query)
+        if (!game) {
+            bot.say(chatroom, `No game found ${negativeEmote}`)
+            return
+        }
+
+        const requestBody = {
+            game_id: game.id
+        }
+        const success = await apiUpdateTwitchChannel(channel, requestBody)
+
+        const reply = success
+            ? `Stream game successfully updated to ${game.name}! ${positiveEmote}`
+            : `Unable to update stream game! ${negativeEmote}`
+        bot.say(chatroom, reply)
+    },
+    async updateStreamTitle(props) {
+        const { bot, chatroom, args, channel } = props
+        const title = args.join(` `)
+        logMessage([`> updateStreamTitle(title: '${title}')`])
+
+        const negativeEmote = getContextEmote(`negative`, channel)
+        const positiveEmote = getContextEmote(`positive`, channel)
+        if (!title) {
+            bot.say(chatroom, `No title provided ${negativeEmote}`)
+            return
+        }
+
+        const requestBody = {
+            title: title
+        }
+        const success = await apiUpdateTwitchChannel(channel, requestBody)
+
+        const reply = success
+            ? `Stream title updated successfully! ${positiveEmote}`
+            : `Unable to update stream title! ${negativeEmote}`
+        bot.say(chatroom, reply)
     },
     async makeAnnouncement(props) {
         const { bot, chatroom, args, command, channel, username, isMod } = props
