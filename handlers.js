@@ -12,6 +12,7 @@ const botMention = require(`./patterns/botMention`)
 const { settings } = require(`./config`)
 const { lemonyFresh, users, lemCmds } = require(`./data`)
 
+const { createWebSocket } = require(`./events`)
 const { useLemCmd } = require(`./commands/lemCmds`)
 const { streakListener } = require(`./commands/streaks`)
 const { rollFunNumber } = require(`./commands/funNumber`)
@@ -142,6 +143,8 @@ module.exports = {
             initChannel(channel)
             // Say join message
             if (settings.sayJoinMessage) { sayJoinMessage(this, chatroom) }
+            // Check to create WebSocket session
+            if (lemonyFresh[channel].accessToken && lemonyFresh[channel].refreshToken) { createWebSocket(this, chatroom, channel) }
         }
 
         if (!lemonyFresh[channel].viewers.includes(username)) {

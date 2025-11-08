@@ -4,17 +4,17 @@ const { settings } = require(`../config`)
 const { lemonyFresh, users, mods, commonNicknames, startingLemons, hangmanWins } = require(`../data`)
 
 const { getSubs } = require(`./help`)
-const { printMemory } = require(`../utils`)
 const { rollFunNumber } = require(`./funNumber`)
 const { handleJoin, handlePart } = require(`./joinPart`)
-const { logMessage, dumpMemory, getContextEmote } = require(`../utils`)
+const { logMessage, dumpMemory, getContextEmote, printMemory, pluralize } = require(`../utils`)
+const { deleteEventSubs, createWebSocket, refreshAllChannels } = require(`../events`)
 
 function checkPoints(props) {
     const { bot, chatroom, channel } = props
     logMessage([`> checkPoints(chatroom: ${chatroom})`])
 
     users[BOT_USERNAME].channels?.[channel].points || users[BOT_USERNAME].channels?.[channel].points === 0
-        ? bot.say(chatroom, `I have ${users[BOT_USERNAME].channels[channel].points} point${users[BOT_USERNAME].channels[channel].points === 1 ? `` : `s`}!`)
+        ? bot.say(chatroom, `I have ${pluralize(users[BOT_USERNAME].channels[channel].points, `point`, `points`)}!`)
         : bot.say(chatroom, `I don't know how many points I have!`)
 }
 
@@ -22,6 +22,12 @@ module.exports = {
     '_crash': function kms(props) { throw Error(`Error${props.args.length ? ` with value${props.args.length === 1 ? `` : `s`} '${props.args.join(`', '`)}'` : ``}`) },
     '_shutdown': async (props) => {
         const { bot, chatroom, channel } = props
+        for (const streamer in lemonyFresh) {
+            if (lemonyFresh[streamer].websocketSessionId) {
+                await deleteEventSubs(streamer)
+                lemonyFresh[streamer].websocketSessionId = ``
+            }
+        }
         await printMemory(bot.channels)
         // await dumpMemory(props)
         const byeEmote = getContextEmote(`bye`, channel)
@@ -30,6 +36,16 @@ module.exports = {
         process.exit(0)
     },
     '_print': async (props) => { await printMemory(props.bot.channels) },
+    '_connect': async (props) => {
+        const { bot, chatroom } = props
+        for (const channel in lemonyFresh) {
+            if (lemonyFresh[channel].accessToken && lemonyFresh[channel].refreshToken) {
+                lemonyFresh[channel].websocketSessionId = ``
+                await createWebSocket(bot, chatroom, channel)
+            }
+        }
+    },
+    '!refresh': refreshAllChannels,
     'dump': dumpMemory,
     '!test': checkPoints,
     'tags': (props) => { console.log(props.tags) },

@@ -138,8 +138,8 @@ async function apiGetTwitchChannel(broadcasterId, attempt = 1) {
     } else { return null }
 }
 
-async function apiRefreshToken(username, refreshToken, attempts = 1) {
-    logMessage([`> apiRefreshToken(username: ${username}, attempts: ${attempts})`])
+async function apiRefreshToken(username, refreshToken) {
+    logMessage([`> apiRefreshToken(username: ${username})`])
 
     const endpoint = `https://id.twitch.tv/oauth2/token`
     const options = {
@@ -152,7 +152,6 @@ async function apiRefreshToken(username, refreshToken, attempts = 1) {
 
     const response = await fetch(endpoint, options)
     const twitchData = await response.json()
-    logMessage([`apiRefreshToken`, response.status, renderObj(twitchData, `twitchData`)])
 
     if (response.status === 200) {
         if (username in lemonyFresh) {
@@ -164,7 +163,44 @@ async function apiRefreshToken(username, refreshToken, attempts = 1) {
             mods[username].refreshToken = twitchData.refresh_token
         }
         return true
-    } else { return null }
+    } else {
+        logMessage([`apiRefreshToken`, response.status, renderObj(twitchData, `twitchData`)])
+        return null
+    }
+}
+
+async function apiGetTokenScope(channel, attempt = 1) {
+    logMessage([`> apiGetTokenScope(channel: '${channel}', attempt: ${attempt})`])
+    const streamer = lemonyFresh[channel]
+    if (!streamer.accessToken || !streamer.refreshToken) {
+        logMessage([`-> ${channel} has no token`])
+        return null
+    }
+
+    const endpoint = `https://id.twitch.tv/oauth2/validate`
+    const options = {
+        headers: { authorization: `OAuth ${streamer.accessToken}` }
+    }
+    const response = await fetch(endpoint, options)
+    const twitchData = await response.json()
+
+    if (response.status !== 200) {
+        logMessage([`apiGetTokenScope`, response.status, renderObj(twitchData, `twitchData`)])
+        if (response.status === 401 && twitchData.message === `invalid access token`) {
+            if (attempt < 3) {
+                logMessage([`-> Failed to parse ${channel}'s access token, attempting to get new access token...`])
+                const retry = await apiRefreshToken(channel, streamer.refreshToken)
+                if (retry) {
+                    attempt++
+                    return apiGetTokenScope(channel, attempt)
+                }
+            } else {
+                logMessage([`-> Failed to parse ${channel}'s access token after ${pluralize(attempt, `attempt`, `attempts`)}`])
+                return null
+            }
+        } else { return null }
+    }
+    return twitchData.scopes
 }
 
 async function apiShoutOut(fromId, toId, moderatorName, moderatorId, accessToken, refreshToken, attempt = 1) {
@@ -400,6 +436,8 @@ module.exports = {
     apiGetTwitchAppAccessToken,
     apiGetTwitchUser,
     apiGetTwitchChannel,
+    apiRefreshToken,
+    apiGetTokenScope,
     accessInstructions(props) {
         const { bot, chatroom, username } = props
         logMessage([`> accessInstructions(chatroom: '${chatroom}', username: '${username}')`])
