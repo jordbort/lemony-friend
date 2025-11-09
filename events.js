@@ -173,14 +173,14 @@ async function handleStreamOnline(bot, chatroom, channel) {
             : `playing ${stream.game_name}`
         : `doing nothing`
 
-    const greetEmote = getContextEmote(`greet`, channel)
+    const greetingEmote = getContextEmote(`greeting`, channel)
     const hypeEmote = getContextEmote(`hype`, channel)
 
     const announcements = [
-        `Have fun ${playingGame}, ${streamer}! ${greetEmote}`,
+        `Have fun ${playingGame}, ${streamer}! ${greetingEmote}`,
         `${streamer} is now live, have a great stream! ${hypeEmote}`,
         `${streamer} has gone live! ${hypeEmote}`,
-        `Hi ${streamer} nation ${greetEmote}`,
+        `Hi ${streamer} nation ${greetingEmote}`,
         `first`
     ]
     const reply = announcements[Math.floor(Math.random() * announcements.length)]
@@ -221,9 +221,9 @@ function handleChannelFollow(bot, chatroom, channel, event) {
         ? users[event.user_login].nickname || users[event.user_login].displayName
         : event.user_name
 
-    const greetEmote = getContextEmote(`greet`, channel)
+    const greetingEmote = getContextEmote(`greeting`, channel)
 
-    const reply = `Thank you for following ${streamer}, ${followerName}! ${greetEmote}`
+    const reply = `Thank you for following ${streamer}, ${followerName}! ${greetingEmote}`
     bot.say(chatroom, reply)
 }
 
