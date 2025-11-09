@@ -568,7 +568,7 @@ function reportRandomLemCmdUsage(props) {
     const randomCommand = Object.keys(lemCmds)[Math.floor(Math.random() * Object.keys(lemCmds).length)]
     logMessage([`> reportRandomLemCmdUsage(randomCommand: '${randomCommand}', uses: ${lemCmds[randomCommand].uses})`])
 
-    bot.say(chatroom, Object.keys(lemCmds).length === 0
+    const reply = Object.keys(lemCmds).length === 0
         ? `No lemon commands have been used! ${negativeEmote}`
         : `Lemon command "${randomCommand}" from ${lemCmds[randomCommand].origin in users ? users[lemCmds[randomCommand].origin].nickname || users[lemCmds[randomCommand].origin].displayName : lemCmds[randomCommand].origin}'s channel has been used ${pluralize(lemCmds[randomCommand].uses, `time`, `times`)}! ${lemCmds[randomCommand].uses === 0
             ? dumbEmote
@@ -576,7 +576,48 @@ function reportRandomLemCmdUsage(props) {
                 ? neutralEmote
                 : lemCmds[randomCommand].uses < 100
                     ? positiveEmote
-                    : hypeEmote}`)
+                    : hypeEmote}`
+    bot.say(chatroom, reply)
+}
+
+function sayPastHangmanAnswer(props) {
+    const { bot, chatroom, channel } = props
+    const pastAnswer = lemonyFresh[channel].hangman.answer
+    logMessage([`> sayPastHangmanAnswer(pastAnswer: '${pastAnswer}')`])
+    if (lemonyFresh[channel].hangman === true) {
+        logMessage([`-> Aborting, Hangman game in progress`])
+        return
+    }
+    const neutralEmote = getContextEmote(`neutral`, channel)
+    if (pastAnswer) {
+        bot.say(chatroom, `Do you remember when the Hangman answer was ${pastAnswer}? ${neutralEmote}`)
+    }
+}
+
+function sayPastHangmanSpaces(props) {
+    const { bot, chatroom, channel } = props
+    const arr = lemonyFresh[channel].hangman.spaces
+    logMessage([`> sayPastHangmanSpaces(arr: '${arr.join(` `)}')`])
+    if (lemonyFresh[channel].hangman === true) {
+        logMessage([`-> Aborting, Hangman game in progress`])
+        return
+    }
+    if (arr.length) {
+        bot.say(chatroom, `${arr.join(` `)}`)
+    }
+}
+
+function sayPastHangmanGuessedLetters(props) {
+    const { bot, chatroom, channel } = props
+    const arr = lemonyFresh[channel].hangman.guessedLetters
+    logMessage([`> sayPastHangmanGuessedLetters(arr: '${arr.join(``)}')`])
+    if (lemonyFresh[channel].hangman === true) {
+        logMessage([`-> Aborting, Hangman game in progress`])
+        return
+    }
+    if (arr.length) {
+        bot.say(chatroom, `${arr.join(``)}`)
+    }
 }
 
 module.exports = {
@@ -613,7 +654,10 @@ module.exports = {
             20: useFunnyCommand,
             21: imagineLemons,
             22: makeInsultSentence,
-            23: reportRandomLemCmdUsage
+            23: reportRandomLemCmdUsage,
+            24: sayPastHangmanAnswer,
+            25: sayPastHangmanSpaces,
+            26: sayPastHangmanGuessedLetters
         }
 
         if (funNumber in outcomes) {
