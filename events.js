@@ -5,7 +5,7 @@ const WebSocket = require(`ws`)
 
 const { users, mods, lemonyFresh } = require(`./data`)
 
-const { apiRefreshToken, apiGetTokenScope } = require(`./commands/twitch`)
+const { apiRefreshToken, apiGetTokenScope, apiGetTwitchChannel } = require(`./commands/twitch`)
 const { logMessage, renderObj, getContextEmote, updateMod, pluralize, arrToList } = require(`./utils`)
 
 async function createWebSocket(bot, chatroom, channel, path = `wss://eventsub.wss.twitch.tv/ws`) {
