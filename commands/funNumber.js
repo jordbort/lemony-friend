@@ -584,7 +584,7 @@ function sayPastHangmanAnswer(props) {
     const { bot, chatroom, channel } = props
     const pastAnswer = lemonyFresh[channel].hangman.answer
     logMessage([`> sayPastHangmanAnswer(pastAnswer: '${pastAnswer}')`])
-    if (lemonyFresh[channel].hangman === true) {
+    if (lemonyFresh[channel].hangman.listening || lemonyFresh[channel].hangman.signup) {
         logMessage([`-> Aborting, Hangman game in progress`])
         return
     }
@@ -598,7 +598,7 @@ function sayPastHangmanSpaces(props) {
     const { bot, chatroom, channel } = props
     const arr = lemonyFresh[channel].hangman.spaces
     logMessage([`> sayPastHangmanSpaces(arr: '${arr.join(` `)}')`])
-    if (lemonyFresh[channel].hangman === true) {
+    if (lemonyFresh[channel].hangman.listening || lemonyFresh[channel].hangman.signup) {
         logMessage([`-> Aborting, Hangman game in progress`])
         return
     }
@@ -611,7 +611,7 @@ function sayPastHangmanGuessedLetters(props) {
     const { bot, chatroom, channel } = props
     const arr = lemonyFresh[channel].hangman.guessedLetters
     logMessage([`> sayPastHangmanGuessedLetters(arr: '${arr.join(``)}')`])
-    if (lemonyFresh[channel].hangman === true) {
+    if (lemonyFresh[channel].hangman.listening || lemonyFresh[channel].hangman.signup) {
         logMessage([`-> Aborting, Hangman game in progress`])
         return
     }
