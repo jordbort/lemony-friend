@@ -101,7 +101,7 @@ module.exports = {
         logMessage([`> getRandomUser(arrExclude:`, arrExclude.join(`, `), `)`])
 
         // Only search users who have chatted
-        const arr = Object.keys(users).filter(username => Object.keys(users[username].channels.length))
+        const arr = Object.keys(users).filter(username => Object.keys(users[username].channels).length)
         for (const name of arrExclude) {
             if (arr.includes(name)) { arr.splice(arr.indexOf(name), 1) }
         }
