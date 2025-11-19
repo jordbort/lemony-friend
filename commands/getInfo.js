@@ -9,10 +9,8 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Added new fun number outcomes`,
-            `Created !setgame and !settitle commands`,
-            `Added detection for start of hype trains`,
-            `Implemented features to detect follows, subs, mod/vip, and bits (please update your token with !access) :)`
+            `Implemented message batching for follows, subs, and gift subs`,
+            `Re-wrote code for EventSubs (please update your token with !access) :)`
         ]
 
         const timeOptions = {
