@@ -349,14 +349,17 @@ module.exports = {
             return
         }
 
-        const toUnit = validateUnit(args[2])
+        const usedTo = /^to$/i.test(args[2])
+        const toUnit = usedTo && args[3]
+            ? validateUnit(args[3])
+            : validateUnit(args[2])
         if (!toUnit) {
-            bot.say(chatroom, `I don't recognize "${args[2]}", please use a one-word unit or abbreviation! ${dumbEmote}`)
+            bot.say(chatroom, `I don't recognize "${usedTo ? args[2] : args[3]}", please use a one-word unit or abbreviation! ${dumbEmote}`)
             return
         }
 
         if (fromUnit.name === toUnit.name) {
-            bot.say(chatroom, `${args.slice(0, 3).join(` `)}`)
+            bot.say(chatroom, `${args.slice(0).join(` `)}`)
             return
         }
         if (fromUnit.type !== toUnit.type) {
