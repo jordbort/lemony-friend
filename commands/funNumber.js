@@ -620,6 +620,20 @@ function sayPastHangmanGuessedLetters(props) {
     }
 }
 
+async function sayGameId(props) {
+    const { bot, chatroom, channel } = props
+    const broadcasterId = lemonyFresh[channel].id
+    const twitchChannel = await apiGetTwitchChannel(broadcasterId)
+    if (!twitchChannel) {
+        logMessage([`-> Failed to fetch Twitch channel`])
+        return
+    }
+    logMessage([`> sayGameId(channel: '${channel}', game_name: '${twitchChannel.game_name}', game_id: '${twitchChannel.game_id}')`])
+
+    const reply = twitchChannel.game_id
+    bot.say(chatroom, reply)
+}
+
 module.exports = {
     rollFunNumber(props, funNumber) {
         const { bot, chatroom, tags, message, channel, username, aprilFools } = props
@@ -657,7 +671,8 @@ module.exports = {
             23: reportRandomLemCmdUsage,
             24: sayPastHangmanAnswer,
             25: sayPastHangmanSpaces,
-            26: sayPastHangmanGuessedLetters
+            26: sayPastHangmanGuessedLetters,
+            27: sayGameId
         }
 
         if (funNumber in outcomes) {
