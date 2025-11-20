@@ -4,21 +4,21 @@ const BOT_NICKNAME_REGEX = process.env.BOT_NICKNAME_REGEX
 
 const dev = require(`./commands/dev`)
 const commands = require(`./commands`)
-const printLemon = require(`./commands/printLemon`)
 const patterns = require(`./patterns`)
-const botInteraction = require(`./patterns/botInteraction`)
 const botMention = require(`./patterns/botMention`)
+const printLemon = require(`./commands/printLemon`)
+const botInteraction = require(`./patterns/botInteraction`)
 
 const { settings } = require(`./config`)
 const { lemonyFresh, users, lemCmds } = require(`./data`)
 
-const { createWebSocket } = require(`./events`)
+const { closeWebSocket } = require(`./events`)
 const { useLemCmd } = require(`./commands/lemCmds`)
 const { streakListener } = require(`./commands/streaks`)
 const { rollFunNumber } = require(`./commands/funNumber`)
 const { sayJoinMessage } = require(`./commands/joinPart`)
-const { apiGetTwitchChannel } = require(`./commands/twitch`)
 const { checkWord, checkLetter } = require(`./patterns/hangman`)
+const { apiGetTwitchChannel, initWebSocket } = require(`./commands/twitch`)
 const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
 const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, logMessage, acknowledgeGigantifiedEmote, appendLogs } = require(`./utils`)
@@ -144,7 +144,7 @@ module.exports = {
             // Say join message
             if (settings.sayJoinMessage) { sayJoinMessage(this, chatroom) }
             // Check to create WebSocket session
-            if (lemonyFresh[channel].accessToken && lemonyFresh[channel].refreshToken) { createWebSocket(this, chatroom, channel) }
+            if (!lemonyFresh[channel].webSocketSessionId) { initWebSocket(this, chatroom, channel) }
         }
 
         if (!lemonyFresh[channel].viewers.includes(username)) {
@@ -154,6 +154,12 @@ module.exports = {
     onPartedHandler(chatroom, username, self) {
         logMessage([`${username} parted from ${chatroom}`])
         const channel = chatroom.substring(1)
+
+        // Close WebSocket connection
+        if (self) {
+            if (lemonyFresh[channel].webSocketSessionId) { closeWebSocket(channel) }
+            lemonyFresh[channel].webSocketSessionId = ``
+        }
 
         while (lemonyFresh[channel].viewers.includes(username)) {
             lemonyFresh[channel].viewers.splice(lemonyFresh[channel].viewers.indexOf(username), 1)

@@ -22,14 +22,14 @@ module.exports = {
     '_crash': function kms(props) { throw Error(`Error${props.args.length ? ` with value${props.args.length === 1 ? `` : `s`} '${props.args.join(`', '`)}'` : ``}`) },
     '_shutdown': async (props) => {
         const { bot, chatroom, channel } = props
-        for (const streamer in lemonyFresh) {
-            if (lemonyFresh[streamer].websocketSessionId) {
-                await deleteEventSubs(streamer)
-                lemonyFresh[streamer].websocketSessionId = ``
+        for (const streamer of bot.channels) {
+            if (lemonyFresh[streamer.substring(1)].webSocketSessionId) {
+                await deleteEventSubs(streamer.substring(1))
+                closeWebSocket(streamer.substring(1))
+                lemonyFresh[streamer.substring(1)].webSocketSessionId = ``
             }
         }
         await printMemory(bot.channels)
-        // await dumpMemory(props)
         const byeEmote = getContextEmote(`bye`, channel)
         bot.say(chatroom, `Bye for now! ${byeEmote}`)
         await logMessage([`> Done`])

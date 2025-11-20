@@ -4,7 +4,7 @@ const { settings } = require(`../config`)
 const { lemonyFresh, users, lemCmds } = require(`../data`)
 const numbers = require(`../numbers`)
 
-const { apiGetTwitchUser } = require(`./twitch`)
+const { apiGetTwitchUser, deleteEventSubs } = require(`./twitch`)
 const { getUsername, getContextEmote, logMessage, pluralize, arrToList } = require(`../utils`)
 
 module.exports = {
@@ -105,9 +105,10 @@ module.exports = {
         const notInChannel = validUsers.filter(user => !bot.channels.includes(`#${user}`))
 
         const byeEmote = getContextEmote(`bye`, channel)
-        needToPart.forEach(user => {
-            if (settings.sayPartMessage) { bot.say(`#${user}`, `Bye for now! ${byeEmote}`) }
-            bot.part(`#${user}`)
+        needToPart.forEach(async streamer => {
+            if (settings.sayPartMessage) { bot.say(`#${streamer}`, `Bye for now! ${byeEmote}`) }
+            await deleteEventSubs(streamer)
+            bot.part(`#${streamer}`)
         })
 
         const reply = needToPart.length
