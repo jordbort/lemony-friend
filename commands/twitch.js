@@ -6,6 +6,7 @@ const REDIRECT_URI = process.env.REDIRECT_URI
 const { settings } = require(`../config`)
 const { lemonyFresh, mods, users } = require(`../data`)
 const { openWebSocket, handleEvent, getWebSocket, removeClosedWebSocket, handleReconnect } = require(`../events`)
+const { getContextEmote, resetCooldownTimer, getToUser, renderObj, pluralize, logMessage, arrToList } = require(`../utils`)
 
 async function apiGetTwitchAppAccessToken() {
     logMessage([`> apiGetTwitchAppAccessToken()`])
@@ -755,6 +756,54 @@ module.exports = {
     apiGetEventSubs,
     updateEventSubs,
     initWebSocket,
+    async checkToken(props) {
+        const { bot, chatroom, channel } = props
+        const arrScope = await apiGetTokenScope(channel)
+        if (!arrScope) {
+            bot.say(chatroom, `Channel has no access token!`)
+            return
+        }
+
+        const allScopes = [
+            `moderator:read:followers`,
+            `channel:manage:vips`,
+            `moderation:read`,
+            `moderator:manage:shoutouts`,
+            `channel:read:subscriptions`,
+            `bits:read`,
+            `channel:read:hype_train`,
+            `channel:manage:broadcast`
+        ].filter(el => !arrScope.includes(el))
+
+        const arrAbilities = allScopes.map(el => {
+            if (el === `moderator:read:followers`) { return `followers` }
+            else if (el === `channel:manage:vips`) { return `VIPs` }
+            else if (el === `moderation:read`) { return `mods` }
+            else if (el === `moderator:manage:shoutouts`) { return `shoutouts from other streamers` }
+            else if (el === `channel:read:subscriptions`) { return `subs/gift subs` }
+            else if (el === `bits:read`) { return `cheering bits` }
+            else if (el === `channel:read:hype_train`) { return `start of hype trains` }
+            else if (el === `channel:read:hype_train`) { return `detect hype trains` }
+            else if (el === `channel:manage:broadcast`) { return `updating your stream game or title` }
+        })
+
+        const reply = arrAbilities.length
+            ? `Token is unable to handle ${arrToList(arrAbilities, `or`)}. Please use !access to renew your token and get all the features!`
+            : `Token has all available features! Thanks for using ${BOT_USERNAME}!`
+        bot.say(chatroom, reply)
+    },
+    async deleteEventSubs(channel) {
+        logMessage([`> deleteEventSubs(channel: '${channel}')`])
+        const obj = await apiGetEventSubs(channel)
+        if (obj && `data` in obj) {
+            if (obj.data.length) {
+                for (const el of obj.data) {
+                    logMessage([`-> session_id: '${el.transport.session_id}', Deleting ${channel} EventSub: '${el.type}', status: '${el.status}', session_id matches? ${lemonyFresh[channel].webSocketSessionId === el.transport.session_id})`])
+                    await apiDeleteEventSub(channel, el.id)
+                }
+            }
+        }
+    },
     accessInstructions(props) {
         const { bot, chatroom, username } = props
         logMessage([`> accessInstructions(chatroom: '${chatroom}', username: '${username}')`])

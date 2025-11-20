@@ -15,11 +15,12 @@ const { insultUser, manageVerbs, manageNouns, manageAdjectives } = require(`./in
 const { getLastMessage, getMessageCount, sayOnlineTime, sayFriends, getColor, getLemons } = require(`./getInfo`)
 const { sayGoodnight, handleGreet, chant, handleRaid, setAway, yell, tiny, makeCursive } = require(`./conversation`)
 const { getDadJoke, getPokemon, getDefinition, getPokemonAbility, getUrbanDictionaryDefinition } = require(`./external`)
-const { handleShoutout, getBotToken, makeAnnouncement, accessInstructions, authorizeToken, banUsers, startPoll, endPoll, updateStreamGame, updateStreamTitle } = require(`./twitch`)
+const { handleShoutout, getBotToken, makeAnnouncement, accessInstructions, authorizeToken, banUsers, startPoll, endPoll, updateStreamGame, updateStreamTitle, checkToken } = require(`./twitch`)
 
 module.exports = {
     '!so': handleShoutout,
     '!token': getBotToken,
+    '!checktoken': checkToken,
 
     '!announce': makeAnnouncement,
     '!announceblue': makeAnnouncement,
