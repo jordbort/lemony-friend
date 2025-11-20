@@ -12,47 +12,6 @@ const emotePattern = /\b([a-z][a-z0-9]{2,9}[A-Z0-9][a-zA-Z0-9]{0,19})\b/
 
 const formatMegabytes = (num) => Math.round(num / 1024 / 1024 * 100) / 100
 
-function makeLogs(arr) {
-    let logs = `🍋️ LEMONY LOGS 🍋️\n`
-
-    const dateOptions = {
-        weekday: `long`,
-        month: `long`,
-        day: `numeric`,
-        year: `numeric`,
-        timeZone: settings.timeZone
-    }
-    const timeOptions = {
-        hour: `numeric`,
-        minute: `numeric`,
-        second: `numeric`,
-        timeZone: settings.timeZone,
-        timeZoneName: `short`
-    }
-
-    logs += `Session started: ${settings.startDate.toLocaleDateString(`en-US`, dateOptions)} at ${settings.startDate.toLocaleTimeString(`en-US`, timeOptions)}\n`
-
-    logs += `\nJoined channels: ['${arr.join(`', '`)}']\n\n`
-
-    const objectsToLog = [
-        [lemonyFresh, `lemonyFresh`],
-        [mods, `mods`],
-        [users, `users`],
-        [knownTags, `knownTags`],
-        [settings, `settings`],
-        [wordBank, `wordBank`],
-        [lemCmds, `lemCmds`],
-        [commonNicknames, `commonNicknames`],
-        [startingLemons, `startingLemons`],
-        [hangmanWins, `hangmanWins`]
-    ]
-    for (const [obj, objName] of objectsToLog) {
-        logs += `${renderObj(obj, objName)}\n\n`
-    }
-
-    return logs
-}
-
 async function printMemory(arr) {
     await fs.writeFile(`./memory.json`, JSON.stringify({
         joinedChannels: arr,
@@ -182,17 +141,11 @@ module.exports = {
                 : users[BOT_USERNAME]?.channels.e1ectroma?.sub ? `e1ectr4Heat`
                     : users[BOT_USERNAME]?.channels.domonintendo1?.sub ? `domoni6Sneeze`
                         : `>(`
+
         for (const chatroom of bot.channels) {
             bot.say(chatroom, `Oops, I just crashed! ${emote} ${err.message} ${location}`)
         }
-
-        // await logMessage([makeLogs(bot.channels)])
         await logMessage([err.stack])
-    },
-    async dumpMemory(props) {
-        const { bot, channel, username } = props
-        await logMessage([`> dumpMemory(channel: ${channel}, username: ${username})`, `\n`])
-        await logMessage([makeLogs(bot.channels)])
     },
     coinFlip() { return Math.floor(Math.random() * 2) },
     superscript(str) {
