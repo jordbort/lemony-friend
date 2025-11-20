@@ -3,6 +3,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 
 const WebSocket = require(`ws`)
 
+const { settings } = require(`./config`)
 const { users, mods, lemonyFresh } = require(`./data`)
 
 const { apiRefreshToken, apiGetTokenScope, apiGetTwitchChannel } = require(`./commands/twitch`)
@@ -166,23 +167,35 @@ async function handleStreamOnline(bot, chatroom, channel) {
         ? users[channel].nickname || users[channel].displayName
         : channel
 
-    const stream = await apiGetTwitchChannel(lemonyFresh[channel].id)
-    const playingGame = stream.game_name
-        ? stream.game_name === `Just Chatting`
-            ? `chatting with viewers`
-            : `playing ${stream.game_name}`
-        : `doing nothing`
+    const endpoint = `https://api.twitch.tv/helix/channels?broadcaster_id=${lemonyFresh[channel].id}`
+    const options = {
+        headers: {
+            authorization: `Bearer ${settings.botAccessToken}`,
+            'Client-Id': CLIENT_ID
+        }
+    }
+    const response = await fetch(endpoint, options)
+    const twitchData = await response.json()
 
     const greetingEmote = getContextEmote(`greeting`, channel)
     const hypeEmote = getContextEmote(`hype`, channel)
 
     const announcements = [
-        `Have fun ${playingGame}, ${streamer}! ${greetingEmote}`,
         `${streamer} is now live, have a great stream! ${hypeEmote}`,
         `${streamer} has gone live! ${hypeEmote}`,
         `Hi ${streamer} nation ${greetingEmote}`,
         `first`
     ]
+    if (twitchData?.data?.[0]) {
+        announcements.push(
+            `Have fun ${twitchData.data[0].game_name
+                ? twitchData.data[0].game_name === `Just Chatting`
+                    ? `chatting with viewers`
+                    : `playing ${twitchData.data[0].game_name}`
+                : `doing nothing`
+            }, ${streamer}! ${greetingEmote}`
+        )
+    }
     const reply = announcements[Math.floor(Math.random() * announcements.length)]
 
     bot.say(chatroom, reply)
