@@ -237,24 +237,18 @@ module.exports = {
             aprilFools: new Date(currentTime).getMonth() === 3 && new Date(currentTime).getDate() === 1
         }
 
-        // User attribute change detection
-        const colorChange = tags.color !== users[username].color && users[username].color !== ``
-        const subChange = userChannel.sub !== tags.subscriber
-        const modChange = userChannel.mod !== tags.mod
-        const vipChange = userChannel.vip !== (!!tags.vip || !!tags.badges?.vip)
-
-        if (subChange) { handleSubChange(props) }
-        if (modChange) { handleModChange(props) }
-        if (vipChange) { handleVIPChange(props) }
-
         // Bot stops listening
         if (self) { return }
 
-        // Acknowledge color change
-        if (colorChange) {
-            handleColorChange(props)
-            return
-        }
+        // User attribute change detection
+        const subChange = userChannel.sub !== tags.subscriber
+        const modChange = userChannel.mod !== tags.mod
+        const vipChange = userChannel.vip !== (!!tags.vip || !!tags.badges?.vip)
+        const colorChange = tags.color !== users[username].color && users[username].color !== ``
+        if (subChange) { handleSubChange(props) }
+        if (modChange) { handleModChange(props) }
+        if (vipChange) { handleVIPChange(props) }
+        if (colorChange) { handleColorChange(props) }
 
         // Acknowledge gigantified emote
         if (tags[`msg-id`] === `gigantified-emote-message`) {
