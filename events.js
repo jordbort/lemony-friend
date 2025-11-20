@@ -243,15 +243,10 @@ function handleChannelHypeTrainBegin(bot, chatroom, channel, event) {
         ? users[channel].nickname || users[channel].displayName
         : channel
 
-    const contributors = event.top_contributions
-        .map(el => {
-            for (const user in users) {
-                if (users[user].id === el.user_id) {
-                    return users[user].nickname || users[user].displayName
-                }
-            }
-        })
-        .filter(el => el)
+    const contributors = event.top_contributions.map(obj => obj.user_login in users
+        ? users[obj.user_login].nickname || users[obj.user_login].displayName
+        : obj.user_name
+    )
 
     const hypeEmote = getContextEmote(`hype`, channel)
     const reply = `A hype train just started for ${streamer}, thanks to ${arrToList(contributors)}! ${hypeEmote}`
