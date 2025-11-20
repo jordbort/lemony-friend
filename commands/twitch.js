@@ -524,7 +524,7 @@ module.exports = {
         bot.say(chatroom, reply)
     },
     async getBotToken(props) {
-        const { bot, chatroom } = props
+        const { bot, chatroom, channel } = props
         const success = await apiGetTwitchAppAccessToken()
         const positiveEmote = getContextEmote(`positive`, channel)
         const negativeEmote = getContextEmote(`negative`, channel)
