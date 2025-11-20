@@ -5,10 +5,29 @@ const WebSocket = require(`ws`)
 
 const { settings } = require(`./config`)
 const { users, mods, lemonyFresh } = require(`./data`)
+const webSockets = {}
+for (const channel in lemonyFresh) { webSockets[channel] = [] }
 
-const { apiRefreshToken, apiGetTokenScope, apiGetTwitchChannel } = require(`./commands/twitch`)
-const { logMessage, renderObj, getContextEmote, updateMod, pluralize, arrToList } = require(`./utils`)
+function getWebSocket(channel, reconnection = false) {
+    if (webSockets[channel]) {
+        logMessage([`> getWebSocket(channel: '${channel}', reconnection: ${reconnection}, length: ${webSockets[channel].length})`])
+        if (webSockets[channel].length === 0) {
+            logMessage([`* WARNING: No WebSocket exists for '${channel}'${reconnection ? ` reconnection = ${reconnection}` : ``}`])
+            return
+        } else if (webSockets[channel].length !== 1 && reconnection) {
+            logMessage([`* WARNING: Reconnecting, ${webSockets[channel].length} WebSockets exist for '${channel}'`])
+        } else if (webSockets[channel].length >= 2) {
+            reconnection
+                ? logMessage([`> Reconnecting, ${pluralize(webSockets[channel].length, `WebSocket exists`, `WebSockets exist`)} for '${channel}', returning newest one to apply event listeners`])
+                : logMessage([`* WARNING: ${webSockets[channel].length} WebSockets exist for '${channel}'`])
+        }
+        return webSockets[channel][webSockets[channel].length - 1]
+    } else { logMessage([`> getWebSocket(channel: '${channel}') - Error: No WebSocket in webSockets{} for '${channel}'`]) }
+}
 
+function openWebSocket(channel, path = `wss://eventsub.wss.twitch.tv/ws`) {
+    logMessage([`> openWebSocket(channel: '${channel}', path: '${path}')`])
+    console.log(`BEFORE:`, channel, webSockets[channel].length, webSockets[channel].map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`))
     webSockets[channel].push(new WebSocket(path))
     console.log(`AFTER:`, channel, webSockets[channel].length, webSockets[channel].map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`))
 }
@@ -254,32 +273,49 @@ function handleChannelHypeTrainBegin(bot, chatroom, channel, event) {
 }
 
 module.exports = {
-    createWebSocket,
-    async refreshChannels(props) {
-        const { args } = props
-        if (args.length) {
-            for (const arg of args) {
-                if (arg in lemonyFresh && lemonyFresh[arg].accessToken && lemonyFresh[arg].refreshToken) {
-                    await refreshEventSubs(arg)
-                }
-            }
-        } else {
-            for (const channel in lemonyFresh) {
-                if (lemonyFresh[channel].accessToken && lemonyFresh[channel].refreshToken) {
-                    await refreshEventSubs(channel)
-                }
-            }
-        }
+    openWebSocket,
+    handleEvent,
+    getWebSocket,
+    logWebsockets(channel) {
+        if (channel in webSockets) {
+            console.log(channel, webSockets[channel].length, webSockets[channel].map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`))
+        } else { console.log(channel, `not in webSockets{}`) }
     },
-    async deleteEventSubs(channel) {
-        const obj = await apiGetEventSubs(channel)
-        if (obj && `data` in obj) {
-            if (obj.data.length) {
-                for (const el of obj.data) {
-                    logMessage([`-> Deleting ${channel} '${el.type}' EventSub (${el.status})`])
-                    await apiDeleteEventSub(channel, el.id)
-                }
-            }
+    examineWebsockets(channel) {
+        if (channel in webSockets) {
+            console.log(channel, webSockets[channel].length, webSockets[channel].map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`))
+            console.log(webSockets[channel])
+        } else { console.log(channel, `not in webSockets{}`) }
+    },
+    handleStreamOffline,
+    closeWebSocket(channel) {
+        logMessage([`> closeWebSocket(channel: '${channel}')`])
+        if (!lemonyFresh[channel].webSocketSessionId) { logMessage([`* WARNING: No webSocketSessionId for '${channel}'`]) }
+        const ws = getWebSocket(channel)
+        console.log(`BEFORE:`, channel, webSockets[channel].length, webSockets[channel].map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`))
+        if (ws) {
+            ws.close()
+            webSockets[channel].splice(webSockets[channel].length - 1, 1)
+            lemonyFresh[channel].webSocketSessionId = ``
+        } else {
+            console.log(`* Error: No web socket to close for '${channel}'`)
         }
+        console.log(`AFTER:`, channel, webSockets[channel].length, webSockets[channel].map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`))
+    },
+    removeClosedWebSocket(channel) {
+        logMessage([`> removeClosedWebSocket(channel: '${channel}')`])
+        if (webSockets[channel][0]?._closeFrameReceived) { webSockets[channel].shift() }
+        else { logMessage([`-> Error: No WebSocket removed`]) }
+        console.log(`After removing closed web socket:`, channel, webSockets[channel].length, webSockets[channel].map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`))
+    },
+    handleReconnect(channel) {
+        logMessage([`> handleReconnect(channel: '${channel}')`])
+        console.log(`BEFORE:`, channel, webSockets[channel].length, webSockets[channel].map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`))
+        if (webSockets[channel].length === 2) {
+            webSockets[channel][0].close()
+        } else {
+            logMessage([`* WARNING: The wrong number of web sockets exist to handle reconnecting`])
+        }
+        console.log(`AFTER:`, channel, webSockets[channel].length, webSockets[channel].map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`))
     }
 }

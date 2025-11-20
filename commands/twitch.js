@@ -5,7 +5,7 @@ const REDIRECT_URI = process.env.REDIRECT_URI
 
 const { settings } = require(`../config`)
 const { lemonyFresh, mods, users } = require(`../data`)
-const { getContextEmote, resetCooldownTimer, getToUser, renderObj, pluralize, logMessage } = require(`../utils`)
+const { openWebSocket, handleEvent, getWebSocket, removeClosedWebSocket, handleReconnect } = require(`../events`)
 
 async function apiGetTwitchAppAccessToken() {
     logMessage([`> apiGetTwitchAppAccessToken()`])
@@ -282,6 +282,180 @@ async function apiGetTokenScope(channel, attempt = 1) {
     return twitchData.scopes
 }
 
+async function apiCreateEventSub(channel, type, version, attempt = 1) {
+    logMessage([`> apiCreateEventSub(channel: '${channel}', type: '${type}', version: '${version}', attempt: ${attempt})`])
+    const streamer = lemonyFresh[channel]
+
+    const endpoint = `https://api.twitch.tv/helix/eventsub/subscriptions`
+
+    const requestBody = {
+        type: type,
+        version: version,
+        condition: {
+            broadcaster_user_id: `${streamer.id}`
+        },
+        transport: {
+            method: `websocket`,
+            session_id: streamer.webSocketSessionId
+        }
+    }
+    if ([
+        `channel.follow`,
+        `channel.shoutout.receive`
+    ].includes(type)) {
+        requestBody.condition.moderator_user_id = `${streamer.id}`
+    }
+
+    const options = {
+        method: `POST`,
+        headers: {
+            authorization: `Bearer ${streamer.accessToken}`,
+            'Client-Id': CLIENT_ID,
+            'Content-Type': `application/json`
+        },
+        body: JSON.stringify(requestBody)
+    }
+    const response = await fetch(endpoint, options)
+
+    if (response.status !== 202) {
+        const twitchData = await response.json()
+        logMessage([`createEventSub`, response.status, renderObj(twitchData, `twitchData`)])
+        if (response.status === 401) {
+            if (attempt < 3) {
+                logMessage([`-> Failed to create '${type}' EventSub for ${channel}, attempting to get new access token...`])
+                const retry = await apiRefreshToken(channel, streamer.refreshToken)
+                if (retry) {
+                    attempt++
+                    return apiCreateEventSub(channel, type, version, attempt)
+                }
+            } else {
+                logMessage([`-> Failed to create '${type}' EventSub for ${channel} after ${pluralize(attempt, `attempt`, `attempts`)}`])
+                return null
+            }
+        } else if (response.status === 403) {
+            return false
+        }
+    }
+}
+
+async function apiGetEventSubs(channel, attempt = 1) {
+    logMessage([`> apiGetEventSubs(channel: '${channel}', attempt: ${attempt})`])
+    const endpoint = `https://api.twitch.tv/helix/eventsub/subscriptions`
+    const options = {
+        headers: {
+            authorization: `Bearer ${lemonyFresh[channel].accessToken}`,
+            'Client-Id': CLIENT_ID,
+            'Content-Type': `application/json`
+        }
+    }
+    const response = await fetch(endpoint, options)
+    const twitchData = await response.json()
+    if (response.status !== 200) {
+        logMessage([`apiGetEventSubs`, response.status, renderObj(twitchData, `twitchData`)])
+    }
+
+    if (response.status === 200) {
+        return twitchData
+    } else if (response.status === 401 && twitchData.message === `invalid access token`) {
+        if (attempt < 3) {
+            logMessage([`-> Failed to get ${channel}'s event subscriptions, attempting to get new access token...`])
+            const retry = await apiRefreshToken(channel, lemonyFresh[channel].refreshToken)
+            if (retry) {
+                attempt++
+                return apiGetEventSubs(channel, attempt)
+            }
+        } else {
+            logMessage([`-> Failed to get ${channel}'s event subscriptions after ${pluralize(attempt, `attempt`, `attempts`)}`])
+            return null
+        }
+    }
+}
+
+async function apiDeleteEventSub(channel, id, attempt = 1) {
+    logMessage([`> apiDeleteEventSub(channel: '${channel}', session_id: '${id}', attempt: ${attempt})`])
+    const streamer = lemonyFresh[channel]
+    const endpoint = `https://api.twitch.tv/helix/eventsub/subscriptions?id=${id}`
+    const options = {
+        method: `DELETE`,
+        headers: {
+            authorization: `Bearer ${streamer.accessToken}`,
+            'Client-Id': CLIENT_ID
+        }
+    }
+    const response = await fetch(endpoint, options)
+
+    if (response.status !== 204) {
+        const twitchData = await response.json()
+        logMessage([`apiDeleteEventSub`, response.status, renderObj(twitchData, `twitchData`)])
+        if (response.status === 401) {
+            if (attempt < 3) {
+                logMessage([`-> Failed to delete EventSub for ${channel}, attempting to get new access token...`])
+                const retry = await apiRefreshToken(channel, streamer.refreshToken)
+                if (retry) {
+                    attempt++
+                    return apiDeleteEventSub(channel, id, attempt)
+                }
+            } else {
+                logMessage([`-> Failed to delete EventSub for ${channel} after ${pluralize(attempt, `attempt`, `attempts`)}`])
+                return null
+            }
+        } else if (response.status === 403) {
+            return false
+        }
+    }
+}
+
+async function updateEventSubs(channel) {
+    logMessage([`> updateEventSubs(channel: '${channel}')`])
+    const arrScope = await apiGetTokenScope(channel)
+    if (!arrScope) {
+        logMessage([`-> Unable to determine ${channel}'s token scope`])
+        return
+    }
+    const obj = await apiGetEventSubs(channel)
+    if (obj && `data` in obj) {
+        const enabled = obj.data.filter(obj => obj.status === `enabled`).map(obj => obj.type)
+        const disabled = obj.data.filter(obj => obj.status !== `enabled`)
+        if (disabled.length) {
+            console.log(`channel:`, channel, `enabled.length:`, enabled.length, `disabled.length:`, disabled.length)
+            for (const el of disabled) {
+                logMessage([`-> session_id: '${el.transport.session_id}', Deleting ${channel} EventSub: '${el.type}', status: '${el.status}', session_id matches? ${lemonyFresh[channel].webSocketSessionId === el.transport.session_id})`])
+                await apiDeleteEventSub(channel, el.id)
+            }
+        }
+        if (!enabled.includes(`stream.online`)) { await apiCreateEventSub(channel, `stream.online`, `1`) }
+        if (!enabled.includes(`stream.offline`)) { await apiCreateEventSub(channel, `stream.offline`, `1`) }
+        for (const scope of arrScope) {
+            if (scope === `moderator:read:followers`) {
+                if (!enabled.includes(`channel.follow`)) { await apiCreateEventSub(channel, `channel.follow`, `2`) }
+            }
+            if (scope === `channel:manage:vips`) {
+                if (!enabled.includes(`channel.vip.add`)) { await apiCreateEventSub(channel, `channel.vip.add`, `1`) }
+                if (!enabled.includes(`channel.vip.remove`)) { await apiCreateEventSub(channel, `channel.vip.remove`, `1`) }
+            }
+            if (scope === `moderation:read`) {
+                if (!enabled.includes(`channel.moderator.add`)) { await apiCreateEventSub(channel, `channel.moderator.add`, `1`) }
+                if (!enabled.includes(`channel.moderator.remove`)) { await apiCreateEventSub(channel, `channel.moderator.remove`, `1`) }
+            }
+            if (scope === `moderator:manage:shoutouts`) {
+                if (!enabled.includes(`channel.shoutout.receive`)) { await apiCreateEventSub(channel, `channel.shoutout.receive`, `1`) }
+            }
+            if (scope === `channel:read:subscriptions`) {
+                if (!enabled.includes(`channel.subscribe`)) { await apiCreateEventSub(channel, `channel.subscribe`, `1`) }
+                if (!enabled.includes(`channel.subscription.end`)) { await apiCreateEventSub(channel, `channel.subscription.end`, `1`) }
+                if (!enabled.includes(`channel.subscription.gift`)) { await apiCreateEventSub(channel, `channel.subscription.gift`, `1`) }
+                if (!enabled.includes(`channel.subscription.message`)) { await apiCreateEventSub(channel, `channel.subscription.message`, `1`) }
+            }
+            if (scope === `bits:read`) {
+                if (!enabled.includes(`channel.cheer`)) { await apiCreateEventSub(channel, `channel.cheer`, `1`) }
+            }
+            if (scope === `channel:read:hype_train`) {
+                if (!enabled.includes(`channel.hype_train.begin`)) { await apiCreateEventSub(channel, `channel.hype_train.begin`, `2`) }
+            }
+        }
+    }
+}
+
 async function apiShoutOut(fromId, toId, moderatorName, moderatorId, accessToken, refreshToken, attempt = 1) {
     logMessage([`> apiShoutOut(fromId: ${fromId}, toId: ${toId}, moderatorName: ${moderatorName}, moderatorId: ${moderatorId}, attempt: ${attempt})`])
     const endpoint = `https://api.twitch.tv/helix/chat/shoutouts?from_broadcaster_id=${fromId}&to_broadcaster_id=${toId}&moderator_id=${moderatorId}`
@@ -511,12 +685,76 @@ async function apiBanUsers(broadcasterId, moderatorName, moderatorId, arrUsers, 
     return { banned: banned, alreadyBanned: alreadyBanned }
 }
 
+async function initWebSocket(bot, chatroom, channel) {
+    logMessage([`> initWebSocket(channel: '${channel}')`])
+    const arrScope = await apiGetTokenScope(channel)
+    if (!arrScope) {
+        logMessage([`-> Unable to determine ${channel}'s token scope`])
+        return
+    }
+    openWebSocket(channel)
+    const ws = getWebSocket(channel, false)
+
+    ws.onopen = () => logMessage([`-> WebSocket connection established for ${channel}`])
+
+    ws.onmessage = (event) => {
+        const message = JSON.parse(event.data)
+
+        // If new welcome message, save session ID and create event subs, else close
+        if (message.metadata.message_type === `session_welcome`) {
+            console.log(channel, lemonyFresh[channel].webSocketSessionId ? lemonyFresh[channel].webSocketSessionId : `NO ID`, message.payload.session.id, `match?`, lemonyFresh[channel].webSocketSessionId === message.payload.session.id, lemonyFresh[channel].webSocketSessionId === message.payload.session.id ? `Reconnecting, right?` : `New connection, right?`)
+            if (lemonyFresh[channel].webSocketSessionId === message.payload.session.id) {
+                // close if 2 web sockets
+                handleReconnect(channel)
+            } else {
+                lemonyFresh[channel].webSocketSessionId = message.payload.session.id
+                // EventSubs don't quite seem to expire immediately?
+                setTimeout(() => updateEventSubs(channel), 500)
+            }
+        }
+
+        // Log messages other than 'welcome' and 'keepalive'
+        if ([
+            `session_keepalive`,
+            `session_welcome`
+        ].includes(message.metadata.message_type)) { return }
+        logMessage([renderObj(message, `WebSocket message for ${channel}`)])
+
+        // Handle events
+        if (`subscription` in message.payload) {
+            handleEvent(bot, chatroom, channel, message.payload.subscription.type, message.payload.event)
+        }
+
+        // Handle reconnection
+        if (message.metadata.message_type === `session_reconnect`) {
+            openWebSocket(channel, message.payload.session.reconnect_url)
+        }
+    }
+
+    ws.onclose = (event) => {
+        removeClosedWebSocket(channel)
+        const { code, reason, wasClean } = event
+        wasClean
+            ? logMessage([`-> WebSocket connection for ${channel} closed with code ${code}: '${reason}'`])
+            : logMessage([`-> WebSocket connection for ${channel} died unexpectedly with code ${code}${reason ? `: '${reason}'` : ``}`])
+
+        if (![1000, 4003, 4004].includes(code)) { // Not on purpose, unused, or from reconnection
+            initWebSocket(bot, chatroom, channel)
+        }
+    }
+
+    ws.onerror = (error) => logMessage([`WebSocket error from ${channel}:`, error])
+}
+
 module.exports = {
     apiGetTwitchAppAccessToken,
     apiGetTwitchUser,
     apiGetTwitchChannel,
     apiRefreshToken,
     apiGetTokenScope,
+    apiGetEventSubs,
+    updateEventSubs,
+    initWebSocket,
     accessInstructions(props) {
         const { bot, chatroom, username } = props
         logMessage([`> accessInstructions(chatroom: '${chatroom}', username: '${username}')`])
@@ -824,6 +1062,7 @@ module.exports = {
             ? `Access token was granted! ${hypeEmote}`
             : `Failed to grant access token! ${negativeEmote}`
         bot.say(chatroom, reply)
+        updateEventSubs(channel)
     },
     async banUsers(props) {
         const { bot, chatroom, args, channel, username, isMod } = props
