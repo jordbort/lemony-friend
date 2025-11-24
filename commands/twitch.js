@@ -686,24 +686,24 @@ async function apiBanUsers(broadcasterId, moderatorName, moderatorId, arrUsers, 
     return { banned: banned, alreadyBanned: alreadyBanned }
 }
 
-async function initWebSocket(bot, chatroom, channel) {
+async function initWebSocket(bot, chatroom, channel, path = `wss://eventsub.wss.twitch.tv/ws`) {
     logMessage([`> initWebSocket(channel: '${channel}')`])
     const arrScope = await apiGetTokenScope(channel)
     if (!arrScope) {
         logMessage([`-> Unable to determine ${channel}'s token scope`])
         return
     }
-    openWebSocket(channel)
-    const ws = getWebSocket(channel, false)
+    openWebSocket(channel, path)
+    const ws = getWebSocket(channel, path !== `wss://eventsub.wss.twitch.tv/ws`)
 
     ws.onopen = () => logMessage([`-> WebSocket connection established for ${channel}`])
 
     ws.onmessage = (event) => {
         const message = JSON.parse(event.data)
+        handleMessage(channel, message)
 
         // If new welcome message, save session ID and create event subs, else close
         if (message.metadata.message_type === `session_welcome`) {
-            console.log(channel, lemonyFresh[channel].webSocketSessionId ? lemonyFresh[channel].webSocketSessionId : `NO ID`, message.payload.session.id, `match?`, lemonyFresh[channel].webSocketSessionId === message.payload.session.id, lemonyFresh[channel].webSocketSessionId === message.payload.session.id ? `Reconnecting, right?` : `New connection, right?`)
             if (lemonyFresh[channel].webSocketSessionId === message.payload.session.id) {
                 // close if 2 web sockets
                 handleReconnect(channel)
@@ -728,13 +728,13 @@ async function initWebSocket(bot, chatroom, channel) {
 
         // Handle reconnection
         if (message.metadata.message_type === `session_reconnect`) {
-            openWebSocket(channel, message.payload.session.reconnect_url)
+            initWebSocket(bot, chatroom, channel, message.payload.session.reconnect_url)
         }
     }
 
     ws.onclose = (event) => {
-        removeClosedWebSocket(channel)
         const { code, reason, wasClean } = event
+        removeClosedWebSockets(channel, code)
         wasClean
             ? logMessage([`-> WebSocket connection for ${channel} closed with code ${code}: '${reason}'`])
             : logMessage([`-> WebSocket connection for ${channel} died unexpectedly with code ${code}${reason ? `: '${reason}'` : ``}`])
@@ -766,26 +766,31 @@ module.exports = {
 
         const allScopes = [
             `moderator:read:followers`,
-            `channel:manage:vips`,
             `moderation:read`,
+            `channel:manage:vips`,
             `moderator:manage:shoutouts`,
             `channel:read:subscriptions`,
             `bits:read`,
+            `moderator:manage:announcements`,
+            `moderator:manage:banned_users`,
+            `moderator:read:shoutouts`,
             `channel:read:hype_train`,
             `channel:manage:broadcast`
         ].filter(el => !arrScope.includes(el))
 
         const arrAbilities = allScopes.map(el => {
-            if (el === `moderator:read:followers`) { return `followers` }
-            else if (el === `channel:manage:vips`) { return `VIPs` }
-            else if (el === `moderation:read`) { return `mods` }
+            if (el === `moderator:read:followers`) { return `new followers` }
+            else if (el === `moderation:read`) { return `new mods` }
+            else if (el === `channel:manage:vips`) { return `new VIPs` }
             else if (el === `moderator:manage:shoutouts`) { return `shoutouts from other streamers` }
             else if (el === `channel:read:subscriptions`) { return `subs/gift subs` }
             else if (el === `bits:read`) { return `cheering bits` }
-            else if (el === `channel:read:hype_train`) { return `start of hype trains` }
-            else if (el === `channel:read:hype_train`) { return `detect hype trains` }
+            else if (el === `moderator:manage:announcements`) { return `making announcements` }
+            else if (el === `moderator:manage:banned_users`) { return `banning spambots` }
+            else if (el === `moderator:read:shoutouts`) { return `receiving shoutouts` }
+            else if (el === `channel:read:hype_train`) { return `detecting hype trains` }
             else if (el === `channel:manage:broadcast`) { return `updating your stream game or title` }
-        })
+        }).filter(el => el)
 
         const reply = arrAbilities.length
             ? `Token is unable to handle ${arrToList(arrAbilities, `or`)}. Please use !access to renew your token and get all the features!`
@@ -798,7 +803,6 @@ module.exports = {
         if (obj && `data` in obj) {
             if (obj.data.length) {
                 for (const el of obj.data) {
-                    logMessage([`-> session_id: '${el.transport.session_id}', Deleting ${channel} EventSub: '${el.type}', status: '${el.status}', session_id matches? ${lemonyFresh[channel].webSocketSessionId === el.transport.session_id})`])
                     await apiDeleteEventSub(channel, el.id)
                 }
             }

@@ -28,27 +28,23 @@ const webSockets = {}
 for (const channel in lemonyFresh) { webSockets[channel] = [] }
 
 function getWebSocket(channel, reconnection = false) {
+    logMessage([`> getWebSocket(channel: '${channel}', length: ${webSockets[channel]?.length})`])
     if (webSockets[channel]) {
-        logMessage([`> getWebSocket(channel: '${channel}', reconnection: ${reconnection}, length: ${webSockets[channel].length})`])
         if (webSockets[channel].length === 0) {
-            logMessage([`* WARNING: No WebSocket exists for '${channel}'${reconnection ? ` reconnection = ${reconnection}` : ``}`])
+            logMessage([`* WARNING: No WebSocket exists for '${channel}'`])
             return
-        } else if (webSockets[channel].length !== 1 && reconnection) {
-            logMessage([`* WARNING: Reconnecting, ${webSockets[channel].length} WebSockets exist for '${channel}'`])
         } else if (webSockets[channel].length >= 2) {
-            reconnection
-                ? logMessage([`> Reconnecting, ${pluralize(webSockets[channel].length, `WebSocket exists`, `WebSockets exist`)} for '${channel}', returning newest one to apply event listeners`])
-                : logMessage([`* WARNING: ${webSockets[channel].length} WebSockets exist for '${channel}'`])
+            if (webSockets[channel].length > 2 || !reconnection) {
+                logMessage([`* WARNING: ${webSockets[channel].length} WebSockets exist for '${channel}'`])
+            }
         }
         return webSockets[channel][webSockets[channel].length - 1]
-    } else { logMessage([`> getWebSocket(channel: '${channel}') - Error: No WebSocket in webSockets{} for '${channel}'`]) }
+    } else { logMessage([`* Error: No WebSocket in webSockets{} for '${channel}'`]) }
 }
 
-function openWebSocket(channel, path = `wss://eventsub.wss.twitch.tv/ws`) {
+function openWebSocket(channel, path) {
     logMessage([`> openWebSocket(channel: '${channel}', path: '${path}')`])
-    console.log(`BEFORE:`, channel, webSockets[channel].length, webSockets[channel].map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`))
     webSockets[channel].push(new WebSocket(path))
-    console.log(`AFTER:`, channel, webSockets[channel].length, webSockets[channel].map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`))
 }
 
 function handleEvent(bot, chatroom, channel, type, event) {
@@ -419,7 +415,6 @@ module.exports = {
         logMessage([`> closeWebSocket(channel: '${channel}')`])
         if (!lemonyFresh[channel].webSocketSessionId) { logMessage([`* WARNING: No webSocketSessionId for '${channel}'`]) }
         const ws = getWebSocket(channel)
-        console.log(`BEFORE:`, channel, webSockets[channel].length, webSockets[channel].map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`))
         if (ws) {
             ws.close()
             webSockets[channel].splice(webSockets[channel].length - 1, 1)
@@ -427,22 +422,23 @@ module.exports = {
         } else {
             console.log(`* Error: No web socket to close for '${channel}'`)
         }
-        console.log(`AFTER:`, channel, webSockets[channel].length, webSockets[channel].map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`))
     },
-    removeClosedWebSocket(channel) {
-        logMessage([`> removeClosedWebSocket(channel: '${channel}')`])
-        if (webSockets[channel][0]?._closeFrameReceived) { webSockets[channel].shift() }
-        else { logMessage([`-> Error: No WebSocket removed`]) }
-        console.log(`After removing closed web socket:`, channel, webSockets[channel].length, webSockets[channel].map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`))
+    removeClosedWebSockets(channel, code) {
+        logMessage([`> removeClosedWebSockets(channel: '${channel}', code: ${code})`])
+        for (let i = webSockets[channel].length - 1; i >= 0; i--) {
+            if (webSockets[channel][i]._closeFrameReceived || code === 1006) {
+                if (!webSockets[channel][i]._closeFrameReceived) { console.log(`* Error: WebSocket for '${channel}' at index ${i} is not closed yet, splicing anyway`) }
+                webSockets[channel].splice(i, 1)
+            }
+        }
     },
     handleReconnect(channel) {
         logMessage([`> handleReconnect(channel: '${channel}')`])
-        console.log(`BEFORE:`, channel, webSockets[channel].length, webSockets[channel].map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`))
         if (webSockets[channel].length === 2) {
             webSockets[channel][0].close()
         } else {
-            logMessage([`* WARNING: The wrong number of web sockets exist to handle reconnecting`])
+            console.log(`* WARNING: ${pluralize(webSockets[channel].length), `web socket exists`, `web sockets exist`} instead of 2!`)
         }
-        console.log(`AFTER:`, channel, webSockets[channel].length, webSockets[channel].map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`))
+    },
     }
 }
