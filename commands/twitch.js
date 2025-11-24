@@ -5,7 +5,7 @@ const REDIRECT_URI = process.env.REDIRECT_URI
 
 const { settings } = require(`../config`)
 const { lemonyFresh, mods, users } = require(`../data`)
-const { openWebSocket, handleEvent, getWebSocket, removeClosedWebSocket, handleReconnect } = require(`../events`)
+const { openWebSocket, handleEvent, getWebSocket, removeClosedWebSockets, handleReconnect, handleMessage } = require(`../events`)
 const { getContextEmote, resetCooldownTimer, getToUser, renderObj, pluralize, logMessage, arrToList } = require(`../utils`)
 
 async function apiGetTwitchAppAccessToken() {
@@ -713,13 +713,6 @@ async function initWebSocket(bot, chatroom, channel, path = `wss://eventsub.wss.
                 setTimeout(() => updateEventSubs(channel), 500)
             }
         }
-
-        // Log messages other than 'welcome' and 'keepalive'
-        if ([
-            `session_keepalive`,
-            `session_welcome`
-        ].includes(message.metadata.message_type)) { return }
-        logMessage([renderObj(message, `WebSocket message for ${channel}`)])
 
         // Handle events
         if (`subscription` in message.payload) {

@@ -5,7 +5,7 @@ const WebSocket = require(`ws`)
 
 const { settings } = require(`./config`)
 const { users, mods, lemonyFresh } = require(`./data`)
-const { logMessage, getContextEmote, updateMod, pluralize, arrToList } = require(`./utils`)
+const { logMessage, getContextEmote, updateMod, pluralize, arrToList, renderObj } = require(`./utils`)
 
 const batch = {}
 for (const channel in lemonyFresh) {
@@ -440,5 +440,73 @@ module.exports = {
             console.log(`* WARNING: ${pluralize(webSockets[channel].length), `web socket exists`, `web sockets exist`} instead of 2!`)
         }
     },
+    handleMessage(channel, message) {
+        if (`subscription` in message.payload) {
+            const streamer = message.payload.event.broadcaster_user_name
+            const fromStreamer = message.payload.event.from_broadcaster_user_name
+            const displayName = message.payload.event.user_name
+            switch (message.payload.subscription.type) {
+                case `stream.online`:
+                    logMessage([`* ONLINE: ${streamer} started streaming`])
+                    break
+                case `stream.offline`:
+                    logMessage([`* OFFLINE: ${streamer} stopped streaming`])
+                    break
+                case `channel.follow`:
+                    logMessage([`* NEW FOLLOWER: ${streamer} was followed by ${displayName}`])
+                    break
+                case `channel.vip.add`:
+                    logMessage([`* ADD VIP: ${streamer} added ${displayName} as a VIP`])
+                    break
+                case `channel.vip.remove`:
+                    logMessage([`* REMOVE VIP: ${streamer} removed ${displayName} as a VIP`])
+                    break
+                case `channel.moderator.add`:
+                    logMessage([`* ADD MODERATOR: ${streamer} added ${displayName} as a mod`])
+                    break
+                case `channel.moderator.remove`:
+                    logMessage([`* REMOVE MODERATOR: ${streamer} removed ${displayName} as a mod`])
+                    break
+                case `channel.shoutout.receive`:
+                    logMessage([`* SHOUTOUT: ${streamer} received a shoutout from ${fromStreamer}`])
+                    break
+                case `channel.subscribe`:
+                    logMessage([`* SUB: ${displayName} just subscribed to ${streamer}`])
+                    break
+                case `channel.subscription.end`:
+                    logMessage([`* SUB END: ${displayName}'s sub to ${streamer} expired`])
+                    break
+                case `channel.subscription.gift`:
+                    logMessage([`* GIFT SUB: ${displayName || `An anonymous user`} gifted ${pluralize(message.payload.event.total), `sub`, `subs`} to ${streamer}`])
+                    break
+                case `channel.subscription.message`:
+                    logMessage([`* SUB MESSAGE: ${displayName} resubscribed to ${streamer}`])
+                    break
+                case `channel.cheer`:
+                    logMessage([`* BITS: ${displayName || `An anonymous user`} cheered ${pluralize(message.payload.event.bits), `bit`, `bits`} to ${streamer}`])
+                    break
+                case `channel.hype_train.begin`:
+                    logMessage([`* HYPE TRAIN: A hype train started for ${streamer}`])
+                    break
+                default:
+                    logMessage([renderObj(message, `WebSocket message for ${channel}`)])
+            }
+        } else {
+            switch (message.metadata.message_type) {
+                case `session_welcome`:
+                    logMessage([`* WELCOME '${channel}' status: ${message.payload.session.status}`])
+                    break
+                case `session_reconnect`:
+                    logMessage([`* RECONNECT '${channel}' status: ${message.payload.session.status}, reconnect_url: ${message.payload.session.reconnect_url}`])
+                    break
+                case `session_keepalive`:
+                    break
+                case `revocation`:
+                    logMessage([`* REVOKED '${channel}' status: ${message.payload.session.status}`])
+                    break
+                default:
+                    logMessage([renderObj(message, `WebSocket message for ${channel}`)])
+            }
+        }
     }
 }
