@@ -416,7 +416,6 @@ async function updateEventSubs(channel) {
         if (disabled.length) {
             console.log(`channel:`, channel, `enabled.length:`, enabled.length, `disabled.length:`, disabled.length)
             for (const el of disabled) {
-                logMessage([`-> session_id: '${el.transport.session_id}', Deleting ${channel} EventSub: '${el.type}', status: '${el.status}', session_id matches? ${lemonyFresh[channel].webSocketSessionId === el.transport.session_id})`])
                 await apiDeleteEventSub(channel, el.id)
             }
         }
