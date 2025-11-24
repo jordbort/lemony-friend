@@ -634,6 +634,15 @@ async function sayGameId(props) {
     bot.say(chatroom, reply)
 }
 
+function rememberPastMessage(props) {
+    const { bot, chatroom, channel, userNickname, message } = props
+    const msg = message.split(` `)
+    const neutralEmote = getContextEmote(`neutral`, channel)
+    msg.length < 10
+        ? setTimeout(() => bot.say(chatroom, `I'm still thinking about when ${userNickname} said "${msg.join(` `)}" ${neutralEmote}`), 10000)
+        : setTimeout(() => bot.say(chatroom, `I'm still thinking about when ${userNickname} said "... ${msg.splice(4, 6).join(` `)} ..." ${neutralEmote}`), 10000)
+}
+
 module.exports = {
     rollFunNumber(props, funNumber) {
         const { bot, chatroom, tags, message, channel, username, aprilFools } = props
@@ -672,7 +681,8 @@ module.exports = {
             24: sayPastHangmanAnswer,
             25: sayPastHangmanSpaces,
             26: sayPastHangmanGuessedLetters,
-            27: sayGameId
+            27: sayGameId,
+            28: rememberPastMessage
         }
 
         if (funNumber in outcomes) {
