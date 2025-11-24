@@ -81,7 +81,6 @@ async function apiGetTwitchUser(username, attempt = 1) {
 
     if (response.status !== 200) {
         if (attempt < 3) {
-            logMessage([`-> Failed to get Twitch user, attempting to get new access token...`])
             const retry = await apiGetTwitchAppAccessToken()
             if (retry) {
                 attempt++
@@ -126,7 +125,6 @@ async function apiGetTwitchChannel(broadcasterId, attempt = 1) {
         return twitchData.data[0]
     } else if (response.status === 401) {
         if (attempt < 3) {
-            logMessage([`-> Failed to get Twitch channel, attempting to get new access token...`])
             const retry = await apiGetTwitchAppAccessToken()
             if (retry) {
                 attempt++
@@ -168,7 +166,6 @@ async function apiUpdateTwitchChannel(channel, requestBody, attempt = 1) {
         ])
         if (response.status === 401 && twitchData.message === `Invalid OAuth token`) {
             if (attempt < 3) {
-                logMessage([`-> Failed to update Twitch channel, attempting to get new access token...`])
                 const retry = await apiRefreshToken(channel, streamer.refreshToken)
                 if (retry) {
                     attempt++
@@ -201,7 +198,6 @@ async function apiGetGame(query, attempt = 1) {
         logMessage([`apiGetGame`, response.status, renderObj(twitchData, `twitchData`)])
         if (response.status !== 401) {
             if (attempt < 3) {
-                logMessage([`-> Failed to get game info, attempting to get new access token...`])
                 const retry = await apiGetTwitchAppAccessToken()
                 if (retry) {
                     attempt++
@@ -476,7 +472,6 @@ async function apiShoutOut(fromId, toId, moderatorName, moderatorId, accessToken
             const twitchData = await response.json()
             logMessage([`apiShoutOut`, response.status, renderObj(twitchData, `twitchData`)])
             if (response.status === 401) {
-                logMessage([`-> Unauthorized from apiShoutOut(), attempting to refresh access token...`])
                 const retry = await apiRefreshToken(moderatorName, refreshToken)
                 if (retry) {
                     attempt++
@@ -516,7 +511,6 @@ async function apiPostAnnouncement(channel, broadcasterId, moderatorId, moderato
             const twitchData = await response.json()
             logMessage([`apiPostAnnouncement`, response.status, renderObj(twitchData, `twitchData`)])
             if (response.status === 401) {
-                logMessage([`-> Unauthorized from apiPostAnnouncement(), attempting to refresh access token...`])
                 const retry = await apiRefreshToken(moderatorName, refreshToken)
                 if (retry) {
                     attempt++
@@ -569,7 +563,6 @@ async function apiStartPoll(channel, broadcasterId, title, arrChoices, duration,
         return true
     } else if (response.status === 401) {
         if (attempt < 3) {
-            logMessage([`-> Unauthorized from apiStartPoll(), attempting to refresh access token...`])
             const retry = await apiRefreshToken(channel, refreshToken)
             if (retry) {
                 attempt++
@@ -604,7 +597,6 @@ async function apiEndPoll(channel, broadcasterId, pollId, status, accessToken, r
         return true
     } else if (response.status === 401) {
         if (attempt < 3) {
-            logMessage([`-> Unauthorized from apiEndPoll(), attempting to refresh access token...`])
             const retry = await apiRefreshToken(channel, refreshToken)
             if (retry) {
                 attempt++
@@ -668,7 +660,6 @@ async function apiBanUsers(broadcasterId, moderatorName, moderatorId, arrUsers, 
             alreadyBanned.push(userToBan)
         } else if (response.status === 401) {
             if (attempt < 3) {
-                logMessage([`-> Unauthorized from apiBanUsers(), attempting to refresh access token...`])
                 const retry = await apiRefreshToken(moderatorName, refreshToken)
                 if (retry) {
                     attempt++
