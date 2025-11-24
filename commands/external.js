@@ -119,8 +119,6 @@ module.exports = {
         for (const abilities of data.abilities) { pokemonAbilities.push(`${abilities.ability.name}${abilities.is_hidden ? ` (hidden)` : ``}`) }
         reply += `${pokemonAbilities.join(`, `)}. `
 
-        let type1Data
-        let type2Data
         const doubleDamageTo = []
         const doubleDamageFrom = []
         const halfDamageTo = []
@@ -129,9 +127,8 @@ module.exports = {
         const immuneFrom = []
 
         if (pokemonTypes[0]) {
-            // look up one type
             const response1 = await fetch(`https://pokeapi.co/api/v2/type/${pokemonTypes[0]}`)
-            type1Data = await response1.json()
+            const type1Data = await response1.json()
             for (const damageType of type1Data.damage_relations.double_damage_to) {
                 if (!doubleDamageTo.includes(damageType.name)) { doubleDamageTo.push(damageType.name) }
             }
@@ -152,9 +149,8 @@ module.exports = {
             }
         }
         if (pokemonTypes[1]) {
-            // look up two types
             const response2 = await fetch(`https://pokeapi.co/api/v2/type/${pokemonTypes[1]}`)
-            type2Data = await response2.json()
+            const type2Data = await response2.json()
             for (const damageType of type2Data.damage_relations.double_damage_to) {
                 if (!doubleDamageTo.includes(damageType.name)) { doubleDamageTo.push(damageType.name) }
             }
@@ -176,14 +172,7 @@ module.exports = {
         }
 
         // if it TAKES double damage AND half damage FROM a type, remove from BOTH arrays
-        const nullify = []
-        for (const type of doubleDamageFrom) {
-            logMessage([`Looking at:`, doubleDamageFrom.indexOf(type), type])
-            if (halfDamageFrom.includes(type)) {
-                logMessage([`Found in both:`, type])
-                nullify.push(type)
-            }
-        }
+        const nullify = doubleDamageFrom.filter(el => halfDamageFrom.includes(el))
         for (const dupe of nullify) {
             doubleDamageFrom.splice(doubleDamageFrom.indexOf(dupe), 1)
             halfDamageFrom.splice(halfDamageFrom.indexOf(dupe), 1)
@@ -191,24 +180,8 @@ module.exports = {
 
         // Cleaning up immunities
         for (const type of immuneFrom) {
-            if (halfDamageFrom.includes(type)) {
-                logMessage([`"Immunity from" found in halfDamageFrom:`, type])
-                halfDamageFrom.splice(halfDamageFrom.indexOf(type), 1)
-            }
-            if (doubleDamageFrom.includes(type)) {
-                logMessage([`"Immunity from" found in doubleDamageFrom:`, type])
-                doubleDamageFrom.splice(doubleDamageFrom.indexOf(type), 1)
-            }
-        }
-
-        if (settings.debug) {
-            logMessage([`nullify:`, nullify])
-            logMessage([`doubleDamageTo:`, doubleDamageTo])
-            logMessage([`doubleDamageFrom:`, doubleDamageFrom])
-            logMessage([`halfDamageTo:`, halfDamageTo])
-            logMessage([`halfDamageFrom:`, halfDamageFrom])
-            logMessage([`immuneTo:`, immuneTo])
-            logMessage([`immuneFrom:`, immuneFrom])
+            if (halfDamageFrom.includes(type)) { halfDamageFrom.splice(halfDamageFrom.indexOf(type), 1) }
+            if (doubleDamageFrom.includes(type)) { doubleDamageFrom.splice(doubleDamageFrom.indexOf(type), 1) }
         }
 
         if (doubleDamageTo.length > 0) { reply += `Super effective to ${doubleDamageTo.join(`/`)}-type Pokemon. ` }
