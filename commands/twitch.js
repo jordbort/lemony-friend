@@ -284,14 +284,14 @@ async function apiGetTokenScope(channel, attempt = 1) {
 }
 
 async function apiCreateEventSub(channel, type, version, attempt = 1) {
-    logMessage([`> apiCreateEventSub(channel: '${channel}', type: '${type}', version: '${version}', attempt: ${attempt})`])
+    logMessage([`> apiCreateEventSub(channel: '${channel}', type: '${type}', version: ${version}, attempt: ${attempt})`])
     const streamer = lemonyFresh[channel]
 
     const endpoint = `https://api.twitch.tv/helix/eventsub/subscriptions`
 
     const requestBody = {
         type: type,
-        version: version,
+        version: `${version}`,
         condition: {
             broadcaster_user_id: `${streamer.id}`
         },
@@ -424,37 +424,37 @@ async function updateEventSubs(channel) {
                 await apiDeleteEventSub(channel, el.id)
             }
         }
-        if (!enabled.includes(`stream.online`)) { await apiCreateEventSub(channel, `stream.online`, `1`) }
-        if (!enabled.includes(`stream.offline`)) { await apiCreateEventSub(channel, `stream.offline`, `1`) }
+        if (!enabled.includes(`stream.online`)) { await apiCreateEventSub(channel, `stream.online`, 1) }
+        if (!enabled.includes(`stream.offline`)) { await apiCreateEventSub(channel, `stream.offline`, 1) }
         for (const scope of arrScope) {
             if (scope === `moderator:read:followers`) {
-                if (!enabled.includes(`channel.follow`)) { await apiCreateEventSub(channel, `channel.follow`, `2`) }
+                if (!enabled.includes(`channel.follow`)) { await apiCreateEventSub(channel, `channel.follow`, 2) }
             }
             if (scope === `channel:manage:vips`) {
-                if (!enabled.includes(`channel.vip.add`)) { await apiCreateEventSub(channel, `channel.vip.add`, `1`) }
-                if (!enabled.includes(`channel.vip.remove`)) { await apiCreateEventSub(channel, `channel.vip.remove`, `1`) }
+                if (!enabled.includes(`channel.vip.add`)) { await apiCreateEventSub(channel, `channel.vip.add`, 1) }
+                if (!enabled.includes(`channel.vip.remove`)) { await apiCreateEventSub(channel, `channel.vip.remove`, 1) }
             }
             if (scope === `moderation:read`) {
-                if (!enabled.includes(`channel.moderator.add`)) { await apiCreateEventSub(channel, `channel.moderator.add`, `1`) }
-                if (!enabled.includes(`channel.moderator.remove`)) { await apiCreateEventSub(channel, `channel.moderator.remove`, `1`) }
+                if (!enabled.includes(`channel.moderator.add`)) { await apiCreateEventSub(channel, `channel.moderator.add`, 1) }
+                if (!enabled.includes(`channel.moderator.remove`)) { await apiCreateEventSub(channel, `channel.moderator.remove`, 1) }
             }
             if (scope === `moderator:manage:shoutouts`) {
-                if (!enabled.includes(`channel.shoutout.receive`)) { await apiCreateEventSub(channel, `channel.shoutout.receive`, `1`) }
+                if (!enabled.includes(`channel.shoutout.receive`)) { await apiCreateEventSub(channel, `channel.shoutout.receive`, 1) }
             }
             if (scope === `channel:read:subscriptions`) {
-                if (!enabled.includes(`channel.subscribe`)) { await apiCreateEventSub(channel, `channel.subscribe`, `1`) }
-                if (!enabled.includes(`channel.subscription.end`)) { await apiCreateEventSub(channel, `channel.subscription.end`, `1`) }
-                if (!enabled.includes(`channel.subscription.gift`)) { await apiCreateEventSub(channel, `channel.subscription.gift`, `1`) }
-                if (!enabled.includes(`channel.subscription.message`)) { await apiCreateEventSub(channel, `channel.subscription.message`, `1`) }
+                if (!enabled.includes(`channel.subscribe`)) { await apiCreateEventSub(channel, `channel.subscribe`, 1) }
+                if (!enabled.includes(`channel.subscription.end`)) { await apiCreateEventSub(channel, `channel.subscription.end`, 1) }
+                if (!enabled.includes(`channel.subscription.gift`)) { await apiCreateEventSub(channel, `channel.subscription.gift`, 1) }
+                if (!enabled.includes(`channel.subscription.message`)) { await apiCreateEventSub(channel, `channel.subscription.message`, 1) }
             }
             if (scope === `bits:read`) {
-                if (!enabled.includes(`channel.cheer`)) { await apiCreateEventSub(channel, `channel.cheer`, `1`) }
+                if (!enabled.includes(`channel.cheer`)) { await apiCreateEventSub(channel, `channel.cheer`, 1) }
             }
             if (scope === `channel:read:hype_train`) {
-                if (!enabled.includes(`channel.hype_train.begin`)) { await apiCreateEventSub(channel, `channel.hype_train.begin`, `2`) }
+                if (!enabled.includes(`channel.hype_train.begin`)) { await apiCreateEventSub(channel, `channel.hype_train.begin`, 2) }
             }
         }
-    }
+    } else { console.log(`* WARNING: Failed to get EventSubs for '${channel}'`) }
 }
 
 async function apiShoutOut(fromId, toId, moderatorName, moderatorId, accessToken, refreshToken, attempt = 1) {
