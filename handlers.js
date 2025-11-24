@@ -18,7 +18,7 @@ const { streakListener } = require(`./commands/streaks`)
 const { rollFunNumber } = require(`./commands/funNumber`)
 const { sayJoinMessage } = require(`./commands/joinPart`)
 const { checkWord, checkLetter } = require(`./patterns/hangman`)
-const { apiGetTwitchChannel, initWebSocket } = require(`./commands/twitch`)
+const { apiGetTwitchChannel, initWebSocket, updateEventSubs } = require(`./commands/twitch`)
 const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
 const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, logMessage, acknowledgeGigantifiedEmote, appendLogs } = require(`./utils`)
@@ -143,8 +143,10 @@ module.exports = {
             initChannel(channel)
             // Say join message
             if (settings.sayJoinMessage) { sayJoinMessage(this, chatroom) }
-            // Check to create WebSocket session
-            if (!lemonyFresh[channel].webSocketSessionId) { initWebSocket(this, chatroom, channel) }
+            // Check to create or update WebSocket session
+            lemonyFresh[channel].webSocketSessionId
+                ? updateEventSubs(channel)
+                : initWebSocket(this, chatroom, channel)
         }
 
         if (!lemonyFresh[channel].viewers.includes(username)) {
