@@ -474,7 +474,7 @@ module.exports = {
                     logMessage([`* SUB: ${displayName} just subscribed to ${streamer}`])
                     break
                 case `channel.subscription.end`:
-                    logMessage([`* SUB END: ${displayName}'s sub to ${streamer} expired`])
+                    logMessage([`* SUB END: ${displayName}'s ${message.payload.event.is_gift ? `gift ` : ``}sub to ${streamer} expired`])
                     break
                 case `channel.subscription.gift`:
                     logMessage([`* GIFT SUB: ${displayName || `An anonymous user`} gifted ${pluralize(message.payload.event.total), `sub`, `subs`} to ${streamer}`])
