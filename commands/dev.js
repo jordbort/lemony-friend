@@ -8,7 +8,7 @@ const { rollFunNumber } = require(`./funNumber`)
 const { handleJoin, handlePart } = require(`./joinPart`)
 const { deleteEventSubs, updateEventSubs, initWebSocket, apiGetEventSubs } = require(`./twitch`)
 const { logMessage, printMemory, pluralize, getContextEmote, getToUser } = require(`../utils`)
-const { logWebsockets, examineWebsockets, openWebSocket, closeWebSocket, removeClosedWebSockets } = require(`../events`)
+const { logWebsockets, examineWebsockets, closeWebSocket, removeClosedWebSockets } = require(`../events`)
 
 function checkPoints(props) {
     const { bot, chatroom, channel } = props
@@ -105,22 +105,6 @@ module.exports = {
                 }
             }
         } else { deleteEventSubs(channel) }
-    },
-    'open': (props) => {
-        const { bot, args, channel } = props
-        const path = `wss://eventsub.wss.twitch.tv/ws`
-        if (args.length) {
-            if (args[0] === `all`) {
-                for (const chatroom of bot.channels) {
-                    if (chatroom.substring(1) in lemonyFresh) { openWebSocket(chatroom.substring(1), path) }
-                }
-            } else {
-                for (const arg of args) {
-                    const streamer = getToUser(arg)
-                    if (streamer in lemonyFresh) { openWebSocket(streamer, path) }
-                }
-            }
-        } else { openWebSocket(channel, path) }
     },
     'close': (props) => {
         const { bot, args, channel } = props
