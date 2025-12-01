@@ -353,7 +353,7 @@ async function apiGetEventSubs(channel, attempt = 1) {
 
     if (response.status === 200) {
         return twitchData
-    } else if (response.status === 401 && twitchData.message === `invalid access token`) {
+    } else if (response.status === 401 && [`Invalid OAuth token`, `invalid access token`].includes(twitchData.message)) {
         if (attempt < 3) {
             logMessage([`-> Failed to get ${channel}'s event subscriptions, attempting to get new access token...`])
             const retry = await apiRefreshToken(channel, lemonyFresh[channel].refreshToken)
