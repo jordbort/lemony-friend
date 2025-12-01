@@ -9,8 +9,7 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Implemented message batching for follows, subs, and gift subs`,
-            `Re-wrote code for EventSubs (please update your token with !access) :)`
+            `Updated fun number outcomes`
         ]
 
         const timeOptions = {
