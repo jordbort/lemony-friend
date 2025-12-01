@@ -332,12 +332,12 @@ function useBTTVEmote(props) {
         return
     }
 
-    const shakingCurseChance = [`c! s! `, ``, ``, ``]
-    const shakingCurse = shakingCurseChance[Math.floor(Math.random() * shakingCurseChance.length)]
+    const effectChance = [`c! s! `, `p! `, ``, ``, ``, ``, ``, ``]
+    const effect = effectChance[Math.floor(Math.random() * effectChance.length)]
 
     const emotes = lemonyFresh[channel].bttvEmotes
     const emote = emotes[Math.floor(Math.random() * emotes.length)]
-    bot.say(chatroom, `w! h! ${shakingCurse}${emote}`)
+    bot.say(chatroom, `w! h! ${effect}${emote}`)
 }
 
 function restartFunTimer(props) {
