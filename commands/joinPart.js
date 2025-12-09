@@ -70,7 +70,7 @@ module.exports = {
     },
     async handleJoin(props) {
         const { bot, chatroom, args } = props
-        logMessage([`> handleJoin(chatroom: ${chatroom}, args: '${args.join(`', '`)}')`])
+        await logMessage([`> handleJoin(chatroom: ${chatroom}, args: '${args.join(`', '`)}')`])
 
         const validUsers = args.map(arg => getUsername(arg)).filter(user => user)
         const alreadyJoined = validUsers.filter(channel => bot.channels.includes(`#${channel}`))

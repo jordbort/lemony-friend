@@ -300,12 +300,12 @@ async function askAboutGame(props) {
     const broadcasterId = lemonyFresh[channel].id
     const twitchChannel = await apiGetTwitchChannel(broadcasterId)
     if (!twitchChannel) {
-        logMessage([`-> Failed to fetch Twitch channel`])
+        await logMessage([`-> Failed to fetch Twitch channel`])
         return
     }
 
     const { game_name, game_id } = twitchChannel
-    logMessage([`> askAboutGame(channel: '${channel}', game_name: '${game_name}', game_id: '${game_id}')`])
+    await logMessage([`> askAboutGame(channel: '${channel}', game_name: '${game_name}', game_id: '${game_id}')`])
 
     const neutralEmote = getContextEmote(`neutral`, channel)
     const reply = game_name === `Just Chatting`
@@ -625,10 +625,10 @@ async function sayGameId(props) {
     const broadcasterId = lemonyFresh[channel].id
     const twitchChannel = await apiGetTwitchChannel(broadcasterId)
     if (!twitchChannel) {
-        logMessage([`-> Failed to fetch Twitch channel`])
+        await logMessage([`-> Failed to fetch Twitch channel`])
         return
     }
-    logMessage([`> sayGameId(channel: '${channel}', game_name: '${twitchChannel.game_name}', game_id: '${twitchChannel.game_id}')`])
+    await logMessage([`> sayGameId(channel: '${channel}', game_name: '${twitchChannel.game_name}', game_id: '${twitchChannel.game_id}')`])
 
     const reply = twitchChannel.game_id
     bot.say(chatroom, reply)

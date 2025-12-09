@@ -6,7 +6,7 @@ const { getContextEmote, renderObj, logMessage, pluralize } = require(`../utils`
 module.exports = {
     async checkSentiment(props) {
         const { bot, chatroom, message } = props
-        logMessage([`> checkSentiment(chatroom: ${chatroom}, message: ${message})`])
+        await logMessage([`> checkSentiment(chatroom: ${chatroom}, message: ${message})`])
 
         const sanitizedMsg = message.replace(/[\\{`}%^|]/g, ``)
         const endpoint = `https://api.api-ninjas.com/v1/sentiment?text=${sanitizedMsg}`
@@ -18,7 +18,7 @@ module.exports = {
 
         const response = await fetch(endpoint, options)
         const data = await response.json()
-        logMessage([`checkSentiment`, response.status, renderObj(data, `data`)])
+        await logMessage([`checkSentiment`, response.status, renderObj(data, `data`)])
 
         'sentiment' in data
             ? data.sentiment.includes(`NEUTRAL`)
@@ -32,7 +32,7 @@ module.exports = {
     },
     async getDadJoke(props) {
         const { bot, chatroom, channel } = props
-        logMessage([`> getDadJoke(chatroom: ${chatroom})`])
+        await logMessage([`> getDadJoke(chatroom: ${chatroom})`])
 
         const response = await fetch(`https://icanhazdadjoke.com/`, {
             headers: {
@@ -40,7 +40,7 @@ module.exports = {
             }
         })
         const data = await response.json()
-        logMessage([`getDadJoke`, response.status, renderObj(data, `data`)])
+        await logMessage([`getDadJoke`, response.status, renderObj(data, `data`)])
 
         const negativeEmote = getContextEmote(`negative`, channel)
         data.status === 200
@@ -49,7 +49,7 @@ module.exports = {
     },
     async getDefinition(props) {
         const { bot, chatroom, args, channel } = props
-        logMessage([`> getDefinition(chatroom: ${chatroom}, args:`, args, `)`])
+        await logMessage([`> getDefinition(chatroom: ${chatroom}, args:`, args, `)`])
         const str = args.join(` `).replace(/[\\{`}%^|]/g, ``)
         if (!str) {
             bot.say(chatroom, `Please give me a word to define! :)`)
@@ -65,7 +65,7 @@ module.exports = {
 
         const response = await fetch(endpoint, options)
         const data = await response.json()
-        logMessage([`getDefinition`, response.status, renderObj(data, `data`)])
+        await logMessage([`getDefinition`, response.status, renderObj(data, `data`)])
 
         const negativeEmote = getContextEmote(`negative`, channel)
         if (`error` in data) {
@@ -93,17 +93,17 @@ module.exports = {
             .join(`-`)
             .toLowerCase()
             .replace(/[\\{`}%^|]/g, ``)
-        logMessage([`> getPokemon(chatroom: ${chatroom}, pokemon: ${pokemon})`])
+        await logMessage([`> getPokemon(chatroom: ${chatroom}, pokemon: ${pokemon})`])
 
         if (!pokemon) {
-            logMessage([`-> No Pokemon provided`])
+            await logMessage([`-> No Pokemon provided`])
             return
         }
 
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`)
         const negativeEmote = getContextEmote(`negative`, channel)
         if (response.status !== 200) {
-            logMessage([`-> ${response.status}: ${response.statusText}`])
+            await logMessage([`-> ${response.status}: ${response.statusText}`])
             bot.say(chatroom, `Pokémon "${pokemon}" was not found! ${negativeEmote}`)
             return
         }
@@ -197,9 +197,9 @@ module.exports = {
         const abilityName = args.join(`-`).toLowerCase().replace(/[\\{`}%^|']/g, ``)
         const negativeEmote = getContextEmote(`negative`, channel)
 
-        logMessage([`> getPokemonAbility(chatroom: ${chatroom}, abilityName: '${abilityName}')`])
+        await logMessage([`> getPokemonAbility(chatroom: ${chatroom}, abilityName: '${abilityName}')`])
         if (!abilityName) {
-            logMessage([`-> No ability provided`])
+            await logMessage([`-> No ability provided`])
             return
         }
 
@@ -217,7 +217,7 @@ module.exports = {
 
         const response = await fetch(`https://pokeapi.co/api/v2/ability/${abilityName}`)
         if (response.status !== 200) {
-            logMessage([`-> ${response.status}: ${response.statusText}`])
+            await logMessage([`-> ${response.status}: ${response.statusText}`])
             bot.say(chatroom, `Ability "${args.join(` `)}" not found! ${negativeEmote}`)
             return
         }
@@ -227,7 +227,7 @@ module.exports = {
             const message = data.effect_entries.filter(el => el.language.name === `en`)[0].effect.replace(/\n+/g, ` `).replace(/ +/g, ` `)
             bot.say(chatroom, message)
         } else {
-            logMessage([`-> No effect entries for`, args.join(` `), data.flavor_text_entries.length, `total flavor text entries`])
+            await logMessage([`-> No effect entries for`, args.join(` `), data.flavor_text_entries.length, `total flavor text entries`])
             if (data.flavor_text_entries.length) {
                 const message = data.flavor_text_entries.filter(el => el.language.name === `en`)[0].flavor_text.replace(/\n+/g, ` `).replace(/ +/g, ` `)
                 bot.say(chatroom, message)
@@ -237,7 +237,7 @@ module.exports = {
     async getUrbanDictionaryDefinition(props) {
         const { bot, chatroom, args, channel } = props
         const query = args.join(` `)
-        logMessage([`> getUrbanDictionaryDefinition(channel: ${channel}, query: '${query}')`])
+        await logMessage([`> getUrbanDictionaryDefinition(channel: ${channel}, query: '${query}')`])
 
         if (!query) {
             bot.say(chatroom, `No query provided! :O`)
@@ -246,7 +246,7 @@ module.exports = {
 
         const response = await fetch(`https://unofficialurbandictionaryapi.com/api/search?term=${query}`)
         const data = await response.json()
-        logMessage([`getUrbanDictionaryDefinition`, response.status, renderObj(data, `data`)])
+        await logMessage([`getUrbanDictionaryDefinition`, response.status, renderObj(data, `data`)])
 
         if (data.statusCode !== 200) {
             bot.say(chatroom, `Error fetching definition! :O`)

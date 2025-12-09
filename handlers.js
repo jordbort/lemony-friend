@@ -119,7 +119,7 @@ function hangmanListener(props) {
 async function addToKnownChannels(broadcasterId) {
     const twitchChannel = await apiGetTwitchChannel(broadcasterId)
     if (!twitchChannel) {
-        logMessage([`-> Failed to fetch Twitch channel for knownChannels`])
+        await logMessage([`-> Failed to fetch Twitch channel for knownChannels`])
         return
     }
     settings.knownChannels[broadcasterId] = twitchChannel.broadcaster_login
