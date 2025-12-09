@@ -15,14 +15,13 @@ async function apiGetTwitchAppAccessToken() {
 
     const response = await fetch(endpoint, options)
     const twitchData = await response.json()
-    logMessage([`apiGetTwitchAppAccessToken`, response.status, renderObj(twitchData, `twitchData`)])
 
     if (response.status === 200) {
         settings.botAccessToken = twitchData.access_token
         logMessage([`-> Access token granted successfully!`])
         return true
     } else {
-        logMessage([`-> Failed to get access token`])
+        logMessage([`apiGetTwitchAppAccessToken`, response.status, renderObj(twitchData, `twitchData`)])
         return null
     }
 }
@@ -41,10 +40,8 @@ async function apiGetOAUTHToken(username, authCode) {
 
     const response = await fetch(endpoint, options)
     const twitchData = await response.json()
-    logMessage([`authorizeToken`, response.status, renderObj(twitchData, `twitchData`)])
 
     if (response.status === 200) {
-        logMessage([`-> OAUTH token granted successfully!`])
         if (username in lemonyFresh) {
             lemonyFresh[username].accessToken = twitchData.access_token
             lemonyFresh[username].refreshToken = twitchData.refresh_token
@@ -53,8 +50,12 @@ async function apiGetOAUTHToken(username, authCode) {
             mods[username].accessToken = twitchData.access_token
             mods[username].refreshToken = twitchData.refresh_token
         }
+        logMessage([`-> OAUTH token granted successfully!`])
         return true
-    } else { return null }
+    } else {
+        logMessage([`authorizeToken`, response.status, renderObj(twitchData, `twitchData`)])
+        return null
+    }
 }
 
 async function apiGetTwitchUser(username, attempt = 1) {
@@ -69,33 +70,26 @@ async function apiGetTwitchUser(username, attempt = 1) {
     const response = await fetch(endpoint, options)
     const twitchData = await response.json()
 
-    logMessage([
-        `apiGetTwitchUser`,
-        response.status,
-        `data` in twitchData
-            ? twitchData.data.length
-                ? renderObj(twitchData.data[0], `twitchData.data[0]`)
-                : `twitchData.data: []`
-            : renderObj(twitchData, `twitchData`)
-    ])
-
-    if (response.status !== 200) {
-        if (attempt < 3) {
-            const retry = await apiGetTwitchAppAccessToken()
-            if (retry) {
-                attempt++
-                return apiGetTwitchUser(username, attempt)
-            }
-        } else {
-            logMessage([`-> Failed to get Twitch user after ${pluralize(attempt, `attempt`, `attempts`)}`])
-            return null
-        }
-    } else {
+    if (response.status === 200) {
         if (!twitchData.data.length) {
             logMessage([`-> No user '${username}' found`])
             return false
         }
         return twitchData.data[0]
+    } else {
+        logMessage([`apiGetTwitchUser`, response.status, renderObj(twitchData, `twitchData`)])
+        if (response.status === 401) {
+            if (attempt < 3) {
+                const retry = await apiGetTwitchAppAccessToken()
+                if (retry) {
+                    attempt++
+                    return apiGetTwitchUser(username, attempt)
+                }
+            } else {
+                logMessage([`-> Failed to get Twitch user after ${pluralize(attempt, `attempt`, `attempts`)}`])
+                return null
+            }
+        } else { return null }
     }
 }
 
@@ -111,30 +105,23 @@ async function apiGetTwitchChannel(broadcasterId, attempt = 1) {
     const response = await fetch(endpoint, options)
     const twitchData = await response.json()
 
-    logMessage([
-        `apiGetTwitchChannel`,
-        response.status,
-        `data` in twitchData
-            ? twitchData.data.length
-                ? renderObj(twitchData.data[0], `twitchData.data[0]`)
-                : `twitchData.data: []`
-            : renderObj(twitchData, `twitchData`)
-    ])
-
     if (response.status === 200) {
         return twitchData.data[0]
-    } else if (response.status === 401) {
-        if (attempt < 3) {
-            const retry = await apiGetTwitchAppAccessToken()
-            if (retry) {
-                attempt++
-                return apiGetTwitchChannel(broadcasterId, attempt)
+    } else {
+        logMessage([`apiGetTwitchChannel`, response.status, renderObj(twitchData, `twitchData`)])
+        if (response.status === 401) {
+            if (attempt < 3) {
+                const retry = await apiGetTwitchAppAccessToken()
+                if (retry) {
+                    attempt++
+                    return apiGetTwitchChannel(broadcasterId, attempt)
+                }
+            } else {
+                logMessage([`-> Failed to get Twitch channel after ${pluralize(attempt, `attempt`, `attempts`)}`])
+                return null
             }
-        } else {
-            logMessage([`-> Failed to get Twitch channel after ${pluralize(attempt, `attempt`, `attempts`)}`])
-            return null
-        }
-    } else { return null }
+        } else { return null }
+    }
 }
 
 async function apiUpdateTwitchChannel(channel, requestBody, attempt = 1) {
@@ -181,7 +168,7 @@ async function apiUpdateTwitchChannel(channel, requestBody, attempt = 1) {
 }
 
 async function apiGetGame(query, attempt = 1) {
-    logMessage([`> apiGetGame(query: '${query}')`])
+    logMessage([`> apiGetGame(query: '${query}', attempt: ${attempt})`])
     const endpoint = isNaN(Number(query))
         ? `https://api.twitch.tv/helix/games?name=${query}`
         : `https://api.twitch.tv/helix/games?id=${query}`
@@ -194,10 +181,15 @@ async function apiGetGame(query, attempt = 1) {
     const response = await fetch(endpoint, options)
     const twitchData = await response.json()
 
-    if (response.status !== 200) {
+    if (response.status === 200) {
+        return twitchData.data.length
+            ? twitchData.data[0]
+            : (logMessage([`-> No game found`]), null)
+    } else {
         logMessage([`apiGetGame`, response.status, renderObj(twitchData, `twitchData`)])
-        if (response.status !== 401) {
+        if (response.status === 401) {
             if (attempt < 3) {
+                logMessage([`-> Failed to get game info, getting new app access token...`])
                 const retry = await apiGetTwitchAppAccessToken()
                 if (retry) {
                     attempt++
@@ -207,11 +199,8 @@ async function apiGetGame(query, attempt = 1) {
                 logMessage([`-> Failed to get game info after ${pluralize(attempt, `attempt`, `attempts`)}`])
                 return null
             }
-        }
+        } else { return null }
     }
-    return twitchData.data.length
-        ? twitchData.data[0]
-        : (logMessage([`-> No game found`]), null)
 }
 
 async function apiRefreshToken(username, refreshToken) {
@@ -260,11 +249,12 @@ async function apiGetTokenScope(channel, attempt = 1) {
     const response = await fetch(endpoint, options)
     const twitchData = await response.json()
 
-    if (response.status !== 200) {
-        logMessage([`apiGetTokenScope`, response.status, renderObj(twitchData, `twitchData`)])
+    if (response.status === 200) {
+        return twitchData.scopes
+    } else {
+        logMessage([`apiGetTokenScope ${channel}`, response.status, renderObj(twitchData, `twitchData`)])
         if (response.status === 401 && twitchData.message === `invalid access token`) {
             if (attempt < 3) {
-                logMessage([`-> Failed to parse ${channel}'s access token, attempting to get new access token...`])
                 const retry = await apiRefreshToken(channel, streamer.refreshToken)
                 if (retry) {
                     attempt++
@@ -276,7 +266,6 @@ async function apiGetTokenScope(channel, attempt = 1) {
             }
         } else { return null }
     }
-    return twitchData.scopes
 }
 
 async function apiCreateEventSub(channel, type, version, attempt = 1) {
@@ -319,7 +308,7 @@ async function apiCreateEventSub(channel, type, version, attempt = 1) {
         logMessage([`createEventSub`, response.status, renderObj(twitchData, `twitchData`)])
         if (response.status === 401) {
             if (attempt < 3) {
-                logMessage([`-> Failed to create '${type}' EventSub for ${channel}, attempting to get new access token...`])
+                logMessage([`-> Failed to create '${type}' EventSub for ${channel}, refreshing token...`])
                 const retry = await apiRefreshToken(channel, streamer.refreshToken)
                 if (retry) {
                     attempt++
@@ -347,23 +336,22 @@ async function apiGetEventSubs(channel, attempt = 1) {
     }
     const response = await fetch(endpoint, options)
     const twitchData = await response.json()
-    if (response.status !== 200) {
-        logMessage([`apiGetEventSubs`, response.status, renderObj(twitchData, `twitchData`)])
-    }
 
     if (response.status === 200) {
         return twitchData
-    } else if (response.status === 401 && [`Invalid OAuth token`, `invalid access token`].includes(twitchData.message)) {
-        if (attempt < 3) {
-            logMessage([`-> Failed to get ${channel}'s event subscriptions, attempting to get new access token...`])
-            const retry = await apiRefreshToken(channel, lemonyFresh[channel].refreshToken)
-            if (retry) {
-                attempt++
-                return apiGetEventSubs(channel, attempt)
+    } else {
+        logMessage([`apiGetEventSubs ${channel}`, response.status, renderObj(twitchData, `twitchData`)])
+        if (response.status === 401 && [`Invalid OAuth token`, `invalid access token`].includes(twitchData.message)) {
+            if (attempt < 3) {
+                const retry = await apiRefreshToken(channel, lemonyFresh[channel].refreshToken)
+                if (retry) {
+                    attempt++
+                    return apiGetEventSubs(channel, attempt)
+                }
+            } else {
+                logMessage([`-> Failed to get ${channel}'s event subscriptions after ${pluralize(attempt, `attempt`, `attempts`)}`])
+                return null
             }
-        } else {
-            logMessage([`-> Failed to get ${channel}'s event subscriptions after ${pluralize(attempt, `attempt`, `attempts`)}`])
-            return null
         }
     }
 }
@@ -383,10 +371,9 @@ async function apiDeleteEventSub(channel, id, attempt = 1) {
 
     if (response.status !== 204) {
         const twitchData = await response.json()
-        logMessage([`apiDeleteEventSub`, response.status, renderObj(twitchData, `twitchData`)])
+        logMessage([`apiDeleteEventSub ${channel}`, response.status, renderObj(twitchData, `twitchData`)])
         if (response.status === 401) {
             if (attempt < 3) {
-                logMessage([`-> Failed to delete EventSub for ${channel}, attempting to get new access token...`])
                 const retry = await apiRefreshToken(channel, streamer.refreshToken)
                 if (retry) {
                     attempt++
@@ -471,9 +458,9 @@ async function apiShoutOut(fromId, toId, moderatorName, moderatorId, accessToken
     if (response.status === 204) {
         logMessage([`-> Shoutout posted successfully!`])
     } else {
+        const twitchData = await response.json()
+        logMessage([`apiShoutOut`, response.status, renderObj(twitchData, `twitchData`)])
         if (attempt < 3) {
-            const twitchData = await response.json()
-            logMessage([`apiShoutOut`, response.status, renderObj(twitchData, `twitchData`)])
             if (response.status === 401) {
                 const retry = await apiRefreshToken(moderatorName, refreshToken)
                 if (retry) {
@@ -509,10 +496,12 @@ async function apiPostAnnouncement(channel, broadcasterId, moderatorId, moderato
     }
 
     const response = await fetch(endpoint, options)
-    if (response.status !== 204) {
+    if (response.status === 204) {
+        return true
+    } else {
+        const twitchData = await response.json()
+        logMessage([`apiPostAnnouncement`, response.status, renderObj(twitchData, `twitchData`)])
         if (attempt < 3) {
-            const twitchData = await response.json()
-            logMessage([`apiPostAnnouncement`, response.status, renderObj(twitchData, `twitchData`)])
             if (response.status === 401) {
                 const retry = await apiRefreshToken(moderatorName, refreshToken)
                 if (retry) {
@@ -526,7 +515,7 @@ async function apiPostAnnouncement(channel, broadcasterId, moderatorId, moderato
             logMessage([`-> Failed to post announcement after ${pluralize(attempt, `attempt`, `attempts`)}`])
             return null
         }
-    } else { return true }
+    }
 }
 
 async function apiStartPoll(channel, broadcasterId, title, arrChoices, duration, accessToken, refreshToken, attempt = 1) {
@@ -551,33 +540,28 @@ async function apiStartPoll(channel, broadcasterId, title, arrChoices, duration,
 
     const response = await fetch(endpoint, options)
     const twitchData = await response.json()
-    logMessage([
-        `apiStartPoll`,
-        response.status,
-        `data` in twitchData
-            ? twitchData.data.length
-                ? renderObj(twitchData.data[0], `twitchData.data[0]`)
-                : `twitchData.data: []`
-            : renderObj(twitchData, `twitchData`)])
 
     if (response.status === 200) {
         lemonyFresh[channel].pollId = twitchData.data[0].id
         setTimeout(() => { lemonyFresh[channel].pollId = `` }, duration * 1000)
         return true
-    } else if (response.status === 401) {
-        if (attempt < 3) {
-            const retry = await apiRefreshToken(channel, refreshToken)
-            if (retry) {
-                attempt++
-                accessToken = lemonyFresh[channel].accessToken
-                refreshToken = lemonyFresh[channel].refreshToken
-                return apiStartPoll(channel, broadcasterId, title, arrChoices, duration, accessToken, refreshToken, attempt)
+    } else {
+        logMessage([`apiStartPoll`, response.status, renderObj(twitchData, `twitchData`)])
+        if (response.status === 401) {
+            if (attempt < 3) {
+                const retry = await apiRefreshToken(channel, refreshToken)
+                if (retry) {
+                    attempt++
+                    accessToken = lemonyFresh[channel].accessToken
+                    refreshToken = lemonyFresh[channel].refreshToken
+                    return apiStartPoll(channel, broadcasterId, title, arrChoices, duration, accessToken, refreshToken, attempt)
+                }
+            } else {
+                logMessage([`-> Failed to start poll after ${pluralize(attempt, `attempt`, `attempts`)}`])
+                return null
             }
-        } else {
-            logMessage([`-> Failed to start poll after ${pluralize(attempt, `attempt`, `attempts`)}`])
-            return null
-        }
-    } else { return null }
+        } else { return null }
+    }
 }
 
 async function apiEndPoll(channel, broadcasterId, pollId, status, accessToken, refreshToken, attempt = 1) {
@@ -647,34 +631,28 @@ async function apiBanUsers(broadcasterId, moderatorName, moderatorId, arrUsers, 
 
         const response = await fetch(endpoint, options)
         const twitchData = await response.json()
-        logMessage([`apiBanUsers`,
-            response.status,
-            `data` in twitchData
-                ? twitchData.data.length
-                    ? renderObj(twitchData.data[0],
-                        `twitchData.data[0]`)
-                    : `twitchData.data: []`
-                : renderObj(twitchData, `twitchData`)
-        ])
 
         if (response.status === 200) {
             banned.push(userToBan)
         } else if (response.status === 400 && twitchData.message === `The user specified in the user_id field is already banned.`) {
             alreadyBanned.push(userToBan)
-        } else if (response.status === 401) {
-            if (attempt < 3) {
-                const retry = await apiRefreshToken(moderatorName, refreshToken)
-                if (retry) {
-                    attempt++
-                    accessToken = moderatorName in mods ? mods[moderatorName].accessToken : lemonyFresh[moderatorName].accessToken
-                    refreshToken = moderatorName in mods ? mods[moderatorName].refreshToken : lemonyFresh[moderatorName].refreshToken
-                    return apiBanUsers(broadcasterId, moderatorName, moderatorId, arrUsers, reason, accessToken, refreshToken, attempt)
+        } else {
+            logMessage([`apiBanUsers`, response.status, renderObj(twitchData, `twitchData`)])
+            if (response.status === 401) {
+                if (attempt < 3) {
+                    const retry = await apiRefreshToken(moderatorName, refreshToken)
+                    if (retry) {
+                        attempt++
+                        accessToken = moderatorName in mods ? mods[moderatorName].accessToken : lemonyFresh[moderatorName].accessToken
+                        refreshToken = moderatorName in mods ? mods[moderatorName].refreshToken : lemonyFresh[moderatorName].refreshToken
+                        return apiBanUsers(broadcasterId, moderatorName, moderatorId, arrUsers, reason, accessToken, refreshToken, attempt)
+                    }
+                } else {
+                    logMessage([`-> Failed to ban user after ${pluralize(attempt, `attempt`, `attempts`)}`])
+                    return null
                 }
-            } else {
-                logMessage([`-> Failed to ban user after ${pluralize(attempt, `attempt`, `attempts`)}`])
-                return null
-            }
-        } else { return null }
+            } else { return null }
+        }
     }
 
     return { banned: banned, alreadyBanned: alreadyBanned }
