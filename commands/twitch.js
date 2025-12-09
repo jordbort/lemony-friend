@@ -5,7 +5,7 @@ const REDIRECT_URI = process.env.REDIRECT_URI
 
 const { settings } = require(`../config`)
 const { lemonyFresh, mods, users } = require(`../data`)
-const { openWebSocket, handleEvent, getWebSocket, removeClosedWebSockets, handleReconnect, handleMessage } = require(`../events`)
+const { openWebSocket, handleEvent, getWebSocket, removeClosedWebSockets, handleReconnect, handleMessage, closeWebSocket } = require(`../events`)
 const { getContextEmote, resetCooldownTimer, getToUser, renderObj, pluralize, logMessage, arrToList } = require(`../utils`)
 
 async function apiGetTwitchAppAccessToken() {
@@ -413,12 +413,16 @@ async function updateEventSubs(channel) {
     if (obj && `data` in obj) {
         const enabled = obj.data.filter(obj => obj.status === `enabled`).map(obj => obj.type)
         const disabled = obj.data.filter(obj => obj.status !== `enabled`)
+        // Delete disabled EventSubs
         if (disabled.length) {
             console.log(`channel:`, channel, `enabled.length:`, enabled.length, `disabled.length:`, disabled.length)
             for (const el of disabled) {
                 await apiDeleteEventSub(channel, el.id)
             }
         }
+        // In case EventSubs died?
+        if (obj.total === 0) { closeWebSocket(channel) }
+        // Rebuild EventSubs
         if (!enabled.includes(`stream.online`)) { await apiCreateEventSub(channel, `stream.online`, 1) }
         if (!enabled.includes(`stream.offline`)) { await apiCreateEventSub(channel, `stream.offline`, 1) }
         for (const scope of arrScope) {
