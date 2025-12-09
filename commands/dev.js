@@ -126,15 +126,15 @@ module.exports = {
         if (args.length) {
             if (args[0] === `all`) {
                 for (const chatroom of bot.channels) {
-                    if (chatroom.substring(1) in lemonyFresh) { updateEventSubs(chatroom.substring(1)) }
+                    if (chatroom.substring(1) in lemonyFresh) { updateEventSubs(chatroom.substring(1), true) }
                 }
             } else {
                 for (const arg of args) {
                     const streamer = getToUser(arg)
-                    if (streamer in lemonyFresh) { updateEventSubs(streamer) }
+                    if (streamer in lemonyFresh) { updateEventSubs(streamer, true) }
                 }
             }
-        } else { updateEventSubs(channel) }
+        } else { updateEventSubs(channel, true) }
     },
     'init': (props) => {
         const { bot, chatroom, args, channel } = props

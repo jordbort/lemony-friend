@@ -389,7 +389,7 @@ async function apiDeleteEventSub(channel, id, attempt = 1) {
     }
 }
 
-async function updateEventSubs(channel) {
+async function updateEventSubs(channel, maintenance = false) {
     await logMessage([`> updateEventSubs(channel: '${channel}')`])
     const arrScope = await apiGetTokenScope(channel)
     if (!arrScope) {
@@ -407,8 +407,8 @@ async function updateEventSubs(channel) {
                 await apiDeleteEventSub(channel, el.id)
             }
         }
-        // In case EventSubs died?
-        if (obj.total === 0) { closeWebSocket(channel) }
+        // In case EventSubs died
+        if (maintenance && obj.total === 0) { closeWebSocket(channel) }
         // Rebuild EventSubs
         if (!enabled.includes(`stream.online`)) { await apiCreateEventSub(channel, `stream.online`, 1) }
         if (!enabled.includes(`stream.offline`)) { await apiCreateEventSub(channel, `stream.offline`, 1) }
