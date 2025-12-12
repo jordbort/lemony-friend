@@ -760,8 +760,8 @@ module.exports = {
             : `Token has all available features! Thanks for using ${BOT_USERNAME}!`
         bot.say(chatroom, reply)
     },
-    async deleteEventSubs(channel) {
-        await logMessage([`> deleteEventSubs(channel: '${channel}')`])
+    async deleteAllEventSubs(channel) {
+        await logMessage([`> deleteAllEventSubs(channel: '${channel}')`])
         const obj = await apiGetEventSubs(channel)
         if (obj && `data` in obj) {
             if (obj.data.length) {

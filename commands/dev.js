@@ -6,7 +6,7 @@ const { lemonyFresh, users, mods, commonNicknames, startingLemons, hangmanWins }
 const { getSubs } = require(`./help`)
 const { rollFunNumber } = require(`./funNumber`)
 const { handleJoin, handlePart } = require(`./joinPart`)
-const { deleteEventSubs, updateEventSubs, initWebSocket, apiGetEventSubs } = require(`./twitch`)
+const { deleteAllEventSubs, updateEventSubs, initWebSocket, apiGetEventSubs } = require(`./twitch`)
 const { logMessage, printMemory, pluralize, getContextEmote, getToUser } = require(`../utils`)
 const { logWebsockets, examineWebsockets, closeWebSocket, removeClosedWebSockets } = require(`../events`)
 
@@ -25,7 +25,7 @@ module.exports = {
         const { bot, chatroom, channel } = props
         for (const streamer of bot.channels) {
             if (lemonyFresh[streamer.substring(1)].webSocketSessionId) {
-                await deleteEventSubs(streamer.substring(1))
+                await deleteAllEventSubs(streamer.substring(1))
                 closeWebSocket(streamer.substring(1))
                 lemonyFresh[streamer.substring(1)].webSocketSessionId = ``
             }
@@ -96,15 +96,15 @@ module.exports = {
         if (args.length) {
             if (args[0] === `all`) {
                 for (const chatroom of bot.channels) {
-                    if (chatroom.substring(1) in lemonyFresh) { deleteEventSubs(chatroom.substring(1)) }
+                    if (chatroom.substring(1) in lemonyFresh) { deleteAllEventSubs(chatroom.substring(1)) }
                 }
             } else {
                 for (const arg of args) {
                     const streamer = getToUser(arg)
-                    if (streamer in lemonyFresh) { deleteEventSubs(streamer) }
+                    if (streamer in lemonyFresh) { deleteAllEventSubs(streamer) }
                 }
             }
-        } else { deleteEventSubs(channel) }
+        } else { deleteAllEventSubs(channel) }
     },
     'close': (props) => {
         const { bot, args, channel } = props
