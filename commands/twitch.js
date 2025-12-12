@@ -404,7 +404,7 @@ async function updateEventSubs(channel, maintenance = false) {
         if (disabled.length) {
             console.log(`channel:`, channel, `enabled.length:`, enabled.length, `disabled.length:`, disabled.length)
             for (const el of disabled) {
-                await apiDeleteEventSub(channel, el.id)
+                await apiDeleteEventSub(channel, el.transport.session_id)
             }
         }
         // Rebuild EventSubs
@@ -766,7 +766,7 @@ module.exports = {
         if (obj && `data` in obj) {
             if (obj.data.length) {
                 for (const el of obj.data) {
-                    await apiDeleteEventSub(channel, el.id)
+                    await apiDeleteEventSub(channel, el.transport.session_id)
                 }
             }
         }
