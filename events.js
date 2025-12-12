@@ -260,13 +260,13 @@ function handleChannelSubscription(bot, chatroom, channel, event) {
         obj.names.push(subscriberName)
         if (!obj.timer) {
             obj.timer = Number(setTimeout(() => {
-                bot.say(chatroom, `${arrToList(obj.gifters)} gifted ${obj.names.length === 1 ? `a ${streamer} sub` : `${streamer} subs`} to ${arrToList(obj.names)}! ${obj.names >= 5 ? hypeEmote : positiveEmote}`)
+                bot.say(chatroom, `${arrToList(obj.gifters)} gifted ${obj.names.length === 1 ? `a sub` : `subs`} to ${arrToList(obj.names)}! ${obj.names >= 5 ? hypeEmote : positiveEmote}`)
                 resetChannelBatch(`giftedSubs`, channel)
             }, 1000))
         } else {
             clearTimeout(obj.timer)
             obj.timer = Number(setTimeout(() => {
-                bot.say(chatroom, `${arrToList(obj.gifters)} gifted ${obj.names.length === 1 ? `a ${streamer} sub` : `${streamer} subs`} to ${arrToList(obj.names)}! ${obj.names >= 5 ? hypeEmote : positiveEmote}`)
+                bot.say(chatroom, `${arrToList(obj.gifters)} gifted ${obj.names.length === 1 ? `a sub` : `subs`} to ${arrToList(obj.names)}! ${obj.names >= 5 ? hypeEmote : positiveEmote}`)
                 resetChannelBatch(`giftedSubs`, channel)
             }, 1000))
         }
@@ -442,6 +442,7 @@ module.exports = {
     },
     handleMessage(channel, message) {
         if (`subscription` in message.payload) {
+            // keepAlive(channel)
             const streamer = message.payload.event.broadcaster_user_name
             const fromStreamer = message.payload.event.from_broadcaster_user_name
             const displayName = message.payload.event.user_name
@@ -477,6 +478,7 @@ module.exports = {
                     logMessage([`* SUB END: ${displayName}'s ${message.payload.event.is_gift ? `gift ` : ``}sub to ${streamer} expired`])
                     break
                 case `channel.subscription.gift`:
+                    console.log(message.payload.event, message.payload.event.total) // why isn't "total" working?
                     logMessage([`* GIFT SUB: ${displayName || `An anonymous user`} gifted ${pluralize(message.payload.event.total), `sub`, `subs`} to ${streamer}`])
                     break
                 case `channel.subscription.message`:
@@ -500,6 +502,7 @@ module.exports = {
                     logMessage([`* RECONNECT '${channel}' status: ${message.payload.session.status}, reconnect_url: ${message.payload.session.reconnect_url}`])
                     break
                 case `session_keepalive`:
+                    // keepAlive(channel)
                     break
                 case `revocation`:
                     logMessage([`* REVOKED '${channel}' status: ${message.payload.session.status}`])
