@@ -1,6 +1,5 @@
 const API_KEY = process.env.API_KEY
 
-const { settings } = require(`../config`)
 const { getContextEmote, renderObj, logMessage, pluralize } = require(`../utils`)
 
 module.exports = {

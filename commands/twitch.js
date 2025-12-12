@@ -5,7 +5,7 @@ const REDIRECT_URI = process.env.REDIRECT_URI
 
 const { settings } = require(`../config`)
 const { lemonyFresh, mods, users } = require(`../data`)
-const { openWebSocket, handleEvent, getWebSocket, removeClosedWebSockets, handleReconnect, handleMessage, closeWebSocket } = require(`../events`)
+const { openWebSocket, handleEvent, getWebSocket, removeClosedWebSockets, handleReconnect, handleMessage } = require(`../events`)
 const { getContextEmote, resetCooldownTimer, getToUser, renderObj, pluralize, logMessage, arrToList } = require(`../utils`)
 
 async function apiGetTwitchAppAccessToken() {
@@ -407,8 +407,6 @@ async function updateEventSubs(channel, maintenance = false) {
                 await apiDeleteEventSub(channel, el.id)
             }
         }
-        // In case EventSubs died
-        if (maintenance && obj.total === 0) { closeWebSocket(channel) }
         // Rebuild EventSubs
         if (!enabled.includes(`stream.online`)) { await apiCreateEventSub(channel, `stream.online`, 1) }
         if (!enabled.includes(`stream.offline`)) { await apiCreateEventSub(channel, `stream.offline`, 1) }

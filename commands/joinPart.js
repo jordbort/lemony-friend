@@ -107,7 +107,7 @@ module.exports = {
         const byeEmote = getContextEmote(`bye`, channel)
         needToPart.forEach(async streamer => {
             if (settings.sayPartMessage) { bot.say(`#${streamer}`, `Bye for now! ${byeEmote}`) }
-            await deleteEventSubs(streamer)
+            deleteEventSubs(streamer)
             bot.part(`#${streamer}`)
         })
 
