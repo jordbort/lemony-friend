@@ -391,7 +391,7 @@ function handleChannelHypeTrainBegin(bot, chatroom, channel, event) {
     )
 
     const hypeEmote = getContextEmote(`hype`, channel)
-    const reply = `A hype train just started for ${streamer}, thanks to ${arrToList(contributors)}! ${hypeEmote}`
+    const reply = `A hype train just started for ${streamer}, thanks to ${arrToList(contributors.filter((str, idx) => idx === contributors.indexOf(str)))}! ${hypeEmote}`
     bot.say(chatroom, reply)
 }
 
