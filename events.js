@@ -28,17 +28,17 @@ const webSockets = {}
 for (const channel in lemonyFresh) { webSockets[channel] = [] }
 
 function getWebSocket(channel, reconnection = false) {
-    logMessage([`> getWebSocket(channel: '${channel}', length: ${webSockets[channel]?.length})`])
-    if (webSockets[channel]) {
-        if (webSockets[channel].length === 0) {
+    logMessage([`> getWebSocket(channel: '${channel}', length: ${webSockets[channel].ws.length})`])
+    if (webSockets[channel].ws) {
+        if (webSockets[channel].ws.length === 0) {
             logMessage([`* WARNING: No WebSocket exists for '${channel}'`])
             return
-        } else if (webSockets[channel].length >= 2) {
-            if (webSockets[channel].length > 2 || !reconnection) {
-                logMessage([`* WARNING: ${webSockets[channel].length} WebSockets exist for '${channel}'`])
+        } else if (webSockets[channel].ws.length >= 2) {
+            if (webSockets[channel].ws.length > 2 || !reconnection) {
+                logMessage([`* WARNING: ${webSockets[channel].ws.length} WebSockets exist for '${channel}'`])
             }
         }
-        return webSockets[channel][webSockets[channel].length - 1]
+        return webSockets[channel].ws[webSockets[channel].ws.length - 1]
     } else { logMessage([`* Error: No WebSocket in webSockets{} for '${channel}'`]) }
 }
 
@@ -401,115 +401,14 @@ module.exports = {
     getWebSocket,
     logWebsockets(channel) {
         if (channel in webSockets) {
-            console.log(channel, webSockets[channel].length, webSockets[channel].map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`))
+            console.log(channel, webSockets[channel].ws.length, webSockets[channel].ws.map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`), webSockets[channel].timer ? webSockets[channel].timer._destroyed ? `DESTROYED` : `ACTIVE` : `INACTIVE`)
         } else { console.log(channel, `not in webSockets{}`) }
     },
     examineWebsockets(channel) {
         if (channel in webSockets) {
-            console.log(channel, webSockets[channel].length, webSockets[channel].map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`))
-            console.log(webSockets[channel])
+            console.log(channel, webSockets[channel].ws.length, webSockets[channel].ws.map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`), webSockets[channel].timer ? webSockets[channel].timer._destroyed ? `DESTROYED` : `ACTIVE` : `INACTIVE`)
+            console.log(webSockets[channel].ws)
+            console.log(webSockets[channel].timer)
         } else { console.log(channel, `not in webSockets{}`) }
-    },
-    handleStreamOffline,
-    closeWebSocket(channel) {
-        logMessage([`> closeWebSocket(channel: '${channel}')`])
-        if (!lemonyFresh[channel].webSocketSessionId) { logMessage([`* WARNING: No webSocketSessionId for '${channel}'`]) }
-        const ws = getWebSocket(channel)
-        if (ws) {
-            ws.close()
-            webSockets[channel].splice(webSockets[channel].length - 1, 1)
-            lemonyFresh[channel].webSocketSessionId = ``
-        } else {
-            console.log(`* Error: No web socket to close for '${channel}'`)
-        }
-    },
-    removeClosedWebSockets(channel, code) {
-        logMessage([`> removeClosedWebSockets(channel: '${channel}', code: ${code})`])
-        for (let i = webSockets[channel].length - 1; i >= 0; i--) {
-            if (webSockets[channel][i]._closeFrameReceived || code === 1006) {
-                if (!webSockets[channel][i]._closeFrameReceived) { console.log(`* Error: WebSocket for '${channel}' at index ${i} is not closed yet, splicing anyway`) }
-                webSockets[channel].splice(i, 1)
-            }
-        }
-    },
-    handleReconnect(channel) {
-        logMessage([`> handleReconnect(channel: '${channel}')`])
-        if (webSockets[channel].length === 2) {
-            webSockets[channel][0].close()
-        } else {
-            console.log(`* WARNING: ${pluralize(webSockets[channel].length), `web socket exists`, `web sockets exist`} instead of 2!`)
-        }
-    },
-    handleMessage(channel, message) {
-        if (`subscription` in message.payload) {
-            // keepAlive(channel)
-            const streamer = message.payload.event.broadcaster_user_name
-            const fromStreamer = message.payload.event.from_broadcaster_user_name
-            const displayName = message.payload.event.user_name
-            switch (message.payload.subscription.type) {
-                case `stream.online`:
-                    logMessage([`* ONLINE: ${streamer} started streaming`])
-                    break
-                case `stream.offline`:
-                    logMessage([`* OFFLINE: ${streamer} stopped streaming`])
-                    break
-                case `channel.follow`:
-                    logMessage([`* NEW FOLLOWER: ${streamer} was followed by ${displayName}`])
-                    break
-                case `channel.vip.add`:
-                    logMessage([`* ADD VIP: ${streamer} added ${displayName} as a VIP`])
-                    break
-                case `channel.vip.remove`:
-                    logMessage([`* REMOVE VIP: ${streamer} removed ${displayName} as a VIP`])
-                    break
-                case `channel.moderator.add`:
-                    logMessage([`* ADD MODERATOR: ${streamer} added ${displayName} as a mod`])
-                    break
-                case `channel.moderator.remove`:
-                    logMessage([`* REMOVE MODERATOR: ${streamer} removed ${displayName} as a mod`])
-                    break
-                case `channel.shoutout.receive`:
-                    logMessage([`* SHOUTOUT: ${streamer} received a shoutout from ${fromStreamer}`])
-                    break
-                case `channel.subscribe`:
-                    logMessage([`* SUB: ${displayName} just subscribed to ${streamer}`])
-                    break
-                case `channel.subscription.end`:
-                    logMessage([`* SUB END: ${displayName}'s ${message.payload.event.is_gift ? `gift ` : ``}sub to ${streamer} expired`])
-                    break
-                case `channel.subscription.gift`:
-                    console.log(message.payload.event, message.payload.event.total) // why isn't "total" working?
-                    logMessage([`* GIFT SUB: ${displayName || `An anonymous user`} gifted ${pluralize(message.payload.event.total), `sub`, `subs`} to ${streamer}`])
-                    break
-                case `channel.subscription.message`:
-                    logMessage([`* SUB MESSAGE: ${displayName} resubscribed to ${streamer}`])
-                    break
-                case `channel.cheer`:
-                    logMessage([`* BITS: ${displayName || `An anonymous user`} cheered ${pluralize(message.payload.event.bits), `bit`, `bits`} to ${streamer}`])
-                    break
-                case `channel.hype_train.begin`:
-                    logMessage([`* HYPE TRAIN: A hype train started for ${streamer}`])
-                    break
-                default:
-                    logMessage([renderObj(message, `WebSocket message for ${channel}`)])
-            }
-        } else {
-            switch (message.metadata.message_type) {
-                case `session_welcome`:
-                    logMessage([`* WELCOME '${channel}' status: ${message.payload.session.status}`])
-                    break
-                case `session_reconnect`:
-                    logMessage([`* RECONNECT '${channel}' status: ${message.payload.session.status}, reconnect_url: ${message.payload.session.reconnect_url}`])
-                    break
-                case `session_keepalive`:
-                    // keepAlive(channel)
-                    break
-                case `revocation`:
-                    logMessage([`* REVOKED '${channel}' status: ${message.payload.session.status}`])
-                    break
-                default:
-                    logMessage([renderObj(message, `WebSocket message for ${channel}`)])
-            }
-        }
     }
 }
