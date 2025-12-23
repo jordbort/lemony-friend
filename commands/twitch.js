@@ -5,7 +5,6 @@ const REDIRECT_URI = process.env.REDIRECT_URI
 
 const { settings } = require(`../config`)
 const { lemonyFresh, mods, users } = require(`../data`)
-const { openWebSocket, handleEvent, getWebSocket, removeClosedWebSockets, handleReconnect, handleMessage } = require(`../events`)
 const { getContextEmote, resetCooldownTimer, getToUser, renderObj, pluralize, logMessage, arrToList } = require(`../utils`)
 
 async function apiGetTwitchAppAccessToken() {
@@ -656,60 +655,6 @@ async function apiBanUsers(broadcasterId, moderatorName, moderatorId, arrUsers, 
     return { banned: banned, alreadyBanned: alreadyBanned }
 }
 
-async function initWebSocket(bot, chatroom, channel, path = `wss://eventsub.wss.twitch.tv/ws`) {
-    await logMessage([`> initWebSocket(channel: '${channel}')`])
-    const arrScope = await apiGetTokenScope(channel)
-    if (!arrScope) {
-        await logMessage([`-> Unable to determine ${channel}'s token scope`])
-        return
-    }
-    openWebSocket(channel, path)
-    const ws = getWebSocket(channel, path !== `wss://eventsub.wss.twitch.tv/ws`)
-
-    ws.onopen = () => logMessage([`-> WebSocket connection established for ${channel}`])
-
-    ws.onmessage = (event) => {
-        const message = JSON.parse(event.data)
-        handleMessage(channel, message)
-
-        // If new welcome message, save session ID and create event subs, else close
-        if (message.metadata.message_type === `session_welcome`) {
-            if (lemonyFresh[channel].webSocketSessionId === message.payload.session.id) {
-                // close if 2 web sockets
-                handleReconnect(channel)
-            } else {
-                lemonyFresh[channel].webSocketSessionId = message.payload.session.id
-                // EventSubs don't quite seem to expire immediately?
-                setTimeout(() => updateEventSubs(channel), 500)
-            }
-        }
-
-        // Handle events
-        if (`subscription` in message.payload) {
-            handleEvent(bot, chatroom, channel, message.payload.subscription.type, message.payload.event)
-        }
-
-        // Handle reconnection
-        if (message.metadata.message_type === `session_reconnect`) {
-            initWebSocket(bot, chatroom, channel, message.payload.session.reconnect_url)
-        }
-    }
-
-    ws.onclose = (event) => {
-        const { code, reason, wasClean } = event
-        removeClosedWebSockets(channel, code)
-        wasClean
-            ? logMessage([`-> WebSocket connection for ${channel} closed with code ${code}: '${reason}'`])
-            : logMessage([`-> WebSocket connection for ${channel} died unexpectedly with code ${code}${reason ? `: '${reason}'` : ``}`])
-
-        if (![1000, 4003, 4004].includes(code)) { // Not on purpose, unused, or from reconnection
-            initWebSocket(bot, chatroom, channel)
-        }
-    }
-
-    ws.onerror = (error) => logMessage([`WebSocket error from ${channel}:`, error])
-}
-
 module.exports = {
     apiGetTwitchAppAccessToken,
     apiGetTwitchUser,
@@ -718,7 +663,6 @@ module.exports = {
     apiGetTokenScope,
     apiGetEventSubs,
     updateEventSubs,
-    initWebSocket,
     async checkToken(props) {
         const { bot, chatroom, channel } = props
         const arrScope = await apiGetTokenScope(channel)

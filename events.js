@@ -5,6 +5,7 @@ const WebSocket = require(`ws`)
 
 const { settings } = require(`./config`)
 const { users, mods, lemonyFresh } = require(`./data`)
+const { apiGetTokenScope, updateEventSubs, apiGetEventSubs } = require(`./commands/twitch`)
 const { logMessage, getContextEmote, updateMod, pluralize, arrToList, renderObj } = require(`./utils`)
 
 const batch = {}
@@ -25,7 +26,62 @@ function resetChannelBatch(type, channel) {
 }
 
 const webSockets = {}
-for (const channel in lemonyFresh) { webSockets[channel] = [] }
+
+async function initWebSocket(bot, chatroom, channel, path = `wss://eventsub.wss.twitch.tv/ws`) {
+    await logMessage([`> initWebSocket(channel: '${channel}')`])
+    const arrScope = await apiGetTokenScope(channel)
+    if (!arrScope) {
+        await logMessage([`-> Unable to determine ${channel}'s token scope`])
+        return
+    }
+    webSockets[channel].ws.push(new WebSocket(path))
+    const ws = getWebSocket(channel, path !== `wss://eventsub.wss.twitch.tv/ws`)
+
+    ws.onopen = () => logMessage([`-> WebSocket connection established for ${channel}`])
+
+    ws.onmessage = (event) => {
+        const message = JSON.parse(event.data)
+        handleMessage(channel, message)
+
+        // If new welcome message, save session ID and create event subs, else close
+        if (message.metadata.message_type === `session_welcome`) {
+            if (lemonyFresh[channel].webSocketSessionId === message.payload.session.id) {
+                // close if 2 web sockets
+                handleReconnect(channel)
+            } else {
+                lemonyFresh[channel].webSocketSessionId = message.payload.session.id
+                // EventSubs don't quite seem to expire immediately?
+                // setTimeout(() =>
+                updateEventSubs(channel)
+                // , 500)
+            }
+        }
+
+        // Handle events
+        if (`subscription` in message.payload) {
+            handleEvent(bot, chatroom, channel, message.payload.subscription.type, message.payload.event)
+        }
+
+        // Handle reconnection
+        if (message.metadata.message_type === `session_reconnect`) {
+            initWebSocket(bot, chatroom, channel, message.payload.session.reconnect_url)
+        }
+    }
+
+    ws.onclose = (event) => {
+        const { code, reason, wasClean } = event
+        removeClosedWebSockets(channel, code)
+        wasClean
+            ? logMessage([`-> WebSocket connection for ${channel} closed with code ${code}: '${reason}'`])
+            : logMessage([`-> WebSocket connection for ${channel} died unexpectedly with code ${code}${reason ? `: '${reason}'` : ``}`])
+
+        if (![1000, 4003, 4004].includes(code)) { // Not on purpose, unused, or from reconnection
+            initWebSocket(bot, chatroom, channel)
+        }
+    }
+
+    ws.onerror = (error) => logMessage([renderObj(error, `-> WebSocket error from ${channel}:`)])
+}
 
 function getWebSocket(channel, reconnection = false) {
     logMessage([`> getWebSocket(channel: '${channel}', length: ${webSockets[channel].ws.length})`])
@@ -42,9 +98,123 @@ function getWebSocket(channel, reconnection = false) {
     } else { logMessage([`* Error: No WebSocket in webSockets{} for '${channel}'`]) }
 }
 
-function openWebSocket(channel, path) {
-    logMessage([`> openWebSocket(channel: '${channel}', path: '${path}')`])
-    webSockets[channel].push(new WebSocket(path))
+function closeWebSocket(channel) {
+    logMessage([`> closeWebSocket(channel: '${channel}')`])
+    clearTimeout(webSockets[channel].timer)
+    webSockets[channel].timer = 0
+    removeClosedWebSockets(channel, `test`)
+    if (!lemonyFresh[channel].webSocketSessionId) { logMessage([`* WARNING: No webSocketSessionId for '${channel}'`]) }
+    const ws = getWebSocket(channel)
+    if (ws) {
+        ws.close()
+        webSockets[channel].ws.splice(webSockets[channel].ws.length - 1, 1)
+        lemonyFresh[channel].webSocketSessionId = ``
+    } else {
+        console.log(`* Error: No web socket to close for '${channel}', timer was stopped anyway`)
+    }
+}
+
+function keepAlive(channel) {
+    if (webSockets[channel].timer._destroyed) {
+        logMessage([`Error: Timer was already destroyed for ${channel}`])
+    }
+    clearTimeout(webSockets[channel].timer)
+    webSockets[channel].timer = setTimeout(() => {
+        logMessage([`* KEEPALIVE message not received for ${channel}, breaking connection...`])
+        closeWebSocket(channel)
+    }, 35000)
+}
+
+function removeClosedWebSockets(channel, code) {
+    logMessage([`> removeClosedWebSockets(channel: '${channel}', code: ${code})`])
+    for (let i = webSockets[channel].ws.length - 1; i >= 0; i--) {
+        if (webSockets[channel].ws[i]._closeFrameReceived || code === 1006) {
+            if (!webSockets[channel].ws[i]._closeFrameReceived) { console.log(`* Error: WebSocket for '${channel}' at index ${i} is not closed yet, splicing anyway`) }
+            webSockets[channel].ws.splice(i, 1)
+        }
+    }
+}
+
+function handleReconnect(channel) {
+    logMessage([`> handleReconnect(channel: '${channel}')`])
+    if (webSockets[channel].ws.length === 2) {
+        webSockets[channel].ws[0].close()
+    } else {
+        console.log(`* WARNING: ${pluralize(webSockets[channel].ws.length), `web socket exists`, `web sockets exist`} instead of 2!`)
+    }
+}
+
+function handleMessage(channel, message) {
+    if (`subscription` in message.payload) {
+        keepAlive(channel)
+        const streamer = message.payload.event.broadcaster_user_name
+        const fromStreamer = message.payload.event.from_broadcaster_user_name
+        const displayName = message.payload.event.user_name
+        switch (message.payload.subscription.type) {
+            case `stream.online`:
+                logMessage([`* ONLINE: ${streamer} started streaming`])
+                break
+            case `stream.offline`:
+                logMessage([`* OFFLINE: ${streamer} stopped streaming`])
+                break
+            case `channel.follow`:
+                logMessage([`* NEW FOLLOWER: ${streamer} was followed by ${displayName}`])
+                break
+            case `channel.vip.add`:
+                logMessage([`* ADD VIP: ${streamer} added ${displayName} as a VIP`])
+                break
+            case `channel.vip.remove`:
+                logMessage([`* REMOVE VIP: ${streamer} removed ${displayName} as a VIP`])
+                break
+            case `channel.moderator.add`:
+                logMessage([`* ADD MODERATOR: ${streamer} added ${displayName} as a mod`])
+                break
+            case `channel.moderator.remove`:
+                logMessage([`* REMOVE MODERATOR: ${streamer} removed ${displayName} as a mod`])
+                break
+            case `channel.shoutout.receive`:
+                logMessage([`* SHOUTOUT: ${streamer} received a shoutout from ${fromStreamer}`])
+                break
+            case `channel.subscribe`:
+                logMessage([`* SUB: ${displayName} just subscribed to ${streamer}`])
+                break
+            case `channel.subscription.end`:
+                logMessage([`* SUB END: ${displayName}'s ${message.payload.event.is_gift ? `gift ` : ``}sub to ${streamer} expired`])
+                break
+            case `channel.subscription.gift`:
+                logMessage([`* GIFT SUB: ${displayName || `An anonymous user`} gifted ${pluralize(message.payload.event.total, `sub`, `subs`)} to ${streamer}`])
+                break
+            case `channel.subscription.message`:
+                logMessage([`* SUB MESSAGE: ${displayName} resubscribed to ${streamer}`])
+                break
+            case `channel.cheer`:
+                logMessage([`* BITS: ${displayName || `An anonymous user`} cheered ${pluralize(message.payload.event.bits), `bit`, `bits`} to ${streamer}`])
+                break
+            case `channel.hype_train.begin`:
+                logMessage([`* HYPE TRAIN: A hype train started for ${streamer} thanks to ${arrToList(message.payload.event.top_contributions.map(obj => obj.user_login))}`])
+                break
+            default:
+                logMessage([renderObj(message, `WebSocket message for ${channel}`)])
+        }
+    } else {
+        switch (message.metadata.message_type) {
+            case `session_welcome`:
+                logMessage([`* WELCOME '${channel}' status: ${message.payload.session.status}`])
+                keepAlive(channel)
+                break
+            case `session_reconnect`:
+                logMessage([`* RECONNECT '${channel}' status: ${message.payload.session.status}, reconnect_url: ${message.payload.session.reconnect_url}`])
+                break
+            case `session_keepalive`:
+                keepAlive(channel)
+                break
+            case `revocation`:
+                logMessage([`* REVOKED '${channel}' status: ${message.payload.session.status}`])
+                break
+            default:
+                logMessage([renderObj(message, `WebSocket message for ${channel}`)])
+        }
+    }
 }
 
 function handleEvent(bot, chatroom, channel, type, event) {
@@ -387,9 +557,21 @@ function handleChannelHypeTrainBegin(bot, chatroom, channel, event) {
 }
 
 module.exports = {
-    openWebSocket,
     handleEvent,
     getWebSocket,
+    closeWebSocket,
+    initWebSocket,
+    registerWebSocket(channel) {
+        logMessage([`> registerWebSocket(channel: '${channel}')`])
+        if (channel in webSockets) {
+            logMessage([`-> '${channel}' is already registered`])
+            return
+        }
+        webSockets[channel] = {
+            ws: [],
+            timer: 0
+        }
+    },
     logWebsockets(channel) {
         if (channel in webSockets) {
             console.log(channel, webSockets[channel].ws.length, webSockets[channel].ws.map(obj => obj?._closeFrameReceived === undefined ? `undefined?` : obj._closeFrameReceived ? `closed` : `open`), webSockets[channel].timer ? webSockets[channel].timer._destroyed ? `DESTROYED` : `ACTIVE` : `INACTIVE`)

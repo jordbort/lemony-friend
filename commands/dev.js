@@ -6,9 +6,9 @@ const { lemonyFresh, users, mods, commonNicknames, startingLemons, hangmanWins }
 const { getSubs } = require(`./help`)
 const { rollFunNumber } = require(`./funNumber`)
 const { handleJoin, handlePart } = require(`./joinPart`)
-const { deleteAllEventSubs, updateEventSubs, initWebSocket, apiGetEventSubs } = require(`./twitch`)
+const { deleteAllEventSubs, updateEventSubs, apiGetEventSubs } = require(`./twitch`)
 const { logMessage, printMemory, pluralize, getContextEmote, getToUser } = require(`../utils`)
-const { logWebsockets, examineWebsockets, closeWebSocket, removeClosedWebSockets } = require(`../events`)
+const { initWebSocket, logWebsockets, examineWebsockets, closeWebSocket } = require(`../events`)
 
 function checkPoints(props) {
     const { bot, chatroom, channel } = props

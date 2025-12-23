@@ -12,13 +12,13 @@ const botInteraction = require(`./patterns/botInteraction`)
 const { settings } = require(`./config`)
 const { lemonyFresh, users, lemCmds } = require(`./data`)
 
-const { closeWebSocket } = require(`./events`)
 const { useLemCmd } = require(`./commands/lemCmds`)
 const { streakListener } = require(`./commands/streaks`)
 const { rollFunNumber } = require(`./commands/funNumber`)
 const { sayJoinMessage } = require(`./commands/joinPart`)
 const { checkWord, checkLetter } = require(`./patterns/hangman`)
-const { apiGetTwitchChannel, initWebSocket, updateEventSubs } = require(`./commands/twitch`)
+const { apiGetTwitchChannel, updateEventSubs } = require(`./commands/twitch`)
+const { registerWebSocket, initWebSocket, closeWebSocket } = require(`./events`)
 const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
 const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, logMessage, acknowledgeGigantifiedEmote, appendLogs } = require(`./utils`)
@@ -144,6 +144,7 @@ module.exports = {
             // Say join message
             if (settings.sayJoinMessage) { sayJoinMessage(this, chatroom) }
             // Check to create or update WebSocket session
+            registerWebSocket(channel)
             lemonyFresh[channel].webSocketSessionId
                 ? updateEventSubs(channel)
                 : initWebSocket(this, chatroom, channel)
