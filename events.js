@@ -316,26 +316,17 @@ function handleChannelGiftSub(bot, chatroom, channel, event) {
             : event.user_name
 
     obj.total += event.total
-    obj.gifters.push(gifter)
+    if (!obj.gifters.includes(gifter)) { obj.gifters.push(gifter) }
     const positiveEmote = getContextEmote(`positive`, channel)
     const hypeEmote = getContextEmote(`hype`, channel)
 
-    if (!obj.timer) {
-        obj.timer = Number(setTimeout(() => {
-            if (obj.total !== obj.names.length) { console.log(`TOTAL NAMES CHECK FAILED :(`) }
-            else { console.log(`TOTAL NAMES CHECK PASSED :)`) }
-            bot.say(chatroom, `${arrToList(obj.gifters)} gifted ${obj.names.length === 1 ? `a ${streamer} sub` : `${streamer} subs`} to ${arrToList(obj.names)}! ${obj.names >= 5 ? hypeEmote : positiveEmote}`)
-            resetChannelBatch(`giftedSubs`, channel)
-        }, 1000))
-    } else {
-        clearTimeout(obj.timer)
-        obj.timer = Number(setTimeout(() => {
-            if (obj.total !== obj.names.length) { console.log(`TOTAL NAMES CHECK FAILED :(`) }
-            else { console.log(`TOTAL NAMES CHECK PASSED :)`) }
-            bot.say(chatroom, `${arrToList(obj.gifters)} gifted ${obj.names.length === 1 ? `a ${streamer} sub` : `${streamer} subs`} to ${arrToList(obj.names)}! ${obj.names >= 5 ? hypeEmote : positiveEmote}`)
-            resetChannelBatch(`giftedSubs`, channel)
-        }, 1000))
-    }
+    clearTimeout(obj.timer)
+    obj.timer = Number(setTimeout(() => {
+        if (obj.total !== obj.names.length) { console.log(`TOTAL NAMES CHECK FAILED :(`) }
+        else { console.log(`TOTAL NAMES CHECK PASSED :)`) }
+        bot.say(chatroom, `${arrToList(obj.gifters)} gifted ${obj.names.length === 1 ? `a ${streamer} sub` : `${streamer} subs`} to ${arrToList(obj.names)}! ${obj.names >= 5 ? hypeEmote : positiveEmote}`)
+        resetChannelBatch(`giftedSubs`, channel)
+    }, 1000))
 
     logMessage([`> handleChannelGiftSub(channel: '${channel}', timer: ${obj.timer}, gifters: '${obj.gifters.join(`', '`)}'), names: '${obj.names.join(`', '`)}')`])
 }
