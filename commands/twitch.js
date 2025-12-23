@@ -388,22 +388,23 @@ async function apiDeleteEventSub(channel, id, attempt = 1) {
     }
 }
 
-async function updateEventSubs(channel, maintenance = false) {
+async function updateEventSubs(channel) {
     await logMessage([`> updateEventSubs(channel: '${channel}')`])
     const arrScope = await apiGetTokenScope(channel)
     if (!arrScope) {
         await logMessage([`-> Unable to determine ${channel}'s token scope`])
         return
     }
+    const sessionId = lemonyFresh[channel].webSocketSessionId
     const obj = await apiGetEventSubs(channel)
     if (obj && `data` in obj) {
-        const enabled = obj.data.filter(obj => obj.status === `enabled`).map(obj => obj.type)
-        const disabled = obj.data.filter(obj => obj.status !== `enabled`)
+        const enabled = obj.data.filter(el => el.status === `enabled` && el.transport.session_id === sessionId).map(el => el.type)
+        const disabled = obj.data.filter(el => el.status !== `enabled` || el.transport.session_id !== sessionId)
         // Delete disabled EventSubs
         if (disabled.length) {
             console.log(`channel:`, channel, `enabled.length:`, enabled.length, `disabled.length:`, disabled.length)
             for (const el of disabled) {
-                await apiDeleteEventSub(channel, el.id)
+                await apiDeleteEventSub(channel, el.id, el.status)
             }
         }
         // Rebuild EventSubs
