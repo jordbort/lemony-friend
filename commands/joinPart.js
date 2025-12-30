@@ -86,9 +86,10 @@ module.exports = {
             if (!twitchUser.id) {
                 bot.say(chatroom, `Error: User "${channel}" not found! :O`)
             } else {
+                const username = twitchUser.login
                 successfullyJoined.push(channel)
-                lemonyFresh[channel] = { ...lemonyFresh[channel], id: Number(twitchUser.id) }
-                bot.join(channel)
+                lemonyFresh[username] = { id: Number(twitchUser.id), ...lemonyFresh[username] }
+                bot.join(username)
             }
         }
 
