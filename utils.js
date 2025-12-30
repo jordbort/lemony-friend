@@ -39,22 +39,16 @@ function getContextEmote(type, channel) {
         if (type === `bye`) { emotes.push(`WhitneyVibe`) }
     }
 
-    for (const emote of lemonyFresh[channel].contextEmotes[baseType]) {
-        if (!lemonyFresh[channel].followEmotes.includes(emote)
-            && !lemonyFresh[channel].subEmotes.includes(emote)
-            && !lemonyFresh[channel].bttvEmotes.includes(emote)
-            && !settings.globalEmotes.twitch.includes(emote)
-            && !settings.globalEmotes.bttv.includes(emote)) {
-            logMessage([`Error: Emote '${emote}' doesn't exist for '${channel}', deleting...`])
-            lemonyFresh[channel].contextEmotes[baseType].splice(lemonyFresh[channel].contextEmotes[baseType].indexOf(emote), 1)
-            continue
-        }
-        if (lemonyFresh[channel].followEmotes.includes(emote)
-            || (lemonyFresh[channel].subEmotes.includes(emote) && users[BOT_USERNAME]?.channels[channel]?.sub)
-            || lemonyFresh[channel].bttvEmotes.includes(emote)
-            || settings.globalEmotes.twitch.includes(emote)
-            || settings.globalEmotes.bttv.includes(emote)) {
-            emotes.push(emote)
+    for (const member in lemonyFresh) {
+        for (const emote of lemonyFresh[member].contextEmotes[baseType]) {
+            if ((lemonyFresh[member].followEmotes.includes(emote) && member === channel)
+                || (lemonyFresh[member].followEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
+                || (lemonyFresh[member].subEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
+                || (lemonyFresh[member].bttvEmotes.includes(emote) && member === channel)
+                || settings.globalEmotes.twitch.includes(emote)
+                || settings.globalEmotes.bttv.includes(emote)) {
+                emotes.push(emote)
+            }
         }
     }
     // logMessage([`> getContextEmote(type: '${type}', channel: '${channel}', emotes: '${emotes.join(`', '`)}')`])
