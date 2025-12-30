@@ -13,11 +13,12 @@ const { settings } = require(`./config`)
 const { lemonyFresh, users, lemCmds } = require(`./data`)
 
 const { useLemCmd } = require(`./commands/lemCmds`)
+const { getBttvEmotes } = require(`./commands/external`)
 const { streakListener } = require(`./commands/streaks`)
 const { rollFunNumber } = require(`./commands/funNumber`)
 const { sayJoinMessage } = require(`./commands/joinPart`)
 const { checkWord, checkLetter } = require(`./patterns/hangman`)
-const { apiGetTwitchChannel, updateEventSubs } = require(`./commands/twitch`)
+const { apiGetTwitchChannel, updateEventSubs, getEmotes } = require(`./commands/twitch`)
 const { registerWebSocket, initWebSocket, closeWebSocket } = require(`./events`)
 const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
@@ -140,9 +141,14 @@ module.exports = {
         const channel = chatroom.substring(1)
 
         if (self) {
+            // Setup channel data
             initChannel(channel)
+            getEmotes(channel)
+            getBttvEmotes(channel)
+
             // Say join message
             if (settings.sayJoinMessage) { sayJoinMessage(this, chatroom) }
+
             // Check to create or update WebSocket session
             registerWebSocket(channel)
             lemonyFresh[channel].webSocketSessionId

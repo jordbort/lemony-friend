@@ -425,19 +425,18 @@ function awardLemonToRecentChatters(props) {
 
 function useTwoEmotes(props) {
     const { bot, chatroom, channel } = props
-    logMessage([`> useTwoEmotes(channel: '${channel}', emotes: ${lemonyFresh[channel].emotes.length})`])
+    logMessage([`> useTwoEmotes(channel: '${channel}', followEmotes: ${lemonyFresh[channel].followEmotes.length}, subEmotes: ${lemonyFresh[channel].subEmotes.length})`])
 
-    if (lemonyFresh[channel].emotes.length === 0) {
-        logMessage([`-> No known emotes in channel '${channel}'`])
+    const emotes = [...lemonyFresh[channel].followEmotes]
+    if (users[BOT_USERNAME].channels[channel].sub) {
+        emotes.push(...lemonyFresh[channel].subEmotes)
+    }
+
+    if (!emotes.length) {
+        logMessage([`-> No emotes available to use in channel '${channel}'`])
         return
     }
 
-    if (!users[BOT_USERNAME].channels[channel].sub) {
-        logMessage([`-> ${BOT_USERNAME} is not subscribed to ${channel}, can't use emotes`])
-        return
-    }
-
-    const emotes = lemonyFresh[channel].emotes
     const emoteOne = emotes[Math.floor(Math.random() * emotes.length)]
     const emoteTwo = emotes[Math.floor(Math.random() * emotes.length)]
     bot.say(chatroom, `${emoteOne} ${emoteTwo}`)

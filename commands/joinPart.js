@@ -49,7 +49,6 @@ module.exports = {
                             ? positiveEmote
                             : hypeEmote}`,
                 `Let's play Hangman! ${positiveEmote}`,
-                `I know ${pluralize(lemonyFresh[channel].emotes.length, `emote`, `emotes`)} in ${channel}'s channel! ${neutralEmote}`,
                 `It has been ${Date.now().toLocaleString(`en-US`)} milliseconds since January 1, 1970, 12:00:00 AM UTC ${lemonEmote}`,
                 `${BOT_USERNAME} has entered the chat ${lemonEmote}`,
                 `${BOT_USERNAME in users
@@ -63,6 +62,10 @@ module.exports = {
                             ? positiveEmote
                             : hypeEmote}`
             ]
+
+            if (lemonyFresh[channel].followEmotes.length) { joinMessages.push(`I know ${pluralize(lemonyFresh[channel].followEmotes.length, `follow emote`, `follow emotes`)} in ${channel}'s channel! ${positiveEmote}`) }
+            if (lemonyFresh[channel].subEmotes.length) { joinMessages.push(`I know ${pluralize(lemonyFresh[channel].subEmotes.length, `sub emote`, `sub emotes`)} in ${channel}'s channel! ${positiveEmote}`) }
+            if (lemonyFresh[channel].bttvEmotes.length) { joinMessages.push(`I know ${pluralize(lemonyFresh[channel].bttvEmotes.length, `bttv emote`, `bttv emotes`)} in ${channel}'s channel! ${positiveEmote}`) }
 
             const joinMessage = joinMessages[Math.floor(Math.random() * joinMessages.length)]
             bot.say(chatroom, joinMessage)

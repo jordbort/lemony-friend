@@ -30,7 +30,6 @@ async function printMemory(arr) {
 
 function getContextEmote(type, channel) {
     const baseType = `${type}Emotes`
-    const bttvType = `bttv${type.substring(0, 1).toUpperCase()}${type.substring(1)}Emotes`
     const emotes = [...settings.baseEmotes[baseType]]
 
     if (channel === `jpegstripes` && !users[BOT_USERNAME]?.channels.jpegstripes?.sub) {
@@ -40,11 +39,24 @@ function getContextEmote(type, channel) {
         if (type === `bye`) { emotes.push(`WhitneyVibe`) }
     }
 
-    for (const member in lemonyFresh) {
-        if (users[BOT_USERNAME]?.channels[member]?.sub) { emotes.push(...lemonyFresh[member].contextEmotes[baseType]) }
-        if (member === channel) { emotes.push(...lemonyFresh[member].contextEmotes[bttvType]) }
+    for (const emote of lemonyFresh[channel].contextEmotes[baseType]) {
+        if (!lemonyFresh[channel].followEmotes.includes(emote)
+            && !lemonyFresh[channel].subEmotes.includes(emote)
+            && !lemonyFresh[channel].bttvEmotes.includes(emote)
+            && !settings.globalEmotes.twitch.includes(emote)
+            && !settings.globalEmotes.bttv.includes(emote)) {
+            logMessage([`Error: Emote '${emote}' doesn't exist for '${channel}', deleting...`])
+            lemonyFresh[channel].contextEmotes[baseType].splice(lemonyFresh[channel].contextEmotes[baseType].indexOf(emote), 1)
+            continue
+        }
+        if (lemonyFresh[channel].followEmotes.includes(emote)
+            || (lemonyFresh[channel].subEmotes.includes(emote) && users[BOT_USERNAME]?.channels[channel]?.sub)
+            || lemonyFresh[channel].bttvEmotes.includes(emote)
+            || settings.globalEmotes.twitch.includes(emote)
+            || settings.globalEmotes.bttv.includes(emote)) {
+            emotes.push(emote)
+        }
     }
-    if (type === `lemon` && emotes.length > 1) { emotes.shift() }
     // logMessage([`> getContextEmote(type: '${type}', channel: '${channel}', emotes: '${emotes.join(`', '`)}')`])
 
     const emote = emotes[Math.floor(Math.random() * emotes.length)] || ``
@@ -403,7 +415,8 @@ module.exports = {
         lemonyFresh[channel].refreshToken = lemonyFresh[channel]?.refreshToken || mods[channel]?.refreshToken || ``
         lemonyFresh[channel].subRaidMessage = lemonyFresh[channel]?.subRaidMessage || ``
         lemonyFresh[channel].noSubRaidMessage = lemonyFresh[channel]?.noSubRaidMessage || ``
-        lemonyFresh[channel].emotes = lemonyFresh[channel]?.emotes || []
+        lemonyFresh[channel].followEmotes = lemonyFresh[channel]?.followEmotes || []
+        lemonyFresh[channel].subEmotes = lemonyFresh[channel]?.subEmotes || []
         lemonyFresh[channel].bttvEmotes = lemonyFresh[channel]?.bttvEmotes || []
         lemonyFresh[channel].contextEmotes = {
             lemonEmotes: [],
@@ -415,15 +428,6 @@ module.exports = {
             greetingEmotes: [],
             byeEmotes: [],
             dumbEmotes: [],
-            bttvLemonEmotes: [],
-            bttvNeutralEmotes: [],
-            bttvHypeEmotes: [],
-            bttvPositiveEmotes: [],
-            bttvUpsetEmotes: [],
-            bttvNegativeEmotes: [],
-            bttvGreetingEmotes: [],
-            bttvByeEmotes: [],
-            bttvDumbEmotes: [],
             ...lemonyFresh[channel].contextEmotes
         }
         lemonyFresh[channel].funnyCommands = lemonyFresh[channel]?.funnyCommands || []

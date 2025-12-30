@@ -656,6 +656,38 @@ async function apiBanUsers(broadcasterId, moderatorName, moderatorId, arrUsers, 
     return { banned: banned, alreadyBanned: alreadyBanned }
 }
 
+async function apiGetEmotes(broadcasterId, attempt = 1) {
+    await logMessage([`> apiGetEmotes(broadcasterId: ${broadcasterId})`])
+    const endpoint = `https://api.twitch.tv/helix/chat/emotes?broadcaster_id=${broadcasterId}`;
+    const options = {
+        headers: {
+            authorization: `Bearer ${settings.botAccessToken}`,
+            'Client-Id': CLIENT_ID
+        }
+    }
+
+    const response = await fetch(endpoint, options)
+    const twitchData = await response.json()
+
+    if (response.status === 200) {
+        return twitchData.data
+    } else {
+        await logMessage([`apiGetEmotes`, response.status, renderObj(twitchData, `twitchData`)])
+        if (response.status === 401) {
+            if (attempt < 3) {
+                const retry = await apiGetTwitchAppAccessToken()
+                if (retry) {
+                    attempt++
+                    return apiGetEmotes(username, attempt)
+                }
+            } else {
+                await logMessage([`-> Failed to get channel emotes after ${pluralize(attempt, `attempt`, `attempts`)}`])
+                return null
+            }
+        } else { return null }
+    }
+}
+
 module.exports = {
     apiGetTwitchAppAccessToken,
     apiGetTwitchUser,
@@ -1108,5 +1140,21 @@ module.exports = {
         } else {
             bot.say(chatroom, `Failed to autoban user! ${dumbEmote}`)
         }
+    },
+    async getEmotes(channel) {
+        await logMessage([`> getEmotes(channel: '${channel}')`])
+        const data = await apiGetEmotes(lemonyFresh[channel].id)
+        if (!data) {
+            lemonyFresh[channel].followEmotes = []
+            lemonyFresh[channel].subEmotes = []
+            await logMessage([`-> No emotes found for '${channel}'`])
+            return
+        }
+
+        const followEmotes = data.filter(el => el.emote_type === `follower`).map(el => el.name)
+        const subEmotes = data.filter(el => el.emote_type === `subscriptions` && el.tier === `1000`).map(el => el.name)
+        lemonyFresh[channel].followEmotes = [...followEmotes]
+        lemonyFresh[channel].subEmotes = [...subEmotes]
+        await logMessage([`-> ${pluralize(lemonyFresh[channel].followEmotes.length, `follower emote`, `follower emotes`)} and ${pluralize(lemonyFresh[channel].subEmotes.length, `sub emote`, `sub emotes`)} for '${channel}'`])
     }
 }

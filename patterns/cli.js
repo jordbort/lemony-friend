@@ -223,15 +223,6 @@ function updateContextEmotes(bot, chatroom, obj, message, name, args) {
         [/^greeting(Emotes)?$|^greet$/i]: { name: `greetingEmotes`, func: updateArr },
         [/^bye(Emotes)?$/i]: { name: `byeEmotes`, func: updateArr },
         [/^dumb(Emotes)?$|^dumb?$/i]: { name: `dumbEmotes`, func: updateArr },
-        [/^bttvLemon(Emotes)?$|^bttvLem$/i]: { name: `bttvLemonEmotes`, func: updateArr },
-        [/^bttvNeutral(Emotes)?$|^bttvNeu$/i]: { name: `bttvNeutralEmotes`, func: updateArr },
-        [/^bttvHype(Emotes)?$/i]: { name: `bttvHypeEmotes`, func: updateArr },
-        [/^bttvPositive(Emotes)?$|^bttvPos$/i]: { name: `bttvPositiveEmotes`, func: updateArr },
-        [/^bttvUpset(Emotes)?$|^bttvUp$/i]: { name: `bttvUpsetEmotes`, func: updateArr },
-        [/^bttvNegative(Emotes)?$|^bttvNeg$/i]: { name: `bttvNegativeEmotes`, func: updateArr },
-        [/^bttvGreeting(Emotes)?$|^bttvGreet$/i]: { name: `bttvGreetingEmotes`, func: updateArr },
-        [/^bttvBye(Emotes)?$/i]: { name: `bttvByeEmotes`, func: updateArr },
-        [/^bttvDumb(Emotes)?$|^bttvDumb?$/i]: { name: `bttvDumbEmotes`, func: updateArr }
     }
 
     for (const option in options) {
@@ -244,7 +235,7 @@ function updateContextEmotes(bot, chatroom, obj, message, name, args) {
         }
     }
 
-    bot.say(chatroom, `/me ${message} options: lemon (lem), neutral (neu), hype, positive (pos), upset (up), negative (neg), greeting (greet), bye, dumb (dum), bttvLemon (bttvLem), bttvNeutral (bttvNeu), bttvHype, bttvPositive (bttvPos), bttvUpset (bttvUp), bttvNegative (bttvNeg), bttvGreeting (bttvGreet), bttvBye, bttvDumb (bttvDum)`)
+    bot.say(chatroom, `/me ${message} options: lemon (lem), neutral (neu), hype, positive (pos), upset (up), negative (neg), greeting (greet), bye, dumb (dum)`)
 }
 
 function deleteUser(bot, chatroom, obj, message, name, args) {
@@ -267,7 +258,8 @@ function updateChannelDev(props, args) {
     const options = {
         [/^timers?$|^t$/i]: { name: `timers`, func: updateTimer },
         [/^rollFunNumber$|^rfn$/i]: { name: `rollFunNumber`, func: updateBool },
-        [/^emotes?$|^e$/i]: { name: `emotes`, func: updateArr },
+        [/^followEmotes?$|^fe$/i]: { name: `followEmotes`, func: updateArr },
+        [/^subEmotes?$|^se$/i]: { name: `subEmotes`, func: updateArr },
         [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
         [/^contextEmotes?$|^ce$/i]: { name: `contextEmotes`, func: updateContextEmotes },
         [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
@@ -298,7 +290,8 @@ function updateChannel(props, args) {
     const options = {
         [/^timers?$|^t$/i]: { name: `timers`, func: updateTimer },
         [/^rollFunNumber$|^rfn$/i]: { name: `rollFunNumber`, func: updateBool },
-        [/^emotes?$|^e$/i]: { name: `emotes`, func: updateArr },
+        [/^followEmotes?$|^fe$/i]: { name: `followEmotes`, func: updateArr },
+        [/^subEmotes?$|^se$/i]: { name: `subEmotes`, func: updateArr },
         [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
         [/^contextEmotes?$|^ce$/i]: { name: `contextEmotes`, func: updateContextEmotes },
         [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
@@ -440,7 +433,7 @@ function updateGlobalEmotes(bot, chatroom, obj, message, name, args) {
         }
     }
 
-    bot.say(chatroom, `/me Options for setting "globalEmotes": twitch (t), bttv (b)`)
+    bot.say(chatroom, `/me Options for setting "globalEmotes": ${makeList(options)}`)
 }
 
 function updateSettingsDev(props, args) {

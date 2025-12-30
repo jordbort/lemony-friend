@@ -1,6 +1,19 @@
 const API_KEY = process.env.API_KEY
 
+const { lemonyFresh } = require(`../data`)
+
 const { getContextEmote, renderObj, logMessage, pluralize } = require(`../utils`)
+
+async function apiGetBttvEmotes(broadcasterId) {
+    await logMessage([`> getBttvEmotes(broadcasterId: ${broadcasterId})`])
+    const endpoint = `https://api.betterttv.net/3/cached/users/twitch/${broadcasterId}`
+    const response = await fetch(endpoint)
+    const data = await response.json()
+    if (response.status !== 200) { await logMessage([`apiGetBttvEmotes`, response.status, renderObj(data, `data`)]) }
+    return `id` in data
+        ? data
+        : null
+}
 
 module.exports = {
     async checkSentiment(props) {
@@ -257,5 +270,18 @@ module.exports = {
             : `No definition found! :O`
 
         bot.say(chatroom, reply)
+    },
+    async getBttvEmotes(channel) {
+        await logMessage([`> getBttvEmotes(channel: '${channel}')`])
+        const data = await apiGetBttvEmotes(lemonyFresh[channel].id)
+
+        if (!data) {
+            lemonyFresh[channel].bttvEmotes = []
+            await logMessage([`-> No BTTV emotes found for '${channel}'`])
+            return
+        }
+        const bttvEmotes = [...data.channelEmotes.map(el => el.code), ...data.sharedEmotes.map(el => el.code)]
+        lemonyFresh[channel].bttvEmotes = [...bttvEmotes]
+        await logMessage([`-> ${pluralize(lemonyFresh[channel].bttvEmotes.length, `BTTV emote`, `BTTV emotes`)} for '${channel}'`])
     }
 }
