@@ -440,7 +440,7 @@ function handleChannelSubscription(bot, chatroom, channel, event) {
                 resetChannelBatch(`giftedSubs`, channel)
             }, 1000))
         }
-        logMessage([`> handleChannelSubscription(channel: '${channel}', gift: ${event.is_gift}, timer: ${obj.timer}, gifters: '${obj.gifters.join(`', '`)}'), names: '${obj.names.join(`', '`)}')`])
+        logMessage([`> handleChannelSubscription(channel: '${channel}', gift: ${event.is_gift}, timer: ${obj.timer}, gifters: '${obj.gifters.join(`', '`)}', names: '${obj.names.join(`', '`)}')`])
     } else {
         const obj = batch[channel].subs
         obj.names.push(subscriberName)
@@ -498,7 +498,7 @@ function handleChannelGiftSub(bot, chatroom, channel, event) {
         resetChannelBatch(`giftedSubs`, channel)
     }, 1000))
 
-    logMessage([`> handleChannelGiftSub(channel: '${channel}', timer: ${obj.timer}, gifters: '${obj.gifters.join(`', '`)}'), names: '${obj.names.join(`', '`)}')`])
+    logMessage([`> handleChannelGiftSub(channel: '${channel}', timer: ${obj.timer}, gifters: '${obj.gifters.join(`', '`)}', names: '${obj.names.join(`', '`)}')`])
 }
 
 function handleChannelSubscriptionMessage(bot, chatroom, channel, event) {
