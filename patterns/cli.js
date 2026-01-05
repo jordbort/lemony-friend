@@ -222,7 +222,7 @@ function updateContextEmotes(bot, chatroom, obj, message, name, args) {
         [/^negative(Emotes)?$|^neg$/i]: { name: `negativeEmotes`, func: updateArr },
         [/^greeting(Emotes)?$|^greet$/i]: { name: `greetingEmotes`, func: updateArr },
         [/^bye(Emotes)?$/i]: { name: `byeEmotes`, func: updateArr },
-        [/^dumb(Emotes)?$|^dumb?$/i]: { name: `dumbEmotes`, func: updateArr },
+        [/^dumb(Emotes)?$|^dumb?$/i]: { name: `dumbEmotes`, func: updateArr }
     }
 
     for (const option in options) {

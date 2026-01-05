@@ -356,7 +356,7 @@ async function apiGetEventSubs(channel, attempt = 1) {
 }
 
 async function apiDeleteEventSub(channel, id, attempt = 1) {
-    await logMessage([`> apiDeleteEventSub(channel: '${channel}', session_id: '${id}', attempt: ${attempt})`])
+    await logMessage([`> apiDeleteEventSub(channel: '${channel}', id: '${id}', attempt: ${attempt})`])
     const streamer = lemonyFresh[channel]
     const endpoint = `https://api.twitch.tv/helix/eventsub/subscriptions?id=${id}`
     const options = {

@@ -335,7 +335,7 @@ function handleChannelFollow(bot, chatroom, channel, event) {
 function handleChannelAddVIP(bot, chatroom, channel, event) {
     const username = event.user_login
     if (username in users && channel in users[username].channels) {
-        users[username].channels[channel].sub = true
+        users[username].channels[channel].vip = true
     }
     const streamer = channel in users
         ? users[channel].nickname || users[channel].displayName
