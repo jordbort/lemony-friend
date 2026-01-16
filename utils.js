@@ -12,47 +12,6 @@ const emotePattern = /\b([a-z][a-z0-9]{2,9}[A-Z0-9][a-zA-Z0-9]{0,19})\b/
 
 const formatMegabytes = (num) => Math.round(num / 1024 / 1024 * 100) / 100
 
-function makeLogs(arr) {
-    let logs = `🍋️ LEMONY LOGS 🍋️\n`
-
-    const dateOptions = {
-        weekday: `long`,
-        month: `long`,
-        day: `numeric`,
-        year: `numeric`,
-        timeZone: settings.timeZone
-    }
-    const timeOptions = {
-        hour: `numeric`,
-        minute: `numeric`,
-        second: `numeric`,
-        timeZone: settings.timeZone,
-        timeZoneName: `short`
-    }
-
-    logs += `Session started: ${settings.startDate.toLocaleDateString(`en-US`, dateOptions)} at ${settings.startDate.toLocaleTimeString(`en-US`, timeOptions)}\n`
-
-    logs += `\nJoined channels: ['${arr.join(`', '`)}']\n\n`
-
-    const objectsToLog = [
-        [lemonyFresh, `lemonyFresh`],
-        [mods, `mods`],
-        [users, `users`],
-        [knownTags, `knownTags`],
-        [settings, `settings`],
-        [wordBank, `wordBank`],
-        [lemCmds, `lemCmds`],
-        [commonNicknames, `commonNicknames`],
-        [startingLemons, `startingLemons`],
-        [hangmanWins, `hangmanWins`]
-    ]
-    for (const [obj, objName] of objectsToLog) {
-        logs += `${renderObj(obj, objName)}\n\n`
-    }
-
-    return logs
-}
-
 async function printMemory(arr) {
     await fs.writeFile(`./memory.json`, JSON.stringify({
         joinedChannels: arr,
@@ -71,7 +30,6 @@ async function printMemory(arr) {
 
 function getContextEmote(type, channel) {
     const baseType = `${type}Emotes`
-    const bttvType = `bttv${type.substring(0, 1).toUpperCase()}${type.substring(1)}Emotes`
     const emotes = [...settings.baseEmotes[baseType]]
 
     if (channel === `jpegstripes` && !users[BOT_USERNAME]?.channels.jpegstripes?.sub) {
@@ -82,10 +40,17 @@ function getContextEmote(type, channel) {
     }
 
     for (const member in lemonyFresh) {
-        if (users[BOT_USERNAME]?.channels[member]?.sub) { emotes.push(...lemonyFresh[member].contextEmotes[baseType]) }
-        if (member === channel) { emotes.push(...lemonyFresh[member].contextEmotes[bttvType]) }
+        for (const emote of lemonyFresh[member].contextEmotes[baseType]) {
+            if ((lemonyFresh[member].followEmotes.includes(emote) && member === channel)
+                || (lemonyFresh[member].followEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
+                || (lemonyFresh[member].subEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
+                || (lemonyFresh[member].bttvEmotes.includes(emote) && member === channel)
+                || settings.globalEmotes.twitch.includes(emote)
+                || settings.globalEmotes.bttv.includes(emote)) {
+                emotes.push(emote)
+            }
+        }
     }
-    if (type === `lemon` && emotes.length > 1) { emotes.shift() }
     // logMessage([`> getContextEmote(type: '${type}', channel: '${channel}', emotes: '${emotes.join(`', '`)}')`])
 
     const emote = emotes[Math.floor(Math.random() * emotes.length)] || ``
@@ -101,14 +66,20 @@ function pluralize(num, singularForm, pluralForm) {
 function renderObj(obj, objName, indentation = ``) {
     if (!Object.keys(obj).length) return `${objName}: {}`
     const tab = `${indentation}\t`
-    const data = [`${objName}: {`]
+    const data = [`${objName ? `${objName}: ` : ``}{`]
     const keys = `\n${Object.keys(obj).map((key) => {
         return typeof obj[key] === `string`
             ? `${tab}${key}: '${obj[key]}'`
             : typeof obj[key] === `object` && obj[key] !== null
                 ? Array.isArray(obj[key])
                     ? `${tab}${key}: [${obj[key].length
-                        ? obj[key].map((val) => { return typeof val === `string` ? `'${val}'` : val }).join(`, `)
+                        ? obj[key].map((val) => {
+                            return typeof val === `string`
+                                ? `'${val}'`
+                                : typeof val === `object` && val !== null && !Array.isArray(val)
+                                    ? renderObj(val, ``, tab)
+                                    : val
+                        }).join(`, `)
                         : ``
                     }]`
                     : `${tab}${renderObj(obj[key], key, tab)}`
@@ -168,6 +139,7 @@ module.exports = {
     renderObj,
     logMessage,
     async handleUncaughtException(bot, err, location) {
+        for (const channel in lemonyFresh) { lemonyFresh[channel].webSocketSessionId = `` }
         await printMemory(bot.channels)
         await logMessage([`> handleUncaughtException(err.message: '${err.message}', location: '${location}')`])
 
@@ -176,17 +148,11 @@ module.exports = {
                 : users[BOT_USERNAME]?.channels.e1ectroma?.sub ? `e1ectr4Heat`
                     : users[BOT_USERNAME]?.channels.domonintendo1?.sub ? `domoni6Sneeze`
                         : `>(`
+
         for (const chatroom of bot.channels) {
             bot.say(chatroom, `Oops, I just crashed! ${emote} ${err.message} ${location}`)
         }
-
-        // await logMessage([makeLogs(bot.channels)])
         await logMessage([err.stack])
-    },
-    async dumpMemory(props) {
-        const { bot, channel, username } = props
-        await logMessage([`> dumpMemory(channel: ${channel}, username: ${username})`, `\n`])
-        await logMessage([makeLogs(bot.channels)])
     },
     coinFlip() { return Math.floor(Math.random() * 2) },
     superscript(str) {
@@ -342,10 +308,10 @@ module.exports = {
             ? str.replace(/^[@#]/g, ``).toLowerCase()
             : null
     },
-    arrToList(arr) {
+    arrToList(arr, conjunction = `and`) {
         return arr
             .map((element, idx) => idx !== 0 && idx + 1 === arr.length
-                ? `and ${element}`
+                ? `${conjunction} ${element}`
                 : element)
             .join(arr.length > 2
                 ? `, `
@@ -438,11 +404,13 @@ module.exports = {
     initChannel(channel) {
         logMessage([`> initChannel(channel: '${channel}')`])
         lemonyFresh[channel] = { ...lemonyFresh[channel] }
+        lemonyFresh[channel].webSocketSessionId = lemonyFresh[channel]?.webSocketSessionId || ``
         lemonyFresh[channel].accessToken = lemonyFresh[channel]?.accessToken || mods[channel]?.accessToken || ``
         lemonyFresh[channel].refreshToken = lemonyFresh[channel]?.refreshToken || mods[channel]?.refreshToken || ``
         lemonyFresh[channel].subRaidMessage = lemonyFresh[channel]?.subRaidMessage || ``
         lemonyFresh[channel].noSubRaidMessage = lemonyFresh[channel]?.noSubRaidMessage || ``
-        lemonyFresh[channel].emotes = lemonyFresh[channel]?.emotes || []
+        lemonyFresh[channel].followEmotes = lemonyFresh[channel]?.followEmotes || []
+        lemonyFresh[channel].subEmotes = lemonyFresh[channel]?.subEmotes || []
         lemonyFresh[channel].bttvEmotes = lemonyFresh[channel]?.bttvEmotes || []
         lemonyFresh[channel].contextEmotes = {
             lemonEmotes: [],
@@ -454,15 +422,6 @@ module.exports = {
             greetingEmotes: [],
             byeEmotes: [],
             dumbEmotes: [],
-            bttvLemonEmotes: [],
-            bttvNeutralEmotes: [],
-            bttvHypeEmotes: [],
-            bttvPositiveEmotes: [],
-            bttvUpsetEmotes: [],
-            bttvNegativeEmotes: [],
-            bttvGreetingEmotes: [],
-            bttvByeEmotes: [],
-            bttvDumbEmotes: [],
             ...lemonyFresh[channel].contextEmotes
         }
         lemonyFresh[channel].funnyCommands = lemonyFresh[channel]?.funnyCommands || []
@@ -534,14 +493,15 @@ module.exports = {
             mods[username].isModIn.push(chatroom)
         }
     },
-    resetCooldownTimer(channel, timer) {
-        logMessage([`> resetCooldownTimer(channel: '${channel}', timer: '${timer}', cooldown: ${pluralize(lemonyFresh[channel].timers[timer].cooldown, `second`, `seconds`)})`])
-        lemonyFresh[channel].timers[timer].listening = false
-        clearTimeout(lemonyFresh[channel].timers[timer].timerId)
-        lemonyFresh[channel].timers[timer].timerId = Number(setTimeout(() => {
-            lemonyFresh[channel].timers[timer].listening = true
-            logMessage([`-> Listening for '${timer}' again!`])
-        }, lemonyFresh[channel].timers[timer].cooldown * 1000))
+    resetCooldownTimer(channel, name) {
+        const timer = lemonyFresh[channel].timers[name]
+        logMessage([`> resetCooldownTimer(channel: '${channel}', timer: '${name}', cooldown: ${pluralize(timer.cooldown, `second`, `seconds`)})`])
+        timer.listening = false
+        clearTimeout(timer.timerId)
+        timer.timerId = Number(setTimeout(() => {
+            timer.listening = true
+            logMessage([`-> Listening for '${name}' again!`])
+        }, timer.cooldown * 1000))
     },
     // (For debugging/discovery) Add to list of known message tags
     tagsListener(tags) {

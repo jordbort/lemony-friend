@@ -4,7 +4,7 @@ const { settings } = require(`../config`)
 const { lemonyFresh, users, lemCmds } = require(`../data`)
 const numbers = require(`../numbers`)
 
-const { apiGetTwitchUser } = require(`./twitch`)
+const { apiGetTwitchUser, deleteAllEventSubs } = require(`./twitch`)
 const { getUsername, getContextEmote, logMessage, pluralize, arrToList } = require(`../utils`)
 
 module.exports = {
@@ -49,7 +49,6 @@ module.exports = {
                             ? positiveEmote
                             : hypeEmote}`,
                 `Let's play Hangman! ${positiveEmote}`,
-                `I know ${pluralize(lemonyFresh[channel].emotes.length, `emote`, `emotes`)} in ${channel}'s channel! ${neutralEmote}`,
                 `It has been ${Date.now().toLocaleString(`en-US`)} milliseconds since January 1, 1970, 12:00:00 AM UTC ${lemonEmote}`,
                 `${BOT_USERNAME} has entered the chat ${lemonEmote}`,
                 `${BOT_USERNAME in users
@@ -64,13 +63,17 @@ module.exports = {
                             : hypeEmote}`
             ]
 
+            if (lemonyFresh[channel].followEmotes.length) { joinMessages.push(`I know ${pluralize(lemonyFresh[channel].followEmotes.length, `follow emote`, `follow emotes`)} in ${channel}'s channel! ${positiveEmote}`) }
+            if (lemonyFresh[channel].subEmotes.length) { joinMessages.push(`I know ${pluralize(lemonyFresh[channel].subEmotes.length, `sub emote`, `sub emotes`)} in ${channel}'s channel! ${positiveEmote}`) }
+            if (lemonyFresh[channel].bttvEmotes.length) { joinMessages.push(`I know ${pluralize(lemonyFresh[channel].bttvEmotes.length, `bttv emote`, `bttv emotes`)} in ${channel}'s channel! ${positiveEmote}`) }
+
             const joinMessage = joinMessages[Math.floor(Math.random() * joinMessages.length)]
             bot.say(chatroom, joinMessage)
         }
     },
     async handleJoin(props) {
         const { bot, chatroom, args } = props
-        logMessage([`> handleJoin(chatroom: ${chatroom}, args: '${args.join(`', '`)}')`])
+        await logMessage([`> handleJoin(chatroom: ${chatroom}, args: '${args.join(`', '`)}')`])
 
         const validUsers = args.map(arg => getUsername(arg)).filter(user => user)
         const alreadyJoined = validUsers.filter(channel => bot.channels.includes(`#${channel}`))
@@ -83,9 +86,10 @@ module.exports = {
             if (!twitchUser.id) {
                 bot.say(chatroom, `Error: User "${channel}" not found! :O`)
             } else {
+                const username = twitchUser.login
                 successfullyJoined.push(channel)
-                lemonyFresh[channel] = { ...lemonyFresh[channel], id: Number(twitchUser.id) }
-                bot.join(channel)
+                lemonyFresh[username] = { id: Number(twitchUser.id), ...lemonyFresh[username] }
+                bot.join(username)
             }
         }
 
@@ -105,9 +109,10 @@ module.exports = {
         const notInChannel = validUsers.filter(user => !bot.channels.includes(`#${user}`))
 
         const byeEmote = getContextEmote(`bye`, channel)
-        needToPart.forEach(user => {
-            if (settings.sayPartMessage) { bot.say(`#${user}`, `Bye for now! ${byeEmote}`) }
-            bot.part(`#${user}`)
+        needToPart.forEach(async streamer => {
+            if (settings.sayPartMessage) { bot.say(`#${streamer}`, `Bye for now! ${byeEmote}`) }
+            deleteAllEventSubs(streamer)
+            bot.part(`#${streamer}`)
         })
 
         const reply = needToPart.length

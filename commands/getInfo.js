@@ -9,13 +9,8 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Added Urban Dictionary definitions`,
-            `Implement {message} variable in lemon commands`,
-            `Extended numbers list to 9999`,
-            `Reorganized code`,
-            `Added new uses for lemons`,
-            `Reworked !yell logic`,
-            `Migrated user channels into a new 'channels' object`
+            `Refactored how emotes are found and used`,
+            `Improved web socket functionality`
         ]
 
         const timeOptions = {
@@ -103,13 +98,14 @@ module.exports = {
     getRandomUser(arrExclude) {
         logMessage([`> getRandomUser(arrExclude:`, arrExclude.join(`, `), `)`])
 
-        const arr = Object.keys(users)
+        // Only search users who have chatted
+        const arr = Object.keys(users).filter(username => Object.keys(users[username].channels).length)
         for (const name of arrExclude) {
             if (arr.includes(name)) { arr.splice(arr.indexOf(name), 1) }
         }
         const randomUser = arr[Math.floor(Math.random() * arr.length)]
 
-        logMessage([`-> username: ${randomUser}`])
+        logMessage([`-> randomUser: ${randomUser}`])
         return randomUser
     },
     getRandomChannelMessage(user) {

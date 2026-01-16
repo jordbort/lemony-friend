@@ -6,16 +6,16 @@ const { pluralize, getContextEmote, logMessage, arrToList } = require(`../utils`
 const setDelay = (channel) => users[BOT_USERNAME].channels[channel].mod || users[BOT_USERNAME].channels[channel].vip || channel === BOT_USERNAME ? 1000 : 2000
 
 async function getRandomWord() {
-    logMessage([`> getRandomWord()`])
+    await logMessage([`> getRandomWord()`])
 
     const response = await fetch(`https://random-word-api.vercel.app/api?words=1`)
     const data = await response.json()
-    logMessage([`-> Random word:`, data])
+    await logMessage([`-> Random word:`, data])
     return data[0]
 }
 
 async function hangmanInit(channel, username) {
-    logMessage([`> hangmanInit(channel: '${channel}', username: '${username}')`])
+    await logMessage([`> hangmanInit(channel: '${channel}', username: '${username}')`])
     const hangman = lemonyFresh[channel].hangman
 
     hangman.listening = true

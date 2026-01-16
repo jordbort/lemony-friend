@@ -300,12 +300,12 @@ async function askAboutGame(props) {
     const broadcasterId = lemonyFresh[channel].id
     const twitchChannel = await apiGetTwitchChannel(broadcasterId)
     if (!twitchChannel) {
-        logMessage([`-> Failed to fetch Twitch channel`])
+        await logMessage([`-> Failed to fetch Twitch channel`])
         return
     }
 
     const { game_name, game_id } = twitchChannel
-    logMessage([`> askAboutGame(channel: '${channel}', game_name: '${game_name}', game_id: '${game_id}')`])
+    await logMessage([`> askAboutGame(channel: '${channel}', game_name: '${game_name}', game_id: '${game_id}')`])
 
     const neutralEmote = getContextEmote(`neutral`, channel)
     const reply = game_name === `Just Chatting`
@@ -332,12 +332,12 @@ function useBTTVEmote(props) {
         return
     }
 
-    const shakingCurseChance = [`c! s! `, ``, ``, ``]
-    const shakingCurse = shakingCurseChance[Math.floor(Math.random() * shakingCurseChance.length)]
+    const effectChance = [`c! s! `, `p! `, ``, ``, ``, ``, ``, ``]
+    const effect = effectChance[Math.floor(Math.random() * effectChance.length)]
 
     const emotes = lemonyFresh[channel].bttvEmotes
     const emote = emotes[Math.floor(Math.random() * emotes.length)]
-    bot.say(chatroom, `w! h! ${shakingCurse}${emote}`)
+    bot.say(chatroom, `w! h! ${effect}${emote}`)
 }
 
 function restartFunTimer(props) {
@@ -425,19 +425,18 @@ function awardLemonToRecentChatters(props) {
 
 function useTwoEmotes(props) {
     const { bot, chatroom, channel } = props
-    logMessage([`> useTwoEmotes(channel: '${channel}', emotes: ${lemonyFresh[channel].emotes.length})`])
+    logMessage([`> useTwoEmotes(channel: '${channel}', followEmotes: ${lemonyFresh[channel].followEmotes.length}, subEmotes: ${lemonyFresh[channel].subEmotes.length})`])
 
-    if (lemonyFresh[channel].emotes.length === 0) {
-        logMessage([`-> No known emotes in channel '${channel}'`])
+    const emotes = [...lemonyFresh[channel].followEmotes]
+    if (users[BOT_USERNAME].channels[channel].sub) {
+        emotes.push(...lemonyFresh[channel].subEmotes)
+    }
+
+    if (!emotes.length) {
+        logMessage([`-> No emotes available to use in channel '${channel}'`])
         return
     }
 
-    if (!users[BOT_USERNAME].channels[channel].sub) {
-        logMessage([`-> ${BOT_USERNAME} is not subscribed to ${channel}, can't use emotes`])
-        return
-    }
-
-    const emotes = lemonyFresh[channel].emotes
     const emoteOne = emotes[Math.floor(Math.random() * emotes.length)]
     const emoteTwo = emotes[Math.floor(Math.random() * emotes.length)]
     bot.say(chatroom, `${emoteOne} ${emoteTwo}`)
@@ -568,7 +567,7 @@ function reportRandomLemCmdUsage(props) {
     const randomCommand = Object.keys(lemCmds)[Math.floor(Math.random() * Object.keys(lemCmds).length)]
     logMessage([`> reportRandomLemCmdUsage(randomCommand: '${randomCommand}', uses: ${lemCmds[randomCommand].uses})`])
 
-    bot.say(chatroom, Object.keys(lemCmds).length === 0
+    const reply = Object.keys(lemCmds).length === 0
         ? `No lemon commands have been used! ${negativeEmote}`
         : `Lemon command "${randomCommand}" from ${lemCmds[randomCommand].origin in users ? users[lemCmds[randomCommand].origin].nickname || users[lemCmds[randomCommand].origin].displayName : lemCmds[randomCommand].origin}'s channel has been used ${pluralize(lemCmds[randomCommand].uses, `time`, `times`)}! ${lemCmds[randomCommand].uses === 0
             ? dumbEmote
@@ -576,12 +575,76 @@ function reportRandomLemCmdUsage(props) {
                 ? neutralEmote
                 : lemCmds[randomCommand].uses < 100
                     ? positiveEmote
-                    : hypeEmote}`)
+                    : hypeEmote}`
+    bot.say(chatroom, reply)
+}
+
+function sayPastHangmanAnswer(props) {
+    const { bot, chatroom, channel } = props
+    const pastAnswer = lemonyFresh[channel].hangman.answer
+    logMessage([`> sayPastHangmanAnswer(pastAnswer: '${pastAnswer}')`])
+    if (lemonyFresh[channel].hangman.listening || lemonyFresh[channel].hangman.signup) {
+        logMessage([`-> Aborting, Hangman game in progress`])
+        return
+    }
+    const neutralEmote = getContextEmote(`neutral`, channel)
+    if (pastAnswer) {
+        bot.say(chatroom, `Do you remember when the Hangman answer was ${pastAnswer}? ${neutralEmote}`)
+    }
+}
+
+function sayPastHangmanSpaces(props) {
+    const { bot, chatroom, channel } = props
+    const arr = lemonyFresh[channel].hangman.spaces
+    logMessage([`> sayPastHangmanSpaces(arr: '${arr.join(` `)}')`])
+    if (lemonyFresh[channel].hangman.listening || lemonyFresh[channel].hangman.signup) {
+        logMessage([`-> Aborting, Hangman game in progress`])
+        return
+    }
+    if (arr.length) {
+        bot.say(chatroom, `${arr.join(` `)}`)
+    }
+}
+
+function sayPastHangmanGuessedLetters(props) {
+    const { bot, chatroom, channel } = props
+    const arr = lemonyFresh[channel].hangman.guessedLetters
+    logMessage([`> sayPastHangmanGuessedLetters(arr: '${arr.join(``)}')`])
+    if (lemonyFresh[channel].hangman.listening || lemonyFresh[channel].hangman.signup) {
+        logMessage([`-> Aborting, Hangman game in progress`])
+        return
+    }
+    if (arr.length) {
+        bot.say(chatroom, `${arr.join(``)}`)
+    }
+}
+
+async function sayGameId(props) {
+    const { bot, chatroom, channel } = props
+    const broadcasterId = lemonyFresh[channel].id
+    const twitchChannel = await apiGetTwitchChannel(broadcasterId)
+    if (!twitchChannel) {
+        await logMessage([`-> Failed to fetch Twitch channel`])
+        return
+    }
+    await logMessage([`> sayGameId(channel: '${channel}', game_name: '${twitchChannel.game_name}', game_id: '${twitchChannel.game_id}')`])
+
+    const reply = twitchChannel.game_id
+    bot.say(chatroom, reply)
+}
+
+function rememberPastMessage(props) {
+    const { bot, chatroom, channel, userNickname, message } = props
+    const msg = message.split(` `)
+    const neutralEmote = getContextEmote(`neutral`, channel)
+    msg.length < 10
+        ? setTimeout(() => bot.say(chatroom, `I'm still thinking about when ${userNickname} said "${msg.join(` `)}" ${neutralEmote}`), 600000)
+        : setTimeout(() => bot.say(chatroom, `I'm still thinking about when ${userNickname} said "... ${msg.splice(4, 6).join(` `)} ..." ${neutralEmote}`), 600000)
 }
 
 module.exports = {
     rollFunNumber(props, funNumber) {
-        const { tags, message, channel, username } = props
+        const { bot, chatroom, tags, message, channel, username, aprilFools } = props
         logMessage([`> rollFunNumber(channel: '${channel}', tags: ${Object.keys(tags).length}, username: '${username}', message: '${message}', funNumber: ${funNumber})`])
 
         if (!lemonyFresh[channel].rollFunNumber) {
@@ -613,13 +676,22 @@ module.exports = {
             20: useFunnyCommand,
             21: imagineLemons,
             22: makeInsultSentence,
-            23: reportRandomLemCmdUsage
+            23: reportRandomLemCmdUsage,
+            24: sayPastHangmanAnswer,
+            25: sayPastHangmanSpaces,
+            26: sayPastHangmanGuessedLetters,
+            27: sayGameId,
+            28: rememberPastMessage
         }
 
         if (funNumber in outcomes) {
             logMessage([`-> Fun number`, funNumber, `matched:`, `[Function: ${outcomes[funNumber].name}]`])
-            return outcomes[funNumber](props)
+            outcomes[funNumber](props)
+            return
         }
-        logMessage([`-> Fun number`, funNumber, `is unused`])
+
+        aprilFools
+            ? bot.say(chatroom, `${funNumber}`)
+            : logMessage([`-> Fun number`, funNumber, `is unused`])
     }
 }

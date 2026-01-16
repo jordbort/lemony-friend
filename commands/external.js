@@ -1,12 +1,24 @@
 const API_KEY = process.env.API_KEY
 
-const { settings } = require(`../config`)
+const { lemonyFresh } = require(`../data`)
+
 const { getContextEmote, renderObj, logMessage, pluralize } = require(`../utils`)
+
+async function apiGetBttvEmotes(broadcasterId) {
+    await logMessage([`> getBttvEmotes(broadcasterId: ${broadcasterId})`])
+    const endpoint = `https://api.betterttv.net/3/cached/users/twitch/${broadcasterId}`
+    const response = await fetch(endpoint)
+    const data = await response.json()
+    if (response.status !== 200) { await logMessage([`apiGetBttvEmotes`, response.status, renderObj(data, `data`)]) }
+    return `id` in data
+        ? data
+        : null
+}
 
 module.exports = {
     async checkSentiment(props) {
         const { bot, chatroom, message } = props
-        logMessage([`> checkSentiment(chatroom: ${chatroom}, message: ${message})`])
+        await logMessage([`> checkSentiment(chatroom: ${chatroom}, message: ${message})`])
 
         const sanitizedMsg = message.replace(/[\\{`}%^|]/g, ``)
         const endpoint = `https://api.api-ninjas.com/v1/sentiment?text=${sanitizedMsg}`
@@ -18,7 +30,7 @@ module.exports = {
 
         const response = await fetch(endpoint, options)
         const data = await response.json()
-        logMessage([`checkSentiment`, response.status, renderObj(data, `data`)])
+        await logMessage([`checkSentiment`, response.status, renderObj(data, `data`)])
 
         'sentiment' in data
             ? data.sentiment.includes(`NEUTRAL`)
@@ -32,7 +44,7 @@ module.exports = {
     },
     async getDadJoke(props) {
         const { bot, chatroom, channel } = props
-        logMessage([`> getDadJoke(chatroom: ${chatroom})`])
+        await logMessage([`> getDadJoke(chatroom: ${chatroom})`])
 
         const response = await fetch(`https://icanhazdadjoke.com/`, {
             headers: {
@@ -40,7 +52,7 @@ module.exports = {
             }
         })
         const data = await response.json()
-        logMessage([`getDadJoke`, response.status, renderObj(data, `data`)])
+        await logMessage([`getDadJoke`, response.status, renderObj(data, `data`)])
 
         const negativeEmote = getContextEmote(`negative`, channel)
         data.status === 200
@@ -49,7 +61,7 @@ module.exports = {
     },
     async getDefinition(props) {
         const { bot, chatroom, args, channel } = props
-        logMessage([`> getDefinition(chatroom: ${chatroom}, args:`, args, `)`])
+        await logMessage([`> getDefinition(chatroom: ${chatroom}, args:`, args, `)`])
         const str = args.join(` `).replace(/[\\{`}%^|]/g, ``)
         if (!str) {
             bot.say(chatroom, `Please give me a word to define! :)`)
@@ -65,7 +77,7 @@ module.exports = {
 
         const response = await fetch(endpoint, options)
         const data = await response.json()
-        logMessage([`getDefinition`, response.status, renderObj(data, `data`)])
+        await logMessage([`getDefinition`, response.status, renderObj(data, `data`)])
 
         const negativeEmote = getContextEmote(`negative`, channel)
         if (`error` in data) {
@@ -93,17 +105,17 @@ module.exports = {
             .join(`-`)
             .toLowerCase()
             .replace(/[\\{`}%^|]/g, ``)
-        logMessage([`> getPokemon(chatroom: ${chatroom}, pokemon: ${pokemon})`])
+        await logMessage([`> getPokemon(chatroom: ${chatroom}, pokemon: ${pokemon})`])
 
         if (!pokemon) {
-            logMessage([`-> No Pokemon provided`])
+            await logMessage([`-> No Pokemon provided`])
             return
         }
 
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`)
         const negativeEmote = getContextEmote(`negative`, channel)
         if (response.status !== 200) {
-            logMessage([`-> ${response.status}: ${response.statusText}`])
+            await logMessage([`-> ${response.status}: ${response.statusText}`])
             bot.say(chatroom, `Pokémon "${pokemon}" was not found! ${negativeEmote}`)
             return
         }
@@ -119,8 +131,6 @@ module.exports = {
         for (const abilities of data.abilities) { pokemonAbilities.push(`${abilities.ability.name}${abilities.is_hidden ? ` (hidden)` : ``}`) }
         reply += `${pokemonAbilities.join(`, `)}. `
 
-        let type1Data
-        let type2Data
         const doubleDamageTo = []
         const doubleDamageFrom = []
         const halfDamageTo = []
@@ -129,9 +139,8 @@ module.exports = {
         const immuneFrom = []
 
         if (pokemonTypes[0]) {
-            // look up one type
             const response1 = await fetch(`https://pokeapi.co/api/v2/type/${pokemonTypes[0]}`)
-            type1Data = await response1.json()
+            const type1Data = await response1.json()
             for (const damageType of type1Data.damage_relations.double_damage_to) {
                 if (!doubleDamageTo.includes(damageType.name)) { doubleDamageTo.push(damageType.name) }
             }
@@ -152,9 +161,8 @@ module.exports = {
             }
         }
         if (pokemonTypes[1]) {
-            // look up two types
             const response2 = await fetch(`https://pokeapi.co/api/v2/type/${pokemonTypes[1]}`)
-            type2Data = await response2.json()
+            const type2Data = await response2.json()
             for (const damageType of type2Data.damage_relations.double_damage_to) {
                 if (!doubleDamageTo.includes(damageType.name)) { doubleDamageTo.push(damageType.name) }
             }
@@ -176,14 +184,7 @@ module.exports = {
         }
 
         // if it TAKES double damage AND half damage FROM a type, remove from BOTH arrays
-        const nullify = []
-        for (const type of doubleDamageFrom) {
-            logMessage([`Looking at:`, doubleDamageFrom.indexOf(type), type])
-            if (halfDamageFrom.includes(type)) {
-                logMessage([`Found in both:`, type])
-                nullify.push(type)
-            }
-        }
+        const nullify = doubleDamageFrom.filter(el => halfDamageFrom.includes(el))
         for (const dupe of nullify) {
             doubleDamageFrom.splice(doubleDamageFrom.indexOf(dupe), 1)
             halfDamageFrom.splice(halfDamageFrom.indexOf(dupe), 1)
@@ -191,24 +192,8 @@ module.exports = {
 
         // Cleaning up immunities
         for (const type of immuneFrom) {
-            if (halfDamageFrom.includes(type)) {
-                logMessage([`"Immunity from" found in halfDamageFrom:`, type])
-                halfDamageFrom.splice(halfDamageFrom.indexOf(type), 1)
-            }
-            if (doubleDamageFrom.includes(type)) {
-                logMessage([`"Immunity from" found in doubleDamageFrom:`, type])
-                doubleDamageFrom.splice(doubleDamageFrom.indexOf(type), 1)
-            }
-        }
-
-        if (settings.debug) {
-            logMessage([`nullify:`, nullify])
-            logMessage([`doubleDamageTo:`, doubleDamageTo])
-            logMessage([`doubleDamageFrom:`, doubleDamageFrom])
-            logMessage([`halfDamageTo:`, halfDamageTo])
-            logMessage([`halfDamageFrom:`, halfDamageFrom])
-            logMessage([`immuneTo:`, immuneTo])
-            logMessage([`immuneFrom:`, immuneFrom])
+            if (halfDamageFrom.includes(type)) { halfDamageFrom.splice(halfDamageFrom.indexOf(type), 1) }
+            if (doubleDamageFrom.includes(type)) { doubleDamageFrom.splice(doubleDamageFrom.indexOf(type), 1) }
         }
 
         if (doubleDamageTo.length > 0) { reply += `Super effective to ${doubleDamageTo.join(`/`)}-type Pokemon. ` }
@@ -224,9 +209,9 @@ module.exports = {
         const abilityName = args.join(`-`).toLowerCase().replace(/[\\{`}%^|']/g, ``)
         const negativeEmote = getContextEmote(`negative`, channel)
 
-        logMessage([`> getPokemonAbility(chatroom: ${chatroom}, abilityName: '${abilityName}')`])
+        await logMessage([`> getPokemonAbility(chatroom: ${chatroom}, abilityName: '${abilityName}')`])
         if (!abilityName) {
-            logMessage([`-> No ability provided`])
+            await logMessage([`-> No ability provided`])
             return
         }
 
@@ -244,7 +229,7 @@ module.exports = {
 
         const response = await fetch(`https://pokeapi.co/api/v2/ability/${abilityName}`)
         if (response.status !== 200) {
-            logMessage([`-> ${response.status}: ${response.statusText}`])
+            await logMessage([`-> ${response.status}: ${response.statusText}`])
             bot.say(chatroom, `Ability "${args.join(` `)}" not found! ${negativeEmote}`)
             return
         }
@@ -254,7 +239,7 @@ module.exports = {
             const message = data.effect_entries.filter(el => el.language.name === `en`)[0].effect.replace(/\n+/g, ` `).replace(/ +/g, ` `)
             bot.say(chatroom, message)
         } else {
-            logMessage([`-> No effect entries for`, args.join(` `), data.flavor_text_entries.length, `total flavor text entries`])
+            await logMessage([`-> No effect entries for`, args.join(` `), data.flavor_text_entries.length, `total flavor text entries`])
             if (data.flavor_text_entries.length) {
                 const message = data.flavor_text_entries.filter(el => el.language.name === `en`)[0].flavor_text.replace(/\n+/g, ` `).replace(/ +/g, ` `)
                 bot.say(chatroom, message)
@@ -264,7 +249,7 @@ module.exports = {
     async getUrbanDictionaryDefinition(props) {
         const { bot, chatroom, args, channel } = props
         const query = args.join(` `)
-        logMessage([`> getUrbanDictionaryDefinition(channel: ${channel}, query: '${query}')`])
+        await logMessage([`> getUrbanDictionaryDefinition(channel: ${channel}, query: '${query}')`])
 
         if (!query) {
             bot.say(chatroom, `No query provided! :O`)
@@ -273,7 +258,7 @@ module.exports = {
 
         const response = await fetch(`https://unofficialurbandictionaryapi.com/api/search?term=${query}`)
         const data = await response.json()
-        logMessage([`getUrbanDictionaryDefinition`, response.status, renderObj(data, `data`)])
+        await logMessage([`getUrbanDictionaryDefinition`, response.status, renderObj(data, `data`)])
 
         if (data.statusCode !== 200) {
             bot.say(chatroom, `Error fetching definition! :O`)
@@ -285,5 +270,18 @@ module.exports = {
             : `No definition found! :O`
 
         bot.say(chatroom, reply)
+    },
+    async getBttvEmotes(channel) {
+        await logMessage([`> getBttvEmotes(channel: '${channel}')`])
+        const data = await apiGetBttvEmotes(lemonyFresh[channel].id)
+
+        if (!data) {
+            lemonyFresh[channel].bttvEmotes = []
+            await logMessage([`-> No BTTV emotes found for '${channel}'`])
+            return
+        }
+        const bttvEmotes = [...data.channelEmotes.map(el => el.code), ...data.sharedEmotes.map(el => el.code)]
+        lemonyFresh[channel].bttvEmotes = [...bttvEmotes]
+        await logMessage([`-> ${pluralize(lemonyFresh[channel].bttvEmotes.length, `BTTV emote`, `BTTV emotes`)} for '${channel}'`])
     }
 }

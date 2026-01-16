@@ -4,20 +4,22 @@ const BOT_NICKNAME_REGEX = process.env.BOT_NICKNAME_REGEX
 
 const dev = require(`./commands/dev`)
 const commands = require(`./commands`)
-const printLemon = require(`./commands/printLemon`)
 const patterns = require(`./patterns`)
-const botInteraction = require(`./patterns/botInteraction`)
 const botMention = require(`./patterns/botMention`)
+const printLemon = require(`./commands/printLemon`)
+const botInteraction = require(`./patterns/botInteraction`)
 
 const { settings } = require(`./config`)
 const { lemonyFresh, users, lemCmds } = require(`./data`)
 
 const { useLemCmd } = require(`./commands/lemCmds`)
+const { getBttvEmotes } = require(`./commands/external`)
 const { streakListener } = require(`./commands/streaks`)
 const { rollFunNumber } = require(`./commands/funNumber`)
 const { sayJoinMessage } = require(`./commands/joinPart`)
-const { apiGetTwitchChannel } = require(`./commands/twitch`)
 const { checkWord, checkLetter } = require(`./patterns/hangman`)
+const { apiGetTwitchChannel, updateEventSubs, getEmotes } = require(`./commands/twitch`)
+const { registerWebSocket, initWebSocket, closeWebSocket } = require(`./events`)
 const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
 const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, logMessage, acknowledgeGigantifiedEmote, appendLogs } = require(`./utils`)
@@ -118,7 +120,7 @@ function hangmanListener(props) {
 async function addToKnownChannels(broadcasterId) {
     const twitchChannel = await apiGetTwitchChannel(broadcasterId)
     if (!twitchChannel) {
-        logMessage([`-> Failed to fetch Twitch channel for knownChannels`])
+        await logMessage([`-> Failed to fetch Twitch channel for knownChannels`])
         return
     }
     settings.knownChannels[broadcasterId] = twitchChannel.broadcaster_login
@@ -139,9 +141,19 @@ module.exports = {
         const channel = chatroom.substring(1)
 
         if (self) {
+            // Setup channel data
             initChannel(channel)
+            getEmotes(channel)
+            getBttvEmotes(channel)
+
             // Say join message
             if (settings.sayJoinMessage) { sayJoinMessage(this, chatroom) }
+
+            // Check to create or update WebSocket session
+            registerWebSocket(channel)
+            lemonyFresh[channel].webSocketSessionId
+                ? updateEventSubs(channel)
+                : initWebSocket(this, chatroom, channel)
         }
 
         if (!lemonyFresh[channel].viewers.includes(username)) {
@@ -151,6 +163,12 @@ module.exports = {
     onPartedHandler(chatroom, username, self) {
         logMessage([`${username} parted from ${chatroom}`])
         const channel = chatroom.substring(1)
+
+        // Close WebSocket connection
+        if (self) {
+            if (lemonyFresh[channel].webSocketSessionId) { closeWebSocket(channel) }
+            lemonyFresh[channel].webSocketSessionId = ``
+        }
 
         while (lemonyFresh[channel].viewers.includes(username)) {
             lemonyFresh[channel].viewers.splice(lemonyFresh[channel].viewers.indexOf(username), 1)
@@ -201,16 +219,11 @@ module.exports = {
         // Initialize user in a new chatroom
         if (!(channel in users[username].channels)) { initUserChannel(tags, username, channel) }
 
+        const currentTime = Number(tags[`tmi-sent-ts`]) || Date.now()
         const userChannel = users[username].channels[channel]
         userChannel.msgCount++
         userChannel.lastMessage = msg
-
-        // Checking time comparisons
-        const currentTime = Number(tags[`tmi-sent-ts`])
-        const minutesSinceLastMsg = (currentTime - userChannel.sentAt) / 60000
-        self
-            ? userChannel.sentAt = Date.now()
-            : userChannel.sentAt = currentTime
+        userChannel.sentAt = currentTime
 
         const args = msg.split(` `)
         const command = args.shift().toLowerCase()
@@ -235,27 +248,22 @@ module.exports = {
             userNickname: users[username].nickname || users[username].displayName,
             toUser: toUser,
             target: users?.[toUser] || null,
-            targetNickname: users?.[toUser]?.nickname || users?.[toUser]?.displayName || null
+            targetNickname: users?.[toUser]?.nickname || users?.[toUser]?.displayName || null,
+            aprilFools: new Date(currentTime).getMonth() === 3 && new Date(currentTime).getDate() === 1
         }
-
-        // User attribute change detection
-        const colorChange = tags.color !== users[username].color && users[username].color !== ``
-        const subChange = userChannel.sub !== tags.subscriber
-        const modChange = userChannel.mod !== tags.mod
-        const vipChange = userChannel.vip !== (!!tags.vip || !!tags.badges?.vip)
-
-        if (subChange) { handleSubChange(props) }
-        if (modChange) { handleModChange(props) }
-        if (vipChange) { handleVIPChange(props) }
 
         // Bot stops listening
         if (self) { return }
 
-        // Acknowledge color change
-        if (colorChange) {
-            handleColorChange(props)
-            return
-        }
+        // User attribute change detection
+        const subChange = userChannel.sub !== tags.subscriber
+        const modChange = userChannel.mod !== tags.mod
+        const vipChange = userChannel.vip !== (!!tags.vip || !!tags.badges?.vip)
+        const colorChange = tags.color !== users[username].color && users[username].color !== ``
+        if (subChange) { handleSubChange(props) }
+        if (modChange) { handleModChange(props) }
+        if (vipChange) { handleVIPChange(props) }
+        if (colorChange) { handleColorChange(props) }
 
         // Acknowledge gigantified emote
         if (tags[`msg-id`] === `gigantified-emote-message`) {
@@ -310,6 +318,8 @@ module.exports = {
             return
         }
 
+        // Checking whether enough time has passed to welcome back
+        const minutesSinceLastMsg = (currentTime - userChannel.sentAt) / 60000
         if (minutesSinceLastMsg > 1
             && minutesSinceLastMsg >= settings.minWelcomeBackMinutes
             && minutesSinceLastMsg < settings.maxWelcomeBackMinutes

@@ -4,17 +4,18 @@ const { settings } = require(`../config`)
 const { lemonyFresh, users, mods, commonNicknames, startingLemons, hangmanWins } = require(`../data`)
 
 const { getSubs } = require(`./help`)
-const { printMemory } = require(`../utils`)
 const { rollFunNumber } = require(`./funNumber`)
 const { handleJoin, handlePart } = require(`./joinPart`)
-const { logMessage, dumpMemory, getContextEmote } = require(`../utils`)
+const { deleteAllEventSubs, updateEventSubs, apiGetEventSubs } = require(`./twitch`)
+const { logMessage, printMemory, pluralize, getContextEmote, getToUser } = require(`../utils`)
+const { initWebSocket, logWebsockets, examineWebsockets, closeWebSocket } = require(`../events`)
 
 function checkPoints(props) {
     const { bot, chatroom, channel } = props
     logMessage([`> checkPoints(chatroom: ${chatroom})`])
 
     users[BOT_USERNAME].channels?.[channel].points || users[BOT_USERNAME].channels?.[channel].points === 0
-        ? bot.say(chatroom, `I have ${users[BOT_USERNAME].channels[channel].points} point${users[BOT_USERNAME].channels[channel].points === 1 ? `` : `s`}!`)
+        ? bot.say(chatroom, `I have ${pluralize(users[BOT_USERNAME].channels[channel].points, `point`, `points`)}!`)
         : bot.say(chatroom, `I don't know how many points I have!`)
 }
 
@@ -22,15 +23,146 @@ module.exports = {
     '_crash': function kms(props) { throw Error(`Error${props.args.length ? ` with value${props.args.length === 1 ? `` : `s`} '${props.args.join(`', '`)}'` : ``}`) },
     '_shutdown': async (props) => {
         const { bot, chatroom, channel } = props
+        for (const streamer of bot.channels) {
+            if (lemonyFresh[streamer.substring(1)].webSocketSessionId) {
+                await deleteAllEventSubs(streamer.substring(1))
+                closeWebSocket(streamer.substring(1))
+                lemonyFresh[streamer.substring(1)].webSocketSessionId = ``
+            }
+        }
         await printMemory(bot.channels)
-        // await dumpMemory(props)
         const byeEmote = getContextEmote(`bye`, channel)
         bot.say(chatroom, `Bye for now! ${byeEmote}`)
         await logMessage([`> Done`])
         process.exit(0)
     },
+    'ws': (props) => {
+        const { bot, args } = props
+        if (args.length) {
+            for (const arg of args) {
+                const streamer = getToUser(arg)
+                if (streamer in lemonyFresh) { logWebsockets(streamer) }
+            }
+        } else {
+            for (const chatroom of bot.channels) {
+                if (chatroom.substring(1) in lemonyFresh) { logWebsockets(chatroom.substring(1)) }
+            }
+        }
+    },
+    'look': async (props) => {
+        const { bot, args, channel } = props
+        if (args.length) {
+            if (args[0] === `all`) {
+                for (const chatroom of bot.channels) {
+                    if (chatroom.substring(1) in lemonyFresh) {
+                        const obj = await apiGetEventSubs(chatroom.substring(1))
+                        if (obj && `data` in obj) { obj.data.forEach(el => console.log(`'${chatroom.substring(1)}' ${el.type} (${el.status})`)) }
+                        else { console.log(`Failed to fetch EventSubs for '${chatroom.substring(1)}'`) }
+                    }
+                }
+            } else {
+                for (const arg of args) {
+                    const streamer = getToUser(arg)
+                    if (streamer in lemonyFresh) {
+                        const obj = await apiGetEventSubs(streamer)
+                        if (obj && `data` in obj) { obj.data.forEach(el => console.log(`'${streamer}' ${el.type} (${el.status})`)) }
+                        else { console.log(`Failed to fetch EventSubs for '${streamer}'`) }
+                    }
+                }
+            }
+        } else {
+            const obj = await apiGetEventSubs(channel)
+            if (obj && `data` in obj) { obj.data.forEach(el => console.log(`'${channel}' ${el.type} (${el.status})`)) }
+            else { console.log(`Failed to fetch EventSubs for '${channel}'`) }
+        }
+    },
+    'examine': (props) => {
+        const { bot, args, channel } = props
+        if (args.length) {
+            if (args[0] === `all`) {
+                for (const chatroom of bot.channels) {
+                    if (chatroom.substring(1) in lemonyFresh) { examineWebsockets(chatroom.substring(1)) }
+                }
+            } else {
+                for (const arg of args) {
+                    const streamer = getToUser(arg)
+                    if (streamer in lemonyFresh) { examineWebsockets(streamer) }
+                }
+            }
+        } else { examineWebsockets(channel) }
+    },
+    'del': (props) => {
+        const { bot, args, channel } = props
+        if (args.length) {
+            if (args[0] === `all`) {
+                for (const chatroom of bot.channels) {
+                    if (chatroom.substring(1) in lemonyFresh) { deleteAllEventSubs(chatroom.substring(1)) }
+                }
+            } else {
+                for (const arg of args) {
+                    const streamer = getToUser(arg)
+                    if (streamer in lemonyFresh) { deleteAllEventSubs(streamer) }
+                }
+            }
+        } else { deleteAllEventSubs(channel) }
+    },
+    'close': (props) => {
+        const { bot, args, channel } = props
+        if (args.length) {
+            if (args[0] === `all`) {
+                for (const chatroom of bot.channels) {
+                    if (chatroom.substring(1) in lemonyFresh) { closeWebSocket(chatroom.substring(1)) }
+                }
+            } else {
+                for (const arg of args) {
+                    const streamer = getToUser(arg)
+                    if (streamer in lemonyFresh) { closeWebSocket(streamer) }
+                }
+            }
+        } else { closeWebSocket(channel) }
+    },
+    'update': (props) => {
+        const { bot, args, channel } = props
+        if (args.length) {
+            if (args[0] === `all`) {
+                for (const chatroom of bot.channels) {
+                    if (chatroom.substring(1) in lemonyFresh) { updateEventSubs(chatroom.substring(1), true) }
+                }
+            } else {
+                for (const arg of args) {
+                    const streamer = getToUser(arg)
+                    if (streamer in lemonyFresh) { updateEventSubs(streamer, true) }
+                }
+            }
+        } else { updateEventSubs(channel, true) }
+    },
+    'init': (props) => {
+        const { bot, chatroom, args, channel } = props
+        if (args.length) {
+            if (args[0] === `all`) {
+                for (const streamer of bot.channels) { initWebSocket(bot, streamer, streamer.substring(1)) }
+            } else {
+                for (const arg of args) {
+                    const streamer = getToUser(arg)
+                    if (streamer in lemonyFresh) { initWebSocket(bot, `#${streamer}`, streamer) }
+                }
+            }
+        } else { initWebSocket(bot, chatroom, channel) }
+    },
+    'trim': (props) => {
+        const { bot, args, channel } = props
+        if (args.length) {
+            if (args[0] === `all`) {
+                for (const streamer of bot.channels) { removeClosedWebSockets(streamer.substring(1)) }
+            } else {
+                for (const arg of args) {
+                    const streamer = getToUser(arg)
+                    if (streamer in lemonyFresh) { removeClosedWebSockets(streamer) }
+                }
+            }
+        } else { removeClosedWebSockets(channel) }
+    },
     '_print': async (props) => { await printMemory(props.bot.channels) },
-    'dump': dumpMemory,
     '!test': checkPoints,
     'tags': (props) => { console.log(props.tags) },
 
@@ -77,7 +209,7 @@ module.exports = {
     '!broadcast': (props) => {
         const { bot, message } = props
         for (const chatroom of bot.channels) {
-            bot.say(chatroom, `${message.substring(11)}`)
+            if (chatroom.substring(1) in lemonyFresh) { bot.say(chatroom, `${message.substring(11)}`) }
         }
     },
 

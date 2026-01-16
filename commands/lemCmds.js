@@ -1,5 +1,5 @@
 const { settings } = require(`../config`)
-const { lemonyFresh, users, lemCmds } = require(`../data`)
+const { lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
 const { getContextEmote, logMessage, pluralize } = require(`../utils`)
 
 const regexNumber = /\{\s?number\s?(-?\d+)\s?\}/gi
@@ -11,22 +11,26 @@ function applyVariables(str, props) {
     const { args, channel, username, toUser } = props
     logMessage([`-> applyVariables(str: ${str}, args: '${args.join(`', '`)}')`])
 
+    // Prepare viewers
     const viewers = lemonyFresh[channel].viewers.filter(viewer => !settings.ignoredBots.includes(viewer))
     const randomViewerOne = viewers[Math.floor(Math.random() * viewers.length)]
-
     let randomViewerTwo = viewers[Math.floor(Math.random() * viewers.length)]
     if (viewers.length > 1) {
         while (randomViewerTwo === randomViewerOne) {
             randomViewerTwo = viewers[Math.floor(Math.random() * viewers.length)]
         }
     }
-
     let randomViewerThree = viewers[Math.floor(Math.random() * viewers.length)]
     if (viewers.length > 2) {
         while (randomViewerThree === randomViewerOne || randomViewerThree === randomViewerTwo) {
             randomViewerThree = viewers[Math.floor(Math.random() * viewers.length)]
         }
     }
+
+    // Prepare word bank choices
+    const nouns = wordBank.nouns.length ? [...wordBank.nouns] : [`lemon`, `friend`]
+    const verbs = wordBank.verbs.length ? [...wordBank.verbs] : [`squeeze`, `juice`]
+    const adjectives = wordBank.adjectives.length ? [...wordBank.adjectives] : [`lemony`, `fresh`]
 
     const newStr = str
         .replace(/\{\s?(message|msg)\s?\}/gi, args.join(` `))
@@ -49,6 +53,9 @@ function applyVariables(str, props) {
         .replace(/\{\s?greet(ing)?\s?\}/gi, () => getContextEmote(`greeting`, channel))
         .replace(/\{\s?bye\s?\}/gi, () => getContextEmote(`bye`, channel))
         .replace(/\{\s?dumb?\s?\}/gi, () => getContextEmote(`dumb`, channel))
+        .replace(/\{\s?n(oun)?\s?\}/gi, () => nouns[Math.floor(Math.random() * nouns.length)])
+        .replace(/\{\s?v(erb)?\s?\}/gi, () => verbs[Math.floor(Math.random() * verbs.length)])
+        .replace(/\{\s?adj(ective)?\s?\}/gi, () => adjectives[Math.floor(Math.random() * adjectives.length)])
         .replace(/\{\s?1\s?\}/g, args[0] || ``)
         .replace(/\{\s?2\s?\}/g, args[1] || ``)
         .replace(/\{\s?3\s?\}/g, args[2] || ``)
