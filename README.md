@@ -112,17 +112,21 @@ Use `cli channel` or `cli c` to access settings for the current channel (if you 
 
 Use this command to adjust the cooldown and "listening" status of timers for bot commands and reply types. Having a cooldown prevents the same command from being responded to multiple times within that time period. Changing the "listening" status of a command or reply type to `false` prevents the bot from acknowledging the message. For example, if you already have a bot in your channel that handles shoutouts, and don't want lemony_friend to give them, you can use `cli channel timer !so listening false` to disable this behavior. Here is a current list of all timers that can be adjusted and/or enabled/disabled: `!so` The command for giving shoutouts, `!raid` The command for saying the raid message(s), `!count` The command for viewing/adjusting the count, `streak` Listening for message/emote streaks, `new-chatter` Greeting new chatters in a chatroom (does not include spam detection), `greet` Saying hi to one user, `mass-greet` Saying hi to multiple users, `say-goodnight` Saying bye/goodnight to a user, `say-thanks` Saying thanks to a user, `say-youre-welcome` Saying you're welcome to a user, `say-mood` Responding to "how are you" messages
 
-- `cli channel emotes` or `cli c e` (array of strings)
+- `cli channel followEmotes` or `cli c fe` (array of strings)
 
-Use this command to update the list of emotes lemony_friend has access to within a channel.
+Use this command to update the list of follower emotes lemony_friend knows within a channel. Lemony_friend automatically learns a channel's emotes when it connects or reconnects, so this usually doesn't need to be updated unless follower emotes have been added or removed recently, and the list needs to be updated ASAP.
+
+- `cli channel subEmotes` or `cli c se` (array of strings)
+
+Use this command to update the list of subscriber emotes lemony_friend knows within a channel. Lemony_friend automatically learns a channel's emotes when it connects or reconnects, so this usually doesn't need to be updated unless subscriber emotes have been added or removed recently, and the list needs to be updated ASAP.
 
 - `cli channel bttvEmotes` or `cli c bttv` (array of strings)
 
-Use this command to update the list of BTTV emotes lemony_friend has access to within a channel.
+Use this command to update the list of BTTV emotes lemony_friend knows within a channel. Lemony_friend automatically learns a channel's BTTV emotes when it connects or reconnects, so this usually doesn't need to be updated unless BTTV emotes have been added or removed recently, and the list needs to be updated ASAP.
 
 - `cli channel contextEmote` or `cli c ce` (emote type, array of strings)
 
-Use this command to update the 18 categories of emotes (Twitch sub emotes and BTTV emotes, 9 each) lemony_friend will use at random, defined for each channel. The categories are: `lemonEmotes` (`lem`), `neutralEmotes` (`neu`), `hypeEmotes` (`hype`), `positiveEmotes` (`pos`), `upsetEmotes` (`up`), `negativeEmotes` (`neg`), `greetingEmotes` (`greet`), `byeEmotes` (`bye`), `dumbEmotes` (`dumb`), `bttvLemonEmotes` (`bttvLem`), `bttvNeutralEmotes` (`bttvNeu`), `bttvHypeEmotes` (`hype`), `bttvPositiveEmotes` (`bttvPos`), `bttvUpsetEmotes` (`bttvUp`), `bttvNegativeEmotes` (`bttvNeg`), `bttvGreetingEmotes` (`bttvGreet`), `bttvByeEmotes` (`bttvBye`), `bttvDumbEmotes` (`bttvDumb`)
+Use this command to update the 9 categories of emotes lemony_friend will draw from at random, defined for each channel. The categories are: `lemonEmotes` (`lem`), `neutralEmotes` (`neu`), `hypeEmotes` (`hype`), `positiveEmotes` (`pos`), `upsetEmotes` (`up`), `negativeEmotes` (`neg`), `greetingEmotes` (`greet`), `byeEmotes` (`bye`), `dumbEmotes` (`dumb`)
 
 - `cli channel subRaidMessage` or `cli c srm` (string)
 
