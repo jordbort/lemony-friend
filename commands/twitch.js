@@ -402,9 +402,9 @@ async function updateEventSubs(channel) {
         const disabled = obj.data.filter(el => el.status !== `enabled` || el.transport.session_id !== sessionId)
         // Delete disabled EventSubs
         if (disabled.length) {
-            console.log(`channel:`, channel, `enabled.length:`, enabled.length, `disabled.length:`, disabled.length)
+            if (enabled.length) { console.log(`channel:`, channel, `enabled.length:`, enabled.length, `disabled.length:`, disabled.length) }
             for (const el of disabled) {
-                await apiDeleteEventSub(channel, el.id, el.status)
+                await apiDeleteEventSub(channel, el.id)
             }
         }
         // Rebuild EventSubs
