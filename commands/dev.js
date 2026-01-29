@@ -91,21 +91,6 @@ module.exports = {
             }
         } else { examineWebsockets(channel) }
     },
-    'del': (props) => {
-        const { bot, args, channel } = props
-        if (args.length) {
-            if (args[0] === `all`) {
-                for (const chatroom of bot.channels) {
-                    if (chatroom.substring(1) in lemonyFresh) { deleteAllEventSubs(chatroom.substring(1)) }
-                }
-            } else {
-                for (const arg of args) {
-                    const streamer = getToUser(arg)
-                    if (streamer in lemonyFresh) { deleteAllEventSubs(streamer) }
-                }
-            }
-        } else { deleteAllEventSubs(channel) }
-    },
     'close': (props) => {
         const { bot, args, channel } = props
         if (args.length) {
@@ -148,19 +133,6 @@ module.exports = {
                 }
             }
         } else { initWebSocket(bot, chatroom, channel) }
-    },
-    'trim': (props) => {
-        const { bot, args, channel } = props
-        if (args.length) {
-            if (args[0] === `all`) {
-                for (const streamer of bot.channels) { removeClosedWebSockets(streamer.substring(1)) }
-            } else {
-                for (const arg of args) {
-                    const streamer = getToUser(arg)
-                    if (streamer in lemonyFresh) { removeClosedWebSockets(streamer) }
-                }
-            }
-        } else { removeClosedWebSockets(channel) }
     },
     '_print': async (props) => { await printMemory(props.bot.channels) },
     '!test': checkPoints,
