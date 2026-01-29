@@ -41,7 +41,7 @@ async function initWebSocket(bot, chatroom, channel, path = `wss://eventsub.wss.
 
     ws.onmessage = (event) => {
         const message = JSON.parse(event.data)
-        handleMessage(channel, message)
+        handleMessage(bot, chatroom, channel, message)
 
         // If new welcome message, save session ID and create event subs, else close
         if (message.metadata.message_type === `session_welcome`) {
@@ -95,7 +95,7 @@ function getWebSocket(channel, reconnection = false) {
     } else { logMessage([`* Error: No WebSocket in webSockets{} for '${channel}'`]) }
 }
 
-function closeWebSocket(channel) {
+function closeWebSocket(bot, chatroom, channel) {
     logMessage([`> closeWebSocket(channel: '${channel}')`])
     clearTimeout(webSockets[channel].timer)
     webSockets[channel].timer = 0
@@ -105,18 +105,19 @@ function closeWebSocket(channel) {
         ws.close()
         lemonyFresh[channel].webSocketSessionId = ``
     } else {
-        console.log(`* Error: No web socket to close for '${channel}', timer was stopped anyway`)
+        logMessage([`* Error: No web socket to close for '${channel}', reinitializing web socket...`])
+        initWebSocket(bot, chatroom, channel)
     }
 }
 
-function keepAlive(channel) {
+function keepAlive(bot, chatroom, channel) {
     if (webSockets[channel].timer._destroyed) {
         logMessage([`Error: Timer was already destroyed for ${channel}`])
     }
     clearTimeout(webSockets[channel].timer)
     webSockets[channel].timer = setTimeout(() => {
         logMessage([`* KEEPALIVE message not received for ${channel}, breaking connection...`])
-        closeWebSocket(channel)
+        closeWebSocket(bot, chatroom, channel)
     }, 35000)
 }
 
@@ -139,9 +140,9 @@ function handleReconnect(channel) {
     }
 }
 
-function handleMessage(channel, message) {
+function handleMessage(bot, chatroom, channel, message) {
     if (`subscription` in message.payload) {
-        keepAlive(channel)
+        keepAlive(bot, chatroom, channel)
         const streamer = message.payload.event.broadcaster_user_name
         const fromStreamer = message.payload.event.from_broadcaster_user_name
         const displayName = message.payload.event.user_name
@@ -195,13 +196,13 @@ function handleMessage(channel, message) {
         switch (message.metadata.message_type) {
             case `session_welcome`:
                 logMessage([`* WELCOME '${channel}' status: ${message.payload.session.status}`])
-                keepAlive(channel)
+                keepAlive(bot, chatroom, channel)
                 break
             case `session_reconnect`:
                 logMessage([`* RECONNECT '${channel}' status: ${message.payload.session.status}, reconnect_url: ${message.payload.session.reconnect_url}`])
                 break
             case `session_keepalive`:
-                keepAlive(channel)
+                keepAlive(bot, chatroom, channel)
                 break
             case `revocation`:
                 logMessage([`* REVOKED '${channel}' status: ${message.payload.session.status}`])
