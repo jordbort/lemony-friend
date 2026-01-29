@@ -669,22 +669,43 @@ async function apiGetStreamTwitchEmotes(broadcasterId, attempt = 1) {
     const response = await fetch(endpoint, options)
     const twitchData = await response.json()
 
-    if (response.status === 200) {
-        return twitchData.data
-    } else {
-        await logMessage([`apiGetEmotes`, response.status, renderObj(twitchData, `twitchData`)])
-        if (response.status === 401) {
-            if (attempt < 3) {
-                const retry = await apiGetTwitchAppAccessToken()
-                if (retry) {
-                    attempt++
-                    return apiGetEmotes(username, attempt)
+    }
+}
+
+async function apiGetGlobalTwitchEmotes(attempt = 1) {
+    await logMessage([`> apiGetGlobalTwitchEmotes()`])
+    const endpoint = `https://api.twitch.tv/helix/chat/emotes/global`
+    const options = {
+        headers: {
+            authorization: `Bearer ${settings.botAccessToken}`,
+            'Client-Id': CLIENT_ID
+        }
+    }
+
+    try {
+        const response = await fetch(endpoint, options)
+        const twitchData = await response.json()
+
+        if (response.status === 200) {
+            return twitchData.data
+        } else {
+            await logMessage([`apiGetGlobalTwitchEmotes`, response.status, renderObj(twitchData, `twitchData`)])
+            if (response.status === 401) {
+                if (attempt < 3) {
+                    const retry = await apiGetTwitchAppAccessToken()
+                    if (retry) {
+                        attempt++
+                        return apiGetGlobalTwitchEmotes(attempt)
+                    }
+                } else {
+                    await logMessage([`-> Failed to get channel emotes after ${pluralize(attempt, `attempt`, `attempts`)}`])
+                    return null
                 }
-            } else {
-                await logMessage([`-> Failed to get channel emotes after ${pluralize(attempt, `attempt`, `attempts`)}`])
-                return null
-            }
-        } else { return null }
+            } else { return null }
+        }
+    } catch (err) {
+        logMessage([`apiGetGlobalTwitchEmotes ${err}`])
+        return false
     }
 }
 
@@ -894,8 +915,8 @@ module.exports = {
 
             const stream = await apiGetTwitchChannel(twitchUser.id)
             if (!stream) {
-                await logMessage([`-> Failed to fetch ${toUser}'s channel, exiting handleShoutout function`])
-                bot.say(chatroom, `Failed to fetch ${toUser}'s stream information! :O`)
+                await logMessage([`-> Failed to get ${toUser}'s channel, exiting handleShoutout function`])
+                bot.say(chatroom, `Failed to get ${toUser}'s stream information! :O`)
                 return
             }
             const neutralEmote = getContextEmote(`neutral`, channel)
@@ -1140,6 +1161,19 @@ module.exports = {
         } else {
             bot.say(chatroom, `Failed to autoban user! ${dumbEmote}`)
         }
+    },
+    async getGlobalTwitchEmotes() {
+        await logMessage([`> getGlobalTwitchEmotes()`])
+        const data = await apiGetGlobalTwitchEmotes()
+
+        if (!data) {
+            await logMessage([`-> Failed to look up Twitch global emotes`])
+            return
+        }
+
+        const twitchEmotes = data.map(obj => obj.name)
+        settings.globalEmotes.twitch = [...twitchEmotes]
+        await logMessage([`-> Found ${pluralize(settings.globalEmotes.twitch.length, `Twitch global emote`, `Twitch global emotes`)}`])
     },
     async getStreamTwitchEmotes(channel) {
         await logMessage([`> getStreamTwitchEmotes(channel: '${channel}')`])

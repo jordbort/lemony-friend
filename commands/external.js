@@ -1,8 +1,26 @@
 const API_KEY = process.env.API_KEY
 
+const { settings } = require(`../config`)
 const { lemonyFresh } = require(`../data`)
 
 const { getContextEmote, renderObj, logMessage, pluralize } = require(`../utils`)
+
+async function apiGetGlobalBttvEmotes() {
+    await logMessage([`> apiGetGlobalBttvEmotes()`])
+
+    try {
+        const endpoint = `https://api.betterttv.net/3/cached/emotes/global`
+        const response = await fetch(endpoint)
+        const data = await response.json()
+        if (response.status !== 200) {
+            await logMessage([`apiGetGlobalBttvEmotes`, response.status, renderObj(data, `data`)])
+            return null
+        }
+        return data
+    } catch (err) {
+        logMessage([`apiGetGlobalBttvEmotes ${err}`])
+    }
+}
 
 async function apiGetStreamBttvEmotes(broadcasterId) {
     await logMessage([`> apiGetStreamBttvEmotes(broadcasterId: ${broadcasterId})`])
@@ -262,7 +280,18 @@ module.exports = {
             ? `"${query}" (${pluralize(data.data.length, `definition`, `definitions`)} found): ${objDefinition.meaning} - ex: "${objDefinition.example}" (${objDefinition.date})`
             : `No definition found! :O`
 
-        bot.say(chatroom, reply)
+    async getGlobalBttvEmotes() {
+        await logMessage([`> getGlobalBttvEmotes()`])
+        const data = await apiGetGlobalBttvEmotes()
+
+        if (!data) {
+            await logMessage([`-> Failed to look up BTTV global emotes`])
+            return
+        }
+
+        const bttvEmotes = data.map(obj => obj.code)
+        settings.globalEmotes.bttv = [...bttvEmotes]
+        await logMessage([`-> Found ${pluralize(settings.globalEmotes.bttv.length, `BTTV global emote`, `BTTV global emotes`)}`])
     },
     async getStreamBttvEmotes(channel) {
         await logMessage([`> getStreamBttvEmotes(channel: '${channel}')`])

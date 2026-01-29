@@ -13,14 +13,14 @@ const { settings } = require(`./config`)
 const { lemonyFresh, users, lemCmds } = require(`./data`)
 
 const { useLemCmd } = require(`./commands/lemCmds`)
-const { getBttvEmotes } = require(`./commands/external`)
 const { streakListener } = require(`./commands/streaks`)
 const { rollFunNumber } = require(`./commands/funNumber`)
 const { sayJoinMessage } = require(`./commands/joinPart`)
 const { checkWord, checkLetter } = require(`./patterns/hangman`)
-const { apiGetTwitchChannel, updateEventSubs, getEmotes } = require(`./commands/twitch`)
 const { registerWebSocket, initWebSocket, closeWebSocket } = require(`./events`)
+const { getGlobalBttvEmotes, getStreamBttvEmotes } = require(`./commands/external`)
 const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
+const { apiGetTwitchChannel, getGlobalTwitchEmotes, getStreamTwitchEmotes } = require(`./commands/twitch`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
 const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, logMessage, acknowledgeGigantifiedEmote, appendLogs } = require(`./utils`)
 
@@ -120,7 +120,7 @@ function hangmanListener(props) {
 async function addToKnownChannels(broadcasterId) {
     const twitchChannel = await apiGetTwitchChannel(broadcasterId)
     if (!twitchChannel) {
-        await logMessage([`-> Failed to fetch Twitch channel for knownChannels`])
+        await logMessage([`-> Failed to get Twitch channel for knownChannels`])
         return
     }
     settings.knownChannels[broadcasterId] = twitchChannel.broadcaster_login
@@ -135,6 +135,8 @@ module.exports = {
             ? logMessage([`[${time}] 🍋 Connected to ${addr}:${port}`])
             : logMessage([`[${time}] 🍋 Re-connected to ${addr}:${port}`])
         settings.firstConnection = false
+        // getGlobalTwitchEmotes()
+        getGlobalBttvEmotes()
     },
     onJoinedHandler(chatroom, username, self) {
         logMessage([`${username} joined ${chatroom}`])
