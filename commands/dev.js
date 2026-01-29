@@ -56,8 +56,9 @@ module.exports = {
                 for (const chatroom of bot.channels) {
                     if (chatroom.substring(1) in lemonyFresh) {
                         const obj = await apiGetEventSubs(chatroom.substring(1))
-                        if (obj && `data` in obj) { obj.data.forEach(el => console.log(`'${chatroom.substring(1)}' ${el.type} (${el.status})`)) }
-                        else { console.log(`Failed to fetch EventSubs for '${chatroom.substring(1)}'`) }
+                        console.log(chatroom.substring(1), lemonyFresh[chatroom.substring(1)].webSocketSessionId)
+                        if (obj && `data` in obj) { obj.data.forEach(el => console.log(`'${chatroom.substring(1)}' ${el.type} (${el.status}) - ${el.transport.session_id} ${lemonyFresh[chatroom.substring(1)].webSocketSessionId === el.transport.session_id ? `MATCH` : `NO MATCH`}`)) }
+                        else { console.log(`Failed to get EventSubs for '${chatroom.substring(1)}'`) }
                     }
                 }
             } else {
@@ -65,15 +66,17 @@ module.exports = {
                     const streamer = getToUser(arg)
                     if (streamer in lemonyFresh) {
                         const obj = await apiGetEventSubs(streamer)
-                        if (obj && `data` in obj) { obj.data.forEach(el => console.log(`'${streamer}' ${el.type} (${el.status})`)) }
-                        else { console.log(`Failed to fetch EventSubs for '${streamer}'`) }
+                        console.log(streamer, lemonyFresh[streamer].webSocketSessionId)
+                        if (obj && `data` in obj) { obj.data.forEach(el => console.log(`'${streamer}' ${el.type} (${el.status}) - ${el.transport.session_id} ${lemonyFresh[streamer].webSocketSessionId === el.transport.session_id ? `MATCH` : `NO MATCH`}`)) }
+                        else { console.log(`Failed to get EventSubs for '${streamer}'`) }
                     }
                 }
             }
         } else {
             const obj = await apiGetEventSubs(channel)
-            if (obj && `data` in obj) { obj.data.forEach(el => console.log(`'${channel}' ${el.type} (${el.status})`)) }
-            else { console.log(`Failed to fetch EventSubs for '${channel}'`) }
+            console.log(channel, lemonyFresh[channel].webSocketSessionId)
+            if (obj && `data` in obj) { obj.data.forEach(el => console.log(`'${channel}' ${el.type} (${el.status}) - ${el.transport.session_id} ${lemonyFresh[channel].webSocketSessionId === el.transport.session_id ? `MATCH` : `NO MATCH`}`)) }
+            else { console.log(`Failed to get EventSubs for '${channel}'`) }
         }
     },
     'examine': (props) => {
@@ -92,19 +95,19 @@ module.exports = {
         } else { examineWebsockets(channel) }
     },
     'close': (props) => {
-        const { bot, args, channel } = props
+        const { bot, chatroom, args, channel } = props
         if (args.length) {
             if (args[0] === `all`) {
                 for (const chatroom of bot.channels) {
-                    if (chatroom.substring(1) in lemonyFresh) { closeWebSocket(chatroom.substring(1)) }
+                    if (chatroom.substring(1) in lemonyFresh) { closeWebSocket(bot, chatroom, chatroom.substring(1)) }
                 }
             } else {
                 for (const arg of args) {
                     const streamer = getToUser(arg)
-                    if (streamer in lemonyFresh) { closeWebSocket(streamer) }
+                    if (streamer in lemonyFresh) { closeWebSocket(bot, chatroom, streamer) }
                 }
             }
-        } else { closeWebSocket(channel) }
+        } else { closeWebSocket(bot, chatroom, channel) }
     },
     'update': (props) => {
         const { bot, args, channel } = props
