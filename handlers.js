@@ -143,8 +143,8 @@ module.exports = {
         if (self) {
             // Setup channel data
             initChannel(channel)
-            getEmotes(channel)
-            getBttvEmotes(channel)
+            getStreamTwitchEmotes(channel)
+            getStreamBttvEmotes(channel)
 
             // Say join message
             if (settings.sayJoinMessage) { sayJoinMessage(this, chatroom) }

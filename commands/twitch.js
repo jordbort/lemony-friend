@@ -656,9 +656,9 @@ async function apiBanUsers(broadcasterId, moderatorName, moderatorId, arrUsers, 
     return { banned: banned, alreadyBanned: alreadyBanned }
 }
 
-async function apiGetEmotes(broadcasterId, attempt = 1) {
-    await logMessage([`> apiGetEmotes(broadcasterId: ${broadcasterId})`])
-    const endpoint = `https://api.twitch.tv/helix/chat/emotes?broadcaster_id=${broadcasterId}`;
+async function apiGetStreamTwitchEmotes(broadcasterId, attempt = 1) {
+    await logMessage([`> apiGetStreamTwitchEmotes(broadcasterId: ${broadcasterId})`])
+    const endpoint = `https://api.twitch.tv/helix/chat/emotes?broadcaster_id=${broadcasterId}`
     const options = {
         headers: {
             authorization: `Bearer ${settings.botAccessToken}`,
@@ -1141,9 +1141,9 @@ module.exports = {
             bot.say(chatroom, `Failed to autoban user! ${dumbEmote}`)
         }
     },
-    async getEmotes(channel) {
-        await logMessage([`> getEmotes(channel: '${channel}')`])
-        const data = await apiGetEmotes(lemonyFresh[channel].id)
+    async getStreamTwitchEmotes(channel) {
+        await logMessage([`> getStreamTwitchEmotes(channel: '${channel}')`])
+        const data = await apiGetStreamTwitchEmotes(lemonyFresh[channel].id)
         if (!data) {
             lemonyFresh[channel].followEmotes = []
             lemonyFresh[channel].subEmotes = []
