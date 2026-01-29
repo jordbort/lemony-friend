@@ -9,8 +9,7 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Refactored how emotes are found and used`,
-            `Improved web socket functionality`
+            `Implemented error handling for data fetches`
         ]
 
         const timeOptions = {
