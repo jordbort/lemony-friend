@@ -5,7 +5,7 @@ const WebSocket = require(`ws`)
 
 const { settings } = require(`./config`)
 const { users, mods, lemonyFresh } = require(`./data`)
-const { apiGetTokenScope, updateEventSubs, apiGetEventSubs } = require(`./commands/twitch`)
+const { apiGetTokenScope, updateEventSubs } = require(`./commands/twitch`)
 const { logMessage, getContextEmote, updateMod, pluralize, arrToList, renderObj } = require(`./utils`)
 
 const batch = {}
@@ -50,10 +50,7 @@ async function initWebSocket(bot, chatroom, channel, path = `wss://eventsub.wss.
                 handleReconnect(channel)
             } else {
                 lemonyFresh[channel].webSocketSessionId = message.payload.session.id
-                // EventSubs don't quite seem to expire immediately?
-                // setTimeout(() =>
                 updateEventSubs(channel)
-                // , 500)
             }
         }
 
@@ -102,12 +99,10 @@ function closeWebSocket(channel) {
     logMessage([`> closeWebSocket(channel: '${channel}')`])
     clearTimeout(webSockets[channel].timer)
     webSockets[channel].timer = 0
-    removeClosedWebSockets(channel, `test`)
     if (!lemonyFresh[channel].webSocketSessionId) { logMessage([`* WARNING: No webSocketSessionId for '${channel}'`]) }
     const ws = getWebSocket(channel)
     if (ws) {
         ws.close()
-        webSockets[channel].ws.splice(webSockets[channel].ws.length - 1, 1)
         lemonyFresh[channel].webSocketSessionId = ``
     } else {
         console.log(`* Error: No web socket to close for '${channel}', timer was stopped anyway`)
@@ -492,8 +487,6 @@ function handleChannelGiftSub(bot, chatroom, channel, event) {
 
     clearTimeout(obj.timer)
     obj.timer = Number(setTimeout(() => {
-        if (obj.total !== obj.names.length) { console.log(`TOTAL NAMES CHECK FAILED :(`) }
-        else { console.log(`TOTAL NAMES CHECK PASSED :)`) }
         bot.say(chatroom, `${arrToList(obj.gifters)} gifted ${obj.names.length === 1 ? `a ${streamer} sub` : `${streamer} subs`} to ${arrToList(obj.names)}! ${obj.names >= 5 ? hypeEmote : positiveEmote}`)
         resetChannelBatch(`giftedSubs`, channel)
     }, 1000))
