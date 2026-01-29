@@ -431,6 +431,8 @@ module.exports = {
         lemonyFresh[channel].funTimerGuesser = ``
         lemonyFresh[channel].pollId = ``
         lemonyFresh[channel].viewers = []
+        lemonyFresh[channel].streakThreshold = lemonyFresh[channel]?.streakThreshold || 3
+        lemonyFresh[channel].streamerEmoteStreakThreshold = lemonyFresh[channel]?.streamerEmoteStreakThreshold || 4
         lemonyFresh[channel].count = {
             name: ``,
             value: 0,
