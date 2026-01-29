@@ -123,12 +123,15 @@ function keepAlive(bot, chatroom, channel) {
 
 function removeClosedWebSockets(channel, code) {
     logMessage([`> removeClosedWebSockets(channel: '${channel}', code: ${code})`])
+    let numClosed = 0
     for (let i = webSockets[channel].ws.length - 1; i >= 0; i--) {
         if (webSockets[channel].ws[i]._closeFrameReceived || code === 1006) {
-            if (!webSockets[channel].ws[i]._closeFrameReceived) { console.log(`* Error: WebSocket for '${channel}' at index ${i} is not closed yet, splicing anyway`) }
             webSockets[channel].ws.splice(i, 1)
+            numClosed++
         }
     }
+    if (numClosed !== 1) { logMessage([`Warning: Unexpected number of spliced web sockets for '${channel}'`]) }
+    logMessage([`-> ${pluralize(numClosed, `Web socket`, `Web sockets`)} successfully closed for '${channel}'. ${pluralize(webSockets[channel].ws.length, `web socket exists`, `web sockets exist`)}, session ID: ${lemonyFresh[channel].webSocketSessionId || `(none)`}`])
 }
 
 function handleReconnect(channel) {
@@ -136,7 +139,7 @@ function handleReconnect(channel) {
     if (webSockets[channel].ws.length === 2) {
         webSockets[channel].ws[0].close()
     } else {
-        console.log(`* WARNING: ${pluralize(webSockets[channel].ws.length), `web socket exists`, `web sockets exist`} instead of 2!`)
+        logMessage([`* WARNING: ${pluralize(webSockets[channel].ws.length), `web socket exists`, `web sockets exist`} instead of 2!`])
     }
 }
 
