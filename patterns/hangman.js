@@ -8,24 +8,34 @@ const setDelay = (channel) => users[BOT_USERNAME].channels[channel].mod || users
 async function getRandomWord() {
     await logMessage([`> getRandomWord()`])
 
-    const response = await fetch(`https://random-word-api.vercel.app/api?words=1`)
-    const data = await response.json()
-    await logMessage([`-> Random word:`, data])
-    return data[0]
+    try {
+        const response = await fetch(`https://random-word-api.vercel.app/api?words=1`)
+        const data = await response.json()
+        await logMessage([`-> Random word:`, data])
+        return data[0]
+    } catch (err) {
+        logMessage([`${err}`])
+        return false
+    }
 }
 
 async function hangmanInit(channel, username) {
     await logMessage([`> hangmanInit(channel: '${channel}', username: '${username}')`])
     const hangman = lemonyFresh[channel].hangman
 
+    const randomWord = await getRandomWord()
+    if (!randomWord) { return false }
+
     hangman.listening = true
-    hangman.answer = await getRandomWord()
+    hangman.answer = randomWord
     hangman.spaces = Array(hangman.answer.length).fill(`_`)
     hangman.players.length = 0
     hangman.guessedLetters.length = 0
     hangman.chances = settings.hangmanChances
     hangman.currentPlayer = 0
     hangman.players.push(username)
+
+    return true
 }
 
 function solvePuzzle(bot, chatroom, username) {
@@ -71,7 +81,7 @@ function hangmanAnnounce(bot, chatroom, userNickname) {
 }
 
 module.exports = {
-    manageHangman(props) {
+    async manageHangman(props) {
         const { bot, chatroom, args, channel, username, userNickname, isMod } = props
         logMessage([`> manageHangman(chatroom: '${chatroom}')`])
 
@@ -112,7 +122,12 @@ module.exports = {
             return
         }
 
-        hangmanInit(channel, username)
+        const success = await hangmanInit(channel, username)
+        if (!success) {
+            const negativeEmote = getContextEmote(`negative`, channel)
+            bot.say(chatroom, `Failed to start Hangman! ${negativeEmote}`)
+            return
+        }
         hangmanAnnounce(bot, chatroom, userNickname)
     },
     joinHangman(props) {

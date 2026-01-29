@@ -24,6 +24,18 @@ async function apiGetGlobalBttvEmotes() {
 
 async function apiGetStreamBttvEmotes(broadcasterId) {
     await logMessage([`> apiGetStreamBttvEmotes(broadcasterId: ${broadcasterId})`])
+
+    try {
+        const endpoint = `https://api.betterttv.net/3/cached/users/twitch/${broadcasterId}`
+        const response = await fetch(endpoint)
+        const data = await response.json()
+        if (response.status !== 200) { await logMessage([`apiGetStreamBttvEmotes`, response.status, renderObj(data, `data`)]) }
+        return `id` in data
+            ? data
+            : null
+    } catch (err) {
+        logMessage([`apiGetStreamBttvEmotes ${err}`])
+    }
 }
 
 module.exports = {
@@ -39,36 +51,44 @@ module.exports = {
             }
         }
 
-        const response = await fetch(endpoint, options)
-        const data = await response.json()
-        await logMessage([`checkSentiment`, response.status, renderObj(data, `data`)])
+        try {
+            const response = await fetch(endpoint, options)
+            const data = await response.json()
+            await logMessage([`checkSentiment`, response.status, renderObj(data, `data`)])
 
-        'sentiment' in data
-            ? data.sentiment.includes(`NEUTRAL`)
-                ? bot.say(chatroom, `:p`)
-                : data.sentiment.includes(`POSITIVE`)
-                    ? data.sentiment.includes(`WEAK`)
-                        ? bot.say(chatroom, `:)`)
-                        : bot.say(chatroom, `:D`)
-                    : bot.say(chatroom, `:(`)
-            : bot.say(chatroom, `:O`)
+            'sentiment' in data
+                ? data.sentiment.includes(`NEUTRAL`)
+                    ? bot.say(chatroom, `:p`)
+                    : data.sentiment.includes(`POSITIVE`)
+                        ? data.sentiment.includes(`WEAK`)
+                            ? bot.say(chatroom, `:)`)
+                            : bot.say(chatroom, `:D`)
+                        : bot.say(chatroom, `:(`)
+                : bot.say(chatroom, `:O`)
+        } catch (err) {
+            logMessage([`checkSentiment ${err}`])
+        }
     },
     async getDadJoke(props) {
         const { bot, chatroom, channel } = props
         await logMessage([`> getDadJoke(chatroom: ${chatroom})`])
 
-        const response = await fetch(`https://icanhazdadjoke.com/`, {
-            headers: {
-                accept: `application/json`,
-            }
-        })
-        const data = await response.json()
-        await logMessage([`getDadJoke`, response.status, renderObj(data, `data`)])
+        try {
+            const response = await fetch(`https://icanhazdadjoke.com/`, {
+                headers: {
+                    accept: `application/json`,
+                }
+            })
+            const data = await response.json()
+            await logMessage([`getDadJoke`, response.status, renderObj(data, `data`)])
 
-        const negativeEmote = getContextEmote(`negative`, channel)
-        data.status === 200
-            ? bot.say(chatroom, data.joke)
-            : bot.say(chatroom, `Error fetching dad joke! ${negativeEmote}`)
+            const negativeEmote = getContextEmote(`negative`, channel)
+            data.status === 200
+                ? bot.say(chatroom, data.joke)
+                : bot.say(chatroom, `Error getting dad joke! ${negativeEmote}`)
+        } catch (err) {
+            logMessage([`getDadJoke ${err}`])
+        }
     },
     async getDefinition(props) {
         const { bot, chatroom, args, channel } = props
@@ -86,28 +106,32 @@ module.exports = {
             }
         }
 
-        const response = await fetch(endpoint, options)
-        const data = await response.json()
-        await logMessage([`getDefinition`, response.status, renderObj(data, `data`)])
+        try {
+            const response = await fetch(endpoint, options)
+            const data = await response.json()
+            await logMessage([`getDefinition`, response.status, renderObj(data, `data`)])
 
-        const negativeEmote = getContextEmote(`negative`, channel)
-        if (`error` in data) {
-            bot.say(chatroom, `Error: ${data.error} ${negativeEmote}`)
-        } else if (!data.valid || !data.definition) {
-            bot.say(chatroom, `I don't think "${data.word}" is a word! ${negativeEmote}`)
-        } else {
-            let definition = `Definition of "${data.word}": `
-            const regex = /\n/g
-            const splitDefinition = data.definition.replace(regex, ``).split(`. `).filter(el => el !== `\n`)
-
-            if (!splitDefinition.includes(`1`)) {
-                definition += splitDefinition[0]
+            const negativeEmote = getContextEmote(`negative`, channel)
+            if (`error` in data) {
+                bot.say(chatroom, `Error: ${data.error} ${negativeEmote}`)
+            } else if (!data.valid || !data.definition) {
+                bot.say(chatroom, `I don't think "${data.word}" is a word! ${negativeEmote}`)
             } else {
-                if (splitDefinition.includes(`1`)) { definition += `1) ${splitDefinition[splitDefinition.indexOf(`1`) + 1]}. ` }
-                if (splitDefinition.includes(`2`)) { definition += `2) ${splitDefinition[splitDefinition.indexOf(`2`) + 1]}. ` }
-                if (splitDefinition.includes(`3`)) { definition += `3) ${splitDefinition[splitDefinition.indexOf(`3`) + 1]}. ` }
+                let definition = `Definition of "${data.word}": `
+                const regex = /\n/g
+                const splitDefinition = data.definition.replace(regex, ``).split(`. `).filter(el => el !== `\n`)
+
+                if (!splitDefinition.includes(`1`)) {
+                    definition += splitDefinition[0]
+                } else {
+                    if (splitDefinition.includes(`1`)) { definition += `1) ${splitDefinition[splitDefinition.indexOf(`1`) + 1]}. ` }
+                    if (splitDefinition.includes(`2`)) { definition += `2) ${splitDefinition[splitDefinition.indexOf(`2`) + 1]}. ` }
+                    if (splitDefinition.includes(`3`)) { definition += `3) ${splitDefinition[splitDefinition.indexOf(`3`) + 1]}. ` }
+                }
+                bot.say(chatroom, definition)
             }
-            bot.say(chatroom, definition)
+        } catch (err) {
+            logMessage([`getDefinition ${err}`])
         }
     },
     async getPokemon(props) {
@@ -123,97 +147,85 @@ module.exports = {
             return
         }
 
-        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`)
-        const negativeEmote = getContextEmote(`negative`, channel)
-        if (response.status !== 200) {
-            await logMessage([`-> ${response.status}: ${response.statusText}`])
-            bot.say(chatroom, `Pokémon "${pokemon}" was not found! ${negativeEmote}`)
-            return
+        try {
+            const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`)
+            const negativeEmote = getContextEmote(`negative`, channel)
+            if (response.status !== 200) {
+                await logMessage([`-> ${response.status}: ${response.statusText}`])
+                bot.say(chatroom, `Pokémon "${pokemon}" was not found! ${negativeEmote}`)
+                return
+            }
+            const data = await response.json()
+
+            let reply = `#${data.id} ${pokemon.toUpperCase()} `
+
+            const pokemonTypes = []
+            for (const types of data.types) { pokemonTypes.push(types.type.name) }
+            reply += `(${pokemonTypes.join(`/`)}) - ${data.abilities.length === 1 ? `Ability` : `Abilities`}: `
+
+            const pokemonAbilities = []
+            for (const abilities of data.abilities) { pokemonAbilities.push(`${abilities.ability.name}${abilities.is_hidden ? ` (hidden)` : ``}`) }
+            reply += `${pokemonAbilities.join(`, `)}. `
+
+            const doubleDamageTo = []
+            const doubleDamageFrom = []
+            const halfDamageTo = []
+            const halfDamageFrom = []
+            const immuneTo = []
+            const immuneFrom = []
+
+            if (pokemonTypes[0]) {
+                try {
+                    const response1 = await fetch(`https://pokeapi.co/api/v2/type/${pokemonTypes[0]}`)
+                    const type1Data = await response1.json()
+                    for (const damageType of type1Data.damage_relations.double_damage_to) { if (!doubleDamageTo.includes(damageType.name)) { doubleDamageTo.push(damageType.name) } }
+                    for (const damageType of type1Data.damage_relations.double_damage_from) { if (!doubleDamageFrom.includes(damageType.name)) { doubleDamageFrom.push(damageType.name) } }
+                    for (const damageType of type1Data.damage_relations.half_damage_to) { if (!halfDamageTo.includes(damageType.name)) { halfDamageTo.push(damageType.name) } }
+                    for (const damageType of type1Data.damage_relations.half_damage_from) { if (!halfDamageFrom.includes(damageType.name)) { halfDamageFrom.push(damageType.name) } }
+                    for (const damageType of type1Data.damage_relations.no_damage_to) { if (!immuneTo.includes(damageType.name)) { immuneTo.push(damageType.name) } }
+                    for (const damageType of type1Data.damage_relations.no_damage_from) { if (!immuneFrom.includes(damageType.name)) { immuneFrom.push(damageType.name) } }
+                } catch (err) {
+                    logMessage([`getPokemon type1Data ${err}`])
+                }
+            }
+            if (pokemonTypes[1]) {
+                try {
+                    const response2 = await fetch(`https://pokeapi.co/api/v2/type/${pokemonTypes[1]}`)
+                    const type2Data = await response2.json()
+                    for (const damageType of type2Data.damage_relations.double_damage_to) { if (!doubleDamageTo.includes(damageType.name)) { doubleDamageTo.push(damageType.name) } }
+                    for (const damageType of type2Data.damage_relations.double_damage_from) { if (!doubleDamageFrom.includes(damageType.name)) { doubleDamageFrom.push(damageType.name) } }
+                    for (const damageType of type2Data.damage_relations.half_damage_to) { if (!halfDamageTo.includes(damageType.name)) { halfDamageTo.push(damageType.name) } }
+                    for (const damageType of type2Data.damage_relations.half_damage_from) { if (!halfDamageFrom.includes(damageType.name)) { halfDamageFrom.push(damageType.name) } }
+                    for (const damageType of type2Data.damage_relations.no_damage_to) { if (!immuneTo.includes(damageType.name)) { immuneTo.push(damageType.name) } }
+                    for (const damageType of type2Data.damage_relations.no_damage_from) { if (!immuneFrom.includes(damageType.name)) { immuneFrom.push(damageType.name) } }
+                } catch (err) {
+                    logMessage([`getPokemon type2Data ${err}`])
+                }
+            }
+
+            // if it TAKES double damage AND half damage FROM a type, remove from BOTH arrays
+            const nullify = doubleDamageFrom.filter(el => halfDamageFrom.includes(el))
+            for (const dupe of nullify) {
+                doubleDamageFrom.splice(doubleDamageFrom.indexOf(dupe), 1)
+                halfDamageFrom.splice(halfDamageFrom.indexOf(dupe), 1)
+            }
+
+            // Cleaning up immunities
+            for (const type of immuneFrom) {
+                if (halfDamageFrom.includes(type)) { halfDamageFrom.splice(halfDamageFrom.indexOf(type), 1) }
+                if (doubleDamageFrom.includes(type)) { doubleDamageFrom.splice(doubleDamageFrom.indexOf(type), 1) }
+            }
+
+            if (doubleDamageTo.length > 0) { reply += `Super effective to ${doubleDamageTo.join(`/`)}-type Pokemon. ` }
+            if (doubleDamageFrom.length > 0) { reply += `Weak to ${doubleDamageFrom.join(`/`)}-type moves. ` }
+            if (halfDamageTo.length > 0) { reply += `Not very effective to ${halfDamageTo.join(`/`)}-type Pokemon. ` }
+            if (halfDamageFrom.length > 0) { reply += `Resistant to ${halfDamageFrom.join(`/`)}-type moves. ` }
+            if (immuneTo.length > 0) { reply += `No effect to ${immuneTo.join(`/`)}-type Pokemon. ` }
+            if (immuneFrom.length > 0) { reply += `No effect from ${immuneFrom.join(`/`)}-type moves.` }
+            bot.say(chatroom, reply)
+        } catch (err) {
+            logMessage([`getPokemon ${err}`])
         }
-        const data = await response.json()
-
-        let reply = `#${data.id} ${pokemon.toUpperCase()} `
-
-        const pokemonTypes = []
-        for (const types of data.types) { pokemonTypes.push(types.type.name) }
-        reply += `(${pokemonTypes.join(`/`)}) - ${data.abilities.length === 1 ? `Ability` : `Abilities`}: `
-
-        const pokemonAbilities = []
-        for (const abilities of data.abilities) { pokemonAbilities.push(`${abilities.ability.name}${abilities.is_hidden ? ` (hidden)` : ``}`) }
-        reply += `${pokemonAbilities.join(`, `)}. `
-
-        const doubleDamageTo = []
-        const doubleDamageFrom = []
-        const halfDamageTo = []
-        const halfDamageFrom = []
-        const immuneTo = []
-        const immuneFrom = []
-
-        if (pokemonTypes[0]) {
-            const response1 = await fetch(`https://pokeapi.co/api/v2/type/${pokemonTypes[0]}`)
-            const type1Data = await response1.json()
-            for (const damageType of type1Data.damage_relations.double_damage_to) {
-                if (!doubleDamageTo.includes(damageType.name)) { doubleDamageTo.push(damageType.name) }
-            }
-            for (const damageType of type1Data.damage_relations.double_damage_from) {
-                if (!doubleDamageFrom.includes(damageType.name)) { doubleDamageFrom.push(damageType.name) }
-            }
-            for (const damageType of type1Data.damage_relations.half_damage_to) {
-                if (!halfDamageTo.includes(damageType.name)) { halfDamageTo.push(damageType.name) }
-            }
-            for (const damageType of type1Data.damage_relations.half_damage_from) {
-                if (!halfDamageFrom.includes(damageType.name)) { halfDamageFrom.push(damageType.name) }
-            }
-            for (const damageType of type1Data.damage_relations.no_damage_to) {
-                if (!immuneTo.includes(damageType.name)) { immuneTo.push(damageType.name) }
-            }
-            for (const damageType of type1Data.damage_relations.no_damage_from) {
-                if (!immuneFrom.includes(damageType.name)) { immuneFrom.push(damageType.name) }
-            }
-        }
-        if (pokemonTypes[1]) {
-            const response2 = await fetch(`https://pokeapi.co/api/v2/type/${pokemonTypes[1]}`)
-            const type2Data = await response2.json()
-            for (const damageType of type2Data.damage_relations.double_damage_to) {
-                if (!doubleDamageTo.includes(damageType.name)) { doubleDamageTo.push(damageType.name) }
-            }
-            for (const damageType of type2Data.damage_relations.double_damage_from) {
-                if (!doubleDamageFrom.includes(damageType.name)) { doubleDamageFrom.push(damageType.name) }
-            }
-            for (const damageType of type2Data.damage_relations.half_damage_to) {
-                if (!halfDamageTo.includes(damageType.name)) { halfDamageTo.push(damageType.name) }
-            }
-            for (const damageType of type2Data.damage_relations.half_damage_from) {
-                if (!halfDamageFrom.includes(damageType.name)) { halfDamageFrom.push(damageType.name) }
-            }
-            for (const damageType of type2Data.damage_relations.no_damage_to) {
-                if (!immuneTo.includes(damageType.name)) { immuneTo.push(damageType.name) }
-            }
-            for (const damageType of type2Data.damage_relations.no_damage_from) {
-                if (!immuneFrom.includes(damageType.name)) { immuneFrom.push(damageType.name) }
-            }
-        }
-
-        // if it TAKES double damage AND half damage FROM a type, remove from BOTH arrays
-        const nullify = doubleDamageFrom.filter(el => halfDamageFrom.includes(el))
-        for (const dupe of nullify) {
-            doubleDamageFrom.splice(doubleDamageFrom.indexOf(dupe), 1)
-            halfDamageFrom.splice(halfDamageFrom.indexOf(dupe), 1)
-        }
-
-        // Cleaning up immunities
-        for (const type of immuneFrom) {
-            if (halfDamageFrom.includes(type)) { halfDamageFrom.splice(halfDamageFrom.indexOf(type), 1) }
-            if (doubleDamageFrom.includes(type)) { doubleDamageFrom.splice(doubleDamageFrom.indexOf(type), 1) }
-        }
-
-        if (doubleDamageTo.length > 0) { reply += `Super effective to ${doubleDamageTo.join(`/`)}-type Pokemon. ` }
-        if (doubleDamageFrom.length > 0) { reply += `Weak to ${doubleDamageFrom.join(`/`)}-type moves. ` }
-        if (halfDamageTo.length > 0) { reply += `Not very effective to ${halfDamageTo.join(`/`)}-type Pokemon. ` }
-        if (halfDamageFrom.length > 0) { reply += `Resistant to ${halfDamageFrom.join(`/`)}-type moves. ` }
-        if (immuneTo.length > 0) { reply += `No effect to ${immuneTo.join(`/`)}-type Pokemon. ` }
-        if (immuneFrom.length > 0) { reply += `No effect from ${immuneFrom.join(`/`)}-type moves.` }
-        bot.say(chatroom, reply)
     },
     async getPokemonAbility(props) {
         const { bot, chatroom, args, channel } = props
@@ -238,23 +250,27 @@ module.exports = {
             return
         }
 
-        const response = await fetch(`https://pokeapi.co/api/v2/ability/${abilityName}`)
-        if (response.status !== 200) {
-            await logMessage([`-> ${response.status}: ${response.statusText}`])
-            bot.say(chatroom, `Ability "${args.join(` `)}" not found! ${negativeEmote}`)
-            return
-        }
-
-        const data = await response.json()
-        if (data.effect_entries.length) {
-            const message = data.effect_entries.filter(el => el.language.name === `en`)[0].effect.replace(/\n+/g, ` `).replace(/ +/g, ` `)
-            bot.say(chatroom, message)
-        } else {
-            await logMessage([`-> No effect entries for`, args.join(` `), data.flavor_text_entries.length, `total flavor text entries`])
-            if (data.flavor_text_entries.length) {
-                const message = data.flavor_text_entries.filter(el => el.language.name === `en`)[0].flavor_text.replace(/\n+/g, ` `).replace(/ +/g, ` `)
-                bot.say(chatroom, message)
+        try {
+            const response = await fetch(`https://pokeapi.co/api/v2/ability/${abilityName}`)
+            if (response.status !== 200) {
+                await logMessage([`-> ${response.status}: ${response.statusText}`])
+                bot.say(chatroom, `Ability "${args.join(` `)}" not found! ${negativeEmote}`)
+                return
             }
+
+            const data = await response.json()
+            if (data.effect_entries.length) {
+                const message = data.effect_entries.filter(el => el.language.name === `en`)[0].effect.replace(/\n+/g, ` `).replace(/ +/g, ` `)
+                bot.say(chatroom, message)
+            } else {
+                await logMessage([`-> No effect entries for`, args.join(` `), data.flavor_text_entries.length, `total flavor text entries`])
+                if (data.flavor_text_entries.length) {
+                    const message = data.flavor_text_entries.filter(el => el.language.name === `en`)[0].flavor_text.replace(/\n+/g, ` `).replace(/ +/g, ` `)
+                    bot.say(chatroom, message)
+                }
+            }
+        } catch (err) {
+            logMessage([`getPokemonAbility ${err}`])
         }
     },
     async getUrbanDictionaryDefinition(props) {
@@ -267,19 +283,25 @@ module.exports = {
             return
         }
 
-        const response = await fetch(`https://unofficialurbandictionaryapi.com/api/search?term=${query}`)
-        const data = await response.json()
-        await logMessage([`getUrbanDictionaryDefinition`, response.status, renderObj(data, `data`)])
+        try {
+            const response = await fetch(`https://unofficialurbandictionaryapi.com/api/search?term=${query}`)
+            const data = await response.json()
+            await logMessage([`getUrbanDictionaryDefinition`, response.status, renderObj(data, `data`)])
 
-        if (data.statusCode !== 200) {
-            bot.say(chatroom, `Error fetching definition! :O`)
+            if (data.statusCode !== 200) {
+                bot.say(chatroom, `Error getting definition! :O`)
+            }
+
+            const objDefinition = data.data[Math.floor(Math.random() * data.data.length)]
+            const reply = data.found
+                ? `"${query}" (${pluralize(data.data.length, `definition`, `definitions`)} found): ${objDefinition.meaning} - ex: "${objDefinition.example}" (${objDefinition.date})`
+                : `No definition found! :O`
+
+            bot.say(chatroom, reply)
+        } catch (err) {
+            logMessage([`getUrbanDictionaryDefinition ${err}`])
         }
-
-        const objDefinition = data.data[Math.floor(Math.random() * data.data.length)]
-        const reply = data.found
-            ? `"${query}" (${pluralize(data.data.length, `definition`, `definitions`)} found): ${objDefinition.meaning} - ex: "${objDefinition.example}" (${objDefinition.date})`
-            : `No definition found! :O`
-
+    },
     async getGlobalBttvEmotes() {
         await logMessage([`> getGlobalBttvEmotes()`])
         const data = await apiGetGlobalBttvEmotes()

@@ -245,8 +245,6 @@ async function handleStreamOnline(bot, chatroom, channel) {
             'Client-Id': CLIENT_ID
         }
     }
-    const response = await fetch(endpoint, options)
-    const twitchData = await response.json()
 
     const greetingEmote = getContextEmote(`greeting`, channel)
     const hypeEmote = getContextEmote(`hype`, channel)
@@ -257,15 +255,23 @@ async function handleStreamOnline(bot, chatroom, channel) {
         `Hi ${streamer} nation ${greetingEmote}`,
         `first`
     ]
-    if (twitchData?.data?.[0]) {
-        announcements.push(
-            `Have fun ${twitchData.data[0].game_name
-                ? twitchData.data[0].game_name === `Just Chatting`
-                    ? `chatting with viewers`
-                    : `playing ${twitchData.data[0].game_name}`
-                : `doing nothing`
-            }, ${streamer}! ${greetingEmote}`
-        )
+
+    try {
+        const response = await fetch(endpoint, options)
+        const twitchData = await response.json()
+
+        if (twitchData?.data?.[0]) {
+            announcements.push(
+                `Have fun ${twitchData.data[0].game_name
+                    ? twitchData.data[0].game_name === `Just Chatting`
+                        ? `chatting with viewers`
+                        : `playing ${twitchData.data[0].game_name}`
+                    : `doing nothing`
+                }, ${streamer}! ${greetingEmote}`
+            )
+        }
+    } catch (err) {
+        logMessage([`handleStreamOnline ${err}`])
     }
     const reply = announcements[Math.floor(Math.random() * announcements.length)]
 
