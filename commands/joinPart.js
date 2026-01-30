@@ -65,7 +65,7 @@ module.exports = {
 
             if (lemonyFresh[channel].followEmotes.length) { joinMessages.push(`I know ${pluralize(lemonyFresh[channel].followEmotes.length, `follow emote`, `follow emotes`)} in ${channel}'s channel! ${positiveEmote}`) }
             if (lemonyFresh[channel].subEmotes.length) { joinMessages.push(`I know ${pluralize(lemonyFresh[channel].subEmotes.length, `sub emote`, `sub emotes`)} in ${channel}'s channel! ${positiveEmote}`) }
-            if (lemonyFresh[channel].bttvEmotes.length) { joinMessages.push(`I know ${pluralize(lemonyFresh[channel].bttvEmotes.length, `bttv emote`, `bttv emotes`)} in ${channel}'s channel! ${positiveEmote}`) }
+            if (lemonyFresh[channel].bttvEmotes.length) { joinMessages.push(`I know ${pluralize(lemonyFresh[channel].bttvEmotes.length, `BTTV emote`, `BTTV emotes`)} in ${channel}'s channel! ${positiveEmote}`) }
 
             const joinMessage = joinMessages[Math.floor(Math.random() * joinMessages.length)]
             bot.say(chatroom, joinMessage)
