@@ -324,7 +324,7 @@ module.exports = {
             await logMessage([`-> No BTTV emotes found for '${channel}'`])
             return
         }
-        const bttvEmotes = [data.channelEmotes.map(el => el.code), data.sharedEmotes.map(el => el.code)]
+        const bttvEmotes = [...data.channelEmotes.map(el => el.code), ...data.sharedEmotes.map(el => el.code)]
         lemonyFresh[channel].bttvEmotes = [...bttvEmotes]
         await logMessage([`-> ${pluralize(lemonyFresh[channel].bttvEmotes.length, `BTTV emote`, `BTTV emotes`)} for '${channel}'`])
     }
