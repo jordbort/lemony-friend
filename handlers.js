@@ -20,7 +20,7 @@ const { checkWord, checkLetter } = require(`./patterns/hangman`)
 const { registerWebSocket, initWebSocket, closeWebSocket } = require(`./events`)
 const { getGlobalBttvEmotes, getStreamBttvEmotes } = require(`./commands/external`)
 const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
-const { apiGetTwitchChannel, getGlobalTwitchEmotes, getStreamTwitchEmotes } = require(`./commands/twitch`)
+const { apiGetTwitchChannel, updateEventSubs, getGlobalTwitchEmotes, getStreamTwitchEmotes } = require(`./commands/twitch`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
 const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, logMessage, acknowledgeGigantifiedEmote, appendLogs } = require(`./utils`)
 
