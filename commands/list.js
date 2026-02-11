@@ -26,8 +26,13 @@ function addItem(bot, chatroom, channel, args, isModOrVIP) {
     const dumbEmote = getContextEmote(`dumb`, channel)
 
     if (newItem) {
-        lemonyFresh[channel].list.push(newItem)
-        bot.say(chatroom, `Added #${lemonyFresh[channel].list.length - 1} to ${listName}! ${positiveEmote}`)
+        if (lemonyFresh[channel].list.includes(newItem)) {
+            const idx = lemonyFresh[channel].list.indexOf(newItem)
+            bot.say(chatroom, `List already includes "${newItem}" as item #${idx}! ${dumbEmote}`)
+        } else {
+            lemonyFresh[channel].list.push(newItem)
+            bot.say(chatroom, `Added #${lemonyFresh[channel].list.length - 1} to ${listName}! ${positiveEmote}`)
+        }
     } else { bot.say(chatroom, `Nothing added to ${listName}! ${dumbEmote}`) }
 }
 
