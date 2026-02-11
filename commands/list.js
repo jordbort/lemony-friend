@@ -11,6 +11,33 @@ function getItem(bot, chatroom, channel, idx) {
         : bot.say(chatroom, `#${idx} doesn't exist in ${listName}! ${negativeEmote}`)
 }
 
+function getItemRange(bot, chatroom, channel, arg) {
+    const idx1 = Number(arg.split(/(-?\d+)-(-?\d+)/i)[1])
+    const idx2 = Number(arg.split(/(-?\d+)-(-?\d+)/i)[2])
+    logMessage([`-> getItemRange(idx1: ${idx1}, idx2: ${idx2})`])
+
+    const listName = lemonyFresh[channel].list[0] || `the list`
+    const negativeEmote = getContextEmote(`negative`, channel)
+
+    if (!idx1 || !lemonyFresh[channel].list[idx1]) {
+        bot.say(chatroom, `${arg.split(/(-?\d+)-(-?\d+)/i)[1] ? `#${arg.split(/(-?\d+)-(-?\d+)/i)[1]}` : `Item`} not found in ${listName}! ${negativeEmote}`)
+        return
+    }
+
+    if (!idx2 || !lemonyFresh[channel].list[idx2]) {
+        bot.say(chatroom, `${arg.split(/(-?\d+)-(-?\d+)/i)[2] ? `#${arg.split(/(-?\d+)-(-?\d+)/i)[2]}` : `Item`} not found in ${listName}! ${negativeEmote}`)
+        return
+    }
+
+    const listSegment = lemonyFresh[channel].list
+        .slice(idx1, idx2 + 1)
+        .map(el => `${lemonyFresh[channel].list.indexOf(el)}) ${el}`)
+
+    const dumbEmote = getContextEmote(`dumb`, channel)
+    listSegment.length
+        ? bot.say(chatroom, `Items #${idx1}-${idx2} from ${listName}: ${listSegment.join(`, `)}`)
+        : bot.say(chatroom, `No items found in ${lemonyFresh[channel].list[0] || `the list`}! ${dumbEmote}`)
+}
 
 function addItem(bot, chatroom, channel, args, isModOrVIP) {
     logMessage([`-> addItem(args: '${args.join(`', '`)}', isModOrVIP? ${isModOrVIP})`])
@@ -209,8 +236,8 @@ function getListMethods(bot, chatroom, channel, isModOrVIP) {
     const neutralEmote = getContextEmote(`neutral`, channel)
 
     isModOrVIP
-        ? bot.say(chatroom, `You can use !list to show the full list, or !list <number> or "random" to get a specific or random item from the list! VIPs/mods can also use !list add <new item>, edit <number>, delete <number>, swap/switch <number1> <number2>, move <number1> <number2>, name/rename <list name>, clear (to empty list), and reset (to empty list and reset name)! ${neutralEmote}`)
-        : bot.say(chatroom, `You can use !list to show the full list, or !list <number> or "random" to get a specific or random item from the list! ${neutralEmote}`)
+        ? bot.say(chatroom, `You can use !list to show the full list, !list <number> or "random" to get a specific or random item from the list, or !list <number>-<number> to get a range of items! VIPs/mods can also use !list add <new item>, edit <number>, delete <number>, swap/switch <number1> <number2>, move <number1> <number2>, name/rename <list name>, clear (to empty list), and reset (to empty list and reset name)! ${neutralEmote}`)
+        : bot.say(chatroom, `You can use !list to show the full list, !list <number> or "random" to get a specific or random item from the list, or !list <number>-<number> to get a range of items! ${neutralEmote}`)
 }
 
 module.exports = {
@@ -236,6 +263,9 @@ module.exports = {
             return
         }
 
+        // Get range of items by numbers
+        if (/^-?\d+--?\d+$/i.test(args[0])) {
+            getItemRange(bot, chatroom, channel, args[0])
             return
         }
 
