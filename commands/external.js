@@ -277,9 +277,10 @@ module.exports = {
         const { bot, chatroom, args, channel } = props
         const query = args.join(` `)
         await logMessage([`> getUrbanDictionaryDefinition(channel: ${channel}, query: '${query}')`])
+        const negativeEmote = getContextEmote(`negative`, channel)
 
         if (!query) {
-            bot.say(chatroom, `No query provided! :O`)
+            bot.say(chatroom, `No query provided! ${negativeEmote}`)
             return
         }
 
@@ -289,17 +290,18 @@ module.exports = {
             await logMessage([`getUrbanDictionaryDefinition`, response.status, renderObj(data, `data`)])
 
             if (data.statusCode !== 200) {
-                bot.say(chatroom, `Error getting definition! :O`)
+                bot.say(chatroom, `Error getting definition! ${negativeEmote}`)
             }
 
             const objDefinition = data.data[Math.floor(Math.random() * data.data.length)]
             const reply = data.found
                 ? `"${query}" (${pluralize(data.data.length, `definition`, `definitions`)} found): ${objDefinition.meaning} - ex: "${objDefinition.example}" (${objDefinition.date})`
-                : `No definition found! :O`
+                : `No definition found! ${negativeEmote}`
 
             bot.say(chatroom, reply)
         } catch (err) {
             logMessage([`getUrbanDictionaryDefinition ${err}`])
+            bot.say(chatroom, `Error getting definition! ${negativeEmote}`)
         }
     },
     async getGlobalBttvEmotes() {
