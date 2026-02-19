@@ -313,7 +313,7 @@ async function apiGetTokenScope(channel, attempt = 1) {
 }
 
 async function apiCreateEventSub(channel, type, version, attempt = 1) {
-    await logMessage([`> apiCreateEventSub(channel: '${channel}', type: '${type}', version: ${version}, attempt: ${attempt})`])
+    // await logMessage([`> apiCreateEventSub(channel: '${channel}', type: '${type}', version: ${version}, attempt: ${attempt})`])
     const streamer = lemonyFresh[channel]
 
     const endpoint = `https://api.twitch.tv/helix/eventsub/subscriptions`
@@ -413,7 +413,7 @@ async function apiGetEventSubs(channel, attempt = 1) {
 }
 
 async function apiDeleteEventSub(channel, id, attempt = 1) {
-    await logMessage([`> apiDeleteEventSub(channel: '${channel}', id: '${id}', attempt: ${attempt})`])
+    // await logMessage([`> apiDeleteEventSub(channel: '${channel}', id: '${id}', attempt: ${attempt})`])
     const streamer = lemonyFresh[channel]
     const endpoint = `https://api.twitch.tv/helix/eventsub/subscriptions?id=${id}`
     const options = {
@@ -458,18 +458,21 @@ async function updateEventSubs(channel) {
         await logMessage([`-> Unable to determine ${channel}'s token scope`])
         return
     }
+
     const sessionId = lemonyFresh[channel].webSocketSessionId
     const obj = await apiGetEventSubs(channel)
     if (obj && `data` in obj) {
         const enabled = obj.data.filter(el => el.status === `enabled` && el.transport.session_id === sessionId).map(el => el.type)
         const disabled = obj.data.filter(el => el.status !== `enabled` || el.transport.session_id !== sessionId)
+        await logMessage([`--> ${pluralize(enabled.length, `enabled EventSub`, `enabled EventSubs`)} for ${channel}${disabled.length ? `, ${pluralize(disabled.length, `disabled EventSub`, `disabled EventSubs`)} being rebuilt` : ``}`])
+
         // Delete disabled EventSubs
         if (disabled.length) {
-            if (enabled.length) { console.log(`channel:`, channel, `enabled.length:`, enabled.length, `disabled.length:`, disabled.length) }
             for (const el of disabled) {
                 await apiDeleteEventSub(channel, el.id)
             }
         }
+
         // Rebuild EventSubs
         if (!enabled.includes(`stream.online`)) { await apiCreateEventSub(channel, `stream.online`, 1) }
         if (!enabled.includes(`stream.offline`)) { await apiCreateEventSub(channel, `stream.offline`, 1) }
