@@ -329,5 +329,44 @@ module.exports = {
         const bttvEmotes = [...data.channelEmotes.map(el => el.code), ...data.sharedEmotes.map(el => el.code)]
         lemonyFresh[channel].bttvEmotes = [...bttvEmotes]
         await logMessage([`-> ${pluralize(lemonyFresh[channel].bttvEmotes.length, `BTTV emote`, `BTTV emotes`)} for '${channel}'`])
+    },
+    async apiGetRandomWord() {
+        await logMessage([`> apiGetRandomWord()`])
+        const endpoint = `https://api.api-ninjas.com/v2/randomword`
+        const options = {
+            headers: {
+                'X-Api-Key': API_KEY
+            }
+        }
+
+        let word
+        let valid = false
+        do {
+            try {
+                const response = await fetch(endpoint, options)
+                const data = await response.json()
+                await logMessage([`-> Random word:`, data])
+                if (data[0] !== data[0].toLowerCase()) {
+                    await logMessage([`--> '${data[0]}' may be a proper noun, retrying...`])
+                    continue
+                }
+                word = data[0]
+                try {
+                    const endpoint = `https://api.api-ninjas.com/v1/dictionary?word=${word}`
+                    const response = await fetch(endpoint, options)
+                    const data = await response.json()
+                    if (!data.valid) { await logMessage([`--> No defininition for '${word}', retrying...`]) }
+                    valid = data.valid
+                } catch (err) {
+                    logMessage([`(Validating word) ${err}`])
+                    return false
+                }
+            } catch (err) {
+                logMessage([`apiGetRandomWord ${err}`])
+                return false
+            }
+        } while (!valid)
+
+        return word
     }
 }

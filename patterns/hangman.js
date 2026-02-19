@@ -1,6 +1,9 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
+
 const { settings } = require(`../config`)
 const { lemonyFresh, users } = require(`../data`)
+
+const { apiGetRandomWord } = require(`../commands/external`)
 const { pluralize, getContextEmote, logMessage, arrToList } = require(`../utils`)
 
 const setDelay = (channel) => users[BOT_USERNAME].channels[channel].mod || users[BOT_USERNAME].channels[channel].vip || channel === BOT_USERNAME ? 1000 : 2000
@@ -14,7 +17,7 @@ async function getRandomWord() {
         await logMessage([`-> Random word:`, data])
         return data[0]
     } catch (err) {
-        logMessage([`${err}`])
+        logMessage([`getRandomWord ${err}`])
         return false
     }
 }
@@ -23,7 +26,8 @@ async function hangmanInit(channel, username) {
     await logMessage([`> hangmanInit(channel: '${channel}', username: '${username}')`])
     const hangman = lemonyFresh[channel].hangman
 
-    const randomWord = await getRandomWord()
+    let randomWord = await getRandomWord()
+    if (!randomWord) { randomWord = await apiGetRandomWord() }
     if (!randomWord) { return false }
 
     hangman.listening = true
