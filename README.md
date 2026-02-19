@@ -69,6 +69,7 @@ Each channel lemony_friend is in has a generic, unnamed list, empty by default. 
 - `!list` - Check the stream's list.
 - `!list help` - Return all methods available to the user (mods, VIPs, and channel owners have more options).
 - `!list <number>` - Recall a specific item from the list by its number.
+- `!list <number1> to <number2>` or `!list <number1>-<number2>` - Recall a range of items from the list. Both numbers must exist within the list.
 - `!list random` - Recall an item from the list at random.
 - `!list add <...>` - Add an item to the list. Only available to mods, VIPs, and the channel owner.
 - `!list edit <number> <...>` - Update the contents of a specific number in the list. Only available to mods, VIPs, and the channel owner.

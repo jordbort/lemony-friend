@@ -11,31 +11,32 @@ function getItem(bot, chatroom, channel, idx) {
         : bot.say(chatroom, `#${idx} doesn't exist in ${listName}! ${negativeEmote}`)
 }
 
-function getItemRange(bot, chatroom, channel, arg) {
-    const idx1 = Number(arg.split(/(-?\d+)-(-?\d+)/i)[1])
-    const idx2 = Number(arg.split(/(-?\d+)-(-?\d+)/i)[2])
+function getItemRange(bot, chatroom, channel, range) {
+    const regex = /(-?\d+)(-|to)(-?\d+)/i
+    const idx1 = Number(range.split(regex)[1])
+    const idx2 = Number(range.split(regex)[3])
     logMessage([`-> getItemRange(idx1: ${idx1}, idx2: ${idx2})`])
 
     const listName = lemonyFresh[channel].list[0] || `the list`
     const negativeEmote = getContextEmote(`negative`, channel)
 
     if (!idx1 || !lemonyFresh[channel].list[idx1]) {
-        bot.say(chatroom, `${arg.split(/(-?\d+)-(-?\d+)/i)[1] ? `#${arg.split(/(-?\d+)-(-?\d+)/i)[1]}` : `Item`} not found in ${listName}! ${negativeEmote}`)
+        bot.say(chatroom, `#${idx1} not found in ${listName}! ${negativeEmote}`)
         return
     }
 
     if (!idx2 || !lemonyFresh[channel].list[idx2]) {
-        bot.say(chatroom, `${arg.split(/(-?\d+)-(-?\d+)/i)[2] ? `#${arg.split(/(-?\d+)-(-?\d+)/i)[2]}` : `Item`} not found in ${listName}! ${negativeEmote}`)
+        bot.say(chatroom, `#${idx2} not found in ${listName}! ${negativeEmote}`)
         return
     }
 
     const listSegment = lemonyFresh[channel].list
         .slice(idx1, idx2 + 1)
-        .map(el => `${lemonyFresh[channel].list.indexOf(el)}) ${el}`)
+        .map((el, idx) => `${idx + idx1}) ${el}`)
 
     const dumbEmote = getContextEmote(`dumb`, channel)
     listSegment.length
-        ? bot.say(chatroom, `Items #${idx1}-${idx2} from ${listName}: ${listSegment.join(`, `)}`)
+        ? bot.say(chatroom, `Items #${idx1} to #${idx2} from ${listName}: ${listSegment.join(`, `)}`)
         : bot.say(chatroom, `No items found in ${lemonyFresh[channel].list[0] || `the list`}! ${dumbEmote}`)
 }
 
@@ -53,13 +54,8 @@ function addItem(bot, chatroom, channel, args, isModOrVIP) {
     const dumbEmote = getContextEmote(`dumb`, channel)
 
     if (newItem) {
-        if (lemonyFresh[channel].list.includes(newItem)) {
-            const idx = lemonyFresh[channel].list.indexOf(newItem)
-            bot.say(chatroom, `List already includes "${newItem}" as item #${idx}! ${dumbEmote}`)
-        } else {
-            lemonyFresh[channel].list.push(newItem)
-            bot.say(chatroom, `Added #${lemonyFresh[channel].list.length - 1} to ${listName}! ${positiveEmote}`)
-        }
+        lemonyFresh[channel].list.push(newItem)
+        bot.say(chatroom, `Added #${lemonyFresh[channel].list.length - 1} "${newItem}" to ${listName}! ${positiveEmote}`)
     } else { bot.say(chatroom, `Nothing added to ${listName}! ${dumbEmote}`) }
 }
 
@@ -251,6 +247,12 @@ module.exports = {
             return
         }
 
+        // Get range of items by numbers
+        if (/^-?\d+(-|to)-?\d+$/i.test(args.join(``))) {
+            getItemRange(bot, chatroom, channel, args.join(``))
+            return
+        }
+
         // Get item by number
         if (/^-?\d+$/i.test(args[0])) {
             getItem(bot, chatroom, channel, Number(args[0]))
@@ -260,12 +262,6 @@ module.exports = {
         // Get random item
         if (/^random$/i.test(args[0])) {
             getItem(bot, chatroom, channel, Math.ceil(Math.random() * (lemonyFresh[channel].list.length - 1)))
-            return
-        }
-
-        // Get range of items by numbers
-        if (/^-?\d+--?\d+$/i.test(args[0])) {
-            getItemRange(bot, chatroom, channel, args[0])
             return
         }
 
@@ -318,8 +314,7 @@ module.exports = {
         }
 
         // No args, or keyword not recognized
-        const listContents = lemonyFresh[channel].list.map((el, idx) => `${idx}) ${el}`)
-        listContents.shift()
+        const listContents = lemonyFresh[channel].list.slice(1).map((el, idx) => `${idx + 1}) ${el}`)
         const dumbEmote = getContextEmote(`dumb`, channel)
 
         listContents.length
