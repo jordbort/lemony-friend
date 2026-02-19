@@ -64,15 +64,15 @@ module.exports = {
     [/\b(y+o+)+\b/i]: handleGreetOne,
 
     // "ok(ay) lemon"/"lemon ok(ay)"
-    [RegExp(`^o+k+(a*y+)?\\s${BOT_NICKNAME_REGEX}$|^${BOT_NICKNAME_REGEX}\\so+k+(a*y+)?$`, `i`)]: (props) => contextReact(props, `dumb`),
+    [RegExp(`^o+k+(a*y+)?\\s${BOT_NICKNAME_REGEX}\\b|^${BOT_NICKNAME_REGEX}\\so+k+(a*y+)?\\b`, `i`)]: (props) => contextReact(props, `dumb`),
     // "yes lemon"/"lemon yes"
-    [RegExp(`^y+e+s+\\s${BOT_NICKNAME_REGEX}$|^${BOT_NICKNAME_REGEX}\\sy+e+s+$`, `i`)]: (props) => contextReact(props, `neutral`),
+    [RegExp(`^y+e+s+\\s${BOT_NICKNAME_REGEX}\\b|^${BOT_NICKNAME_REGEX}\\sy+e+s+\\b`, `i`)]: (props) => contextReact(props, `neutral`),
     // "no lemon"/"lemon no"
-    [RegExp(`^n+o+\\s${BOT_NICKNAME_REGEX}$|^${BOT_NICKNAME_REGEX}\\sn+o+$`, `i`)]: (props) => contextReact(props, `negative`),
+    [RegExp(`^n+o+\\s${BOT_NICKNAME_REGEX}\\b|^${BOT_NICKNAME_REGEX}\\sn+o+\\b`, `i`)]: (props) => contextReact(props, `negative`),
 
     // good bot
     [/\bg+o{2,}d+\sb+ot+\b/i]: (props) => contextReact(props, `hype`),
 
-    // Contains "you" or "u"
-    [/\b(you|u)['"]*r*e*\b/i]: checkSentiment
+    // Contains "you", "u", "u're", "yr", "yourself", "urself", etc.
+    [/\b(y?o?u|y(e|u)?)['"]*r*e*(self)?\b/i]: checkSentiment
 }
