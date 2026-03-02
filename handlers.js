@@ -22,7 +22,7 @@ const { getGlobalBttvEmotes, getStreamBttvEmotes } = require(`./commands/externa
 const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
 const { apiGetTwitchChannel, updateEventSubs, getGlobalTwitchEmotes, getStreamTwitchEmotes } = require(`./commands/twitch`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
-const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, logMessage, acknowledgeGigantifiedEmote, appendLogs } = require(`./utils`)
+const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, logMessage, appendLogs } = require(`./utils`)
 
 function devCommandUsed(props) {
     const { username, command } = props
@@ -98,6 +98,13 @@ function botMentioned(props) {
         logMessage([`BOT MENTION DID NOT MATCH REGEX PATTERNS`])
     }
     return false
+}
+
+function acknowledgeGigantifiedEmote(bot, chatroom, msg) {
+    const emoteUsed = msg.split(` `)[msg.split(` `).length - 1]
+    const emoteOwner = Object.keys(lemonyFresh).filter(key => lemonyFresh[key].followEmotes.includes(emoteUsed) || lemonyFresh[key].subEmotes.includes(emoteUsed))[0] || null
+    logMessage([`> Gigantified ${emoteUsed} owner: ${emoteOwner || `unknown`}, ${BOT_USERNAME} subbed? ${!!users[BOT_USERNAME]?.channels[emoteOwner]?.sub}`])
+    if (users[BOT_USERNAME]?.channels[emoteOwner]?.sub) { bot.say(chatroom, `BEEG ${emoteUsed}`) }
 }
 
 function hangmanListener(props) {
