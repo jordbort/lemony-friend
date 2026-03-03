@@ -1,7 +1,7 @@
 const CLIENT_ID = process.env.CLIENT_ID
 
 const { settings } = require(`../config`)
-const { joinedChannels } = require(`../data`)
+const { joinedChatrooms } = require(`../data`)
 
 const { pluralize, logMessage, renderObj } = require(`../utils`)
 const { apiGetTwitchAppAccessToken } = require(`../commands/twitch`)
@@ -249,7 +249,7 @@ module.exports = {
             console.log(`assignToConduit: No conduit ID`)
             return
         }
-        const index = joinedChannels.indexOf(chatroom)
+        const index = joinedChatrooms.indexOf(chatroom)
         const conduits = await apiGetConduits()
         const shardCount = conduits[0].shard_count
         await logMessage([`> assignToConduit(chatroom: '${chatroom}', index: ${index}, shardCount: ${shardCount})`])

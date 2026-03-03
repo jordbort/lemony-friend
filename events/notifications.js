@@ -1,6 +1,6 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
-const { lemonyFresh, mods, users, joinedChannels } = require(`../data`)
+const { lemonyFresh, mods, users, joinedChatrooms } = require(`../data`)
 
 const { apiGetTwitchChannel } = require(`../commands/twitch`)
 const { logMessage, getContextEmote, updateMod, pluralize, arrToList } = require(`../utils`)
@@ -347,7 +347,7 @@ module.exports = {
         switch (subscription.type) {
             case `conduit.shard.disabled`:
                 // channel will be undefined
-                const disabledChatroom = joinedChannels[Number(payload.event.shard_id)]
+                const disabledChatroom = joinedChatrooms[Number(payload.event.shard_id)]
                 console.log(`* conduit.shard.disabled`, disabledChatroom, `web socket disabled, shardId:`, shardId)
                 logMessage([`* conduit.shard.disabled`, disabledChatroom, `web socket disabled, shardId:`, shardId])
                 break

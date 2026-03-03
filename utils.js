@@ -14,7 +14,7 @@ const formatMegabytes = (num) => Math.round(num / 1024 / 1024 * 100) / 100
 
 async function printMemory(arr) {
     await fs.writeFile(`./memory.json`, JSON.stringify({
-        joinedChannels: arr,
+        joinedChatrooms: arr,
         settings,
         lemonyFresh,
         mods,

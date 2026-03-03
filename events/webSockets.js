@@ -1,6 +1,6 @@
 const WebSocket = require(`ws`)
 
-const { joinedChannels } = require(`../data`)
+const { joinedChatrooms } = require(`../data`)
 
 const { logMessage } = require(`../utils`)
 const { assignToConduit } = require(`./conduits`)
@@ -74,8 +74,8 @@ function handleMessage(bot, channel, event) {
             // if (event.payload.subscription.type === `conduit.shard.disabled`) {
             //     console.log(event)
             //     const shardId = Number(event.payload.event.shard_id)
-            //     console.log(shardId, joinedChannels[shardId])
-            //     initWebSocket(bot, joinedChannels[shardId], joinedChannels[shardId].substring(1))
+            //     console.log(shardId, joinedChatrooms[shardId])
+            //     initWebSocket(bot, joinedChatrooms[shardId], joinedChatrooms[shardId].substring(1))
             // }
             handleNotification(bot, event.payload)
             break
@@ -173,7 +173,7 @@ module.exports = {
     },
     closeWebSocket,
     checkWebSockets(arrShards) {
-        const list = joinedChannels.map(str => str.substring(1))
+        const list = joinedChatrooms.map(str => str.substring(1))
         for (const shard of arrShards) {
             const shardId = shard.id
             const channel = list[shardId]

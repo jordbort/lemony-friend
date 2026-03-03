@@ -4,14 +4,14 @@ const { onMessageHandler, onJoinedHandler, onPartedHandler, onWhisperHandler, on
 const tmi = require(`tmi.js`)
 const BOT_USERNAME = process.env.BOT_USERNAME
 const OAUTH_TOKEN = process.env.OAUTH_TOKEN
-const { joinedChannels } = require(`./memory.json`)
+const { joinedChatrooms } = require(`./data`)
 
 const opts = {
     identity: {
         username: BOT_USERNAME,
         password: OAUTH_TOKEN
     },
-    channels: joinedChannels
+    channels: joinedChatrooms
 }
 const client = new tmi.client(opts)
 

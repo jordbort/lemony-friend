@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings } = require(`../config`)
-const { lemonyFresh, users, mods, commonNicknames, startingLemons, hangmanWins, joinedChannels } = require(`../data`)
+const { lemonyFresh, users, mods, commonNicknames, startingLemons, hangmanWins, joinedChatrooms } = require(`../data`)
 
 const { getSubs } = require(`./help`)
 const { rollFunNumber } = require(`./funNumber`)
@@ -21,7 +21,7 @@ function checkPoints(props) {
 }
 
 module.exports = {
-    'joined': (props) => { console.log(joinedChannels.length, joinedChannels) },
+    'joined': (props) => { console.log(joinedChatrooms.length, joinedChatrooms) },
     'create': (props) => {
         const { bot, chatroom, args } = props
         const num = !args.length || isNaN(args[0]) ? null : args[0]

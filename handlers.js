@@ -10,7 +10,7 @@ const printLemon = require(`./commands/printLemon`)
 const botInteraction = require(`./patterns/botInteraction`)
 
 const { settings } = require(`./config`)
-const { joinedChannels, lemonyFresh, users, lemCmds } = require(`./data`)
+const { joinedChatrooms, lemonyFresh, users, lemCmds } = require(`./data`)
 
 const { useLemCmd } = require(`./commands/lemCmds`)
 const { addToBatch } = require(`./events/notifications`)
@@ -142,7 +142,7 @@ async function getOrCreateConduit() {
         if (conduits.length > 1) { await logMessage([`Warning: More than one conduit exists`]) }
         settings.conduitId = conduits[0].id
     } else {
-        await apiCreateConduit(joinedChannels.length)
+        await apiCreateConduit(joinedChatrooms.length)
     }
 }
 
@@ -165,8 +165,8 @@ module.exports = {
 
         if (self) {
             addToBatch(channel)
-            if (!joinedChannels.includes(chatroom)) {
-                joinedChannels.push(chatroom)
+            if (!joinedChatrooms.includes(chatroom)) {
+                joinedChatrooms.push(chatroom)
             }
 
             // Setup channel data
