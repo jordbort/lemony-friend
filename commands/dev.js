@@ -6,7 +6,7 @@ const { lemonyFresh, users, mods, commonNicknames, startingLemons, hangmanWins, 
 const { getSubs } = require(`./help`)
 const { rollFunNumber } = require(`./funNumber`)
 const { handleJoin, handlePart } = require(`./joinPart`)
-const { deleteAllEventSubs, updateEventSubs, apiGetEventSubs } = require(`./twitch`)
+const { updateEventSubs, apiGetEventSubs } = require(`./twitch`)
 const { logMessage, printMemory, pluralize, getContextEmote, getToUser, arrToList } = require(`../utils`)
 const { printWebSockets, closeWebSocket, removeClosedWebSockets, forceTrimWebSocket, createWebSocket, checkWebSockets } = require(`../events/webSockets`)
 const { apiCreateConduit, apiGetConduits, apiUpdateConduit, apiDeleteConduit, apiGetConduitShards, apiUpdateConduitShard } = require(`../events/conduits`)
@@ -117,10 +117,6 @@ module.exports = {
             const reply = arrToList(Object.keys(eventSubs).map(key => pluralize(Object.keys(eventSubs[key]).length, `${key} EventSub`, `${key} EventSubs`)))
             bot.say(chatroom, reply)
         }
-    },
-    'deletesubs': (props) => {
-        const { channel } = props
-        deleteAllEventSubs(channel)
     },
     'all': (props) => {
         printWebSockets()

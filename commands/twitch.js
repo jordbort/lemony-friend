@@ -360,9 +360,6 @@ async function apiCreateEventSub(channel, type, version, attempt = 1) {
                     await logMessage([`-> Failed to create '${type}' EventSub for ${channel} after ${pluralize(attempt, `attempt`, `attempts`)}`])
                     return null
                 }
-            } else if (response.status === 409) {
-                console.log(`failed to make`, channel, type)
-                // const data = await apiGetEventSubs()
             } else { return null }
         }
     } catch (err) {
@@ -873,17 +870,6 @@ module.exports = {
             ? `Token is unable to handle ${arrToList(arrAbilities, `or`)}. Please use !access to renew your token and get all the features!`
             : `Token has all available features! Thanks for using ${BOT_USERNAME}!`
         bot.say(chatroom, reply)
-    },
-    async deleteAllEventSubs(channel) {
-        await logMessage([`> deleteAllEventSubs(channel: '${channel}')`])
-        const obj = await apiGetEventSubs()
-        if (obj && `data` in obj) {
-            if (obj.data.length) {
-                for (const el of obj.data) {
-                    await apiDeleteEventSub(el.id, el.type, el.status)
-                }
-            }
-        }
     },
     accessInstructions(props) {
         const { bot, chatroom, username } = props
