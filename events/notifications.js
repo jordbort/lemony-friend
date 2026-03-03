@@ -347,7 +347,8 @@ module.exports = {
         switch (subscription.type) {
             case `conduit.shard.disabled`:
                 // channel will be undefined
-                const disabledChatroom = joinedChatrooms[Number(payload.event.shard_id)]
+                const shardId = Number(payload.event.shard_id)
+                const disabledChatroom = joinedChatrooms[shardId]
                 console.log(`* conduit.shard.disabled`, disabledChatroom, `web socket disabled, shardId:`, shardId)
                 logMessage([`* conduit.shard.disabled`, disabledChatroom, `web socket disabled, shardId:`, shardId])
                 break
