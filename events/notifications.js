@@ -42,7 +42,7 @@ async function handleStreamOnline(bot, channel) {
         )
     }
 
-    const reply = announcements[announcements.length - 1]
+    const reply = announcements[Math.floor(Math.random() * announcements.length)]
 
     bot.say(`#${channel}`, reply)
 }
