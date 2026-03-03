@@ -368,8 +368,8 @@ async function apiCreateEventSub(channel, type, version, attempt = 1) {
     }
 }
 
-async function apiGetEventSubs(page = ``, attempt = 1) {
-    await logMessage([`> apiGetEventSubs(${page ? `next` : `first`} page, attempt: ${attempt})`])
+async function apiGetEventSubs(page = ``, cosmeticPage = 1, attempt = 1) {
+    await logMessage([`> apiGetEventSubs(page: ${cosmeticPage}, attempt: ${attempt})`])
     const endpoint = `https://api.twitch.tv/helix/eventsub/subscriptions${page ? `?after=${page}` : ``}`
     const options = {
         headers: {
@@ -392,7 +392,7 @@ async function apiGetEventSubs(page = ``, attempt = 1) {
                     const retry = await apiGetTwitchAppAccessToken()
                     if (retry) {
                         attempt++
-                        return apiGetGlobalTwitchEmotes(attempt)
+                        return apiGetEventSubs(page, cosmeticPage, attempt)
                     }
                 } else {
                     await logMessage([`-> Failed to get event subscriptions after ${pluralize(attempt, `attempt`, `attempts`)}`])
@@ -453,12 +453,14 @@ async function updateEventSubs(channel) {
     }
 
     let obj = await apiGetEventSubs()
+    let page = 1
     if (obj && `data` in obj) {
         // Collect all pages of EventSubs
         const enabled = obj.data.filter(el => (el.condition?.broadcaster_user_id === `${lemonyFresh[channel].id}` || el.type === `conduit.shard.disabled`) && el.status === `enabled`).map(el => el.type)
         const disabled = obj.data.filter(el => (el.condition?.broadcaster_user_id === `${lemonyFresh[channel].id}` || el.type === `conduit.shard.disabled`) && el.status !== `enabled`)
         while (`cursor` in obj?.pagination) {
-            obj = await apiGetEventSubs(obj.pagination.cursor)
+            page++
+            obj = await apiGetEventSubs(obj.pagination.cursor, page)
             if (obj && `data` in obj) {
                 enabled.push(...obj.data.filter(el => (el.condition?.broadcaster_user_id === `${lemonyFresh[channel].id}` || el.type === `conduit.shard.disabled`) && el.status === `enabled`).map(el => el.type))
                 disabled.push(...obj.data.filter(el => (el.condition?.broadcaster_user_id === `${lemonyFresh[channel].id}` || el.type === `conduit.shard.disabled`) && el.status !== `enabled`))
