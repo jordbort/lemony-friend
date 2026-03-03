@@ -312,10 +312,8 @@ async function apiGetTokenScope(channel, attempt = 1) {
     }
 }
 
-async function apiCreateEventSub(channel, type, version, attempt = 1) {
-    await logMessage([`> apiCreateEventSub(channel: '${channel}', type: '${type}', version: ${version}, attempt: ${attempt})`])
-    const streamer = lemonyFresh[channel]
-
+async function apiCreateEventSub(userId, type, version, attempt = 1) {
+    await logMessage([`> apiCreateEventSub(userId: ${userId}, type: '${type}', version: ${version}, attempt: ${attempt})`])
     const endpoint = `https://api.twitch.tv/helix/eventsub/subscriptions`
 
     const requestBody = {
@@ -330,8 +328,8 @@ async function apiCreateEventSub(channel, type, version, attempt = 1) {
     type === `conduit.shard.disabled`
         ? (requestBody.condition.client_id = CLIENT_ID, requestBody.condition.conduit_id = settings.conduitId)
         : [`channel.follow`, `channel.shoutout.receive`].includes(type)
-            ? (requestBody.condition.broadcaster_user_id = `${streamer.id}`, requestBody.condition.moderator_user_id = `${streamer.id}`)
-            : requestBody.condition.broadcaster_user_id = `${streamer.id}`
+            ? (requestBody.condition.broadcaster_user_id = `${userId}`, requestBody.condition.moderator_user_id = `${userId}`)
+            : requestBody.condition.broadcaster_user_id = `${userId}`
 
     const options = {
         method: `POST`,
@@ -368,9 +366,9 @@ async function apiCreateEventSub(channel, type, version, attempt = 1) {
     }
 }
 
-async function apiGetEventSubs(userId, attempt = 1) {
-    await logMessage([`> apiGetEventSubs(userId: ${userId}, attempt: ${attempt})`])
-    const endpoint = `https://api.twitch.tv/helix/eventsub/subscriptions?user_id=${userId}`
+async function apiGetEventSubs(userId = null, type = ``, attempt = 1) {
+    await logMessage([`> apiGetEventSubs(userId: ${userId}, type: '${type}', attempt: ${attempt})`])
+    const endpoint = `https://api.twitch.tv/helix/eventsub/subscriptions${userId ? `?user_id=${userId}` : type ? `?type=${type}` : ``}`
     const options = {
         headers: {
             authorization: `Bearer ${settings.botAccessToken}`,
@@ -392,7 +390,7 @@ async function apiGetEventSubs(userId, attempt = 1) {
                     const retry = await apiGetTwitchAppAccessToken()
                     if (retry) {
                         attempt++
-                        return apiGetEventSubs(userId, attempt)
+                        return apiGetEventSubs(userId, type, attempt)
                     }
                 } else {
                     await logMessage([`-> Failed to get event subscriptions after ${pluralize(attempt, `attempt`, `attempts`)}`])
@@ -452,7 +450,8 @@ async function updateEventSubs(channel) {
         return
     }
 
-    const obj = await apiGetEventSubs(lemonyFresh[channel].id)
+    const userId = lemonyFresh[channel].id
+    const obj = await apiGetEventSubs(userId)
     if (obj && `data` in obj) {
         const enabled = obj.data.filter(el => el.status === `enabled`).map(el => el.type)
         const disabled = obj.data.filter(el => el.status !== `enabled`)
@@ -465,35 +464,34 @@ async function updateEventSubs(channel) {
         }
 
         // Rebuild EventSubs
-        if (!enabled.includes(`conduit.shard.disabled`)) { await apiCreateEventSub(channel, `conduit.shard.disabled`, 1) }
-        if (!enabled.includes(`stream.online`)) { await apiCreateEventSub(channel, `stream.online`, 1) }
-        if (!enabled.includes(`stream.offline`)) { await apiCreateEventSub(channel, `stream.offline`, 1) }
+        if (!enabled.includes(`stream.online`)) { await apiCreateEventSub(userId, `stream.online`, 1) }
+        if (!enabled.includes(`stream.offline`)) { await apiCreateEventSub(userId, `stream.offline`, 1) }
         for (const scope of arrScope) {
             if (scope === `moderator:read:followers`) {
-                if (!enabled.includes(`channel.follow`)) { await apiCreateEventSub(channel, `channel.follow`, 2) }
+                if (!enabled.includes(`channel.follow`)) { await apiCreateEventSub(userId, `channel.follow`, 2) }
             }
             if (scope === `channel:manage:vips`) {
-                if (!enabled.includes(`channel.vip.add`)) { await apiCreateEventSub(channel, `channel.vip.add`, 1) }
-                if (!enabled.includes(`channel.vip.remove`)) { await apiCreateEventSub(channel, `channel.vip.remove`, 1) }
+                if (!enabled.includes(`channel.vip.add`)) { await apiCreateEventSub(userId, `channel.vip.add`, 1) }
+                if (!enabled.includes(`channel.vip.remove`)) { await apiCreateEventSub(userId, `channel.vip.remove`, 1) }
             }
             if (scope === `moderation:read`) {
-                if (!enabled.includes(`channel.moderator.add`)) { await apiCreateEventSub(channel, `channel.moderator.add`, 1) }
-                if (!enabled.includes(`channel.moderator.remove`)) { await apiCreateEventSub(channel, `channel.moderator.remove`, 1) }
+                if (!enabled.includes(`channel.moderator.add`)) { await apiCreateEventSub(userId, `channel.moderator.add`, 1) }
+                if (!enabled.includes(`channel.moderator.remove`)) { await apiCreateEventSub(userId, `channel.moderator.remove`, 1) }
             }
             if (scope === `moderator:manage:shoutouts`) {
-                if (!enabled.includes(`channel.shoutout.receive`)) { await apiCreateEventSub(channel, `channel.shoutout.receive`, 1) }
+                if (!enabled.includes(`channel.shoutout.receive`)) { await apiCreateEventSub(userId, `channel.shoutout.receive`, 1) }
             }
             if (scope === `channel:read:subscriptions`) {
-                if (!enabled.includes(`channel.subscribe`)) { await apiCreateEventSub(channel, `channel.subscribe`, 1) }
-                if (!enabled.includes(`channel.subscription.end`)) { await apiCreateEventSub(channel, `channel.subscription.end`, 1) }
-                if (!enabled.includes(`channel.subscription.gift`)) { await apiCreateEventSub(channel, `channel.subscription.gift`, 1) }
-                if (!enabled.includes(`channel.subscription.message`)) { await apiCreateEventSub(channel, `channel.subscription.message`, 1) }
+                if (!enabled.includes(`channel.subscribe`)) { await apiCreateEventSub(userId, `channel.subscribe`, 1) }
+                if (!enabled.includes(`channel.subscription.end`)) { await apiCreateEventSub(userId, `channel.subscription.end`, 1) }
+                if (!enabled.includes(`channel.subscription.gift`)) { await apiCreateEventSub(userId, `channel.subscription.gift`, 1) }
+                if (!enabled.includes(`channel.subscription.message`)) { await apiCreateEventSub(userId, `channel.subscription.message`, 1) }
             }
             if (scope === `bits:read`) {
-                if (!enabled.includes(`channel.cheer`)) { await apiCreateEventSub(channel, `channel.cheer`, 1) }
+                if (!enabled.includes(`channel.cheer`)) { await apiCreateEventSub(userId, `channel.cheer`, 1) }
             }
             if (scope === `channel:read:hype_train`) {
-                if (!enabled.includes(`channel.hype_train.begin`)) { await apiCreateEventSub(channel, `channel.hype_train.begin`, 2) }
+                if (!enabled.includes(`channel.hype_train.begin`)) { await apiCreateEventSub(userId, `channel.hype_train.begin`, 2) }
             }
         }
     } else { console.log(`* WARNING: Failed to get EventSubs for '${channel}'`) }
@@ -821,6 +819,7 @@ module.exports = {
     apiRefreshToken,
     apiGetTokenScope,
     apiGetEventSubs,
+    apiCreateEventSub,
     updateEventSubs,
     async checkToken(props) {
         const { bot, chatroom, channel } = props

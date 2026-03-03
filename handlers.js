@@ -22,9 +22,9 @@ const { apiGetConduits, apiCreateConduit } = require(`./events/conduits`)
 const { createWebSocket, closeWebSocket } = require(`./events/webSockets`)
 const { getGlobalBttvEmotes, getStreamBttvEmotes } = require(`./commands/external`)
 const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
-const { apiGetTwitchChannel, getGlobalTwitchEmotes, getStreamTwitchEmotes } = require(`./commands/twitch`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
 const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, logMessage, appendLogs } = require(`./utils`)
+const { apiGetTwitchChannel, getGlobalTwitchEmotes, getStreamTwitchEmotes, apiGetEventSubs, apiCreateEventSub } = require(`./commands/twitch`)
 
 function devCommandUsed(props) {
     const { username, command } = props
@@ -143,6 +143,13 @@ async function getOrCreateConduit() {
         settings.conduitId = conduits[0].id
     } else {
         await apiCreateConduit(joinedChatrooms.length)
+    }
+
+    const eventSubs = await apiGetEventSubs(null, `conduit.shard.disabled`)
+    if (eventSubs && `data` in eventSubs) {
+        if (!eventSubs.data.length || eventSubs.data[0].status !== `enabled`) {
+            await apiCreateEventSub(null, `conduit.shard.disabled`, 1)
+        }
     }
 }
 
