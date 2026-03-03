@@ -86,37 +86,32 @@ module.exports = {
     },
     'getsubs': async (props) => {
         const { bot, args, chatroom } = props
-        const twitchData = await apiGetEventSubs()
-        if (args[0] === `-v`) {
-            bot.say(chatroom, pluralize(twitchData.total, `EventSub`, `EventSubs`))
-            console.log(twitchData.total)
-            console.log(twitchData.data.length, twitchData.data.map(obj => `${`broadcaster_user_id` in obj.condition
-                ? `${Object.keys(lemonyFresh).filter(key => lemonyFresh[key].id === Number(obj.condition.broadcaster_user_id))[0]}`
-                : `global`}, ${obj.type}, ${obj.status}`
-            ))
-            console.log(twitchData.pagination)
-            if (`cursor` in twitchData.pagination) {
-                const moreData = await apiGetEventSubs(twitchData.pagination.cursor)
-                console.log(moreData.data.length, moreData.data.map(obj => `${`broadcaster_user_id` in obj.condition
-                    ? `${Object.keys(lemonyFresh).filter(key => lemonyFresh[key].id === Number(obj.condition.broadcaster_user_id))[0]}`
-                    : `global`}, ${obj.type}, ${obj.status}`
-                ))
+        const reply = []
+        if (!args.length) {
+            for (const channel of joinedChatrooms.map(chatroom => chatroom.substring(1))) {
+                if (channel in lemonyFresh) {
+                    const twitchData = await apiGetEventSubs(lemonyFresh[channel].id)
+                    const enabled = twitchData.data.filter(el => el.status === `enabled`).map(el => el.type)
+                    const disabled = twitchData.data.filter(el => el.status !== `enabled`).map(el => el.type)
+                    console.log(`${channel} ENABLED:`, enabled)
+                    console.log(`${channel} DISABLED:`, disabled)
+                    reply.push(`${channel}:${enabled.length ? ` ${enabled.length} enabled` : ``}${disabled.length ? ` ${disabled.length} disabled` : ``}${!enabled.length && !disabled.length ? ` No EventSubs` : ``}`)
+                }
             }
         } else {
-            const eventSubs = {}
-            for (const obj of twitchData.data) {
-                const channel = Object.keys(lemonyFresh).filter(key => lemonyFresh[key].id === Number(obj.condition.broadcaster_user_id))[0] || `global`
-                if (!(channel in eventSubs)) { eventSubs[channel] = {} }
-                eventSubs[channel][obj.type] = obj.status
+            for (const arg of args) {
+                if (arg in lemonyFresh) {
+                    const twitchData = await apiGetEventSubs(lemonyFresh[arg].id)
+                    const enabled = twitchData.data.filter(el => el.status === `enabled`).map(el => el.type)
+                    const disabled = twitchData.data.filter(el => el.status !== `enabled`).map(el => el.type)
+                    console.log(`${arg} ENABLED:`, enabled)
+                    console.log(`${arg} DISABLED:`, disabled)
+                    reply.push(`${arg}:${enabled.length ? ` ${enabled.length} enabled` : ``}${disabled.length ? ` ${disabled.length} disabled` : ``}${!enabled.length && !disabled.length ? ` No EventSubs` : ``}`)
+                }
             }
-            console.log(twitchData.total)
-            for (const channel in eventSubs) {
-                console.log(channel, Object.keys(eventSubs[channel]).length)
-                console.log(channel, eventSubs[channel])
-            }
-            const reply = arrToList(Object.keys(eventSubs).map(key => pluralize(Object.keys(eventSubs[key]).length, `${key} EventSub`, `${key} EventSubs`)))
-            bot.say(chatroom, reply)
         }
+        if (!reply.length) { return }
+        bot.say(chatroom, reply.join(`, `))
     },
     'all': (props) => {
         printWebSockets()
