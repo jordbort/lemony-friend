@@ -9,8 +9,9 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Implemented error handling for data fetches`,
-            `Updated !list to allow viewing a range of numbers`
+            `Implemented WebSocket conduits`,
+            `Rebuilt WebSocket code`,
+            `Cleaned up other code`
         ]
 
         const timeOptions = {

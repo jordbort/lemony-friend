@@ -10,17 +10,19 @@ const printLemon = require(`./commands/printLemon`)
 const botInteraction = require(`./patterns/botInteraction`)
 
 const { settings } = require(`./config`)
-const { lemonyFresh, users, lemCmds } = require(`./data`)
+const { joinedChannels, lemonyFresh, users, lemCmds } = require(`./data`)
 
 const { useLemCmd } = require(`./commands/lemCmds`)
+const { addToBatch } = require(`./events/notifications`)
 const { streakListener } = require(`./commands/streaks`)
 const { rollFunNumber } = require(`./commands/funNumber`)
 const { sayJoinMessage } = require(`./commands/joinPart`)
 const { checkWord, checkLetter } = require(`./patterns/hangman`)
-const { registerWebSocket, initWebSocket, closeWebSocket } = require(`./events`)
+const { apiGetConduits, apiCreateConduit } = require(`./events/conduits`)
+const { createWebSocket, closeWebSocket } = require(`./events/webSockets`)
 const { getGlobalBttvEmotes, getStreamBttvEmotes } = require(`./commands/external`)
 const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
-const { apiGetTwitchChannel, updateEventSubs, getGlobalTwitchEmotes, getStreamTwitchEmotes } = require(`./commands/twitch`)
+const { apiGetTwitchChannel, getGlobalTwitchEmotes, getStreamTwitchEmotes } = require(`./commands/twitch`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
 const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, logMessage, appendLogs } = require(`./utils`)
 
@@ -133,6 +135,17 @@ async function addToKnownChannels(broadcasterId) {
     settings.knownChannels[broadcasterId] = twitchChannel.broadcaster_login
 }
 
+async function getOrCreateConduit() {
+    await logMessage([`> getOrCreateConduit()`])
+    const conduits = await apiGetConduits()
+    if (conduits.length) {
+        if (conduits.length > 1) { await logMessage([`Warning: More than one conduit exists`]) }
+        settings.conduitId = conduits[0].id
+    } else {
+        await apiCreateConduit(joinedChannels.length)
+    }
+}
+
 module.exports = {
     onConnectedHandler(addr, port) {
         settings.firstConnection && printLemon()
@@ -142,6 +155,7 @@ module.exports = {
             ? logMessage([`[${time}] 🍋 Connected to ${addr}:${port}`])
             : logMessage([`[${time}] 🍋 Re-connected to ${addr}:${port}`])
         settings.firstConnection = false
+        getOrCreateConduit()
         // getGlobalTwitchEmotes()
         getGlobalBttvEmotes()
     },
@@ -150,6 +164,11 @@ module.exports = {
         const channel = chatroom.substring(1)
 
         if (self) {
+            addToBatch(channel)
+            if (!joinedChannels.includes(chatroom)) {
+                joinedChannels.push(chatroom)
+            }
+
             // Setup channel data
             initChannel(channel)
             getStreamTwitchEmotes(channel)
@@ -158,11 +177,8 @@ module.exports = {
             // Say join message
             if (settings.sayJoinMessage) { sayJoinMessage(this, chatroom) }
 
-            // Check to create or update WebSocket session
-            registerWebSocket(channel)
-            lemonyFresh[channel].webSocketSessionId
-                ? updateEventSubs(channel)
-                : initWebSocket(this, chatroom, channel)
+            // Create WebSocket session
+            createWebSocket(this, channel)
         }
 
         if (!lemonyFresh[channel].viewers.includes(username)) {
@@ -175,8 +191,7 @@ module.exports = {
 
         // Close WebSocket connection
         if (self) {
-            if (lemonyFresh[channel].webSocketSessionId) { closeWebSocket(channel) }
-            lemonyFresh[channel].webSocketSessionId = ``
+            closeWebSocket(this, channel)
         }
 
         while (lemonyFresh[channel].viewers.includes(username)) {

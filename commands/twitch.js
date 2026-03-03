@@ -313,7 +313,7 @@ async function apiGetTokenScope(channel, attempt = 1) {
 }
 
 async function apiCreateEventSub(channel, type, version, attempt = 1) {
-    // await logMessage([`> apiCreateEventSub(channel: '${channel}', type: '${type}', version: ${version}, attempt: ${attempt})`])
+    await logMessage([`> apiCreateEventSub(channel: '${channel}', type: '${type}', version: ${version}, attempt: ${attempt})`])
     const streamer = lemonyFresh[channel]
 
     const endpoint = `https://api.twitch.tv/helix/eventsub/subscriptions`
@@ -321,25 +321,22 @@ async function apiCreateEventSub(channel, type, version, attempt = 1) {
     const requestBody = {
         type: type,
         version: `${version}`,
-        condition: {
-            broadcaster_user_id: `${streamer.id}`
-        },
+        condition: {},
         transport: {
-            method: `websocket`,
-            session_id: streamer.webSocketSessionId
+            method: `conduit`,
+            conduit_id: settings.conduitId
         }
     }
-    if ([
-        `channel.follow`,
-        `channel.shoutout.receive`
-    ].includes(type)) {
-        requestBody.condition.moderator_user_id = `${streamer.id}`
-    }
+    type === `conduit.shard.disabled`
+        ? (requestBody.condition.client_id = CLIENT_ID, requestBody.condition.conduit_id = settings.conduitId)
+        : [`channel.follow`, `channel.shoutout.receive`].includes(type)
+            ? (requestBody.condition.broadcaster_user_id = `${streamer.id}`, requestBody.condition.moderator_user_id = `${streamer.id}`)
+            : requestBody.condition.broadcaster_user_id = `${streamer.id}`
 
     const options = {
         method: `POST`,
         headers: {
-            authorization: `Bearer ${streamer.accessToken}`,
+            authorization: `Bearer ${settings.botAccessToken}`,
             'Client-Id': CLIENT_ID,
             'Content-Type': `application/json`
         },
@@ -351,11 +348,10 @@ async function apiCreateEventSub(channel, type, version, attempt = 1) {
 
         if (response.status !== 202) {
             const twitchData = await response.json()
-            await logMessage([`createEventSub`, response.status, renderObj(twitchData, `twitchData`)])
+            await logMessage([`createEventSub '${type}'`, response.status, renderObj(twitchData, `twitchData`)])
             if (response.status === 401) {
                 if (attempt < 3) {
-                    await logMessage([`-> Failed to create '${type}' EventSub for ${channel}, refreshing token...`])
-                    const retry = await apiRefreshToken(channel, streamer.refreshToken)
+                    const retry = await apiGetTwitchAppAccessToken()
                     if (retry) {
                         attempt++
                         return apiCreateEventSub(channel, type, version, attempt)
@@ -364,22 +360,23 @@ async function apiCreateEventSub(channel, type, version, attempt = 1) {
                     await logMessage([`-> Failed to create '${type}' EventSub for ${channel} after ${pluralize(attempt, `attempt`, `attempts`)}`])
                     return null
                 }
-            } else if (response.status === 403) {
-                return false
-            }
+            } else if (response.status === 409) {
+                console.log(`failed to make`, channel, type)
+                // const data = await apiGetEventSubs()
+            } else { return null }
         }
     } catch (err) {
-        logMessage([`apiCreateEventSub ${err}`])
+        logMessage([`apiCreateEventSub ${channel} '${type}' ${err}`])
         return false
     }
 }
 
-async function apiGetEventSubs(channel, attempt = 1) {
-    await logMessage([`> apiGetEventSubs(channel: '${channel}', attempt: ${attempt})`])
-    const endpoint = `https://api.twitch.tv/helix/eventsub/subscriptions`
+async function apiGetEventSubs(page = ``, attempt = 1) {
+    await logMessage([`> apiGetEventSubs(${page ? `next` : `first`} page, attempt: ${attempt})`])
+    const endpoint = `https://api.twitch.tv/helix/eventsub/subscriptions${page ? `?after=${page}` : ``}`
     const options = {
         headers: {
-            authorization: `Bearer ${lemonyFresh[channel].accessToken}`,
+            authorization: `Bearer ${settings.botAccessToken}`,
             'Client-Id': CLIENT_ID,
             'Content-Type': `application/json`
         }
@@ -392,19 +389,19 @@ async function apiGetEventSubs(channel, attempt = 1) {
         if (response.status === 200) {
             return twitchData
         } else {
-            await logMessage([`apiGetEventSubs ${channel}`, response.status, renderObj(twitchData, `twitchData`)])
-            if (response.status === 401 && [`Invalid OAuth token`, `invalid access token`].includes(twitchData.message)) {
+            await logMessage([`apiGetEventSubs`, response.status, renderObj(twitchData, `twitchData`)])
+            if (response.status === 401) {
                 if (attempt < 3) {
-                    const retry = await apiRefreshToken(channel, lemonyFresh[channel].refreshToken)
+                    const retry = await apiGetTwitchAppAccessToken()
                     if (retry) {
                         attempt++
-                        return apiGetEventSubs(channel, attempt)
+                        return apiGetGlobalTwitchEmotes(attempt)
                     }
                 } else {
-                    await logMessage([`-> Failed to get ${channel}'s event subscriptions after ${pluralize(attempt, `attempt`, `attempts`)}`])
+                    await logMessage([`-> Failed to get event subscriptions after ${pluralize(attempt, `attempt`, `attempts`)}`])
                     return null
                 }
-            }
+            } else { return null }
         }
     } catch (err) {
         logMessage([`apiGetEventSubs ${err}`])
@@ -412,14 +409,13 @@ async function apiGetEventSubs(channel, attempt = 1) {
     }
 }
 
-async function apiDeleteEventSub(channel, id, attempt = 1) {
-    // await logMessage([`> apiDeleteEventSub(channel: '${channel}', id: '${id}', attempt: ${attempt})`])
-    const streamer = lemonyFresh[channel]
+async function apiDeleteEventSub(id, type, status, attempt = 1) {
+    await logMessage([`> apiDeleteEventSub(type: '${type}', status: '${status}', attempt: ${attempt})`])
     const endpoint = `https://api.twitch.tv/helix/eventsub/subscriptions?id=${id}`
     const options = {
         method: `DELETE`,
         headers: {
-            authorization: `Bearer ${streamer.accessToken}`,
+            authorization: `Bearer ${settings.botAccessToken}`,
             'Client-Id': CLIENT_ID
         }
     }
@@ -429,24 +425,24 @@ async function apiDeleteEventSub(channel, id, attempt = 1) {
 
         if (response.status !== 204) {
             const twitchData = await response.json()
-            await logMessage([`apiDeleteEventSub ${channel}`, response.status, renderObj(twitchData, `twitchData`)])
+            await logMessage([`apiDeleteEventSub`, response.status, renderObj(twitchData, `twitchData`)])
             if (response.status === 401) {
                 if (attempt < 3) {
-                    const retry = await apiRefreshToken(channel, streamer.refreshToken)
+                    const retry = await apiGetTwitchAppAccessToken()
                     if (retry) {
                         attempt++
-                        return apiDeleteEventSub(channel, id, attempt)
+                        return apiDeleteEventSub(id, type, status, attempt)
                     }
                 } else {
-                    await logMessage([`-> Failed to delete EventSub for ${channel} after ${pluralize(attempt, `attempt`, `attempts`)}`])
+                    await logMessage([`-> Failed to delete '${type}' EventSub after ${pluralize(attempt, `attempt`, `attempts`)}`])
                     return null
                 }
             } else if (response.status === 403) {
                 return false
-            }
+            } else { return null }
         }
     } catch (err) {
-        logMessage([`apiDeleteEventSub ${err}`])
+        logMessage([`apiDeleteEventSub '${type}' ${err}`])
         return false
     }
 }
@@ -459,21 +455,28 @@ async function updateEventSubs(channel) {
         return
     }
 
-    const sessionId = lemonyFresh[channel].webSocketSessionId
-    const obj = await apiGetEventSubs(channel)
+    let obj = await apiGetEventSubs()
     if (obj && `data` in obj) {
-        const enabled = obj.data.filter(el => el.status === `enabled` && el.transport.session_id === sessionId).map(el => el.type)
-        const disabled = obj.data.filter(el => el.status !== `enabled` || el.transport.session_id !== sessionId)
-        await logMessage([`--> ${pluralize(enabled.length, `enabled EventSub`, `enabled EventSubs`)} for ${channel}${disabled.length ? `, ${pluralize(disabled.length, `disabled EventSub`, `disabled EventSubs`)} being rebuilt` : ``}`])
+        // Collect all pages of EventSubs
+        const enabled = obj.data.filter(el => (el.condition?.broadcaster_user_id === `${lemonyFresh[channel].id}` || el.type === `conduit.shard.disabled`) && el.status === `enabled`).map(el => el.type)
+        const disabled = obj.data.filter(el => (el.condition?.broadcaster_user_id === `${lemonyFresh[channel].id}` || el.type === `conduit.shard.disabled`) && el.status !== `enabled`)
+        while (`cursor` in obj?.pagination) {
+            obj = await apiGetEventSubs(obj.pagination.cursor)
+            if (obj && `data` in obj) {
+                enabled.push(...obj.data.filter(el => (el.condition?.broadcaster_user_id === `${lemonyFresh[channel].id}` || el.type === `conduit.shard.disabled`) && el.status === `enabled`).map(el => el.type))
+                disabled.push(...obj.data.filter(el => (el.condition?.broadcaster_user_id === `${lemonyFresh[channel].id}` || el.type === `conduit.shard.disabled`) && el.status !== `enabled`))
+            }
+        }
 
         // Delete disabled EventSubs
         if (disabled.length) {
             for (const el of disabled) {
-                await apiDeleteEventSub(channel, el.id)
+                await apiDeleteEventSub(el.id, el.type, el.status)
             }
         }
 
         // Rebuild EventSubs
+        if (!enabled.includes(`conduit.shard.disabled`)) { await apiCreateEventSub(channel, `conduit.shard.disabled`, 1) }
         if (!enabled.includes(`stream.online`)) { await apiCreateEventSub(channel, `stream.online`, 1) }
         if (!enabled.includes(`stream.offline`)) { await apiCreateEventSub(channel, `stream.offline`, 1) }
         for (const scope of arrScope) {
@@ -873,11 +876,11 @@ module.exports = {
     },
     async deleteAllEventSubs(channel) {
         await logMessage([`> deleteAllEventSubs(channel: '${channel}')`])
-        const obj = await apiGetEventSubs(channel)
+        const obj = await apiGetEventSubs()
         if (obj && `data` in obj) {
             if (obj.data.length) {
                 for (const el of obj.data) {
-                    await apiDeleteEventSub(channel, el.id)
+                    await apiDeleteEventSub(el.id, el.type, el.status)
                 }
             }
         }
