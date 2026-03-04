@@ -21,8 +21,8 @@ function checkPoints(props) {
 }
 
 module.exports = {
-    'joined': (props) => { console.log(joinedChatrooms.length, joinedChatrooms) },
-    'create': (props) => {
+    // For conduits
+    'createconduit': (props) => {
         const { bot, chatroom, args } = props
         const num = !args.length || isNaN(args[0]) ? null : args[0]
         if (num === null) {
@@ -31,7 +31,7 @@ module.exports = {
         }
         apiCreateConduit(num)
     },
-    'get': async (props) => {
+    'getconduit': async (props) => {
         const { bot, chatroom } = props
         if (!settings.conduitId) {
             bot.say(chatroom, `No conduit ID`)
@@ -53,7 +53,7 @@ module.exports = {
         }
         apiUpdateConduit(settings.conduitId, num)
     },
-    'delete': (props) => {
+    'deleteconduit': (props) => {
         const { bot, chatroom } = props
         if (!settings.conduitId) {
             bot.say(chatroom, `No conduit ID`)
@@ -70,19 +70,11 @@ module.exports = {
         const data = await apiGetConduitShards(settings.conduitId)
         checkWebSockets(data)
     },
-    'updateshard': (props) => {
-        const { bot, chatroom, args } = props
-        const num = !args.length || isNaN(args[0]) ? null : args[0]
-        if (num === null) {
-            bot.say(chatroom, `1st arg 'shardId' needed`)
-            return
-        }
-        const webSocketSessionId = args[1]
-        if (!webSocketSessionId) {
-            bot.say(chatroom, `2nd arg 'webSocketSessionId' needed`)
-            return
-        }
-        apiUpdateConduitShard(settings.conduitId, num, webSocketSessionId)
+    'joined': (props) => { console.log(joinedChatrooms.length, joinedChatrooms) },
+
+    // For WebSockets
+    'ws': (props) => {
+        printWebSockets()
     },
     'getsubs': async (props) => {
         const { bot, args, chatroom } = props
@@ -113,21 +105,7 @@ module.exports = {
         if (!reply.length) { return }
         bot.say(chatroom, reply.join(`, `))
     },
-    'all': (props) => {
-        printWebSockets()
-    },
-    '_crash': function kms(props) { throw Error(`Error${props.args.length ? ` with value${props.args.length === 1 ? `` : `s`} '${props.args.join(`', '`)}'` : ``}`) },
-    '_shutdown': async (props) => {
-        const { bot, chatroom, channel } = props
-        await printMemory(bot.channels)
-
-        const byeEmote = getContextEmote(`bye`, channel)
-        bot.say(chatroom, `Bye for now! ${byeEmote}`)
-
-        await logMessage([`> Done`])
-        process.exit(0)
-    },
-    'open': (props) => {
+    'openws': (props) => {
         const { bot, chatroom, args, channel } = props
         if (args.length) {
             if (args[0] === `all`) {
@@ -140,7 +118,7 @@ module.exports = {
             }
         } else { createWebSocket(bot, chatroom, channel) }
     },
-    'close': (props) => {
+    'closews': (props) => {
         const { bot, args, channel } = props
         if (args.length) {
             if (args[0] === `all`) {
@@ -155,7 +133,7 @@ module.exports = {
             }
         } else { closeWebSocket(bot, channel) }
     },
-    'update': (props) => {
+    'updatesubs': (props) => {
         const { bot, args, channel } = props
         if (args.length) {
             if (args[0] === `all`) {
@@ -170,7 +148,7 @@ module.exports = {
             }
         } else { updateEventSubs(channel) }
     },
-    'cleanup': (props) => {
+    'cleanupws': (props) => {
         const { bot, args, channel } = props
         if (args.length) {
             if (args[0] === `all`) {
@@ -185,7 +163,7 @@ module.exports = {
             }
         } else { removeClosedWebSockets(channel) }
     },
-    'trim': (props) => {
+    'trimws': (props) => {
         const { bot, args, channel } = props
         if (args.length) {
             if (args[0] === `all`) {
@@ -200,50 +178,58 @@ module.exports = {
             }
         } else { forceTrimWebSocket(channel) }
     },
-    '_print': async (props) => { await printMemory(props.bot.channels) },
-    '!test': checkPoints,
-    'tags': (props) => { console.log(props.tags) },
 
+    // For saving memory file
+    '_shutdown': async (props) => {
+        const { bot, chatroom, channel } = props
+        await printMemory(bot.channels)
+
+        const byeEmote = getContextEmote(`bye`, channel)
+        bot.say(chatroom, `Bye for now! ${byeEmote}`)
+
+        await logMessage([`> Done`])
+        process.exit(0)
+    },
+    '_print': async (props) => { await printMemory(props.bot.channels) },
+    '_crash': function kms(props) { throw Error(`Error${props.args.length ? ` with value${props.args.length === 1 ? `` : `s`} '${props.args.join(`', '`)}'` : ``}`) },
+
+    // Unclaimed old nicknames, lemons, and Hangman wins
     'unknown': () => {
         console.log(Object.keys(commonNicknames).length, `unapplied nicknames:`, commonNicknames)
         console.log(Object.keys(startingLemons).length, `unclaimed lemons:`, startingLemons)
         console.log(Object.keys(hangmanWins).length, `unapplied Hangman wins:`, hangmanWins)
     },
 
+    // For individual data
     'channel': (props) => {
         const { channel, toUser } = props
         toUser in lemonyFresh
             ? console.log(lemonyFresh[toUser])
             : console.log(lemonyFresh[channel])
     },
-
     'user': (props) => {
         const { username, toUser } = props
         toUser in users
             ? console.log(users[toUser])
             : console.log(users[username])
     },
-
     'mod': (props) => {
         const { username, toUser } = props
         toUser in mods
             ? console.log(mods[toUser])
             : console.log(mods[username])
     },
-
     'viewers': (props) => {
         const { channel, toUser } = props
         toUser in lemonyFresh
             ? console.log(lemonyFresh[toUser].viewers)
             : console.log(lemonyFresh[channel].viewers)
     },
-
+    'tags': (props) => { console.log(props.tags) },
     'settings': () => { console.log(settings) },
-
     'channels': (props) => { console.log(props.bot.channels) },
 
-    'test': (props) => { if (!isNaN(props.args[0])) { rollFunNumber(props, Number(props.args[0])) } },
-
+    // For messaging across all channels
     '!broadcast': (props) => {
         const { bot, message } = props
         for (const chatroom of bot.channels) {
@@ -251,6 +237,7 @@ module.exports = {
         }
     },
 
+    // For stream-friendly log view
     '!streamon': (props) => {
         const { bot, chatroom } = props
         settings.hideNonDevChannel = true
@@ -268,6 +255,10 @@ module.exports = {
         bot.say(chatroom, `/me Settings hideNonDevChannel: ${settings.hideNonDevChannel}, highlightBotMessage: ${settings.highlightBotMessage}, logTime: ${settings.logTime}, debug: ${settings.debug}`)
     },
 
+    // For testing funCumber outcomes
+    'test': (props) => { if (!isNaN(props.args[0])) { rollFunNumber(props, Number(props.args[0])) } },
+
+    '!test': checkPoints,
     '!subs': getSubs,
     '!join': handleJoin,
     '!part': handlePart
