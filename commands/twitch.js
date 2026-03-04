@@ -467,31 +467,35 @@ async function updateEventSubs(channel) {
         if (!enabled.includes(`stream.online`)) { await apiCreateEventSub(userId, `stream.online`, 1) }
         if (!enabled.includes(`stream.offline`)) { await apiCreateEventSub(userId, `stream.offline`, 1) }
         for (const scope of arrScope) {
-            if (scope === `moderator:read:followers`) {
-                if (!enabled.includes(`channel.follow`)) { await apiCreateEventSub(userId, `channel.follow`, 2) }
-            }
-            if (scope === `channel:manage:vips`) {
-                if (!enabled.includes(`channel.vip.add`)) { await apiCreateEventSub(userId, `channel.vip.add`, 1) }
-                if (!enabled.includes(`channel.vip.remove`)) { await apiCreateEventSub(userId, `channel.vip.remove`, 1) }
-            }
-            if (scope === `moderation:read`) {
-                if (!enabled.includes(`channel.moderator.add`)) { await apiCreateEventSub(userId, `channel.moderator.add`, 1) }
-                if (!enabled.includes(`channel.moderator.remove`)) { await apiCreateEventSub(userId, `channel.moderator.remove`, 1) }
-            }
-            if (scope === `moderator:manage:shoutouts`) {
-                if (!enabled.includes(`channel.shoutout.receive`)) { await apiCreateEventSub(userId, `channel.shoutout.receive`, 1) }
-            }
-            if (scope === `channel:read:subscriptions`) {
-                if (!enabled.includes(`channel.subscribe`)) { await apiCreateEventSub(userId, `channel.subscribe`, 1) }
-                if (!enabled.includes(`channel.subscription.end`)) { await apiCreateEventSub(userId, `channel.subscription.end`, 1) }
-                if (!enabled.includes(`channel.subscription.gift`)) { await apiCreateEventSub(userId, `channel.subscription.gift`, 1) }
-                if (!enabled.includes(`channel.subscription.message`)) { await apiCreateEventSub(userId, `channel.subscription.message`, 1) }
-            }
-            if (scope === `bits:read`) {
-                if (!enabled.includes(`channel.cheer`)) { await apiCreateEventSub(userId, `channel.cheer`, 1) }
-            }
-            if (scope === `channel:read:hype_train`) {
-                if (!enabled.includes(`channel.hype_train.begin`)) { await apiCreateEventSub(userId, `channel.hype_train.begin`, 2) }
+            switch (scope) {
+                case `moderator:read:followers`:
+                    if (!enabled.includes(`channel.follow`)) { await apiCreateEventSub(userId, `channel.follow`, 2) }
+                    break
+                case `channel:manage:vips`:
+                    if (!enabled.includes(`channel.vip.add`)) { await apiCreateEventSub(userId, `channel.vip.add`, 1) }
+                    if (!enabled.includes(`channel.vip.remove`)) { await apiCreateEventSub(userId, `channel.vip.remove`, 1) }
+                    break
+                case `moderation:read`:
+                    if (!enabled.includes(`channel.moderator.add`)) { await apiCreateEventSub(userId, `channel.moderator.add`, 1) }
+                    if (!enabled.includes(`channel.moderator.remove`)) { await apiCreateEventSub(userId, `channel.moderator.remove`, 1) }
+                    break
+                case `moderator:manage:shoutouts`:
+                    if (!enabled.includes(`channel.shoutout.receive`)) { await apiCreateEventSub(userId, `channel.shoutout.receive`, 1) }
+                    break
+                case `channel:read:subscriptions`:
+                    if (!enabled.includes(`channel.subscribe`)) { await apiCreateEventSub(userId, `channel.subscribe`, 1) }
+                    if (!enabled.includes(`channel.subscription.end`)) { await apiCreateEventSub(userId, `channel.subscription.end`, 1) }
+                    if (!enabled.includes(`channel.subscription.gift`)) { await apiCreateEventSub(userId, `channel.subscription.gift`, 1) }
+                    if (!enabled.includes(`channel.subscription.message`)) { await apiCreateEventSub(userId, `channel.subscription.message`, 1) }
+                    break
+                case `bits:read`:
+                    if (!enabled.includes(`channel.cheer`)) { await apiCreateEventSub(userId, `channel.cheer`, 1) }
+                    break
+                case `channel:read:hype_train`:
+                    if (!enabled.includes(`channel.hype_train.begin`)) { await apiCreateEventSub(userId, `channel.hype_train.begin`, 2) }
+                    break
+                default:
+                    await logMessage([`-> ${channel} '${scope}' not recognized`])
             }
         }
     } else { console.log(`* WARNING: Failed to get EventSubs for '${channel}'`) }
