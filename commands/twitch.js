@@ -325,11 +325,18 @@ async function apiCreateEventSub(userId, type, version, attempt = 1) {
             conduit_id: settings.conduitId
         }
     }
-    type === `conduit.shard.disabled`
-        ? (requestBody.condition.client_id = CLIENT_ID, requestBody.condition.conduit_id = settings.conduitId)
-        : [`channel.follow`, `channel.shoutout.receive`].includes(type)
-            ? (requestBody.condition.broadcaster_user_id = `${userId}`, requestBody.condition.moderator_user_id = `${userId}`)
-            : requestBody.condition.broadcaster_user_id = `${userId}`
+
+    switch (type) {
+        case `conduit.shard.disabled`:
+            requestBody.condition.client_id = CLIENT_ID
+            requestBody.condition.conduit_id = settings.conduitId
+            break
+        case `channel.follow`:
+        case `channel.shoutout.receive`:
+            requestBody.condition.moderator_user_id = `${userId}`
+        default:
+            requestBody.condition.broadcaster_user_id = `${userId}`
+    }
 
     const options = {
         method: `POST`,
@@ -493,7 +500,6 @@ async function updateEventSubs(channel) {
                     break
                 case `channel:read:hype_train`:
                     if (!enabled.includes(`channel.hype_train.begin`)) { await apiCreateEventSub(userId, `channel.hype_train.begin`, 2) }
-                    break
             }
         }
     } else { console.log(`* WARNING: Failed to get EventSubs for '${channel}'`) }

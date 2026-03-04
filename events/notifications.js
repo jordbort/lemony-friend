@@ -15,7 +15,9 @@ function resetChannelBatch(type, channel) {
     }
 }
 
-async function handleStreamOnline(bot, channel) {
+async function handleStreamOnline(bot, channel, event) {
+    logMessage([`* ONLINE: ${event.broadcaster_user_name} started streaming`])
+
     const streamer = channel in users
         ? users[channel].nickname || users[channel].displayName
         : channel
@@ -47,7 +49,9 @@ async function handleStreamOnline(bot, channel) {
     bot.say(`#${channel}`, reply)
 }
 
-function handleStreamOffline(bot, channel) {
+function handleStreamOffline(bot, channel, event) {
+    logMessage([`* OFFLINE: ${event.broadcaster_user_name} stopped streaming`])
+
     const streamer = channel in users
         ? users[channel].nickname || users[channel].displayName
         : channel
@@ -72,7 +76,10 @@ function handleStreamOffline(bot, channel) {
 }
 
 function handleChannelFollow(bot, channel, event) {
-    if (event.user_login === BOT_USERNAME) {
+    const { broadcaster_user_name, user_login, user_name } = event
+    logMessage([`* NEW FOLLOWER: ${broadcaster_user_name} was followed by ${user_name}`])
+
+    if (user_login === BOT_USERNAME) {
         logMessage([`-> Not thanking self for following`])
         return
     }
@@ -82,9 +89,9 @@ function handleChannelFollow(bot, channel, event) {
         ? users[channel].nickname || users[channel].displayName
         : channel
 
-    const followerName = event.user_login in users
-        ? users[event.user_login].nickname || users[event.user_login].displayName
-        : event.user_name
+    const followerName = user_login in users
+        ? users[user_login].nickname || users[user_login].displayName
+        : user_name
 
     obj.names.push(followerName)
     const greetingEmote = getContextEmote(`greeting`, channel)
@@ -107,35 +114,43 @@ function handleChannelFollow(bot, channel, event) {
 }
 
 function handleChannelAddVIP(bot, channel, event) {
-    const username = event.user_login
-    if (username in users && channel in users[username].channels) {
-        users[username].channels[channel].vip = true
+    const { broadcaster_user_name, user_login, user_name } = event
+    logMessage([`* ADD VIP: ${broadcaster_user_name} added ${user_name} as a VIP`])
+
+    if (user_login in users && channel in users[user_login].channels) {
+        users[user_login].channels[channel].vip = true
     }
     const streamer = channel in users
         ? users[channel].nickname || users[channel].displayName
         : channel
 
-    const vipName = username in users
-        ? users[username].nickname || users[username].displayName
-        : event.user_name
+    const vipName = user_login in users
+        ? users[user_login].nickname || users[user_login].displayName
+        : user_name
 
     const positiveEmote = getContextEmote(`positive`, channel)
 
-    const reply = username === BOT_USERNAME
+    const reply = user_login === BOT_USERNAME
         ? `Thanks for adding me as a VIP, ${streamer}! ${positiveEmote}`
         : `${streamer} added ${vipName} as a VIP! ${positiveEmote}`
     bot.say(`#${channel}`, reply)
 }
 
 function handleChannelRemoveVIP(channel, event) {
-    const username = event.user_login
+    const { broadcaster_user_name, user_login, user_name } = event
+    logMessage([`* REMOVE VIP: ${broadcaster_user_name} removed ${user_name} as a VIP`])
+
+    const username = user_login
     if (username in users && channel in users[username].channels) {
         users[username].channels[channel].vip = false
     }
 }
 
 function handleChannelAddModerator(bot, channel, event) {
-    const username = event.user_login
+    const { broadcaster_user_name, user_login, user_name, user_id } = event
+    logMessage([`* ADD MODERATOR: ${broadcaster_user_name} added ${user_name} as a mod`])
+
+    const username = user_login
     if (username in users && channel in users[username].channels) {
         users[username].channels[channel].mod = true
     }
@@ -145,12 +160,12 @@ function handleChannelAddModerator(bot, channel, event) {
 
     const modName = username in users
         ? users[username].nickname || users[username].displayName
-        : event.user_name
+        : user_name
 
     const positiveEmote = getContextEmote(`positive`, channel)
 
     const self = username === BOT_USERNAME
-    updateMod(`#${channel}`, { 'user-id': event.user_id }, self, username)
+    updateMod(`#${channel}`, { 'user-id': user_id }, self, username)
 
     const reply = self
         ? `Thanks for adding me as a moderator, ${streamer}! ${positiveEmote}`
@@ -159,7 +174,10 @@ function handleChannelAddModerator(bot, channel, event) {
 }
 
 function handleChannelRemoveModerator(channel, event) {
-    const username = event.user_login
+    const { broadcaster_user_name, user_login, user_name } = event
+    logMessage([`* REMOVE MODERATOR: ${broadcaster_user_name} removed ${user_name} as a mod`])
+
+    const username = user_login
     if (username in users && channel in users[username].channels) {
         users[username].channels[channel].mod = false
     }
@@ -171,20 +189,28 @@ function handleChannelRemoveModerator(channel, event) {
 }
 
 function handleChannelReceiveShoutout(bot, channel, event) {
+    const { broadcaster_user_name, from_broadcaster_user_name, from_broadcaster_user_login, viewer_count } = event
+    logMessage([`* SHOUTOUT: ${broadcaster_user_name} received a shoutout from ${from_broadcaster_user_name}`])
+
     const streamer = channel in users
         ? users[channel].nickname || users[channel].displayName
         : channel
-    const fromStreamer = event.from_broadcaster_user_login in users
-        ? users[event.from_broadcaster_user_login].nickname || users[event.from_broadcaster_user_login].displayName
-        : event.from_broadcaster_user_name
+
+    const fromStreamer = from_broadcaster_user_login in users
+        ? users[from_broadcaster_user_login].nickname || users[from_broadcaster_user_login].displayName
+        : from_broadcaster_user_name
+
     const positiveEmote = getContextEmote(`positive`, channel)
     const hypeEmote = getContextEmote(`hype`, channel)
-    const reply = `${streamer} just got a shoutout from ${fromStreamer} to ${pluralize(event.viewer_count, `viewer`, `viewers`)}! ${event.viewer_count >= 20 ? hypeEmote : positiveEmote}`
+    const reply = `${streamer} just got a shoutout from ${fromStreamer} to ${pluralize(viewer_count, `viewer`, `viewers`)}! ${viewer_count >= 20 ? hypeEmote : positiveEmote}`
     bot.say(`#${channel}`, reply)
 }
 
 function handleChannelSubscription(bot, channel, event) {
-    const username = event.user_login
+    const { broadcaster_user_name, user_login, user_name, is_gift } = event
+    logMessage([`* SUB: ${user_name} just subscribed to ${broadcaster_user_name}`])
+
+    const username = user_login
     if (username in users && channel in users[username].channels) {
         users[username].channels[channel].sub = true
     }
@@ -197,12 +223,12 @@ function handleChannelSubscription(bot, channel, event) {
         ? `me`
         : username in users
             ? users[username].nickname || users[username].displayName
-            : event.user_name
+            : user_name
 
     const positiveEmote = getContextEmote(`positive`, channel)
     const hypeEmote = getContextEmote(`hype`, channel)
 
-    if (event.is_gift) {
+    if (is_gift) {
         const obj = batch[channel].giftedSubs
         obj.names.push(subscriberName)
         if (!obj.timer) {
@@ -217,7 +243,7 @@ function handleChannelSubscription(bot, channel, event) {
                 resetChannelBatch(`giftedSubs`, channel)
             }, 1000))
         }
-        logMessage([`> handleChannelSubscription(channel: '${channel}', gift: ${event.is_gift}, timer: ${obj.timer}, gifters: '${obj.gifters.join(`', '`)}', names: '${obj.names.join(`', '`)}')`])
+        logMessage([`> handleChannelSubscription(channel: '${channel}', gift: ${is_gift}, timer: ${obj.timer}, gifters: '${obj.gifters.join(`', '`)}', names: '${obj.names.join(`', '`)}')`])
     } else {
         const obj = batch[channel].subs
         obj.names.push(subscriberName)
@@ -233,12 +259,15 @@ function handleChannelSubscription(bot, channel, event) {
                 resetChannelBatch(`subs`, channel)
             }, 1000))
         }
-        logMessage([`> handleChannelSubscription(channel: '${channel}', gift: ${event.is_gift}, timer: ${obj.timer}, names: '${obj.names.join(`', '`)}')`])
+        logMessage([`> handleChannelSubscription(channel: '${channel}', gift: ${is_gift}, timer: ${obj.timer}, names: '${obj.names.join(`', '`)}')`])
     }
 }
 
 function handleChannelSubscriptionEnd(bot, channel, event) {
-    const username = event.user_login
+    const { broadcaster_user_name, user_login, user_name, is_gift } = event
+    logMessage([`* SUB END: ${user_name}'s ${is_gift ? `gift ` : ``}sub to ${broadcaster_user_name} expired`])
+
+    const username = user_login
     if (username in users && channel in users[username].channels) {
         users[username].channels[channel].sub = false
     }
@@ -250,15 +279,20 @@ function handleChannelSubscriptionEnd(bot, channel, event) {
 }
 
 function handleChannelGiftSub(bot, channel, event) {
+    const { broadcaster_user_name, user_login, user_name, total, is_anonymous } = event
+    const streamer = broadcaster_user_name
+    const displayName = user_name
+    logMessage([`* GIFT SUB: ${displayName || `An anonymous user`} gifted ${pluralize(total, `sub`, `subs`)} to ${streamer}`])
+
     const obj = batch[channel].giftedSubs
 
-    const gifter = event.is_anonymous
+    const gifter = is_anonymous
         ? `an anonymous user`
-        : event.user_login in users
-            ? users[event.user_login].nickname || users[event.user_login].displayName
-            : event.user_name
+        : user_login in users
+            ? users[user_login].nickname || users[user_login].displayName
+            : user_name
 
-    obj.total += event.total
+    obj.total += total
     if (!obj.gifters.includes(gifter)) { obj.gifters.push(gifter) }
     const positiveEmote = getContextEmote(`positive`, channel)
     const hypeEmote = getContextEmote(`hype`, channel)
@@ -273,7 +307,10 @@ function handleChannelGiftSub(bot, channel, event) {
 }
 
 function handleChannelSubscriptionMessage(bot, channel, event) {
-    const username = event.user_login
+    const { broadcaster_user_name, user_login, user_name, cumulative_months } = event
+    logMessage([`* SUB MESSAGE: ${user_name} resubscribed to ${broadcaster_user_name}`])
+
+    const username = user_login
     if (username in users && channel in users[username].channels) {
         users[username].channels[channel].sub = true
     }
@@ -284,10 +321,10 @@ function handleChannelSubscriptionMessage(bot, channel, event) {
 
     const subscriberName = username in users
         ? users[username].nickname || users[username].displayName
-        : event.user_name
+        : user_name
 
-    const yearCount = Math.floor(event.cumulative_months / 12)
-    const monthCount = event.cumulative_months % 12
+    const yearCount = Math.floor(cumulative_months / 12)
+    const monthCount = cumulative_months % 12
     const duration = `${yearCount ? `${pluralize(yearCount, `year`, `years`)}${monthCount ? ` and ` : ``}` : ``}${monthCount ? pluralize(monthCount, `month`, `months`) : ``}`
 
     const positiveEmote = getContextEmote(`positive`, channel)
@@ -299,25 +336,33 @@ function handleChannelSubscriptionMessage(bot, channel, event) {
 }
 
 function handleChannelCheer(bot, channel, event) {
+    const { broadcaster_user_name, user_login, user_name, bits, is_anonymous } = event
+    logMessage([`* BITS: ${user_name || `An anonymous user`} cheered ${pluralize(bits), `bit`, `bits`} to ${broadcaster_user_name}`])
+
     const streamer = channel in users
         ? users[channel].nickname || users[channel].displayName
         : channel
-    const subscriberName = event.is_anonymous
+
+    const subscriberName = is_anonymous
         ? `An anonymous user`
-        : event.user_login in users
-            ? users[event.user_login].nickname || users[event.user_login].displayName
-            : event.user_name
+        : user_login in users
+            ? users[user_login].nickname || users[user_login].displayName
+            : user_name
+
     const positiveEmote = getContextEmote(`positive`, channel)
-    const reply = `${subscriberName} just cheered ${pluralize(event.bits, `bit`, `bits`)} to ${streamer}! ${positiveEmote}`
+    const reply = `${subscriberName} just cheered ${pluralize(bits, `bit`, `bits`)} to ${streamer}! ${positiveEmote}`
     bot.say(`#${channel}`, reply)
 }
 
 function handleChannelHypeTrainBegin(bot, channel, event) {
+    const { broadcaster_user_name, top_contributions } = event
+    logMessage([`* HYPE TRAIN: A hype train started for ${broadcaster_user_name} thanks to ${arrToList(top_contributions.map(obj => obj.user_login))}`])
+
     const streamer = channel in users
         ? users[channel].nickname || users[channel].displayName
         : channel
 
-    const contributors = event.top_contributions.map(obj => obj.user_login in users
+    const contributors = top_contributions.map(obj => obj.user_login in users
         ? users[obj.user_login].nickname || users[obj.user_login].displayName
         : obj.user_name
     )
@@ -325,6 +370,12 @@ function handleChannelHypeTrainBegin(bot, channel, event) {
     const hypeEmote = getContextEmote(`hype`, channel)
     const reply = `A hype train just started for ${streamer}, thanks to ${arrToList(contributors.filter((str, idx) => idx === contributors.indexOf(str)))}! ${hypeEmote}`
     bot.say(`#${channel}`, reply)
+}
+
+function handleShardDisabled(event) {
+    const shardId = Number(event.shard_id)
+    const disabledChannel = joinedChatrooms[shardId].substring(1)
+    logMessage([`* SHARD DISABLED: Conduit shard ID ${shardId} belonging to ${disabledChannel} was disabled`])
 }
 
 module.exports = {
@@ -339,73 +390,54 @@ module.exports = {
     },
     handleNotification(bot, payload) {
         const { subscription, event } = payload
-        const fromChannel = Object.keys(lemonyFresh).filter(key => lemonyFresh[key].id === Number(subscription.condition.broadcaster_user_id))[0]
-        const streamer = event.broadcaster_user_name
-        const fromStreamer = event.from_broadcaster_user_name
-        const displayName = event.user_name
+        const { type, condition } = subscription
+        const fromChannel = Object.keys(lemonyFresh).filter(key => lemonyFresh[key].id === Number(condition.broadcaster_user_id))[0]
 
-        switch (subscription.type) {
-            case `conduit.shard.disabled`: // fromChannel will be undefined
-                const shardId = Number(payload.event.shard_id)
-                const disabledChatroom = joinedChatrooms[shardId]
-                console.log(`* conduit.shard.disabled`, disabledChatroom, `web socket disabled, shardId:`, shardId)
-                logMessage([`* conduit.shard.disabled`, disabledChatroom, `web socket disabled, shardId:`, shardId])
-                break
+        switch (type) {
             case `stream.online`:
-                logMessage([`* ONLINE: ${streamer} started streaming`])
-                handleStreamOnline(bot, fromChannel)
+                handleStreamOnline(bot, fromChannel, event)
                 break
             case `stream.offline`:
-                logMessage([`* OFFLINE: ${streamer} stopped streaming`])
-                handleStreamOffline(bot, fromChannel)
+                handleStreamOffline(bot, fromChannel, event)
                 break
             case `channel.follow`:
-                logMessage([`* NEW FOLLOWER: ${streamer} was followed by ${displayName}`])
                 handleChannelFollow(bot, fromChannel, event)
                 break
             case `channel.vip.add`:
-                logMessage([`* ADD VIP: ${streamer} added ${displayName} as a VIP`])
                 handleChannelAddVIP(bot, fromChannel, event)
                 break
             case `channel.vip.remove`:
-                logMessage([`* REMOVE VIP: ${streamer} removed ${displayName} as a VIP`])
                 handleChannelRemoveVIP(fromChannel, event)
                 break
             case `channel.moderator.add`:
-                logMessage([`* ADD MODERATOR: ${streamer} added ${displayName} as a mod`])
                 handleChannelAddModerator(bot, fromChannel, event)
                 break
             case `channel.moderator.remove`:
-                logMessage([`* REMOVE MODERATOR: ${streamer} removed ${displayName} as a mod`])
                 handleChannelRemoveModerator(fromChannel, event)
                 break
             case `channel.shoutout.receive`:
-                logMessage([`* SHOUTOUT: ${streamer} received a shoutout from ${fromStreamer}`])
                 handleChannelReceiveShoutout(bot, fromChannel, event)
                 break
             case `channel.subscribe`:
-                logMessage([`* SUB: ${displayName} just subscribed to ${streamer}`])
                 handleChannelSubscription(bot, fromChannel, event)
                 break
             case `channel.subscription.end`:
-                logMessage([`* SUB END: ${displayName}'s ${event.is_gift ? `gift ` : ``}sub to ${streamer} expired`])
                 handleChannelSubscriptionEnd(bot, fromChannel, event)
                 break
             case `channel.subscription.gift`:
-                logMessage([`* GIFT SUB: ${displayName || `An anonymous user`} gifted ${pluralize(event.total, `sub`, `subs`)} to ${streamer}`])
                 handleChannelGiftSub(bot, fromChannel, event)
                 break
             case `channel.subscription.message`:
-                logMessage([`* SUB MESSAGE: ${displayName} resubscribed to ${streamer}`])
                 handleChannelSubscriptionMessage(bot, fromChannel, event)
                 break
             case `channel.cheer`:
-                logMessage([`* BITS: ${displayName || `An anonymous user`} cheered ${pluralize(event.bits), `bit`, `bits`} to ${streamer}`])
                 handleChannelCheer(bot, fromChannel, event)
                 break
             case `channel.hype_train.begin`:
-                logMessage([`* HYPE TRAIN: A hype train started for ${streamer} thanks to ${arrToList(event.top_contributions.map(obj => obj.user_login))}`])
                 handleChannelHypeTrainBegin(bot, fromChannel, event)
+                break
+            case `conduit.shard.disabled`:
+                handleShardDisabled(event)
                 break
             default:
                 logMessage([`* '${fromChannel}' ${subscription.type} is not a recognized EventSub`])

@@ -7,9 +7,9 @@ const { getSubs } = require(`./help`)
 const { rollFunNumber } = require(`./funNumber`)
 const { handleJoin, handlePart } = require(`./joinPart`)
 const { updateEventSubs, apiGetEventSubs } = require(`./twitch`)
-const { logMessage, printMemory, pluralize, getContextEmote, getToUser, arrToList } = require(`../utils`)
+const { logMessage, printMemory, pluralize, getContextEmote, getToUser } = require(`../utils`)
+const { apiCreateConduit, apiGetConduits, apiUpdateConduit, apiDeleteConduit, apiGetConduitShards } = require(`../events/conduits`)
 const { printWebSockets, closeWebSocket, removeClosedWebSockets, forceTrimWebSocket, createWebSocket, checkWebSockets } = require(`../events/webSockets`)
-const { apiCreateConduit, apiGetConduits, apiUpdateConduit, apiDeleteConduit, apiGetConduitShards, apiUpdateConduitShard } = require(`../events/conduits`)
 
 function checkPoints(props) {
     const { bot, chatroom, channel } = props
@@ -62,7 +62,7 @@ module.exports = {
         apiDeleteConduit(settings.conduitId)
     },
     'getshards': async (props) => {
-        const { bot, chatroom, channel } = props
+        const { bot, chatroom } = props
         if (!settings.conduitId) {
             bot.say(chatroom, `No conduit ID`)
             return
@@ -70,12 +70,10 @@ module.exports = {
         const data = await apiGetConduitShards(settings.conduitId)
         checkWebSockets(data)
     },
-    'joined': (props) => { console.log(joinedChatrooms.length, joinedChatrooms) },
+    'joined': () => { console.log(joinedChatrooms.length, joinedChatrooms) },
 
     // For WebSockets
-    'ws': (props) => {
-        printWebSockets()
-    },
+    'ws': printWebSockets,
     'getsubs': async (props) => {
         const { bot, args, chatroom } = props
         const reply = []
