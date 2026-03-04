@@ -251,6 +251,10 @@ module.exports = {
         }
         const index = joinedChatrooms.indexOf(chatroom)
         const conduits = await apiGetConduits()
+        if (!conduits) {
+            console.log(`assignToConduit: Failed to get conduit (returned ${conduits})`)
+            return
+        }
         const shardCount = conduits[0].shard_count
         await logMessage([`> assignToConduit(chatroom: '${chatroom}', index: ${index}, shardCount: ${shardCount})`])
         if (index > shardCount - 1) {
