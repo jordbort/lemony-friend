@@ -155,14 +155,17 @@ async function getOrCreateConduit() {
 
 module.exports = {
     onConnectedHandler(addr, port) {
-        settings.firstConnection && printLemon()
-        settings.firstConnection && logMessage([`Session started: ${settings.startDate.toLocaleDateString(`en-US`, { weekday: `long`, month: `long`, day: `numeric`, year: `numeric`, timeZone: settings.timeZone })} at ${settings.startDate.toLocaleTimeString(`en-US`, { hour: `numeric`, minute: `numeric`, second: `numeric`, timeZone: settings.timeZone, timeZoneName: `short` })}`])
         const time = new Date().toLocaleTimeString(settings.timeLocale, { timeZone: settings.timeZone })
-        settings.firstConnection
-            ? logMessage([`[${time}] 🍋 Connected to ${addr}:${port}`])
-            : logMessage([`[${time}] 🍋 Re-connected to ${addr}:${port}`])
+        if (settings.firstConnection) {
+            printLemon()
+            logMessage([`Session started: ${settings.startDate.toLocaleDateString(`en-US`, { weekday: `long`, month: `long`, day: `numeric`, year: `numeric`, timeZone: settings.timeZone })} at ${settings.startDate.toLocaleTimeString(`en-US`, { hour: `numeric`, minute: `numeric`, second: `numeric`, timeZone: settings.timeZone, timeZoneName: `short` })}\n[${time}] 🍋 Connected to ${addr}:${port}`])
+            getOrCreateConduit()
+        } else {
+            logMessage([`[${time}] 🍋 Re-connected to ${addr}:${port}`])
+        }
         settings.firstConnection = false
-        getOrCreateConduit()
+
+        // Get global emotes
         // getGlobalTwitchEmotes()
         getGlobalBttvEmotes()
     },
@@ -171,7 +174,6 @@ module.exports = {
         const channel = chatroom.substring(1)
 
         if (self) {
-            addToBatch(channel)
             if (!joinedChatrooms.includes(chatroom)) {
                 joinedChatrooms.push(chatroom)
             }
@@ -185,6 +187,7 @@ module.exports = {
             if (settings.sayJoinMessage) { sayJoinMessage(this, chatroom) }
 
             // Create WebSocket session
+            addToBatch(channel)
             createWebSocket(this, channel)
         }
 

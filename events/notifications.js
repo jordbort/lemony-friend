@@ -339,14 +339,13 @@ module.exports = {
     },
     handleNotification(bot, payload) {
         const { subscription, event } = payload
-        const channel = Object.keys(lemonyFresh).filter(key => lemonyFresh[key].id === Number(subscription.condition.broadcaster_user_id))[0]
+        const fromChannel = Object.keys(lemonyFresh).filter(key => lemonyFresh[key].id === Number(subscription.condition.broadcaster_user_id))[0]
         const streamer = event.broadcaster_user_name
         const fromStreamer = event.from_broadcaster_user_name
         const displayName = event.user_name
 
         switch (subscription.type) {
-            case `conduit.shard.disabled`:
-                // channel will be undefined
+            case `conduit.shard.disabled`: // fromChannel will be undefined
                 const shardId = Number(payload.event.shard_id)
                 const disabledChatroom = joinedChatrooms[shardId]
                 console.log(`* conduit.shard.disabled`, disabledChatroom, `web socket disabled, shardId:`, shardId)
@@ -354,62 +353,62 @@ module.exports = {
                 break
             case `stream.online`:
                 logMessage([`* ONLINE: ${streamer} started streaming`])
-                handleStreamOnline(bot, channel)
+                handleStreamOnline(bot, fromChannel)
                 break
             case `stream.offline`:
                 logMessage([`* OFFLINE: ${streamer} stopped streaming`])
-                handleStreamOffline(bot, channel)
+                handleStreamOffline(bot, fromChannel)
                 break
             case `channel.follow`:
                 logMessage([`* NEW FOLLOWER: ${streamer} was followed by ${displayName}`])
-                handleChannelFollow(bot, channel, event)
+                handleChannelFollow(bot, fromChannel, event)
                 break
             case `channel.vip.add`:
                 logMessage([`* ADD VIP: ${streamer} added ${displayName} as a VIP`])
-                handleChannelAddVIP(bot, channel, event)
+                handleChannelAddVIP(bot, fromChannel, event)
                 break
             case `channel.vip.remove`:
                 logMessage([`* REMOVE VIP: ${streamer} removed ${displayName} as a VIP`])
-                handleChannelRemoveVIP(channel, event)
+                handleChannelRemoveVIP(fromChannel, event)
                 break
             case `channel.moderator.add`:
                 logMessage([`* ADD MODERATOR: ${streamer} added ${displayName} as a mod`])
-                handleChannelAddModerator(bot, channel, event)
+                handleChannelAddModerator(bot, fromChannel, event)
                 break
             case `channel.moderator.remove`:
                 logMessage([`* REMOVE MODERATOR: ${streamer} removed ${displayName} as a mod`])
-                handleChannelRemoveModerator(channel, event)
+                handleChannelRemoveModerator(fromChannel, event)
                 break
             case `channel.shoutout.receive`:
                 logMessage([`* SHOUTOUT: ${streamer} received a shoutout from ${fromStreamer}`])
-                handleChannelReceiveShoutout(bot, channel, event)
+                handleChannelReceiveShoutout(bot, fromChannel, event)
                 break
             case `channel.subscribe`:
                 logMessage([`* SUB: ${displayName} just subscribed to ${streamer}`])
-                handleChannelSubscription(bot, channel, event)
+                handleChannelSubscription(bot, fromChannel, event)
                 break
             case `channel.subscription.end`:
                 logMessage([`* SUB END: ${displayName}'s ${event.is_gift ? `gift ` : ``}sub to ${streamer} expired`])
-                handleChannelSubscriptionEnd(bot, channel, event)
+                handleChannelSubscriptionEnd(bot, fromChannel, event)
                 break
             case `channel.subscription.gift`:
                 logMessage([`* GIFT SUB: ${displayName || `An anonymous user`} gifted ${pluralize(event.total, `sub`, `subs`)} to ${streamer}`])
-                handleChannelGiftSub(bot, channel, event)
+                handleChannelGiftSub(bot, fromChannel, event)
                 break
             case `channel.subscription.message`:
                 logMessage([`* SUB MESSAGE: ${displayName} resubscribed to ${streamer}`])
-                handleChannelSubscriptionMessage(bot, channel, event)
+                handleChannelSubscriptionMessage(bot, fromChannel, event)
                 break
             case `channel.cheer`:
                 logMessage([`* BITS: ${displayName || `An anonymous user`} cheered ${pluralize(event.bits), `bit`, `bits`} to ${streamer}`])
-                handleChannelCheer(bot, channel, event)
+                handleChannelCheer(bot, fromChannel, event)
                 break
             case `channel.hype_train.begin`:
                 logMessage([`* HYPE TRAIN: A hype train started for ${streamer} thanks to ${arrToList(event.top_contributions.map(obj => obj.user_login))}`])
-                handleChannelHypeTrainBegin(bot, channel, event)
+                handleChannelHypeTrainBegin(bot, fromChannel, event)
                 break
             default:
-                logMessage([`* '${channel}' ${subscription.type} is not a recognized EventSub`])
+                logMessage([`* '${fromChannel}' ${subscription.type} is not a recognized EventSub`])
         }
     }
 }

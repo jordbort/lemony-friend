@@ -494,8 +494,6 @@ async function updateEventSubs(channel) {
                 case `channel:read:hype_train`:
                     if (!enabled.includes(`channel.hype_train.begin`)) { await apiCreateEventSub(userId, `channel.hype_train.begin`, 2) }
                     break
-                default:
-                    await logMessage([`-> ${channel} '${scope}' not recognized`])
             }
         }
     } else { console.log(`* WARNING: Failed to get EventSubs for '${channel}'`) }
