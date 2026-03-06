@@ -177,13 +177,12 @@ function handleChannelRemoveModerator(channel, event) {
     const { broadcaster_user_name, user_login, user_name } = event
     logMessage([`* REMOVE MODERATOR: ${broadcaster_user_name} removed ${user_name} as a mod`])
 
-    const username = user_login
-    if (username in users && channel in users[username].channels) {
-        users[username].channels[channel].mod = false
+    if (user_login in users && channel in users[user_login].channels) {
+        users[user_login].channels[channel].mod = false
     }
-    if (username in mods) {
-        while (mods[username].isModIn.includes(`#${channel}`)) {
-            mods[username].isModIn.splice(mods[username].isModIn.indexOf(`#${channel}`), 1)
+    if (user_login in mods) {
+        while (mods[user_login].isModIn.includes(`#${channel}`)) {
+            mods[user_login].isModIn.splice(mods[user_login].isModIn.indexOf(`#${channel}`), 1)
         }
     }
 }
@@ -267,11 +266,10 @@ function handleChannelSubscriptionEnd(bot, channel, event) {
     const { broadcaster_user_name, user_login, user_name, is_gift } = event
     logMessage([`* SUB END: ${user_name}'s ${is_gift ? `gift ` : ``}sub to ${broadcaster_user_name} expired`])
 
-    const username = user_login
-    if (username in users && channel in users[username].channels) {
-        users[username].channels[channel].sub = false
+    if (user_login in users && channel in users[user_login].channels) {
+        users[user_login].channels[channel].sub = false
     }
-    if (username === BOT_USERNAME) {
+    if (user_login === BOT_USERNAME) {
         const negativeEmote = getContextEmote(`negative`, channel)
         const reply = `Aww, did I lose my sub? ${negativeEmote}`
         bot.say(`#${channel}`, reply)
@@ -280,9 +278,7 @@ function handleChannelSubscriptionEnd(bot, channel, event) {
 
 function handleChannelGiftSub(bot, channel, event) {
     const { broadcaster_user_name, user_login, user_name, total, is_anonymous } = event
-    const streamer = broadcaster_user_name
-    const displayName = user_name
-    logMessage([`* GIFT SUB: ${displayName || `An anonymous user`} gifted ${pluralize(total, `sub`, `subs`)} to ${streamer}`])
+    logMessage([`* GIFT SUB: ${user_name || `An anonymous user`} gifted ${pluralize(total, `sub`, `subs`)} to ${broadcaster_user_name}`])
 
     const obj = batch[channel].giftedSubs
 
@@ -310,17 +306,16 @@ function handleChannelSubscriptionMessage(bot, channel, event) {
     const { broadcaster_user_name, user_login, user_name, cumulative_months } = event
     logMessage([`* SUB MESSAGE: ${user_name} resubscribed to ${broadcaster_user_name}`])
 
-    const username = user_login
-    if (username in users && channel in users[username].channels) {
-        users[username].channels[channel].sub = true
+    if (user_login in users && channel in users[user_login].channels) {
+        users[user_login].channels[channel].sub = true
     }
 
     const streamer = channel in users
         ? users[channel].nickname || users[channel].displayName
         : channel
 
-    const subscriberName = username in users
-        ? users[username].nickname || users[username].displayName
+    const subscriberName = user_login in users
+        ? users[user_login].nickname || users[user_login].displayName
         : user_name
 
     const yearCount = Math.floor(cumulative_months / 12)

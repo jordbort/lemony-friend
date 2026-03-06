@@ -58,7 +58,6 @@ async function apiGetConduits(attempt = 1) {
         const response = await fetch(endpoint, options)
         const twitchData = await response.json()
         if (response.status === 200) {
-            // console.log(twitchData) // delete after testing
             return twitchData.data
         } else {
             await logMessage([`apiGetConduits`, response.status, twitchData])
@@ -172,7 +171,9 @@ async function apiGetConduitShards(conduitId, attempt = 1) {
     try {
         const response = await fetch(endpoint, options)
         const twitchData = await response.json()
-        if (response.status !== 200) {
+        if (response.status === 200) {
+            return twitchData.data
+        } else {
             await logMessage([renderObj(twitchData, `twitchData`)])
             if (response.status === 401) {
                 if (attempt < 3) {
@@ -185,7 +186,7 @@ async function apiGetConduitShards(conduitId, attempt = 1) {
                     await logMessage([`-> Failed to get Twitch conduit shard after ${pluralize(attempt, `attempt`, `attempts`)}`])
                 }
             }
-        } else { return twitchData.data } // delete after testing
+        }
     } catch (err) {
         await logMessage([`apiGetConduitShards ${err}`])
     }
@@ -257,7 +258,7 @@ module.exports = {
         }
         const shardCount = conduits[0].shard_count
         await logMessage([`> assignToConduit(chatroom: '${chatroom}', index: ${index}, shardCount: ${shardCount})`])
-        if (index > shardCount - 1) {
+        if (index >= shardCount) {
             await apiUpdateConduit(settings.conduitId, shardCount + 1)
         }
         apiUpdateConduitShard(settings.conduitId, index, webSocketSessionId)
