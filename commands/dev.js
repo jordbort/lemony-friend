@@ -104,17 +104,17 @@ module.exports = {
         bot.say(chatroom, reply.join(`, `))
     },
     'openws': (props) => {
-        const { bot, chatroom, args, channel } = props
+        const { bot, args, channel } = props
         if (args.length) {
             if (args[0] === `all`) {
-                for (const streamer of bot.channels) { createWebSocket(bot, streamer, streamer.substring(1)) }
+                for (const chatroom of bot.channels) { createWebSocket(bot, chatroom.substring(1)) }
             } else {
                 for (const arg of args) {
                     const streamer = getToUser(arg)
-                    if (streamer in lemonyFresh) { createWebSocket(bot, `#${streamer}`, streamer) }
+                    if (streamer in lemonyFresh) { createWebSocket(bot, streamer) }
                 }
             }
-        } else { createWebSocket(bot, chatroom, channel) }
+        } else { createWebSocket(bot, channel) }
     },
     'closews': (props) => {
         const { bot, args, channel } = props
