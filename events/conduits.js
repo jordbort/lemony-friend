@@ -241,13 +241,12 @@ module.exports = {
     apiCreateConduit, // is in: handlers.js, dev.js
     apiGetConduits, // is in: handlers.js, dev.js
     apiUpdateConduit, // is in: dev.js
-    apiDeleteConduit, // is in: dev.js
-    apiGetConduitShards, // is in: dev.js
+    apiDeleteConduit, // only used in: dev.js
     apiUpdateConduitShard, // is in: dev.js
+    apiGetConduitShards, // only used in: dev.js
     async assignToConduit(chatroom, webSocketSessionId) {
         if (!settings.conduitId) {
-            // await logMessage([`No conduit ID`])
-            console.log(`assignToConduit: No conduit ID`)
+            await logMessage([`assignToConduit Error: No conduit ID`])
             return
         }
         const index = joinedChatrooms.indexOf(chatroom)
