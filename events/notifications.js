@@ -110,7 +110,7 @@ function handleChannelFollow(bot, channel, event) {
         }, 1000))
     }
 
-    logMessage([`> handleChannelFollow(channel: '${channel}', timer: ${obj.timer}, names: '${obj.names.join(`', '`)}')`])
+    // logMessage([`> handleChannelFollow(channel: '${channel}', timer: ${obj.timer}, names: '${obj.names.join(`', '`)}')`])
 }
 
 function handleChannelAddVIP(bot, channel, event) {
@@ -242,7 +242,7 @@ function handleChannelSubscription(bot, channel, event) {
                 resetChannelBatch(`giftedSubs`, channel)
             }, 1000))
         }
-        logMessage([`> handleChannelSubscription(channel: '${channel}', gift: ${is_gift}, timer: ${obj.timer}, gifters: '${obj.gifters.join(`', '`)}', names: '${obj.names.join(`', '`)}')`])
+        // logMessage([`> handleChannelSubscription(channel: '${channel}', gift: ${is_gift}, timer: ${obj.timer}, gifters: '${obj.gifters.join(`', '`)}', names: '${obj.names.join(`', '`)}')`])
     } else {
         const obj = batch[channel].subs
         obj.names.push(subscriberName)
@@ -258,7 +258,7 @@ function handleChannelSubscription(bot, channel, event) {
                 resetChannelBatch(`subs`, channel)
             }, 1000))
         }
-        logMessage([`> handleChannelSubscription(channel: '${channel}', gift: ${is_gift}, timer: ${obj.timer}, names: '${obj.names.join(`', '`)}')`])
+        // logMessage([`> handleChannelSubscription(channel: '${channel}', gift: ${is_gift}, timer: ${obj.timer}, names: '${obj.names.join(`', '`)}')`])
     }
 }
 
@@ -299,7 +299,7 @@ function handleChannelGiftSub(bot, channel, event) {
         resetChannelBatch(`giftedSubs`, channel)
     }, 1000))
 
-    logMessage([`> handleChannelGiftSub(channel: '${channel}', timer: ${obj.timer}, gifters: '${obj.gifters.join(`', '`)}', names: '${obj.names.join(`', '`)}')`])
+    // logMessage([`> handleChannelGiftSub(channel: '${channel}', timer: ${obj.timer}, gifters: '${obj.gifters.join(`', '`)}', names: '${obj.names.join(`', '`)}')`])
 }
 
 function handleChannelSubscriptionMessage(bot, channel, event) {

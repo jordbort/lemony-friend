@@ -8,48 +8,17 @@ const { handleNotification } = require(`./notifications`)
 const { updateEventSubs } = require(`../commands/twitch`)
 
 const webSockets = {}
-function createWebSocket(bot, channel) {
-    if (!(channel in webSockets)) {
-        webSockets[channel] = {
-            sessionId: 0,
-            ws: [],
-            timer: 0
-        }
-    }
-    if (!webSockets[channel].sessionId) {
-        initWebSocket(bot, channel)
-    } else { console.log(`Warning: sessionId ${webSockets[channel].sessionId} already exists for '${channel}'`) }
-}
 
-function keepAlive(bot, channel) {
-    clearTimeout(webSockets[channel].timer)
-    webSockets[channel].timer = setTimeout(() => {
-        logMessage([`* KEEPALIVE message not received for ${channel}, breaking connection...`])
-        closeWebSocket(bot, channel)
-    }, 35000)
-}
+function initWebSocket(bot, channel, path = `wss://eventsub.wss.twitch.tv/ws`) {
+    // logMessage([`> initWebSocket(channel: '${channel}', path: '${path}')`])
 
-function handleWelcome(channel, event) {
-    const { id, status } = event.payload.session
-    logMessage([`* WELCOME '${channel}' status: ${status}`])
-    if (webSockets[channel].sessionId === id) {
-        webSockets[channel].ws[0].close()
-    } else {
-        webSockets[channel].sessionId = id
-        assignToConduit(`#${channel}`, id)
-        updateEventSubs(channel, webSockets[channel].sessionId)
-    }
-}
+    webSockets[channel].ws.push(new WebSocket(path))
+    const ws = getWebSocket(channel)
 
-function handleReconnect(bot, channel, event) {
-    const { status, reconnect_url } = event.payload.session
-    logMessage([`* RECONNECT '${channel}' status: ${status}, reconnect_url: ${reconnect_url}`])
-    initWebSocket(bot, channel, reconnect_url)
-}
-
-function handleRevocation(channel, event) {
-    logMessage([`* REVOKED '${channel}' status: ${event.payload.session.status}`])
-    updateEventSubs(channel, webSockets[channel].sessionId)
+    ws.onopen = () => { logMessage([`-> WebSocket connection established for '${channel}'`]) }
+    ws.onmessage = (event) => { handleMessage(bot, channel, event) }
+    ws.onclose = (event) => { handleClose(bot, channel, event) }
+    ws.onerror = (error) => { logMessage([`-> WebSocket error for '${channel}':`, error.message]) }
 }
 
 function handleMessage(bot, channel, event) {
@@ -76,32 +45,6 @@ function handleMessage(bot, channel, event) {
     }
 }
 
-function getWebSocket(channel) {
-    return webSockets[channel].ws.length
-        ? webSockets[channel].ws[webSockets[channel].ws.length - 1]
-        : null
-}
-
-function closeWebSocket(bot, channel) {
-    logMessage([`> closeWebSocket(channel: '${channel}')`])
-    clearTimeout(webSockets[channel].timer)
-    webSockets[channel].timer = 0
-    if (!webSockets[channel].sessionId) {
-        // logMessage([`* Warning: No sessionId for '${channel}'`])
-        console.log(`* Warning: No sessionId for '${channel}'`)
-    }
-
-    const ws = getWebSocket(channel)
-    if (ws) {
-        webSockets[channel].sessionId = ``
-        ws.close()
-    } else {
-        // logMessage([`* Error: No web socket to close for '${channel}', reinitializing web socket...`])
-        console.log(`* Error: No web socket to close for '${channel}', reinitializing web socket...`)
-        initWebSocket(bot, channel)
-    }
-}
-
 function handleClose(bot, channel, event) {
     const { code, reason, wasClean } = event
     webSockets[channel].ws.shift()
@@ -116,20 +59,73 @@ function handleClose(bot, channel, event) {
     }
 }
 
-function initWebSocket(bot, channel, path = `wss://eventsub.wss.twitch.tv/ws`) {
-    logMessage([`> initWebSocket(channel: '${channel}', path: '${path}')`])
+function handleWelcome(channel, event) {
+    const { id, status } = event.payload.session
+    logMessage([`* WELCOME '${channel}' status: ${status}`])
+    if (webSockets[channel].sessionId === id) {
+        webSockets[channel].ws[0].close()
+    } else {
+        webSockets[channel].sessionId = id
+        assignToConduit(`#${channel}`, id)
+        updateEventSubs(channel, webSockets[channel].sessionId)
+    }
+}
 
-    webSockets[channel].ws.push(new WebSocket(path))
+function handleReconnect(bot, channel, event) {
+    const { status, reconnect_url } = event.payload.session
+    logMessage([`* RECONNECT '${channel}' status: ${status}, reconnect_url: ${reconnect_url}`])
+    initWebSocket(bot, channel, reconnect_url)
+}
+
+function handleRevocation(channel, event) {
+    logMessage([`* REVOKED '${channel}' status: ${event.payload.session.status}`])
+    updateEventSubs(channel, webSockets[channel].sessionId)
+}
+
+function createWebSocket(bot, channel) {
+    if (!(channel in webSockets)) {
+        webSockets[channel] = {
+            sessionId: 0,
+            ws: [],
+            timer: 0
+        }
+    }
+    if (!webSockets[channel].sessionId) {
+        initWebSocket(bot, channel)
+    } else { console.log(`Warning: sessionId ${webSockets[channel].sessionId} already exists for '${channel}'`) }
+}
+
+function keepAlive(bot, channel) {
+    clearTimeout(webSockets[channel].timer)
+    webSockets[channel].timer = setTimeout(() => {
+        logMessage([`* KEEPALIVE message not received for ${channel}, breaking connection...`])
+        closeWebSocket(bot, channel)
+    }, 35000)
+}
+
+function closeWebSocket(bot, channel) {
+    // logMessage([`> closeWebSocket(channel: '${channel}')`])
+    clearTimeout(webSockets[channel].timer)
+    webSockets[channel].timer = 0
+
     const ws = getWebSocket(channel)
+    if (ws) {
+        webSockets[channel].sessionId = ``
+        ws.close()
+    } else {
+        logMessage([`* Error: No web socket to close for '${channel}', reinitializing web socket...`])
+        initWebSocket(bot, channel)
+    }
+}
 
-    ws.onopen = () => { logMessage([`-> WebSocket connection established for '${channel}'`]) }
-    ws.onmessage = (event) => { handleMessage(bot, channel, event) }
-    ws.onclose = (event) => { handleClose(bot, channel, event) }
-    ws.onerror = (error) => { logMessage([`-> WebSocket error for '${channel}':`, error.message]) }
+function getWebSocket(channel) {
+    return webSockets[channel].ws.length
+        ? webSockets[channel].ws[webSockets[channel].ws.length - 1]
+        : null
 }
 
 module.exports = {
-    createWebSocket, // is in: handlers.js
+    createWebSocket, // is in: handlers.js, dev.js
     printWebSockets() { // is in: dev.js
         for (const channel in webSockets) {
             console.log(channel, webSockets[channel].ws.length, webSockets[channel].ws.map(ws => ws._closeFrameSent || ws.closeFrameReceived ? `closed` : `open`), webSockets[channel].timer._destroyed ? `inactive` : `active`, webSockets[channel].sessionId)

@@ -45,7 +45,7 @@ async function apiCreateConduit(shardCount, attempt = 1) {
 }
 
 async function apiGetConduits(attempt = 1) {
-    await logMessage([`> apiGetConduits(attempt: ${attempt})`])
+    // await logMessage([`> apiGetConduits(attempt: ${attempt})`])
     const endpoint = `https://api.twitch.tv/helix/eventsub/conduits`
     const options = {
         headers: {
@@ -193,7 +193,7 @@ async function apiGetConduitShards(conduitId, attempt = 1) {
 }
 
 async function apiUpdateConduitShard(conduitId, shardId, webSocketSessionId, attempt = 1) {
-    await logMessage([`> apiUpdateConduitShard(conduitId: '${conduitId}', shardId: ${shardId}, webSocketSessionId: '${webSocketSessionId}', attempt: ${attempt})`])
+    // await logMessage([`> apiUpdateConduitShard(conduitId: '${conduitId}', shardId: ${shardId}, webSocketSessionId: '${webSocketSessionId}', attempt: ${attempt})`])
     const endpoint = `https://api.twitch.tv/helix/eventsub/conduits/shards`
     const requestBody = {
         conduit_id: conduitId,
@@ -257,7 +257,7 @@ module.exports = {
             return
         }
         const shardCount = conduits[0].shard_count
-        await logMessage([`> assignToConduit(chatroom: '${chatroom}', index: ${index}, shardCount: ${shardCount})`])
+        // await logMessage([`> assignToConduit(chatroom: '${chatroom}', index: ${index}, shardCount: ${shardCount})`])
         if (index >= shardCount) {
             await apiUpdateConduit(settings.conduitId, shardCount + 1)
         }
