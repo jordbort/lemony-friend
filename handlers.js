@@ -225,9 +225,13 @@ module.exports = {
 
         const msg = message.replace(/ +/g, ` `)
         const channel = chatroom.substring(1)
-        const username = tags.username
         const time = new Date().toLocaleTimeString(settings.timeLocale, { timeZone: settings.timeZone })
         const color = tags.color || ``
+        const username = tags.username
+        if (!username) {
+            logMessage([`Error: No username found`])
+            return
+        }
 
         // Log incoming message and capture message tags
         appendLogs(chatroom, tags, msg, self, time, username, color)
