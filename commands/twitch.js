@@ -373,9 +373,9 @@ async function apiCreateEventSub(userId, type, version, attempt = 1) {
     }
 }
 
-async function apiGetEventSubs(userId = null, type = ``, attempt = 1) {
-    await logMessage([`> apiGetEventSubs(userId: ${userId}, type: '${type}', attempt: ${attempt})`])
-    const endpoint = `https://api.twitch.tv/helix/eventsub/subscriptions${userId ? `?user_id=${userId}` : type ? `?type=${type}` : ``}`
+async function apiGetEventSubs(userId = null, attempt = 1) {
+    // await logMessage([`> apiGetEventSubs(userId: ${userId}, attempt: ${attempt})`])
+    const endpoint = `https://api.twitch.tv/helix/eventsub/subscriptions${userId ? `?user_id=${userId}` : ``}`
     const options = {
         headers: {
             authorization: `Bearer ${settings.botAccessToken}`,
@@ -397,7 +397,7 @@ async function apiGetEventSubs(userId = null, type = ``, attempt = 1) {
                     const retry = await apiGetTwitchAppAccessToken()
                     if (retry) {
                         attempt++
-                        return apiGetEventSubs(userId, type, attempt)
+                        return apiGetEventSubs(userId, attempt)
                     }
                 } else {
                     await logMessage([`-> Failed to get event subscriptions after ${pluralize(attempt, `attempt`, `attempts`)}`])
@@ -824,8 +824,7 @@ module.exports = {
     apiGetTwitchAppAccessToken, // used in conduits.js
     apiGetTwitchUser, // used in joinPart.js
     apiGetTwitchChannel, // used in handlers.js, notifications.js
-    apiGetEventSubs, // used in handlers.js, dev.js
-    apiCreateEventSub, // used in handlers.js
+    apiGetEventSubs, // used in dev.js
     updateEventSubs,
     async checkToken(props) {
         const { bot, chatroom, channel } = props
