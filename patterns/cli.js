@@ -256,14 +256,14 @@ function updateChannelDev(props, args) {
     }
 
     const options = {
-        [/^timers?$|^t$/i]: { name: `timers`, func: updateTimer },
-        [/^rollFunNumber$|^rfn$/i]: { name: `rollFunNumber`, func: updateBool },
         [/^followEmotes?$|^fe$/i]: { name: `followEmotes`, func: updateArr },
         [/^subEmotes?$|^se$/i]: { name: `subEmotes`, func: updateArr },
         [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
         [/^contextEmotes?$|^ce$/i]: { name: `contextEmotes`, func: updateContextEmotes },
+        [/^rollFunNumber$|^rfn$/i]: { name: `rollFunNumber`, func: updateBool },
         [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
         [/^noSubRaidMessage$|^nsrm$/i]: { name: `noSubRaidMessage`, func: updateStr },
+        [/^timers?$|^t$/i]: { name: `timers`, func: updateTimer },
         [/^streakThreshold$|^st$/i]: { name: `streakThreshold`, func: updateNum },
         [/^streamerEmoteStreakThreshold$|^sest$/i]: { name: `streamerEmoteStreakThreshold`, func: updateNum },
         [/^funnyCommands?$|^fc$/i]: { name: `funnyCommands`, func: updateArr },
@@ -290,14 +290,14 @@ function updateChannel(props, args) {
     logMessage([`> updateChannel(username, '${username}', channel, '${channel}', args:`, args.join(`, `), `)`])
 
     const options = {
-        [/^timers?$|^t$/i]: { name: `timers`, func: updateTimer },
-        [/^rollFunNumber$|^rfn$/i]: { name: `rollFunNumber`, func: updateBool },
-        [/^followEmotes?$|^fe$/i]: { name: `followEmotes`, func: updateArr },
-        [/^subEmotes?$|^se$/i]: { name: `subEmotes`, func: updateArr },
-        [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
+        // [/^followEmotes?$|^fe$/i]: { name: `followEmotes`, func: updateArr },
+        // [/^subEmotes?$|^se$/i]: { name: `subEmotes`, func: updateArr },
+        // [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
         [/^contextEmotes?$|^ce$/i]: { name: `contextEmotes`, func: updateContextEmotes },
+        [/^rollFunNumber$|^rfn$/i]: { name: `rollFunNumber`, func: updateBool },
         [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
         [/^noSubRaidMessage$|^nsrm$/i]: { name: `noSubRaidMessage`, func: updateStr },
+        [/^timers?$|^t$/i]: { name: `timers`, func: updateTimer },
         [/^streakThreshold$|^st$/i]: { name: `streakThreshold`, func: updateNum },
         [/^streamerEmoteStreakThreshold$|^sest$/i]: { name: `streamerEmoteStreakThreshold`, func: updateNum }
     }
@@ -327,12 +327,12 @@ function updateUserDev(props, args) {
     }
 
     const options = {
-        [/^displayName$|^dn$/i]: { name: `displayName`, func: updateStr },
+        // [/^displayName$|^dn$/i]: { name: `displayName`, func: updateStr },
         [/^nickname$|^nn$/i]: { name: `nickname`, func: updateStr },
         [/^lemons?$|^l$/i]: { name: `lemons`, func: updateNum },
         [/^hangmanWins?$|^hw$/i]: { name: `hangmanWins`, func: updateNum },
-        [/^away$|^a$/i]: { name: `away`, func: updateBool },
-        [/^awayMessage$|^am$/i]: { name: `awayMessage`, func: updateStr },
+        // [/^away$|^a$/i]: { name: `away`, func: updateBool },
+        // [/^awayMessage$|^am$/i]: { name: `awayMessage`, func: updateStr },
         [/^delete$|^d$/i]: { name: `${toUser}`, func: deleteUser }
     }
 
@@ -383,8 +383,8 @@ function updateUser(props, args) {
 
     const options = {
         [/^nickname$|^nn$/i]: { name: `nickname`, func: updateStr },
-        [/^away$|^a$/i]: { name: `away`, func: updateBool },
-        [/^awayMessage$|^am$/i]: { name: `awayMessage`, func: updateStr }
+        // [/^away$|^a$/i]: { name: `away`, func: updateBool },
+        // [/^awayMessage$|^am$/i]: { name: `awayMessage`, func: updateStr }
     }
 
     for (const option in options) {
@@ -453,11 +453,9 @@ function updateSettingsDev(props, args) {
     const options = {
         [/^debug$|^d$/i]: { name: `debug`, func: updateBool },
         [/^autoBan$|^ab$/i]: { name: `autoBan`, func: updatePhraseArr },
-        [/^playPCG$|^pcg$/i]: { name: `playPCG`, func: updateBool },
-        [/^pokeballQuantity$|^pq$/i]: { name: `pokeballQuantity`, func: updateNum },
-        [/^usedPokeball$|^up$/i]: { name: `usedPokeball`, func: updateStr },
-        [/^lemonLeaderCount$|^llc$/i]: { name: `lemonLeaderCount`, func: updateNum },
         [/^ignoredBots?$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
+        // [/^chantEmote$|^ce$/i]: { name: `chantEmote`, func: updateStr },
+        [/^lemonLeaderCount$|^llc$/i]: { name: `lemonLeaderCount`, func: updateNum },
         [/^timeZone$|^tz$/i]: { name: `timeZone`, func: updateTimeZone },
         // [/^timeLocale$|^tl$/i]: { name: `timeLocale`, func: updateTimeLocale },
         // [/^joinMessage$|^jm$/i]: { name: `joinMessage`, func: updateStr },
@@ -472,12 +470,14 @@ function updateSettingsDev(props, args) {
         [/^streakMinutesThreshold$|^smt$/i]: { name: `streakMinutesThreshold`, func: updateNum },
         [/^streakThreshold$|^st$/i]: { name: `streakThreshold`, func: updateNum },
         [/^streamerEmoteStreakThreshold$|^sest$/i]: { name: `streamerEmoteStreakThreshold`, func: updateNum },
-        [/^hangmanSignupSeconds$|^hss$/i]: { name: `hangmanSignupSeconds`, func: updateNum },
         // [/^hangmanChances?$|^hc$/i]: { name: `hangmanChances`, func: updateNum },
+        // [/^hangmanSignupSeconds$|^hss$/i]: { name: `hangmanSignupSeconds`, func: updateNum },
         // [/^hangmanLemonThreshold$|^hlt$/i]: { name: `hangmanLemonThreshold`, func: updateNum },
         // [/^chantCount$|^cc$/i]: { name: `chantCount`, func: updateNum },
-        [/^chantEmote$|^ce$/i]: { name: `chantEmote`, func: updateStr },
         // [/^realRPS$|^rps$/i]: { name: `realRPS`, func: updateBool },
+        [/^playPCG$|^pcg$/i]: { name: `playPCG`, func: updateBool },
+        [/^pokeballQuantity$|^pq$/i]: { name: `pokeballQuantity`, func: updateNum },
+        [/^usedPokeball$|^up$/i]: { name: `usedPokeball`, func: updateStr },
         [/^globalEmotes$|^ge$/i]: { name: `globalEmotes`, func: updateGlobalEmotes },
         [/^botMood$|^m$/i]: { name: `botMood`, func: updateStr }
     }
@@ -503,11 +503,11 @@ function updateSettings(props, args) {
     const options = {
         [/^autoBan$|^ab$/i]: { name: `autoBan`, func: updatePhraseArr },
         [/^ignoredBots?$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
+        // [/^chantEmote$|^ce$/i]: { name: `chantEmote`, func: updateStr },
+        // [/^hangmanChances$|^hc$/i]: { name: `hangmanChances`, func: updateNum },
         [/^playPCG$|^pcg$/i]: { name: `playPCG`, func: updateBool },
-        [/^pokeballQuantity$|^pq$/i]: { name: `pokeballQuantity`, func: updateNum },
-        [/^usedPokeball$|^up$/i]: { name: `usedPokeball`, func: updateStr },
-        [/^chantEmote$|^ce$/i]: { name: `chantEmote`, func: updateStr },
-        // [/^hangmanChances$|^hc$/i]: { name: `hangmanChances`, func: updateNum }
+        // [/^pokeballQuantity$|^pq$/i]: { name: `pokeballQuantity`, func: updateNum },
+        // [/^usedPokeball$|^up$/i]: { name: `usedPokeball`, func: updateStr }
     }
 
     for (const option in options) {
