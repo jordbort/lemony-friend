@@ -237,7 +237,7 @@ async function apiGetGame(query, attempt = 1) {
 }
 
 async function apiRefreshToken(username, refreshToken) {
-    await logMessage([`> apiRefreshToken(username: ${username})`])
+    // await logMessage([`> apiRefreshToken(username: ${username})`])
 
     const endpoint = `https://id.twitch.tv/oauth2/token`
     const options = {
@@ -273,7 +273,7 @@ async function apiRefreshToken(username, refreshToken) {
 }
 
 async function apiGetTokenScope(channel, attempt = 1) {
-    await logMessage([`> apiGetTokenScope(channel: '${channel}', attempt: ${attempt})`])
+    // await logMessage([`> apiGetTokenScope(channel: '${channel}', attempt: ${attempt})`])
     const streamer = lemonyFresh[channel]
     if (!streamer.accessToken || !streamer.refreshToken) {
         await logMessage([`-> ${channel} has no token`])
@@ -450,7 +450,7 @@ async function apiDeleteEventSub(id, type, status, attempt = 1) {
 }
 
 async function updateEventSubs(channel) {
-    await logMessage([`> updateEventSubs(channel: '${channel}')`])
+    // await logMessage([`> updateEventSubs(channel: '${channel}')`])
     const arrScope = await apiGetTokenScope(channel)
     if (!arrScope) {
         await logMessage([`-> Unable to determine ${channel}'s token scope`])
