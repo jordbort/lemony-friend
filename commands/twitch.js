@@ -821,13 +821,11 @@ async function apiGetGlobalTwitchEmotes(attempt = 1) {
 }
 
 module.exports = {
-    apiGetTwitchAppAccessToken,
-    apiGetTwitchUser,
-    apiGetTwitchChannel,
-    apiRefreshToken,
-    apiGetTokenScope,
-    apiGetEventSubs,
-    apiCreateEventSub,
+    apiGetTwitchAppAccessToken, // used in conduits.js
+    apiGetTwitchUser, // used in joinPart.js
+    apiGetTwitchChannel, // used in handlers.js, notifications.js
+    apiGetEventSubs, // used in handlers.js, dev.js
+    apiCreateEventSub, // used in handlers.js
     updateEventSubs,
     async checkToken(props) {
         const { bot, chatroom, channel } = props
@@ -869,6 +867,17 @@ module.exports = {
             ? `Token is unable to handle ${arrToList(arrAbilities, `or`)}. Please use !access to renew your token and get all the features!`
             : `Token has all available features! Thanks for using ${BOT_USERNAME}!`
         bot.say(chatroom, reply)
+    },
+    async deleteAllEventSubs(channel) {
+        await logMessage([`> deleteAllEventSubs(channel: '${channel}')`])
+        const obj = await apiGetEventSubs(lemonyFresh[channel].id)
+        if (obj && `data` in obj) {
+            if (obj.data.length) {
+                for (const el of obj.data) {
+                    await apiDeleteEventSub(el.id, el.type, el.status)
+                }
+            }
+        }
     },
     accessInstructions(props) {
         const { bot, chatroom, username } = props
