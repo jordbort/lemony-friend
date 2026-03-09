@@ -400,14 +400,15 @@ module.exports = {
         logMessage([`> chant(chatroom: '${chatroom}', args:`, args, `)`])
 
         const emotes = [
-            ...Object.keys(lemonyFresh).map(channel => lemonyFresh[channel].emotes),
+            ...Object.keys(lemonyFresh).map(channel => lemonyFresh[channel].followEmotes),
+            ...Object.keys(lemonyFresh).map(channel => lemonyFresh[channel].subEmotes),
             ...Object.keys(lemonyFresh).map(channel => lemonyFresh[channel].bttvEmotes),
             ...settings.globalEmotes.twitch,
             ...settings.globalEmotes.bttv
         ].flat()
 
         const chant = args
-            .map((word) => emotes.includes(word) ? word : word.toUpperCase())
+            .map(word => emotes.includes(word) ? word : word.toUpperCase())
             .join(` `)
 
         const response = Array(settings.chantCount)
