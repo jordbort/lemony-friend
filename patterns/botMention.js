@@ -27,9 +27,11 @@ module.exports = {
     [/c+o+n+g+r+a+t+(u+l+a+t+i+o+n+)?s+/i]: sayThanks,
 
     // how are you
-    [/\bh+o+w+\b.*\b(a+r+e+|r+)\b.*\b(y+o+u+|u+)/i]: sayMood,
+    [/\bh+o+w+\b.*\b(a+r+e+|r+)\b.*\b(y+o+)?u+\b/i]: sayMood,
+    // how about you
+    [/\bh+o+w+\sa+b+o+u+t+\s(y+o+)?u+\b/i]: sayMood,
     // how're you
-    [/\bh+o+w+['"]*r+e+\b.*\b(y+o+u+|u+)/i]: sayMood,
+    [/\bh+o+w+['"]*r+e+\b.*\b(y+o+)?u+/i]: sayMood,
     // hru/hbu
     [/\bh+(r|b)+u+\b/i]: sayMood,
     // hyd
