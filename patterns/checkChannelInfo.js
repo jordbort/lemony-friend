@@ -1,5 +1,5 @@
 const { users, lemonyFresh } = require(`../data`)
-const { getContextEmote, getToUser, pluralize, logMessage, findUserByNickname } = require(`../utils`)
+const { getContextEmote, getToUser, pluralize, logMessage, findUserByNickname, arrToList } = require(`../utils`)
 
 module.exports = {
     checkEmotes(props, splitMessage) {
@@ -15,9 +15,14 @@ module.exports = {
         logMessage([`> checkEmotes(chatroom: '${chatroom}', toUser: '${toUser}', validatedChannelName: '${validatedChannelName}', channelNickname: '${channelNickname}')`])
 
         if (validatedChannelName in lemonyFresh) {
-            `emotes` in lemonyFresh[validatedChannelName]
-                ? bot.say(chatroom, `I know ${pluralize(lemonyFresh[validatedChannelName].emotes.length, `emote`, `emotes`)} in ${channelNickname}'s channel, ${userNickname}!`)
-                : bot.say(chatroom, `I don't know how many emotes ${channelNickname} has, ${userNickname}!`)
+            const reply = lemonyFresh[validatedChannelName].followEmotes.length || lemonyFresh[validatedChannelName].subEmotes.length || lemonyFresh[validatedChannelName].bttvEmotes.length
+                ? `I know ${arrToList([
+                    pluralize(lemonyFresh[validatedChannelName].followEmotes.length, `follower emote`, `follower emotes`),
+                    pluralize(lemonyFresh[validatedChannelName].subEmotes.length, `sub emote`, `sub emotes`),
+                    pluralize(lemonyFresh[validatedChannelName].bttvEmotes.length, `BTTV emote`, `BTTV emotes`)
+                ])} in ${channelNickname}'s channel, ${userNickname}!`
+                : `I don't know of any emotes ${channelNickname} has, ${userNickname}!`
+            bot.say(chatroom, reply)
         }
     },
     checkSelfSub(props, splitMessage) {

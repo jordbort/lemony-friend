@@ -552,10 +552,12 @@ module.exports = {
             ? nicknames[str]
             : null
     },
-    containsInaccessibleEmotes(str) {
-        const inaccessibleEmotes = Object.keys(users[BOT_USERNAME].channels)
-            .filter(channel => users[BOT_USERNAME].channels[channel].sub === false)
-            .map(channel => lemonyFresh[channel].emotes)
+    containsInaccessibleEmotes(str, channel) {
+        const inaccessibleEmotes = Object.keys(lemonyFresh)
+            .filter(stream => !users[BOT_USERNAME].channels[stream].sub)
+            .map(stream => stream === channel
+                ? lemonyFresh[stream].subEmotes
+                : [...lemonyFresh[stream].followEmotes, ...lemonyFresh[stream].subEmotes])
             .flat()
         if (inaccessibleEmotes.some(emote => str.includes(emote))) {
             logMessage([`> containsInaccessibleEmotes(str: '${str}')`])
@@ -566,7 +568,8 @@ module.exports = {
     containsUnrecognizedEmotes(str) {
         if (emotePattern.test(str)) {
             const allEmotes = [
-                ...Object.keys(lemonyFresh).map(channel => lemonyFresh[channel].emotes),
+                ...Object.keys(lemonyFresh).map(channel => lemonyFresh[channel].followEmotes),
+                ...Object.keys(lemonyFresh).map(channel => lemonyFresh[channel].subEmotes),
                 ...Object.keys(lemonyFresh).map(channel => lemonyFresh[channel].bttvEmotes)
             ].flat()
             const unrecognizedEmotes = str
