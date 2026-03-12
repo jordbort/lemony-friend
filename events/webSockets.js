@@ -53,8 +53,9 @@ function handleClose(bot, channel, event) {
         ? logMessage([`-> WebSocket connection for ${channel} closed with code ${code}: '${reason}'`])
         : logMessage([`-> WebSocket connection for ${channel} died unexpectedly with code ${code}${reason ? `: '${reason}'` : ``}`])
 
-    // Should 4004 be removed?
-    if (![1000, 4003, 4004].includes(code)) { // Not on purpose, unused connection, or from reconnection
+    // If not closed on purpose (unless keepAlive timed out), for unused connection, or from not reconnecting in time
+    if (![1000, 4003, 4004].includes(code) || webSockets[channel].timedOut) {
+        if (webSockets[channel].timedOut) { webSockets[channel].timedOut = false }
         initWebSocket(bot, channel)
     }
 }
@@ -87,7 +88,8 @@ function createWebSocket(bot, channel) {
         webSockets[channel] = {
             sessionId: 0,
             ws: [],
-            timer: 0
+            timer: 0,
+            timedOut: false
         }
     }
     if (!webSockets[channel].sessionId) {
@@ -99,6 +101,7 @@ function keepAlive(bot, channel) {
     clearTimeout(webSockets[channel].timer)
     webSockets[channel].timer = setTimeout(() => {
         logMessage([`* KEEPALIVE message not received for ${channel}, breaking connection...`])
+        webSockets[channel].timedOut = true
         closeWebSocket(bot, channel)
     }, 35000)
 }
