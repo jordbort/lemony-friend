@@ -502,7 +502,7 @@ async function updateEventSubs(channel) {
                     if (!enabled.includes(`channel.hype_train.begin`)) { await apiCreateEventSub(userId, `channel.hype_train.begin`, 2) }
             }
         }
-    } else { console.log(`* WARNING: Failed to get EventSubs for '${channel}'`) }
+    } else { await logMessage([`-> Failed to get EventSubs for '${channel}'`]) }
 }
 
 async function apiShoutOut(fromId, toId, moderatorName, moderatorId, accessToken, refreshToken, attempt = 1) {

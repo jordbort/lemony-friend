@@ -7,7 +7,7 @@ const { getSubs } = require(`./help`)
 const { rollFunNumber } = require(`./funNumber`)
 const { handleJoin, handlePart } = require(`./joinPart`)
 const { updateEventSubs, apiGetEventSubs } = require(`./twitch`)
-const { closeWebSocket, createWebSocket, checkWebSockets } = require(`../events/webSockets`)
+const { initWebSocket, closeWebSocket, checkWebSockets } = require(`../events/webSockets`)
 const { logMessage, printMemory, pluralize, getContextEmote, getToUser } = require(`../utils`)
 const { apiCreateConduit, apiGetConduits, apiUpdateConduit, apiDeleteConduit, apiGetConduitShards } = require(`../events/conduits`)
 
@@ -100,18 +100,18 @@ async function getEventSubs(props) {
     bot.say(chatroom, reply.join(`, `))
 }
 
-function openWebSocket(props) {
+function connectWebSocket(props) {
     const { bot, args, channel } = props
     if (args.length) {
         if (args[0] === `all`) {
-            for (const chatroom of bot.channels) { createWebSocket(bot, chatroom.substring(1)) }
+            for (const chatroom of bot.channels) { initWebSocket(bot, chatroom.substring(1)) }
         } else {
             for (const arg of args) {
                 const streamer = getToUser(arg)
-                if (streamer in lemonyFresh) { createWebSocket(bot, streamer) }
+                if (streamer in lemonyFresh) { initWebSocket(bot, streamer) }
             }
         }
-    } else { createWebSocket(bot, channel) }
+    } else { initWebSocket(bot, channel) }
 }
 
 function disconnectWebSocket(props) {
@@ -268,7 +268,7 @@ module.exports = {
 
     // For WebSockets
     'getsubs': getEventSubs,
-    'openws': openWebSocket,
+    'openws': connectWebSocket,
     'closews': disconnectWebSocket,
     'updatesubs': refreshEventSubs,
 

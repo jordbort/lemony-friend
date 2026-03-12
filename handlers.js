@@ -19,7 +19,7 @@ const { rollFunNumber } = require(`./commands/funNumber`)
 const { sayJoinMessage } = require(`./commands/joinPart`)
 const { checkWord, checkLetter } = require(`./patterns/hangman`)
 const { apiGetConduits, apiCreateConduit } = require(`./events/conduits`)
-const { createWebSocket, closeWebSocket } = require(`./events/webSockets`)
+const { initWebSocket, closeWebSocket } = require(`./events/webSockets`)
 const { getGlobalBttvEmotes, getStreamBttvEmotes } = require(`./commands/external`)
 const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
 const { apiGetTwitchChannel, getGlobalTwitchEmotes, getStreamTwitchEmotes } = require(`./commands/twitch`)
@@ -181,7 +181,7 @@ module.exports = {
 
             // Create WebSocket session
             addToBatch(channel)
-            createWebSocket(this, channel)
+            initWebSocket(this, channel)
         }
 
         if (!lemonyFresh[channel].viewers.includes(username)) {

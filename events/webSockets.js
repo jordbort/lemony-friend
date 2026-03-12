@@ -9,11 +9,9 @@ const { updateEventSubs } = require(`../commands/twitch`)
 
 const webSockets = {}
 
-function initWebSocket(bot, channel, path = `wss://eventsub.wss.twitch.tv/ws`) {
-    // logMessage([`> initWebSocket(channel: '${channel}', path: '${path}')`])
-
+function openWebSocket(bot, channel, path = `wss://eventsub.wss.twitch.tv/ws`) {
     webSockets[channel].ws.push(new WebSocket(path))
-    const ws = getWebSocket(channel)
+    const ws = webSockets[channel].ws[webSockets[channel].ws.length - 1]
 
     ws.onopen = () => { logMessage([`-> WebSocket connection established for '${channel}'`]) }
     ws.onmessage = (event) => { handleMessage(bot, channel, event) }
@@ -48,15 +46,12 @@ function handleMessage(bot, channel, event) {
 function handleClose(bot, channel, event) {
     const { code, reason, wasClean } = event
     webSockets[channel].ws.shift()
-
-    wasClean
-        ? logMessage([`-> WebSocket connection for ${channel} closed with code ${code}: '${reason}'`])
-        : logMessage([`-> WebSocket connection for ${channel} died unexpectedly with code ${code}${reason ? `: '${reason}'` : ``}`])
+    logMessage([`-> WebSocket connection for ${channel} ${wasClean ? `closed` : `died unexpectedly`} with code ${code}${reason ? `: '${reason}'` : ``}`])
 
     // If not closed on purpose (unless keepAlive timed out), for unused connection, or from not reconnecting in time
     if (![1000, 4003, 4004].includes(code) || webSockets[channel].timedOut) {
         if (webSockets[channel].timedOut) { webSockets[channel].timedOut = false }
-        initWebSocket(bot, channel)
+        openWebSocket(bot, channel)
     }
 }
 
@@ -75,7 +70,7 @@ function handleWelcome(channel, event) {
 function handleReconnect(bot, channel, event) {
     const { status, reconnect_url } = event.payload.session
     logMessage([`* RECONNECT '${channel}' status: ${status}, reconnect_url: ${reconnect_url}`])
-    initWebSocket(bot, channel, reconnect_url)
+    openWebSocket(bot, channel, reconnect_url)
 }
 
 function handleRevocation(channel, event) {
@@ -83,7 +78,7 @@ function handleRevocation(channel, event) {
     updateEventSubs(channel, webSockets[channel].sessionId)
 }
 
-function createWebSocket(bot, channel) {
+function initWebSocket(bot, channel) {
     if (!(channel in webSockets)) {
         webSockets[channel] = {
             sessionId: 0,
@@ -93,8 +88,8 @@ function createWebSocket(bot, channel) {
         }
     }
     if (!webSockets[channel].sessionId) {
-        initWebSocket(bot, channel)
-    } else { console.log(`Warning: sessionId ${webSockets[channel].sessionId} already exists for '${channel}'`) }
+        openWebSocket(bot, channel)
+    }
 }
 
 function keepAlive(bot, channel) {
@@ -106,29 +101,15 @@ function keepAlive(bot, channel) {
     }, 35000)
 }
 
-function closeWebSocket(bot, channel) {
-    // logMessage([`> closeWebSocket(channel: '${channel}')`])
+function closeWebSocket(channel) {
     clearTimeout(webSockets[channel].timer)
     webSockets[channel].timer = 0
-
-    const ws = getWebSocket(channel)
-    if (ws) {
-        webSockets[channel].sessionId = ``
-        ws.close()
-    } else {
-        logMessage([`* Error: No web socket to close for '${channel}', reinitializing web socket...`])
-        initWebSocket(bot, channel)
-    }
-}
-
-function getWebSocket(channel) {
-    return webSockets[channel].ws.length
-        ? webSockets[channel].ws[webSockets[channel].ws.length - 1]
-        : null
+    webSockets[channel].sessionId = ``
+    webSockets[channel].ws[webSockets[channel].ws.length - 1].close()
 }
 
 module.exports = {
-    createWebSocket, // is in: handlers.js, dev.js
+    initWebSocket, // is in: handlers.js, dev.js
     closeWebSocket, // is in: handlers.js, dev.js
     checkWebSockets(arrShards) { // is in: dev.js
         const channels = joinedChatrooms.map(str => str.substring(1))
