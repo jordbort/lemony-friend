@@ -194,7 +194,7 @@ module.exports = {
 
         // Close WebSocket connection
         if (self) {
-            closeWebSocket(this, channel)
+            closeWebSocket(channel)
         }
 
         while (lemonyFresh[channel].viewers.includes(username)) {

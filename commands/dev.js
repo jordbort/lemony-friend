@@ -119,15 +119,15 @@ function disconnectWebSocket(props) {
     if (args.length) {
         if (args[0] === `all`) {
             for (const chatroom of bot.channels) {
-                if (chatroom.substring(1) in lemonyFresh) { closeWebSocket(bot, chatroom.substring(1)) }
+                if (chatroom.substring(1) in lemonyFresh) { closeWebSocket(chatroom.substring(1)) }
             }
         } else {
             for (const arg of args) {
                 const streamer = getToUser(arg)
-                if (streamer in lemonyFresh) { closeWebSocket(bot, streamer) }
+                if (streamer in lemonyFresh) { closeWebSocket(streamer) }
             }
         }
-    } else { closeWebSocket(bot, channel) }
+    } else { closeWebSocket(channel) }
 }
 
 function refreshEventSubs(props) {

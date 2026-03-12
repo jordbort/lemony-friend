@@ -20,7 +20,7 @@ function openWebSocket(bot, channel, path = `wss://eventsub.wss.twitch.tv/ws`) {
 }
 
 function handleMessage(bot, channel, event) {
-    keepAlive(bot, channel)
+    keepAlive(channel)
     const message = JSON.parse(event.data)
     switch (message.metadata.message_type) {
         case `session_welcome`:
@@ -92,12 +92,12 @@ function initWebSocket(bot, channel) {
     }
 }
 
-function keepAlive(bot, channel) {
+function keepAlive(channel) {
     clearTimeout(webSockets[channel].timer)
     webSockets[channel].timer = setTimeout(() => {
         logMessage([`* KEEPALIVE message not received for ${channel}, breaking connection...`])
         webSockets[channel].timedOut = true
-        closeWebSocket(bot, channel)
+        closeWebSocket(channel)
     }, 35000)
 }
 
