@@ -126,32 +126,24 @@ function getWebSocket(channel) {
 
 module.exports = {
     createWebSocket, // is in: handlers.js, dev.js
-    printWebSockets() { // is in: dev.js
-        for (const channel in webSockets) {
-            console.log(channel, webSockets[channel].ws.length, webSockets[channel].ws.map(ws => ws._closeFrameSent || ws.closeFrameReceived ? `closed` : `open`), webSockets[channel].timer._destroyed ? `inactive` : `active`, webSockets[channel].sessionId)
-        }
-    },
-    removeClosedWebSockets(channel) {
-        let count = 0
-        for (let i = webSockets[channel].ws.length - 1; i >= 0; i--) {
-            if (webSockets[channel].ws[i]?._closeFrameSent || webSockets[channel].ws[i]?._closeFrameReceived) {
-                webSockets[channel].ws.splice(i, 1)
-                count++
-            }
-        }
-        console.log(pluralize(count, `web socket`, `web sockets`), `removed for '${channel}'`)
-    },
-    forceTrimWebSocket(channel) {
-        webSockets[channel].ws.shift()
-    },
-    closeWebSocket,
-    checkWebSockets(arrShards) {
-        const list = joinedChatrooms.map(str => str.substring(1))
+    closeWebSocket, // is in: handlers.js, dev.js
+    checkWebSockets(arrShards) { // is in: dev.js
+        const channels = joinedChatrooms.map(str => str.substring(1))
         for (const shard of arrShards) {
-            const shardId = shard.id
-            const channel = list[shardId]
+            const shardId = Number(shard.id)
+            const channel = channels[shardId]
             const sessionId = shard.transport.session_id
-            console.log(shardId, channel, webSockets[channel].sessionId, webSockets[channel].sessionId === sessionId ? true : sessionId)
+            channel in webSockets
+                ? console.log(
+                    shardId,
+                    channel,
+                    webSockets[channel].timer._destroyed ? `INACTIVE` : `ACTIVE`,
+                    webSockets[channel].ws.length,
+                    webSockets[channel].ws.map(ws => ws?._closeFrameSent || ws?._closeFrameReceived ? `CLOSED` : `OPEN`),
+                    webSockets[channel].sessionId,
+                    webSockets[channel].sessionId === sessionId || sessionId
+                )
+                : console.log(`Error: ${channel} not in webSockets{} - shardId:`, shardId, `sessionId:`, sessionId)
         }
     }
 }
