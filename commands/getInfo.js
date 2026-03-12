@@ -1,6 +1,8 @@
-const { lemonyFresh, users } = require(`../data`)
-const { chatColors, settings } = require(`../config`)
 const numbers = require(`../numbers`)
+
+const { lemonyFresh, users } = require(`../data`)
+const { settings, chatColors } = require(`../config`)
+
 const { getContextEmote, pluralize, getToUser, logMessage, arrToList } = require(`../utils`)
 
 module.exports = {
@@ -9,6 +11,7 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
+            `Implemented way to catch WebSockets that time out but don't reconnect`,
             `Bug fixes`,
             `Updated RegEx`
         ]
