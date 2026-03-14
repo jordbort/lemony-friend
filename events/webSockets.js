@@ -10,8 +10,8 @@ const { updateEventSubs } = require(`../commands/twitch`)
 const webSockets = {}
 
 function openWebSocket(bot, channel, path = `wss://eventsub.wss.twitch.tv/ws`) {
-    webSockets[channel].ws.push(new WebSocket(path))
-    const ws = webSockets[channel].ws[webSockets[channel].ws.length - 1]
+    webSockets[channel].arr.push(new WebSocket(path))
+    const ws = webSockets[channel].arr[webSockets[channel].arr.length - 1]
 
     ws.onopen = () => { logMessage([`-> WebSocket connection established for '${channel}'`]) }
     ws.onmessage = (event) => { handleMessage(bot, channel, event) }
@@ -45,7 +45,7 @@ function handleMessage(bot, channel, event) {
 
 function handleClose(bot, channel, event) {
     const { code, reason, wasClean } = event
-    webSockets[channel].ws.shift()
+    webSockets[channel].arr.shift()
     logMessage([`-> WebSocket connection for ${channel} ${wasClean ? `closed` : `died unexpectedly`} with code ${code}${reason ? `: '${reason}'` : ``}`])
 
     // If not closed on purpose (unless keepAlive timed out), for unused connection, or from not reconnecting in time
@@ -59,7 +59,7 @@ function handleWelcome(channel, event) {
     const { id, status } = event.payload.session
     logMessage([`* WELCOME '${channel}' status: ${status}`])
     if (webSockets[channel].sessionId === id) {
-        webSockets[channel].ws[0].close()
+        webSockets[channel].arr[0].close()
     } else {
         webSockets[channel].sessionId = id
         assignToConduit(`#${channel}`, id)
@@ -82,7 +82,7 @@ function initWebSocket(bot, channel) {
     if (!(channel in webSockets)) {
         webSockets[channel] = {
             sessionId: 0,
-            ws: [],
+            arr: [],
             timer: 0,
             timedOut: false
         }
@@ -105,7 +105,7 @@ function closeWebSocket(channel) {
     clearTimeout(webSockets[channel].timer)
     webSockets[channel].timer = 0
     webSockets[channel].sessionId = ``
-    webSockets[channel].ws[webSockets[channel].ws.length - 1].close()
+    webSockets[channel].arr[webSockets[channel].arr.length - 1].close()
 }
 
 module.exports = {
@@ -122,8 +122,8 @@ module.exports = {
                     shardId,
                     channel,
                     webSockets[channel].timer._destroyed ? `INACTIVE` : `ACTIVE`,
-                    webSockets[channel].ws.length,
-                    webSockets[channel].ws.map(ws => ws?._closeFrameSent || ws?._closeFrameReceived ? `CLOSED` : `OPEN`),
+                    webSockets[channel].arr.length,
+                    webSockets[channel].arr.map(ws => ws?._closeFrameSent || ws?._closeFrameReceived ? `CLOSED` : `OPEN`),
                     webSockets[channel].sessionId,
                     webSockets[channel].sessionId === sessionId || sessionId
                 )
