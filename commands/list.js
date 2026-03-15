@@ -107,8 +107,9 @@ function deleteItem(bot, chatroom, channel, args, isModOrVIP) {
         return
     }
 
+    const deletedItem = lemonyFresh[channel].list[idx]
     lemonyFresh[channel].list.splice(idx, 1)
-    bot.say(chatroom, `Deleted #${idx} from ${listName}! ${positiveEmote}`)
+    bot.say(chatroom, `Deleted #${idx} "${deletedItem}" from ${listName}! ${positiveEmote}`)
 }
 
 function swapItems(bot, chatroom, channel, args, isModOrVIP) {
@@ -176,6 +177,7 @@ function moveItems(bot, chatroom, channel, args, isModOrVIP) {
         return
     }
 
+    const movedItem = lemonyFresh[channel].list[idxOne]
     if (idxOne > idxTwo) {
         const value = lemonyFresh[channel].list[idxOne]
         for (let i = idxOne; i > idxTwo; i--) { lemonyFresh[channel].list[i] = lemonyFresh[channel].list[i - 1] }
@@ -186,7 +188,7 @@ function moveItems(bot, chatroom, channel, args, isModOrVIP) {
         lemonyFresh[channel].list[idxTwo] = value
     }
 
-    bot.say(chatroom, `Moved #${idxOne} in ${listName} to position #${idxTwo}! ${positiveEmote}`)
+    bot.say(chatroom, `Moved #${idxOne} "${movedItem}" in ${listName} to position #${idxTwo}! ${positiveEmote}`)
 }
 
 function renameList(bot, chatroom, channel, args, isModOrVIP) {
