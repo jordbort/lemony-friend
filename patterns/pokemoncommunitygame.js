@@ -1,27 +1,26 @@
+const BOT_USERNAME = process.env.BOT_USERNAME
 const { settings } = require(`../config`)
 const { getContextEmote, logMessage } = require(`../utils`)
 
 module.exports = {
     catchPokemon(props) {
-        const { bot, chatroom, channel, username } = props
-        logMessage([`> catchPokemon(channel: '${channel}', username: '${username}', playPCG: ${settings.playPCG})`])
+        const { bot, chatroom, channel } = props
+        logMessage([`> catchPokemon(channel: '${channel}', playPCG: ${settings.playPCG})`])
 
         if (!settings.playPCG) {
             logMessage([`-> Playing PokemonCommunityGame is disabled, ignoring`])
             return
         }
-        if (username !== `pokemoncommunitygame`) {
-            logMessage([`-> Message not from PokemonCommunityGame, ignoring`])
-            return
-        }
 
-        bot.say(chatroom, `!pokecatch ${settings.usedPokeball}`)
+        const reply = `!pokecatch ${settings.usedPokeball}`
+        bot.say(chatroom, reply)
     },
     buyPokeballs(props) {
         const { bot, chatroom, channel } = props
         logMessage([`> buyPokeballs(channel: '${channel}')`])
 
-        bot.say(chatroom, `!pokeshop pokeball ${settings.pokeballQuantity}`)
+        const reply = `!pokeshop pokeball ${settings.pokeballQuantity}`
+        bot.say(chatroom, reply)
     },
     acknowledgeCaughtPokemon(props) {
         const { bot, chatroom, message, channel } = props
