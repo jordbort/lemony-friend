@@ -642,56 +642,54 @@ function rememberPastMessage(props) {
         : setTimeout(() => bot.say(chatroom, `I'm still thinking about when ${userNickname} said "... ${msg.splice(4, 6).join(` `)} ..." ${neutralEmote}`), 600000)
 }
 
-module.exports = {
-    rollFunNumber(props, funNumber) {
-        const { bot, chatroom, tags, message, channel, username, aprilFools } = props
-        logMessage([`> rollFunNumber(channel: '${channel}', tags: ${Object.keys(tags).length}, username: '${username}', message: '${message}', funNumber: ${funNumber})`])
+module.exports = (props, funNumber) => {
+    const { bot, chatroom, tags, message, channel, username, aprilFools } = props
+    logMessage([`> rollFunNumber(channel: '${channel}', tags: ${Object.keys(tags).length}, username: '${username}', message: '${message}', funNumber: ${funNumber})`])
 
-        if (!lemonyFresh[channel].rollFunNumber) {
-            logMessage([`-> rollFunNumber disabled in ${channel}'s channel`])
-            return
-        }
-
-        const outcomes = {
-            0: makePyramid,
-            1: giveMeMoney,
-            2: transferMeMoney,
-            3: useRedemption,
-            4: givePoints,
-            5: lemonifyRandomUser,
-            6: useUndertaleBot,
-            7: reportChance,
-            8: sayMessageID,
-            9: sayTime,
-            10: askAboutGame,
-            11: awardLemon,
-            12: useBTTVEmote,
-            13: restartFunTimer,
-            14: restartFunTimer,
-            15: restartFunTimer,
-            16: getViewers,
-            17: getLurker,
-            18: awardLemonToRecentChatters,
-            19: useTwoEmotes,
-            20: useFunnyCommand,
-            21: imagineLemons,
-            22: makeInsultSentence,
-            23: reportRandomLemCmdUsage,
-            24: sayPastHangmanAnswer,
-            25: sayPastHangmanSpaces,
-            26: sayPastHangmanGuessedLetters,
-            27: sayGameId,
-            28: rememberPastMessage
-        }
-
-        if (funNumber in outcomes) {
-            logMessage([`-> Fun number`, funNumber, `matched:`, `[Function: ${outcomes[funNumber].name}]`])
-            outcomes[funNumber](props)
-            return
-        }
-
-        aprilFools
-            ? bot.say(chatroom, `${funNumber}`)
-            : logMessage([`-> Fun number`, funNumber, `is unused`])
+    if (!lemonyFresh[channel].rollFunNumber) {
+        logMessage([`-> rollFunNumber disabled in ${channel}'s channel`])
+        return
     }
+
+    const outcomes = {
+        0: makePyramid,
+        1: giveMeMoney,
+        2: transferMeMoney,
+        3: useRedemption,
+        4: givePoints,
+        5: lemonifyRandomUser,
+        6: useUndertaleBot,
+        7: reportChance,
+        8: sayMessageID,
+        9: sayTime,
+        10: askAboutGame,
+        11: awardLemon,
+        12: useBTTVEmote,
+        13: restartFunTimer,
+        14: restartFunTimer,
+        15: restartFunTimer,
+        16: getViewers,
+        17: getLurker,
+        18: awardLemonToRecentChatters,
+        19: useTwoEmotes,
+        20: useFunnyCommand,
+        21: imagineLemons,
+        22: makeInsultSentence,
+        23: reportRandomLemCmdUsage,
+        24: sayPastHangmanAnswer,
+        25: sayPastHangmanSpaces,
+        26: sayPastHangmanGuessedLetters,
+        27: sayGameId,
+        28: rememberPastMessage
+    }
+
+    if (funNumber in outcomes) {
+        logMessage([`-> Fun number`, funNumber, `matched:`, `[Function: ${outcomes[funNumber].name}]`])
+        outcomes[funNumber](props)
+        return
+    }
+
+    aprilFools
+        ? bot.say(chatroom, `${funNumber}`)
+        : logMessage([`-> Fun number`, funNumber, `is unused`])
 }

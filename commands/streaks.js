@@ -82,26 +82,24 @@ function emoteReply(bot, chatroom, channel, emoteOwner, emoteArr) {
     bot.say(chatroom, reply)
 }
 
-module.exports = {
-    streakListener(props) {
-        const { bot, chatroom, message, currentTime, channel } = props
+module.exports = (props) => {
+    const { bot, chatroom, message, currentTime, channel } = props
 
-        // Listening for a message to be repeated by at least two other users
-        checkStreak(bot, chatroom, message, currentTime, channel)
+    // Listening for a message to be repeated by at least two other users
+    checkStreak(bot, chatroom, message, currentTime, channel)
 
-        // Same timer to avoid double message
-        if (lemonyFresh[channel].timers.streak.listening) {
-            // Listening for a messages containing known emotes from a specific streamer
-            const accessibleEmotes = Object.keys(users[BOT_USERNAME].channels)
-                .filter(stream => users[BOT_USERNAME].channels[stream].sub || stream === channel)
-                .map(stream => users[BOT_USERNAME].channels[stream].sub
-                    ? [...lemonyFresh[stream].followEmotes, ...lemonyFresh[stream].subEmotes]
-                    : lemonyFresh[stream].followEmotes)
-                .flat()
-            if (accessibleEmotes.some(emote => message.includes(emote))) {
-                const emoteOwner = Object.keys(lemonyFresh).filter(channel => [...lemonyFresh[channel].followEmotes, ...lemonyFresh[channel].subEmotes].some(emote => message.includes(emote)))[0]
-                checkStreamerEmoteStreak(bot, chatroom, channel, currentTime, emoteOwner)
-            }
-        } else { logMessage([`> Timer in ${channel} 'streak' is not currently listening`]) }
-    }
+    // Same timer to avoid double message
+    if (lemonyFresh[channel].timers.streak.listening) {
+        // Listening for a messages containing known emotes from a specific streamer
+        const accessibleEmotes = Object.keys(users[BOT_USERNAME].channels)
+            .filter(stream => users[BOT_USERNAME].channels[stream].sub || stream === channel)
+            .map(stream => users[BOT_USERNAME].channels[stream].sub
+                ? [...lemonyFresh[stream].followEmotes, ...lemonyFresh[stream].subEmotes]
+                : lemonyFresh[stream].followEmotes)
+            .flat()
+        if (accessibleEmotes.some(emote => message.includes(emote))) {
+            const emoteOwner = Object.keys(lemonyFresh).filter(channel => [...lemonyFresh[channel].followEmotes, ...lemonyFresh[channel].subEmotes].some(emote => message.includes(emote)))[0]
+            checkStreamerEmoteStreak(bot, chatroom, channel, currentTime, emoteOwner)
+        }
+    } else { logMessage([`> Timer in ${channel} 'streak' is not currently listening`]) }
 }

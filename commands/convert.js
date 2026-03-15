@@ -318,58 +318,56 @@ function validateUnit(str) {
     return false
 }
 
-module.exports = {
-    convert(props) {
-        const { bot, chatroom, args, channel } = props
-        logMessage([`> convert(channel: '${channel}', args: [${args.length ? `'${args.join(`', '`)}'` : ``}])`])
+module.exports = (props) => {
+    const { bot, chatroom, args, channel } = props
+    logMessage([`> convert(channel: '${channel}', args: [${args.length ? `'${args.join(`', '`)}'` : ``}])`])
 
-        const neutralEmote = getContextEmote(`neutral`, channel)
-        const positiveEmote = getContextEmote(`positive`, channel)
-        const dumbEmote = getContextEmote(`dumb`, channel)
+    const neutralEmote = getContextEmote(`neutral`, channel)
+    const positiveEmote = getContextEmote(`positive`, channel)
+    const dumbEmote = getContextEmote(`dumb`, channel)
 
-        const num = Number(args[0])
-        if (isNaN(num)) {
-            bot.say(chatroom, `Please give me a number and two units of measurement! ${args.length
-                ? `${/,/.test(args[0])
-                    ? `Try removing the commas from "${args[0]}"`
-                    : `"${args[0]}" isn't a number`
-                } ${dumbEmote}`
-                : `I can do ${arrToList(Object.keys(conversionTypes))} ${neutralEmote}`}`)
-            return
-        }
-
-        if (args.length < 3) {
-            bot.say(chatroom, `Please give me a number and two units of measurement! ${dumbEmote}`)
-            return
-        }
-
-        const fromUnit = validateUnit(args[1])
-        if (!fromUnit) {
-            bot.say(chatroom, `I don't recognize "${args[1]}", please use a one-word unit or abbreviation! ${dumbEmote}`)
-            return
-        }
-
-        const usedTo = /^to$/i.test(args[2])
-        const toUnit = usedTo && args[3]
-            ? validateUnit(args[3])
-            : validateUnit(args[2])
-        if (!toUnit) {
-            bot.say(chatroom, `I don't recognize "${usedTo ? args[2] : args[3]}", please use a one-word unit or abbreviation! ${dumbEmote}`)
-            return
-        }
-
-        if (fromUnit.name === toUnit.name) {
-            bot.say(chatroom, `${args.slice(0).join(` `)}`)
-            return
-        }
-        if (fromUnit.type !== toUnit.type) {
-            bot.say(chatroom, `I can't convert ${fromUnit.type} to ${toUnit.type}! ${dumbEmote}`)
-            return
-        }
-
-        const conversion = conversionTypes[fromUnit.type][fromUnit.name][toUnit.name](num)
-        const roundedFloat = Math.round((conversion + Number.EPSILON) * 1000) / 1000
-        const message = `${num}${fromUnit.type === `temperature` ? `°` : ``} ${num === 1 ? fromUnit.name : fromUnit.plural} is equal to ${roundedFloat}${toUnit.type === `temperature` ? `°` : ``} ${roundedFloat === 1 ? toUnit.name : toUnit.plural} ${positiveEmote}`
-        bot.say(chatroom, message)
+    const num = Number(args[0])
+    if (isNaN(num)) {
+        bot.say(chatroom, `Please give me a number and two units of measurement! ${args.length
+            ? `${/,/.test(args[0])
+                ? `Try removing the commas from "${args[0]}"`
+                : `"${args[0]}" isn't a number`
+            } ${dumbEmote}`
+            : `I can do ${arrToList(Object.keys(conversionTypes))} ${neutralEmote}`}`)
+        return
     }
+
+    if (args.length < 3) {
+        bot.say(chatroom, `Please give me a number and two units of measurement! ${dumbEmote}`)
+        return
+    }
+
+    const fromUnit = validateUnit(args[1])
+    if (!fromUnit) {
+        bot.say(chatroom, `I don't recognize "${args[1]}", please use a one-word unit or abbreviation! ${dumbEmote}`)
+        return
+    }
+
+    const usedTo = /^to$/i.test(args[2])
+    const toUnit = usedTo && args[3]
+        ? validateUnit(args[3])
+        : validateUnit(args[2])
+    if (!toUnit) {
+        bot.say(chatroom, `I don't recognize "${usedTo ? args[2] : args[3]}", please use a one-word unit or abbreviation! ${dumbEmote}`)
+        return
+    }
+
+    if (fromUnit.name === toUnit.name) {
+        bot.say(chatroom, `${args.slice(0).join(` `)}`)
+        return
+    }
+    if (fromUnit.type !== toUnit.type) {
+        bot.say(chatroom, `I can't convert ${fromUnit.type} to ${toUnit.type}! ${dumbEmote}`)
+        return
+    }
+
+    const conversion = conversionTypes[fromUnit.type][fromUnit.name][toUnit.name](num)
+    const roundedFloat = Math.round((conversion + Number.EPSILON) * 1000) / 1000
+    const message = `${num}${fromUnit.type === `temperature` ? `°` : ``} ${num === 1 ? fromUnit.name : fromUnit.plural} is equal to ${roundedFloat}${toUnit.type === `temperature` ? `°` : ``} ${roundedFloat === 1 ? toUnit.name : toUnit.plural} ${positiveEmote}`
+    bot.say(chatroom, message)
 }

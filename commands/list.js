@@ -238,89 +238,87 @@ function getListMethods(bot, chatroom, channel, isModOrVIP) {
         : bot.say(chatroom, `You can use !list to show the full list, !list <number> or "random" to get a specific or random item from the list, or !list <number>-<number> to get a range of items! ${neutralEmote}`)
 }
 
-module.exports = {
-    useList(props) {
-        const { bot, chatroom, args, channel, isModOrVIP } = props
-        logMessage([`> useList(channel: '${channel}', listName: '${lemonyFresh[channel].list[0]}', items: ${lemonyFresh[channel].list.slice(1).length}, args:`, `'${args.join(`', '`)}')`])
+module.exports = (props) => {
+    const { bot, chatroom, args, channel, isModOrVIP } = props
+    logMessage([`> useList(channel: '${channel}', listName: '${lemonyFresh[channel].list[0]}', items: ${lemonyFresh[channel].list.slice(1).length}, args:`, `'${args.join(`', '`)}')`])
 
-        // Get list of all methods
-        if (/^help$/i.test(args[0])) {
-            getListMethods(bot, chatroom, channel, isModOrVIP)
-            return
-        }
-
-        // Get range of items by numbers
-        if (/^-?\d+(-|to)-?\d+$/i.test(args.join(``))) {
-            getItemRange(bot, chatroom, channel, args.join(``))
-            return
-        }
-
-        // Get item by number
-        if (/^-?\d+$/i.test(args[0])) {
-            getItem(bot, chatroom, channel, Number(args[0]))
-            return
-        }
-
-        // Get random item
-        if (/^random$/i.test(args[0])) {
-            getItem(bot, chatroom, channel, Math.ceil(Math.random() * (lemonyFresh[channel].list.length - 1)))
-            return
-        }
-
-        // Add item to list
-        if (/^add$/i.test(args[0])) {
-            addItem(bot, chatroom, channel, args, isModOrVIP)
-            return
-        }
-
-        // Edit item in list
-        if (/^edit$/i.test(args[0])) {
-            editItem(bot, chatroom, channel, args, isModOrVIP)
-            return
-        }
-
-        // Delete item from list
-        if (/^delete$/i.test(args[0])) {
-            deleteItem(bot, chatroom, channel, args, isModOrVIP)
-            return
-        }
-
-        // Swap/switch items in list
-        if (/^swap$|^switch$/i.test(args[0])) {
-            swapItems(bot, chatroom, channel, args, isModOrVIP)
-            return
-        }
-
-        // Move items in list
-        if (/^move$/i.test(args[0])) {
-            moveItems(bot, chatroom, channel, args, isModOrVIP)
-            return
-        }
-
-        // Name/rename list
-        if (/^(re)?name$/i.test(args[0])) {
-            renameList(bot, chatroom, channel, args, isModOrVIP)
-            return
-        }
-
-        // Clear list contents
-        if (/^clear$/i.test(args[0])) {
-            clearList(bot, chatroom, channel, false, isModOrVIP)
-            return
-        }
-
-        // Clear list contents and reset name
-        if (/^reset$/i.test(args[0])) {
-            clearList(bot, chatroom, channel, true, isModOrVIP)
-            return
-        }
-
-        // No args, or keyword not recognized
-        const listContents = lemonyFresh[channel].list.slice(1).map((el, idx) => `${idx + 1}) ${el}`)
-        const dumbEmote = getContextEmote(`dumb`, channel)
-
-        listContents.length
-            ? bot.say(chatroom, `${lemonyFresh[channel].list[0] || `Here's the list`}: ${listContents.join(`, `)}`)
-            : bot.say(chatroom, `No items are in ${lemonyFresh[channel].list[0] || `the list`}! ${dumbEmote}`)
+    // Get list of all methods
+    if (/^help$/i.test(args[0])) {
+        getListMethods(bot, chatroom, channel, isModOrVIP)
+        return
     }
+
+    // Get range of items by numbers
+    if (/^-?\d+(-|to)-?\d+$/i.test(args.join(``))) {
+        getItemRange(bot, chatroom, channel, args.join(``))
+        return
+    }
+
+    // Get item by number
+    if (/^-?\d+$/i.test(args[0])) {
+        getItem(bot, chatroom, channel, Number(args[0]))
+        return
+    }
+
+    // Get random item
+    if (/^random$/i.test(args[0])) {
+        getItem(bot, chatroom, channel, Math.ceil(Math.random() * (lemonyFresh[channel].list.length - 1)))
+        return
+    }
+
+    // Add item to list
+    if (/^add$/i.test(args[0])) {
+        addItem(bot, chatroom, channel, args, isModOrVIP)
+        return
+    }
+
+    // Edit item in list
+    if (/^edit$/i.test(args[0])) {
+        editItem(bot, chatroom, channel, args, isModOrVIP)
+        return
+    }
+
+    // Delete item from list
+    if (/^delete$/i.test(args[0])) {
+        deleteItem(bot, chatroom, channel, args, isModOrVIP)
+        return
+    }
+
+    // Swap/switch items in list
+    if (/^swap$|^switch$/i.test(args[0])) {
+        swapItems(bot, chatroom, channel, args, isModOrVIP)
+        return
+    }
+
+    // Move items in list
+    if (/^move$/i.test(args[0])) {
+        moveItems(bot, chatroom, channel, args, isModOrVIP)
+        return
+    }
+
+    // Name/rename list
+    if (/^(re)?name$/i.test(args[0])) {
+        renameList(bot, chatroom, channel, args, isModOrVIP)
+        return
+    }
+
+    // Clear list contents
+    if (/^clear$/i.test(args[0])) {
+        clearList(bot, chatroom, channel, false, isModOrVIP)
+        return
+    }
+
+    // Clear list contents and reset name
+    if (/^reset$/i.test(args[0])) {
+        clearList(bot, chatroom, channel, true, isModOrVIP)
+        return
+    }
+
+    // No args, or keyword not recognized
+    const listContents = lemonyFresh[channel].list.slice(1).map((el, idx) => `${idx + 1}) ${el}`)
+    const dumbEmote = getContextEmote(`dumb`, channel)
+
+    listContents.length
+        ? bot.say(chatroom, `${lemonyFresh[channel].list[0] || `Here's the list`}: ${listContents.join(`, `)}`)
+        : bot.say(chatroom, `No items are in ${lemonyFresh[channel].list[0] || `the list`}! ${dumbEmote}`)
 }

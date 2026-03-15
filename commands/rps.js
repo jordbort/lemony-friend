@@ -35,24 +35,22 @@ function fakeRPS(playerChoice, channel) {
     }
 }
 
-module.exports = {
-    rockPaperScissors(props) {
-        const { bot, chatroom, args, channel, userNickname, aprilFools } = props
+module.exports = (props) => {
+    const { bot, chatroom, args, channel, userNickname, aprilFools } = props
 
-        const playerChoice = aprilFools
-            ? args.join(` `) || `nothing`
-            : rps.includes(args[0]?.toLowerCase())
-                ? args[0].toLowerCase()
-                : rps[Math.floor(Math.random() * rps.length)]
+    const playerChoice = aprilFools
+        ? args.join(` `) || `nothing`
+        : rps.includes(args[0]?.toLowerCase())
+            ? args[0].toLowerCase()
+            : rps[Math.floor(Math.random() * rps.length)]
 
-        logMessage([`> rockPaperScissors(channel: '${channel}', userNickname: '${userNickname}', playerChoice: '${playerChoice}', aprilFools? ${aprilFools})`])
+    logMessage([`> rockPaperScissors(channel: '${channel}', userNickname: '${userNickname}', playerChoice: '${playerChoice}', aprilFools? ${aprilFools})`])
 
-        let reply = `${userNickname} throws ${playerChoice}! I throw `
+    let reply = `${userNickname} throws ${playerChoice}! I throw `
 
-        aprilFools
-            ? reply += fakeRPS(playerChoice, channel)
-            : reply += realRPS(playerChoice, channel)
+    reply += aprilFools
+        ? fakeRPS(playerChoice, channel)
+        : realRPS(playerChoice, channel)
 
-        bot.say(chatroom, reply)
-    }
+    bot.say(chatroom, reply)
 }

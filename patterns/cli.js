@@ -579,65 +579,63 @@ function updateTimer(bot, chatroom, obj, message, name, args) {
     bot.say(chatroom, `/me Options for timer "${timer}": ${makeList(options)}`)
 }
 
-module.exports = {
-    commandLemonInterface(props, splitMessage) {
-        const { bot, chatroom, channel, username, isMod, isLemonyFreshMember } = props
-        splitMessage.shift()
-        const args = splitMessage[0].split(` `)
-        logMessage([`> commandLemonInterface(username, '${username}', isMod, ${isMod}, isLemonyFreshMember, ${isLemonyFreshMember}, args:`, args.join(`, `), `)`])
+module.exports = (props, splitMessage) => {
+    const { bot, chatroom, channel, username, isMod, isLemonyFreshMember } = props
+    splitMessage.shift()
+    const args = splitMessage[0].split(` `)
+    logMessage([`> commandLemonInterface(username, '${username}', isMod, ${isMod}, isLemonyFreshMember, ${isLemonyFreshMember}, args:`, args.join(`, `), `)`])
 
-        if (username === DEV) {
-            const options = {
-                [/^channels?$|^c$/i]: updateChannelDev,
-                [/^users?$|^u$/i]: updateUserDev,
-                [/^settings?$|^s$/i]: updateSettingsDev
-            }
-            for (const option in options) {
-                const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
-                if (regex.test(args[0])) {
-                    // logMessage([`-> Dev ${username} matched:`, regex, `[Function: ${options[regex].name}]`])
-                    options[regex](props, args)
-                    return
-                }
+    if (username === DEV) {
+        const options = {
+            [/^channels?$|^c$/i]: updateChannelDev,
+            [/^users?$|^u$/i]: updateUserDev,
+            [/^settings?$|^s$/i]: updateSettingsDev
+        }
+        for (const option in options) {
+            const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
+            if (regex.test(args[0])) {
+                // logMessage([`-> Dev ${username} matched:`, regex, `[Function: ${options[regex].name}]`])
+                options[regex](props, args)
+                return
             }
         }
+    }
 
-        if (isMod) {
-            const options = {
-                [/^channels?$|^c$/i]: updateChannel,
-                [/^users?$|^u$/i]: updateUser,
-                [/^settings?$|^s$/i]: updateSettings
-            }
-            for (const option in options) {
-                const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
-                if (regex.test(args[0])) {
-                    // logMessage([`-> Streamer/mod ${username} matched:`, regex, `[Function: ${options[regex].name}]`])
-                    options[regex](props, args)
-                    return
-                }
+    if (isMod) {
+        const options = {
+            [/^channels?$|^c$/i]: updateChannel,
+            [/^users?$|^u$/i]: updateUser,
+            [/^settings?$|^s$/i]: updateSettings
+        }
+        for (const option in options) {
+            const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
+            if (regex.test(args[0])) {
+                // logMessage([`-> Streamer/mod ${username} matched:`, regex, `[Function: ${options[regex].name}]`])
+                options[regex](props, args)
+                return
             }
         }
+    }
 
-        if (isLemonyFreshMember) {
-            const options = {
-                [/^channels?$|^c$/i]: updateChannel,
-                [/^users?$|^u$/i]: updateUser,
-                [/^settings?$|^s$/i]: updateSettings
-            }
-            for (const option in options) {
-                const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
-                if (regex.test(args[0])) {
-                    // logMessage([`-> Streamer ${username} matched:`, regex, `[Function: ${options[regex].name}]`])
-                    props.channel = username
-                    options[regex](props, args)
-                    return
-                }
+    if (isLemonyFreshMember) {
+        const options = {
+            [/^channels?$|^c$/i]: updateChannel,
+            [/^users?$|^u$/i]: updateUser,
+            [/^settings?$|^s$/i]: updateSettings
+        }
+        for (const option in options) {
+            const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
+            if (regex.test(args[0])) {
+                // logMessage([`-> Streamer ${username} matched:`, regex, `[Function: ${options[regex].name}]`])
+                props.channel = username
+                options[regex](props, args)
+                return
             }
         }
+    }
 
-        if (isMod || isLemonyFreshMember) {
-            const lemonEmote = getContextEmote(`lemon`, channel)
-            bot.say(chatroom, `/me Command Lemon Interface ${lemonEmote} > try: channel (c), user (u), settings (s)`)
-        }
+    if (isMod || isLemonyFreshMember) {
+        const lemonEmote = getContextEmote(`lemon`, channel)
+        bot.say(chatroom, `/me Command Lemon Interface ${lemonEmote} > try: channel (c), user (u), settings (s)`)
     }
 }
