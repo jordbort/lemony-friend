@@ -1,15 +1,20 @@
+const DEV = process.env.DEV
+
+const useList = require(`./list`)
+const useCount = require(`./count`)
+const lemCmds = require(`./lemCmds`)
+const useConvert = require(`./convert`)
+const rockPaperScissors = require(`./rps`)
+const useCountdown = require(`./countdown`)
+const useLemonRank = require(`./lemonRank`)
+const makeMultiTwitchLink = require(`./multitwitch`)
+
 const { getTime } = require(`./time`)
-const { useList } = require(`./list`)
-const { useCount } = require(`./count`)
-const { convert } = require(`./convert`)
-const { lemonRank } = require(`./lemonRank`)
-const { countdown } = require(`./countdown`)
-const { getMemoryUsage } = require(`../utils`)
-const { rockPaperScissors } = require(`./rps`)
-const { getDocs, getStats } = require(`./help`)
+const { getSubs } = require(`./help`)
 const { handleLemonify } = require(`./lemonify`)
-const { makeMultiTwitchLink } = require(`./multitwitch`)
+const { handleJoin, handlePart } = require(`./joinPart`)
 const { handleLemCmd, getLemCmds } = require(`./lemCmds`)
+const { getMemoryUsage, logMessage } = require(`../utils`)
 const { getDocs, getStats, accessInstructions } = require(`./help`)
 const { manageHangman, joinHangman } = require(`../patterns/hangman`)
 const { insultUser, manageVerbs, manageNouns, manageAdjectives } = require(`./insult`)
@@ -17,8 +22,9 @@ const { getLastMessage, getMessageCount, sayOnlineTime, sayFriends, getColor, ge
 const { sayGoodnight, handleGreet, chant, handleRaid, setAway, yell, tiny, makeCursive } = require(`./conversation`)
 const { getDadJoke, getPokemon, getDefinition, getPokemonAbility, getUrbanDictionaryDefinition } = require(`./external`)
 const { handleShoutout, getBotToken, makeAnnouncement, authorizeToken, banUsers, startPoll, endPoll, updateStreamGame, updateStreamTitle, checkToken } = require(`./twitch`)
+const { createConduit, getConduit, updateConduitShardCount, deleteConduit, getConduitShards, logJoinedChatrooms, getEventSubs, connectWebSocket, disconnectWebSocket, refreshEventSubs, shutdown, writeMemoryFile, kms, logOldMemoryTables, logChannelInfo, logUserInfo, logModInfo, logChannelViewers, logTags, logSettings, logBotChannels, yellAcrossChannels, streamFriendlyOn, streamFriendlyOff, testFunNumber, checkPoints } = require(`./dev`)
 
-module.exports = {
+const commands = {
     '!so': handleShoutout,
     '!token': getBotToken,
     '!checktoken': checkToken,
@@ -48,12 +54,12 @@ module.exports = {
     '!count': useCount,
     '!list': useList,
 
-    '!convert': convert,
+    '!convert': useConvert,
 
     '!time': getTime,
 
-    '!countdown': countdown,
-    '!timer': countdown,
+    '!countdown': useCountdown,
+    '!timer': useCountdown,
 
     '!rps': rockPaperScissors,
 
@@ -108,8 +114,8 @@ module.exports = {
     '!lemon': getLemons,
     '!lemons': getLemons,
 
-    '!lemonboard': lemonRank,
-    '!lemonrank': lemonRank,
+    '!lemonboard': useLemonRank,
+    '!lemonrank': useLemonRank,
 
     '!friend': sayFriends,
     '!friends': sayFriends,
@@ -135,4 +141,73 @@ module.exports = {
     '!ud': getUrbanDictionaryDefinition,
 
     '!usage': getMemoryUsage
+}
+
+const devCommands = {
+    // For conduits
+    'createconduit': createConduit,
+    'getconduit': getConduit,
+    'shardcount': updateConduitShardCount,
+    'deleteconduit': deleteConduit,
+    'getshards': getConduitShards,
+    'joined': logJoinedChatrooms,
+
+    // For WebSockets
+    'getsubs': getEventSubs,
+    'openws': connectWebSocket,
+    'closews': disconnectWebSocket,
+    'updatesubs': refreshEventSubs,
+
+    // For saving memory file
+    '_shutdown': shutdown,
+    '_print': writeMemoryFile,
+    '_crash': kms,
+
+    // Unclaimed old nicknames, lemons, and Hangman wins
+    'unknown': logOldMemoryTables,
+
+    // For individual data
+    'channel': logChannelInfo,
+    'user': logUserInfo,
+    'mod': logModInfo,
+    'viewers': logChannelViewers,
+    'tags': logTags,
+    'settings': logSettings,
+    'channels': logBotChannels,
+
+    // For messaging across all channels
+    '!broadcast': yellAcrossChannels,
+
+    // For stream-friendly log view
+    '!streamon': streamFriendlyOn,
+    '!streamoff': streamFriendlyOff,
+
+    // For testing funCumber outcomes
+    'test': testFunNumber,
+
+    'sepoints': checkPoints,
+    '!subs': getSubs,
+    '!join': handleJoin,
+    '!part': handlePart
+}
+
+module.exports = (props) => {
+    const { message, username, command } = props
+    if (message.startsWith(`!`)) {
+        if (command in commands) {
+            logMessage([`MATCHED COMMAND:`, command, `[Function: ${commands[command].name}]`])
+            commands[command](props)
+            return true
+        } else if (/!.+lemon/i.test(command) in lemCmds) {
+            logMessage([`COMMAND NOT RECOGNIZED`])
+        }
+    }
+
+    if (username === DEV && command in devCommands) {
+        logMessage([`MATCHED DEV COMMAND:`, command, `[Function: ${devCommands[command].name}]`])
+        devCommands[command](props)
+        return true
+    }
+
+    return false
 }
