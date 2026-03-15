@@ -60,12 +60,14 @@ function handleClose(bot, channel, event) {
 function handleWelcome(channel, event) {
     const { id, status } = event.payload.session
     logMessage([`* WELCOME '${channel}' status: ${status}`])
-    if (webSockets[channel].sessionId === id) {
-        webSockets[channel].arr[0].close()
+
+    const ws = webSockets[channel]
+    if (ws.sessionId === id) {
+        ws.arr[0].close()
     } else {
-        webSockets[channel].sessionId = id
+        ws.sessionId = id
         assignToConduit(`#${channel}`, id)
-        updateEventSubs(channel, webSockets[channel].sessionId)
+        updateEventSubs(channel, ws.sessionId)
     }
 }
 
@@ -83,9 +85,9 @@ function handleRevocation(channel, event) {
 function initWebSocket(bot, channel) {
     if (!(channel in webSockets)) {
         webSockets[channel] = {
-            sessionId: 0,
+            sessionId: ``,
             arr: [],
-            timer: 0,
+            timer: null,
             timedOut: false
         }
     }
@@ -95,19 +97,22 @@ function initWebSocket(bot, channel) {
 }
 
 function keepAlive(channel) {
-    clearTimeout(webSockets[channel].timer)
-    webSockets[channel].timer = setTimeout(() => {
+    const ws = webSockets[channel]
+    clearTimeout(ws.timer)
+    ws.timer = setTimeout(() => {
         logMessage([`* KEEPALIVE message not received for ${channel}, breaking connection...`])
-        webSockets[channel].timedOut = true
+        ws.timedOut = true
         closeWebSocket(channel)
     }, 35000)
 }
 
 function closeWebSocket(channel) {
-    clearTimeout(webSockets[channel].timer)
-    webSockets[channel].timer = 0
-    webSockets[channel].sessionId = ``
-    webSockets[channel].arr[webSockets[channel].arr.length - 1].close()
+    const ws = webSockets[channel]
+    clearTimeout(ws.timer)
+    ws.sessionId = ``
+    if (ws.arr.length) {
+        ws.arr[ws.arr.length - 1].close()
+    }
 }
 
 module.exports = {
@@ -118,16 +123,17 @@ module.exports = {
         for (const shard of arrShards) {
             const shardId = Number(shard.id)
             const channel = channels[shardId]
+            const ws = webSockets[channel]
             const sessionId = shard.transport.session_id
             channel in webSockets
                 ? console.log(
                     shardId,
                     channel,
-                    webSockets[channel].timer._destroyed ? `INACTIVE` : `ACTIVE`,
-                    webSockets[channel].arr.length,
-                    webSockets[channel].arr.map(ws => ws?._closeFrameSent || ws?._closeFrameReceived ? `CLOSED` : `OPEN`),
-                    webSockets[channel].sessionId,
-                    webSockets[channel].sessionId === sessionId || sessionId
+                    ws.timer._destroyed ? `INACTIVE` : `ACTIVE`,
+                    ws.arr.length,
+                    ws.arr.map(ws => ws?._closeFrameSent || ws?._closeFrameReceived ? `CLOSED` : `OPEN`),
+                    ws.sessionId,
+                    ws.sessionId === sessionId || sessionId
                 )
                 : console.log(`Error: ${channel} not in webSockets{} - shardId:`, shardId, `sessionId:`, sessionId)
         }

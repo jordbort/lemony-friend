@@ -28,35 +28,6 @@ async function printMemory(arr) {
     }, null, 4))
 }
 
-function getContextEmote(type, channel) {
-    const baseType = `${type}Emotes`
-    const emotes = [...settings.baseEmotes[baseType]]
-
-    if (channel === `jpegstripes` && !users[BOT_USERNAME]?.channels.jpegstripes?.sub) {
-        if (type === `hype`) { emotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
-        if (type === `positive`) { emotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
-        if (type === `greeting`) { emotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
-        if (type === `bye`) { emotes.push(`WhitneyVibe`) }
-    }
-
-    for (const member in lemonyFresh) {
-        for (const emote of lemonyFresh[member].contextEmotes[baseType]) {
-            if ((lemonyFresh[member].followEmotes.includes(emote) && member === channel)
-                || (lemonyFresh[member].followEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
-                || (lemonyFresh[member].subEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
-                || (lemonyFresh[member].bttvEmotes.includes(emote) && member === channel)
-                || settings.globalEmotes.twitch.includes(emote)
-                || settings.globalEmotes.bttv.includes(emote)) {
-                emotes.push(emote)
-            }
-        }
-    }
-    // logMessage([`> getContextEmote(type: '${type}', channel: '${channel}', emotes: '${emotes.join(`', '`)}')`])
-
-    const emote = emotes[Math.floor(Math.random() * emotes.length)] || ``
-    return emote
-}
-
 function pluralize(num, singularForm, pluralForm) {
     return Number(num) === 1
         ? `${Number(num).toLocaleString(settings.timeLocale)} ${singularForm}`
@@ -134,7 +105,6 @@ async function logMessage(messages, time, channel, username, color, self) {
 module.exports = {
     twitchUsernamePattern,
     printMemory,
-    getContextEmote,
     pluralize,
     renderObj,
     logMessage,
@@ -154,6 +124,34 @@ module.exports = {
         await logMessage([err.stack])
     },
     coinFlip() { return Math.floor(Math.random() * 2) },
+    getContextEmote(type, channel) {
+        const baseType = `${type}Emotes`
+        const emotes = [...settings.baseEmotes[baseType]]
+
+        if (channel === `jpegstripes` && !users[BOT_USERNAME]?.channels.jpegstripes?.sub) {
+            if (type === `hype`) { emotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
+            if (type === `positive`) { emotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
+            if (type === `greeting`) { emotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
+            if (type === `bye`) { emotes.push(`WhitneyVibe`) }
+        }
+
+        for (const member in lemonyFresh) {
+            for (const emote of lemonyFresh[member].contextEmotes[baseType]) {
+                if ((lemonyFresh[member].followEmotes.includes(emote) && member === channel)
+                    || (lemonyFresh[member].followEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
+                    || (lemonyFresh[member].subEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
+                    || (lemonyFresh[member].bttvEmotes.includes(emote) && member === channel)
+                    || settings.globalEmotes.twitch.includes(emote)
+                    || settings.globalEmotes.bttv.includes(emote)) {
+                    emotes.push(emote)
+                }
+            }
+        }
+        // logMessage([`> getContextEmote(type: '${type}', channel: '${channel}', emotes: '${emotes.join(`', '`)}')`])
+
+        const emote = emotes[Math.floor(Math.random() * emotes.length)] || ``
+        return emote
+    },
     superscript(str) {
         const table = {
             'a': `ᵃ`,
