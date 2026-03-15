@@ -61,5 +61,11 @@ module.exports = {
                         : hypeEmote}`
             )
             : bot.say(chatroom, `I am not subbed to any channels I'm active in ${negativeEmote}`)
+    },
+    accessInstructions(props) {
+        const { bot, chatroom, username } = props
+        logMessage([`> accessInstructions(chatroom: '${chatroom}', username: '${username}')`])
+        const reply = `For streamers/mods, please follow this link and instructions, and copy/paste "!authorize <code>" in the chat! ${REDIRECT_URI}`
+        bot.say(chatroom, reply)
     }
 }

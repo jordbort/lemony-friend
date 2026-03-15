@@ -878,12 +878,6 @@ module.exports = {
             }
         }
     },
-    accessInstructions(props) {
-        const { bot, chatroom, username } = props
-        logMessage([`> accessInstructions(chatroom: '${chatroom}', username: '${username}')`])
-        const reply = `For streamers/mods, please follow this link and instructions, and copy/paste "!authorize <code>" in the chat! ${REDIRECT_URI}`
-        bot.say(chatroom, reply)
-    },
     async getBotToken(props) {
         const { bot, chatroom, channel } = props
         const success = await apiGetTwitchAppAccessToken()

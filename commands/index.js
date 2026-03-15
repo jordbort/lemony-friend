@@ -10,12 +10,13 @@ const { getDocs, getStats } = require(`./help`)
 const { handleLemonify } = require(`./lemonify`)
 const { makeMultiTwitchLink } = require(`./multitwitch`)
 const { handleLemCmd, getLemCmds } = require(`./lemCmds`)
+const { getDocs, getStats, accessInstructions } = require(`./help`)
 const { manageHangman, joinHangman } = require(`../patterns/hangman`)
 const { insultUser, manageVerbs, manageNouns, manageAdjectives } = require(`./insult`)
 const { getLastMessage, getMessageCount, sayOnlineTime, sayFriends, getColor, getLemons } = require(`./getInfo`)
 const { sayGoodnight, handleGreet, chant, handleRaid, setAway, yell, tiny, makeCursive } = require(`./conversation`)
 const { getDadJoke, getPokemon, getDefinition, getPokemonAbility, getUrbanDictionaryDefinition } = require(`./external`)
-const { handleShoutout, getBotToken, makeAnnouncement, accessInstructions, authorizeToken, banUsers, startPoll, endPoll, updateStreamGame, updateStreamTitle, checkToken } = require(`./twitch`)
+const { handleShoutout, getBotToken, makeAnnouncement, authorizeToken, banUsers, startPoll, endPoll, updateStreamGame, updateStreamTitle, checkToken } = require(`./twitch`)
 
 module.exports = {
     '!so': handleShoutout,
