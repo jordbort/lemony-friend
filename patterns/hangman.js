@@ -22,16 +22,16 @@ async function getRandomWord() {
     }
 }
 
-async function hangmanInit(channel, username) {
+async function hangmanInit(channel, username, aprilFools) {
     await logMessage([`> hangmanInit(channel: '${channel}', username: '${username}')`])
     const hangman = lemonyFresh[channel].hangman
 
     let randomWord = await getRandomWord()
-    if (!randomWord) { randomWord = await apiGetRandomWord() }
+    if (!randomWord) { randomWord = await apiGetRandomWord(aprilFools) }
     if (!randomWord) { return false }
 
     hangman.listening = true
-    hangman.answer = randomWord
+    hangman.answer = randomWord.toLowerCase()
     hangman.spaces = Array(hangman.answer.length).fill(`_`)
     hangman.players.length = 0
     hangman.guessedLetters.length = 0
@@ -86,7 +86,7 @@ function hangmanAnnounce(bot, chatroom, userNickname) {
 
 module.exports = {
     async manageHangman(props) {
-        const { bot, chatroom, args, channel, username, userNickname, isMod } = props
+        const { bot, chatroom, args, channel, username, userNickname, isMod, aprilFools } = props
         logMessage([`> manageHangman(chatroom: '${chatroom}')`])
 
         // In case a Hangman game is already in progress in the channel
@@ -126,7 +126,7 @@ module.exports = {
             return
         }
 
-        const success = await hangmanInit(channel, username)
+        const success = await hangmanInit(channel, username, aprilFools)
         if (!success) {
             const negativeEmote = getContextEmote(`negative`, channel)
             bot.say(chatroom, `Failed to start Hangman! ${negativeEmote}`)

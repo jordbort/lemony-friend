@@ -40,7 +40,7 @@ async function apiGetStreamBttvEmotes(broadcasterId) {
 
 module.exports = {
     async checkSentiment(props) {
-        const { bot, chatroom, message } = props
+        const { bot, chatroom, message, aprilFools } = props
         await logMessage([`> checkSentiment(chatroom: ${chatroom}, message: ${message})`])
 
         const sanitizedMsg = message.replace(/[\\{`}%^|]/g, ``)
@@ -57,13 +57,15 @@ module.exports = {
             await logMessage([`checkSentiment`, response.status, renderObj(data, `data`)])
 
             'sentiment' in data
-                ? data.sentiment.includes(`NEUTRAL`)
-                    ? bot.say(chatroom, `:p`)
-                    : data.sentiment.includes(`POSITIVE`)
-                        ? data.sentiment.includes(`WEAK`)
-                            ? bot.say(chatroom, `:)`)
-                            : bot.say(chatroom, `:D`)
-                        : bot.say(chatroom, `:(`)
+                ? aprilFools
+                    ? bot.say(chatroom, `${data.sentiment} ${data.score}`)
+                    : data.sentiment.includes(`NEUTRAL`)
+                        ? bot.say(chatroom, `:p`)
+                        : data.sentiment.includes(`POSITIVE`)
+                            ? data.sentiment.includes(`WEAK`)
+                                ? bot.say(chatroom, `:)`)
+                                : bot.say(chatroom, `:D`)
+                            : bot.say(chatroom, `:(`)
                 : bot.say(chatroom, `:O`)
         } catch (err) {
             logMessage([`checkSentiment ${err}`])
@@ -91,7 +93,7 @@ module.exports = {
         }
     },
     async getDefinition(props) {
-        const { bot, chatroom, args, channel } = props
+        const { bot, chatroom, args, channel, aprilFools } = props
         await logMessage([`> getDefinition(chatroom: ${chatroom}, args:`, args, `)`])
         const str = args.join(` `).replace(/[\\{`}%^|]/g, ``)
         if (!str) {
@@ -116,6 +118,8 @@ module.exports = {
                 bot.say(chatroom, `Error: ${data.error} ${negativeEmote}`)
             } else if (!data.valid || !data.definition) {
                 bot.say(chatroom, `I don't think "${data.word}" is a word! ${negativeEmote}`)
+            } else if (aprilFools) {
+                bot.say(chatroom, `Definition of "${data.word}": ${data.definition}`)
             } else {
                 let definition = `Definition of "${data.word}": `
                 const regex = /\n/g
@@ -330,7 +334,7 @@ module.exports = {
         lemonyFresh[channel].bttvEmotes = [...bttvEmotes]
         await logMessage([`-> ${pluralize(lemonyFresh[channel].bttvEmotes.length, `BTTV emote`, `BTTV emotes`)} for '${channel}'`])
     },
-    async apiGetRandomWord() {
+    async apiGetRandomWord(aprilFools) {
         await logMessage([`> apiGetRandomWord()`])
         const endpoint = `https://api.api-ninjas.com/v2/randomword`
         const options = {
@@ -346,11 +350,15 @@ module.exports = {
                 const response = await fetch(endpoint, options)
                 const data = await response.json()
                 await logMessage([`-> Random word:`, data])
+
+                if (aprilFools) { return data[0] }
+
                 if (data[0] !== data[0].toLowerCase()) {
                     await logMessage([`--> '${data[0]}' may be a proper noun, retrying...`])
                     continue
                 }
                 word = data[0]
+
                 try {
                     const endpoint = `https://api.api-ninjas.com/v1/dictionary?word=${word}`
                     const response = await fetch(endpoint, options)
