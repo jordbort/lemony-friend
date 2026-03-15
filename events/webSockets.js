@@ -45,12 +45,14 @@ function handleMessage(bot, channel, event) {
 
 function handleClose(bot, channel, event) {
     const { code, reason, wasClean } = event
-    webSockets[channel].arr.shift()
     logMessage([`-> WebSocket connection for ${channel} ${wasClean ? `closed` : `died unexpectedly`} with code ${code}${reason ? `: '${reason}'` : ``}`])
 
-    // If not closed on purpose (unless keepAlive timed out), for unused connection, or from not reconnecting in time
-    if (![1000, 4003, 4004].includes(code) || webSockets[channel].timedOut) {
-        if (webSockets[channel].timedOut) { webSockets[channel].timedOut = false }
+    const ws = webSockets[channel]
+    ws.arr.shift()
+
+    // If not closed on purpose (unless keepAlive timed out)
+    if (code !== 1000 || ws.timedOut) {
+        if (ws.timedOut) { ws.timedOut = false }
         openWebSocket(bot, channel)
     }
 }
