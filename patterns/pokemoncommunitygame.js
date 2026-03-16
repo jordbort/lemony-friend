@@ -1,4 +1,3 @@
-const BOT_USERNAME = process.env.BOT_USERNAME
 const { settings } = require(`../config`)
 const { getContextEmote, logMessage } = require(`../utils`)
 
