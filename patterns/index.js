@@ -5,6 +5,8 @@ const sayButt = require(`./sayButt`)
 const useLemon = require(`./useLemon`)
 const commandLemonInterface = require(`./cli`)
 
+const { users } = require(`../data`)
+
 const { logMessage } = require(`../utils`)
 const { checkSentiment } = require(`../commands/external`)
 const { catchPokemon, buyPokeballs, acknowledgeCaughtPokemon } = require(`./pokemoncommunitygame`)
