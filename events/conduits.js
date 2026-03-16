@@ -243,12 +243,13 @@ module.exports = {
             await logMessage([`assignToConduit Error: No conduit ID`])
             return
         }
-        const index = joinedChatrooms.indexOf(chatroom)
         const conduits = await apiGetConduits()
         if (!conduits) {
-            console.log(`assignToConduit: Failed to get conduit (returned ${conduits})`)
+            await logMessage([`assignToConduit Error: Couldn't get conduit to update ${chatroom.substring(1)}'s shard`])
             return
         }
+
+        const index = joinedChatrooms.indexOf(chatroom)
         const shardCount = conduits[0].shard_count
         // await logMessage([`> assignToConduit(chatroom: '${chatroom}', index: ${index}, shardCount: ${shardCount})`])
         if (index >= shardCount) {
