@@ -135,7 +135,9 @@ module.exports = {
                     ws.sessionId,
                     ws.sessionId === sessionId || sessionId
                 )
-                : console.log(`Error: ${channel} not in webSockets{} - shardId:`, shardId, `sessionId:`, sessionId)
+                : !channel
+                    ? console.log(shardId, `Unassigned shard${sessionId ? ` - sessionId: ${sessionId}` : ``}`)
+                    : console.log(shardId, `Error: '${channel}' not in webSockets{} - sessionId: ${sessionId || `(none)`}`)
         }
     }
 }
