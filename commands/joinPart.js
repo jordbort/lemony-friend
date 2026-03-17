@@ -108,9 +108,11 @@ module.exports = {
         const needToPart = validUsers.filter(user => bot.channels.includes(`#${user}`))
         const notInChannel = validUsers.filter(user => !bot.channels.includes(`#${user}`))
 
-        const byeEmote = getContextEmote(`bye`, channel)
         needToPart.forEach(async streamer => {
-            if (settings.sayPartMessage) { bot.say(`#${streamer}`, `Bye for now! ${byeEmote}`) }
+            if (settings.sayPartMessage) {
+                const byeEmote = getContextEmote(`bye`, channel)
+                bot.say(`#${streamer}`, `Bye for now! ${byeEmote}`)
+            }
             deleteAllEventSubs(streamer)
             bot.part(`#${streamer}`)
         })

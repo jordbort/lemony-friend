@@ -4,10 +4,24 @@ const { joinedChatrooms } = require(`../data`)
 
 const { logMessage } = require(`../utils`)
 const { assignToConduit } = require(`./conduits`)
-const { handleNotification } = require(`./notifications`)
 const { updateEventSubs } = require(`../commands/twitch`)
+const { handleNotification } = require(`./notifications`)
 
 const webSockets = {}
+
+function initWebSocket(bot, channel) {
+    if (!(channel in webSockets)) {
+        webSockets[channel] = {
+            sessionId: ``,
+            arr: [],
+            timer: null,
+            timedOut: false
+        }
+    }
+    if (!webSockets[channel].sessionId) {
+        openWebSocket(bot, channel)
+    }
+}
 
 function openWebSocket(bot, channel, path = `wss://eventsub.wss.twitch.tv/ws`) {
     webSockets[channel].arr.push(new WebSocket(path))
@@ -82,23 +96,13 @@ function handleRevocation(channel, event) {
     updateEventSubs(channel, webSockets[channel].sessionId)
 }
 
-function initWebSocket(bot, channel) {
-    if (!(channel in webSockets)) {
-        webSockets[channel] = {
-            sessionId: ``,
-            arr: [],
-            timer: null,
-            timedOut: false
-        }
-    }
-    if (!webSockets[channel].sessionId) {
-        openWebSocket(bot, channel)
-    }
-}
-
 function keepAlive(channel) {
     const ws = webSockets[channel]
     clearTimeout(ws.timer)
+    if (!ws.timer._destroyed) {
+        console.log(`Channel '${channel}' timer not destroyed!`)
+        logMessage([`Channel '${channel}' timer not destroyed!`])
+    }
     ws.timer = setTimeout(() => {
         logMessage([`* KEEPALIVE message not received for ${channel}, breaking connection...`])
         ws.timedOut = true
@@ -110,9 +114,9 @@ function closeWebSocket(channel) {
     const ws = webSockets[channel]
     clearTimeout(ws.timer)
     ws.sessionId = ``
-    if (ws.arr.length) {
-        ws.arr[ws.arr.length - 1].close()
-    }
+    ws.arr.length
+        ? ws.arr[ws.arr.length - 1].close()
+        : logMessage([`Warning: No WebSocket to close for '${channel}'`])
 }
 
 module.exports = {
