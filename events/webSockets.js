@@ -99,10 +99,6 @@ function handleRevocation(channel, event) {
 function keepAlive(channel) {
     const ws = webSockets[channel]
     clearTimeout(ws.timer)
-    if (!ws.timer._destroyed) {
-        console.log(`Channel '${channel}' timer not destroyed!`)
-        logMessage([`Channel '${channel}' timer not destroyed!`])
-    }
     ws.timer = setTimeout(() => {
         logMessage([`* KEEPALIVE message not received for ${channel}, breaking connection...`])
         ws.timedOut = true
