@@ -30,7 +30,7 @@ function openWebSocket(bot, channel, path = `wss://eventsub.wss.twitch.tv/ws`) {
     ws.onopen = () => { logMessage([`-> WebSocket connection established for '${channel}'`]) }
     ws.onmessage = (event) => { handleMessage(bot, channel, event) }
     ws.onclose = (event) => { handleClose(bot, channel, event) }
-    ws.onerror = (error) => { logMessage([`-> WebSocket error for '${channel}':`, error.message]) }
+    ws.onerror = (error) => { logMessage([`-> WebSocket error for '${channel}':`, error.message || `(no message)`]) }
 }
 
 function handleMessage(bot, channel, event) {
