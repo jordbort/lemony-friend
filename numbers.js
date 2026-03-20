@@ -9998,5 +9998,5 @@ module.exports = [
     `nine thousand nine hundred ninety-six`,
     `nine thousand nine hundred ninety-seven`,
     `nine thousand nine hundred ninety-eight`,
-    `nine thousand nine hundred ninety-nine`,
+    `nine thousand nine hundred ninety-nine`
 ]
