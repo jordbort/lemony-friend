@@ -27,7 +27,7 @@ function openWebSocket(bot, channel, path = `wss://eventsub.wss.twitch.tv/ws`) {
     webSockets[channel].arr.push(new WebSocket(path))
     const ws = webSockets[channel].arr[webSockets[channel].arr.length - 1]
 
-    ws.onopen = () => { logMessage([`-> WebSocket connection established for '${channel}'`]) }
+    // ws.onopen = () => { logMessage([`-> WebSocket connection established for '${channel}'`]) }
     ws.onmessage = (event) => { handleMessage(bot, channel, event) }
     ws.onclose = (event) => { handleClose(bot, channel, event) }
     ws.onerror = (error) => { logMessage([`-> WebSocket error for '${channel}':`, error.message || `(no message)`]) }
@@ -59,7 +59,7 @@ function handleMessage(bot, channel, event) {
 
 function handleClose(bot, channel, event) {
     const { code, reason, wasClean } = event
-    logMessage([`-> WebSocket connection for ${channel} ${wasClean ? `closed` : `died unexpectedly`} with code ${code}${reason ? `: '${reason}'` : ``}`])
+    // logMessage([`-> WebSocket connection for ${channel} ${wasClean ? `closed` : `died unexpectedly`} with code ${code}${reason ? `: '${reason}'` : ``}`])
 
     const ws = webSockets[channel]
     ws.arr.shift()

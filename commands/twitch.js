@@ -277,7 +277,7 @@ async function apiGetTokenScope(channel, attempt = 1) {
     // await logMessage([`> apiGetTokenScope(channel: '${channel}', attempt: ${attempt})`])
     const streamer = lemonyFresh[channel]
     if (!streamer.accessToken || !streamer.refreshToken) {
-        await logMessage([`-> ${channel} has no token`])
+        // await logMessage([`-> ${channel} has no token`])
         return null
     }
 
@@ -454,7 +454,7 @@ async function updateEventSubs(channel) {
     // await logMessage([`> updateEventSubs(channel: '${channel}')`])
     const arrScope = await apiGetTokenScope(channel)
     if (!arrScope) {
-        await logMessage([`-> Unable to determine ${channel}'s token scope`])
+        // await logMessage([`-> Unable to determine ${channel}'s token scope`])
         return
     }
 

@@ -753,22 +753,20 @@ const validLocales = {
 }
 
 function validateTimeZone(str) {
-    logMessage([`> validateTimeZone(str: ${str})`])
+    // logMessage([`> validateTimeZone(str: ${str})`])
     for (const timeZone of Object.keys(validTimeZones)) {
         const regex = new RegExp(timeZone.split(`/`).slice(1, timeZone.split(`/`).length - 1).join(`/`), timeZone.split(`/`)[timeZone.split(`/`).length - 1])
         if (regex.test(str)) { return validTimeZones[regex] }
     }
-    logMessage([`-> Timezone "${str}" not found, falling back on ${settings.timeZone}`])
     return settings.timeZone
 }
 
 function validateTimeLocale(str) {
-    logMessage([`> validateTimeLocale(str: ${str})`])
+    // logMessage([`> validateTimeLocale(str: ${str})`])
     for (const locale of Object.keys(validLocales)) {
         const regex = new RegExp(locale.split(`/`).slice(1, locale.split(`/`).length - 1).join(`/`), locale.split(`/`)[locale.split(`/`).length - 1])
         if (regex.test(str)) { return validLocales[regex] }
     }
-    logMessage([`-> Locale "${str}" not found, falling back on ${settings.timeLocale}`])
     return settings.timeLocale
 }
 
