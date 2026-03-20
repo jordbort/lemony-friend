@@ -1,4 +1,5 @@
 const { wordBank } = require(`../data`)
+
 const { logMessage, pluralize, getContextEmote } = require(`../utils`)
 
 const getIndefiniteArticle = (nextWord) => /^[aeiou]/i.test(nextWord) ? `an ${nextWord}` : `a ${nextWord}`

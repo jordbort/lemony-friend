@@ -1,13 +1,13 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
+const { settings } = require(`./config`)
+const { joinedChatrooms, lemonyFresh, users, lemCmds } = require(`./data`)
+
 const useCommand = require(`./commands`)
 const usePattern = require(`./patterns`)
 const printLemon = require(`./commands/printLemon`)
 const streakListener = require(`./commands/streaks`)
 const rollFunNumber = require(`./commands/funNumber`)
-
-const { settings } = require(`./config`)
-const { joinedChatrooms, lemonyFresh, users, lemCmds } = require(`./data`)
 
 const { useLemCmd } = require(`./commands/lemCmds`)
 const { addToBatch } = require(`./events/notifications`)

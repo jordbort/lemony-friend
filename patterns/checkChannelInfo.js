@@ -1,4 +1,5 @@
 const { users, lemonyFresh } = require(`../data`)
+
 const { getContextEmote, getToUser, pluralize, logMessage, findUserByNickname, arrToList } = require(`../utils`)
 
 module.exports = {

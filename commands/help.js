@@ -1,6 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { users } = require(`../data`)
+
 const { getContextEmote, logMessage, renderObj } = require(`../utils`)
 
 function renderData(obj, objName) {

@@ -1,5 +1,6 @@
 const { settings } = require(`../config`)
 const { lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
+
 const { getContextEmote, logMessage, pluralize } = require(`../utils`)
 
 const regexNumber = /\{\s?number\s?(-?\d+)\s?\}/gi
