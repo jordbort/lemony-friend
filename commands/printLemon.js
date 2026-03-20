@@ -1,6 +1,6 @@
 const { resetTxt, boldTxt, yellowBg, blackBg, greenBg, whiteBg } = require(`../config`)
 
-module.exports = () => {
+module.exports = function printLemon() {
     const noSq = `  `
     const bkSq = `${blackBg}  ${resetTxt}`
     const gnSq = `${greenBg}  ${resetTxt}`

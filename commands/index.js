@@ -191,7 +191,7 @@ const devCommands = {
     '!part': handlePart
 }
 
-module.exports = (props) => {
+module.exports = function useCommand(props) {
     const { message, username, command } = props
     if (message.startsWith(`!`)) {
         if (command in commands) {

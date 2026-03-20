@@ -1,5 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
+
 const { lemonyFresh, users } = require(`../data`)
+
 const { logMessage, pluralize, coinFlip } = require(`../utils`)
 
 function stealLemon(bot, chatroom, user, suffix, target) {
@@ -1266,7 +1268,7 @@ function nullVerb(bot, chatroom, user, suffix, target, verb) {
     }
 }
 
-module.exports = (props, splitMessage) => {
+module.exports = function useLemon(props, splitMessage) {
     const { bot, chatroom, user, userNickname, target, targetNickname } = props
     const verb = splitMessage[1].toLowerCase()
     const suffix = splitMessage[2].toLowerCase()

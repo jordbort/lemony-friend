@@ -2,6 +2,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings } = require(`../config`)
 const { lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
+
 const numbers = require(`../numbers`)
 
 const { lemonify } = require(`./lemonify`)
@@ -642,7 +643,7 @@ function rememberPastMessage(props) {
         : setTimeout(() => bot.say(chatroom, `I'm still thinking about when ${userNickname} said "... ${msg.splice(4, 6).join(` `)} ..." ${neutralEmote}`), 600000)
 }
 
-module.exports = (props, funNumber) => {
+module.exports = function rollFunNumber(props, funNumber) {
     const { bot, chatroom, tags, message, channel, username, aprilFools } = props
     logMessage([`> rollFunNumber(channel: '${channel}', tags: ${Object.keys(tags).length}, username: '${username}', message: '${message}', funNumber: ${funNumber})`])
 

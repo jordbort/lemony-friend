@@ -1,11 +1,11 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 const BOT_NICKNAME_REGEX = process.env.BOT_NICKNAME_REGEX
 
+const { users } = require(`../data`)
+
 const sayButt = require(`./sayButt`)
 const useLemon = require(`./useLemon`)
 const commandLemonInterface = require(`./cli`)
-
-const { users } = require(`../data`)
 
 const { logMessage } = require(`../utils`)
 const { checkSentiment } = require(`../commands/external`)
@@ -133,7 +133,7 @@ const splitMessagePatterns = {
     [/is (@?[a-z0-9_]+) (a )?vip[\w]*( (to|in) )?/i]: checkTargetVIP
 }
 
-module.exports = (props) => {
+module.exports = function usePattern(props) {
     const { bot, chatroom, username, message, channel } = props
 
     // Interaction with StreamElements

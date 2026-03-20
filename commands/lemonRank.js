@@ -1,8 +1,9 @@
 const { users } = require(`../data`)
 const { settings } = require(`../config`)
+
 const { getContextEmote, pluralize } = require(`../utils`)
 
-module.exports = (props) => {
+module.exports = function useLemonRank(props) {
     const { bot, chatroom, channel } = props
     const lemonEmote = getContextEmote(`lemon`, channel)
     const leaders = Object.keys(users)

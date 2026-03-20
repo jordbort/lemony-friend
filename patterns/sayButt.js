@@ -1,7 +1,8 @@
 const { lemonyFresh } = require(`../data`)
+
 const { getContextEmote, logMessage, resetCooldownTimer } = require(`../utils`)
 
-module.exports = (props, splitMessage) => {
+module.exports = function sayButt(props, splitMessage) {
     const { bot, chatroom, channel } = props
     logMessage([`> sayButt(channel: '${channel}', splitMessage: '${splitMessage}')`])
 

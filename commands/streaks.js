@@ -82,7 +82,7 @@ function emoteReply(bot, chatroom, channel, emoteOwner, emoteArr) {
     bot.say(chatroom, reply)
 }
 
-module.exports = (props) => {
+module.exports = function streakListener(props) {
     const { bot, chatroom, message, currentTime, channel } = props
 
     // Listening for a message to be repeated by at least two other users

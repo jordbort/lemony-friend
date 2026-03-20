@@ -19,7 +19,7 @@ function stopCountdown(bot, chatroom) {
     bot.say(chatroom, `Countdown timer stopped! ${positiveEmote}`)
 }
 
-module.exports = (props) => {
+module.exports = function useCountdown(props) {
     const { bot, chatroom, args, channel } = props
     logMessage([`> countdown(channel: '${channel}', args: '${args.join(`', '`)}')`])
 

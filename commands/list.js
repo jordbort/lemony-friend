@@ -1,4 +1,5 @@
 const { lemonyFresh } = require(`../data`)
+
 const { getContextEmote, logMessage } = require(`../utils`)
 
 function getItem(bot, chatroom, channel, idx) {
@@ -238,7 +239,7 @@ function getListMethods(bot, chatroom, channel, isModOrVIP) {
         : bot.say(chatroom, `You can use !list to show the full list, !list <number> or "random" to get a specific or random item from the list, or !list <number>-<number> to get a range of items! ${neutralEmote}`)
 }
 
-module.exports = (props) => {
+module.exports = function useList(props) {
     const { bot, chatroom, args, channel, isModOrVIP } = props
     logMessage([`> useList(channel: '${channel}', listName: '${lemonyFresh[channel].list[0]}', items: ${lemonyFresh[channel].list.slice(1).length}, args:`, `'${args.join(`', '`)}')`])
 

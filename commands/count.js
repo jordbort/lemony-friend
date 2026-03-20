@@ -1,7 +1,8 @@
 const { lemonyFresh } = require(`../data`)
+
 const { getContextEmote, logMessage, resetCooldownTimer } = require(`../utils`)
 
-module.exports = (props) => {
+module.exports = function useCount(props) {
     const { bot, chatroom, args, channel } = props
     logMessage([`> useCount(channel: '${channel}', count.name: '${lemonyFresh[channel].count.name}', count.value: ${lemonyFresh[channel].count.value}, args:`, `'${args.join(`', '`)}')`])
 

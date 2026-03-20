@@ -1,7 +1,9 @@
 const DEV = process.env.DEV
+
 const { settings } = require(`../config`)
 const { lemonyFresh, users } = require(`../data`)
 const { validTimeZones, validLocales } = require(`../commands/time`)
+
 const { getContextEmote, getToUser, pluralize, logMessage } = require(`../utils`)
 
 const makeList = (obj) => Object.keys(obj)
@@ -579,7 +581,7 @@ function updateTimer(bot, chatroom, obj, message, name, args) {
     bot.say(chatroom, `/me Options for timer "${timer}": ${makeList(options)}`)
 }
 
-module.exports = (props, splitMessage) => {
+module.exports = function commandLemonInterface(props, splitMessage) {
     const { bot, chatroom, channel, username, isMod, isLemonyFreshMember } = props
     splitMessage.shift()
     const args = splitMessage[0].split(` `)

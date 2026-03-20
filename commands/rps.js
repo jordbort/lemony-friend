@@ -35,7 +35,7 @@ function fakeRPS(playerChoice, channel) {
     }
 }
 
-module.exports = (props) => {
+module.exports = function rockPaperScissors(props) {
     const { bot, chatroom, args, channel, userNickname, aprilFools } = props
 
     const playerChoice = aprilFools

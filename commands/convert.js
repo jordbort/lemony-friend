@@ -318,7 +318,7 @@ function validateUnit(str) {
     return false
 }
 
-module.exports = (props) => {
+module.exports = function useConvert(props) {
     const { bot, chatroom, args, channel } = props
     logMessage([`> convert(channel: '${channel}', args: [${args.length ? `'${args.join(`', '`)}'` : ``}])`])
 

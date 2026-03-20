@@ -1,6 +1,6 @@
 const { twitchUsernamePattern, logMessage, getContextEmote } = require(`../utils`)
 
-module.exports = (props) => {
+module.exports = function makeMultiTwitchLink(props) {
     const { bot, chatroom, args } = props
     logMessage([`> makeMultiTwitchLink(args: '${args.join(`', '`)}')`])
 
