@@ -4,7 +4,7 @@ const { settings } = require(`../config`)
 const { users, lemonyFresh } = require(`../data`)
 
 const { autoBanUser } = require(`./twitch`)
-const { getContextEmote, pluralize, resetCooldownTimer, logMessage, superscript, cursive } = require(`../utils`)
+const { getContextEmote, pluralize, resetCooldownTimer, logMessage, superscript, cursive, logArr } = require(`../utils`)
 
 function handleGreetOne(props) {
     const { bot, chatroom, channel, command, userNickname, targetNickname } = props
@@ -437,13 +437,13 @@ module.exports = {
 
         // Filter out channels that have had message activity more than an hour ago
         const recentChannels = Object.keys(mostRecentMessages).filter(channel => currentTime - mostRecentMessages[channel] < 3600000)
-        logMessage([`> yell(userNickname: '${userNickname}', recentChannels: '${recentChannels.join(`', '`)}'`])
+        logMessage([`> yell(userNickname: '${userNickname}', recentChannels: ${logArr(recentChannels)})`])
 
         recentChannels.forEach(channel => bot.say(`#${channel}`, `${userNickname} says: ${message.substring(6)}`))
     },
     setAway(props) {
         const { bot, chatroom, args, command, channel, username, userChannel, userNickname } = props
-        logMessage([`> setAway(chatroom: '${chatroom}', username: '${username}', args:`, `'${args.join(`, `)}'`, `)`])
+        logMessage([`> setAway(chatroom: '${chatroom}', username: '${username}', args: ${logArr(args)})`])
 
         userChannel.away = true
         if (args.length) { userChannel.awayMessage = args.join(` `) }

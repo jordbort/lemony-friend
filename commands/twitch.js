@@ -6,7 +6,7 @@ const REDIRECT_URI = process.env.REDIRECT_URI
 const { settings } = require(`../config`)
 const { lemonyFresh, mods, users } = require(`../data`)
 
-const { getContextEmote, resetCooldownTimer, getToUser, renderObj, pluralize, logMessage, arrToList } = require(`../utils`)
+const { getContextEmote, resetCooldownTimer, getToUser, renderObj, pluralize, logMessage, arrToList, logArr } = require(`../utils`)
 
 async function apiGetTwitchAppAccessToken() {
     await logMessage([`> apiGetTwitchAppAccessToken()`])
@@ -1184,7 +1184,7 @@ module.exports = {
     },
     async banUsers(props) {
         const { bot, chatroom, args, channel, username, isMod } = props
-        await logMessage([`> newBanUsers(channel: '${channel}', username: '${username}', isMod: ${isMod}, args: '${args.join(`', '`)}')`])
+        await logMessage([`> newBanUsers(channel: '${channel}', username: '${username}', isMod: ${isMod}, args: ${logArr(args)})`])
 
         // Mods only
         if (!isMod) {

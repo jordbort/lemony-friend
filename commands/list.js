@@ -1,6 +1,6 @@
 const { lemonyFresh } = require(`../data`)
 
-const { getContextEmote, logMessage } = require(`../utils`)
+const { getContextEmote, logMessage, logArr } = require(`../utils`)
 
 function getItem(bot, chatroom, channel, idx) {
     logMessage([`-> getItem(idx: ${idx})`])
@@ -42,7 +42,7 @@ function getItemRange(bot, chatroom, channel, range) {
 }
 
 function addItem(bot, chatroom, channel, args, isModOrVIP) {
-    logMessage([`-> addItem(args: '${args.join(`', '`)}', isModOrVIP? ${isModOrVIP})`])
+    logMessage([`-> addItem(args: ${logArr(args)}, isModOrVIP? ${isModOrVIP})`])
     const negativeEmote = getContextEmote(`negative`, channel)
     if (!isModOrVIP) {
         bot.say(chatroom, `Only a mod or VIP is allowed to add items to the list! ${negativeEmote}`)
@@ -61,7 +61,7 @@ function addItem(bot, chatroom, channel, args, isModOrVIP) {
 }
 
 function editItem(bot, chatroom, channel, args, isModOrVIP) {
-    logMessage([`-> editItem(args: '${args.join(`', '`)}', isModOrVIP? ${isModOrVIP})`])
+    logMessage([`-> editItem(args: ${logArr(args)}, isModOrVIP? ${isModOrVIP})`])
     const negativeEmote = getContextEmote(`negative`, channel)
     if (!isModOrVIP) {
         bot.say(chatroom, `Only a mod or VIP is allowed to edit items on list! ${negativeEmote}`)
@@ -91,7 +91,7 @@ function editItem(bot, chatroom, channel, args, isModOrVIP) {
 }
 
 function deleteItem(bot, chatroom, channel, args, isModOrVIP) {
-    logMessage([`-> deleteItem(args: '${args.join(`', '`)}', isModOrVIP? ${isModOrVIP})`])
+    logMessage([`-> deleteItem(args: ${logArr(args)}, isModOrVIP? ${isModOrVIP})`])
     const negativeEmote = getContextEmote(`negative`, channel)
     if (!isModOrVIP) {
         bot.say(chatroom, `Only a mod or VIP is allowed to delete items from the list! ${negativeEmote}`)
@@ -114,7 +114,7 @@ function deleteItem(bot, chatroom, channel, args, isModOrVIP) {
 }
 
 function swapItems(bot, chatroom, channel, args, isModOrVIP) {
-    logMessage([`-> swapItems(args: '${args.join(`', '`)}', isModOrVIP? ${isModOrVIP})`])
+    logMessage([`-> swapItems(args: ${logArr(args)}, isModOrVIP? ${isModOrVIP})`])
     const negativeEmote = getContextEmote(`negative`, channel)
     if (!isModOrVIP) {
         bot.say(chatroom, `Only a mod or VIP is allowed to reorder items in the list! ${negativeEmote}`)
@@ -151,7 +151,7 @@ function swapItems(bot, chatroom, channel, args, isModOrVIP) {
 
 function moveItems(bot, chatroom, channel, args, isModOrVIP) {
     const negativeEmote = getContextEmote(`negative`, channel)
-    logMessage([`-> moveItems(args: '${args.join(`', '`)}', isModOrVIP? ${isModOrVIP})`])
+    logMessage([`-> moveItems(args: ${logArr(args)}, isModOrVIP? ${isModOrVIP})`])
     if (!isModOrVIP) {
         bot.say(chatroom, `Only a mod or VIP is allowed to reorder items in the list! ${negativeEmote}`)
         return
@@ -194,7 +194,7 @@ function moveItems(bot, chatroom, channel, args, isModOrVIP) {
 
 function renameList(bot, chatroom, channel, args, isModOrVIP) {
     const negativeEmote = getContextEmote(`negative`, channel)
-    logMessage([`-> renameList(args: '${args.join(`', '`)}', isModOrVIP? ${isModOrVIP})`])
+    logMessage([`-> renameList(args: ${logArr(args)}, isModOrVIP? ${isModOrVIP})`])
     if (!isModOrVIP) {
         bot.say(chatroom, `Only a mod or VIP is allowed to rename the list! ${negativeEmote}`)
         return
@@ -241,7 +241,7 @@ function getListMethods(bot, chatroom, channel, isModOrVIP) {
 
 module.exports = function useList(props) {
     const { bot, chatroom, args, channel, isModOrVIP } = props
-    logMessage([`> useList(channel: '${channel}', listName: '${lemonyFresh[channel].list[0]}', items: ${lemonyFresh[channel].list.slice(1).length}, args:`, `'${args.join(`', '`)}')`])
+    logMessage([`> useList(channel: '${channel}', listName: '${lemonyFresh[channel].list[0]}', items: ${lemonyFresh[channel].list.slice(1).length}, args: ${logArr(args)})`])
 
     // Get list of all methods
     if (/^help$/i.test(args[0])) {

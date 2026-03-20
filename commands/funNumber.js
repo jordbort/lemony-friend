@@ -8,7 +8,7 @@ const numbers = require(`../numbers`)
 const { lemonify } = require(`./lemonify`)
 const { apiGetTwitchChannel } = require(`./twitch`)
 const { getRandomUser, getRandomChannelMessage } = require(`./getInfo`)
-const { getContextEmote, pluralize, logMessage } = require(`../utils`)
+const { getContextEmote, pluralize, logMessage, logArr } = require(`../utils`)
 
 function makePyramid(props) {
     const { bot, chatroom, message, channel } = props
@@ -533,7 +533,7 @@ function makeInsultSentence(props) {
     const filteredNouns = nouns.filter((el, idx) => nouns.indexOf(el) === idx)
     const filteredVerbs = verbs.filter((el, idx) => verbs.indexOf(el) === idx)
 
-    logMessage([`> makeInsultSentence(filteredNouns: ['${filteredNouns.join(`', '`)}'], filteredVerbs: ['${filteredVerbs.join(`', '`)}'])`])
+    logMessage([`> makeInsultSentence(filteredNouns: ${logArr(filteredNouns)}, filteredVerbs: ${logArr(filteredVerbs)})`])
     if (filteredNouns.length < 1 || filteredVerbs.length < 2) {
         logMessage([`-> Not enough words to make a sentence`])
         return

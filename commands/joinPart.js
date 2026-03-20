@@ -6,7 +6,7 @@ const { lemonyFresh, users, lemCmds } = require(`../data`)
 const numbers = require(`../numbers`)
 
 const { apiGetTwitchUser, deleteAllEventSubs } = require(`./twitch`)
-const { getUsername, getContextEmote, logMessage, pluralize, arrToList } = require(`../utils`)
+const { getUsername, getContextEmote, logMessage, pluralize, arrToList, logArr } = require(`../utils`)
 
 module.exports = {
     sayJoinMessage(bot, chatroom) {
@@ -74,7 +74,7 @@ module.exports = {
     },
     async handleJoin(props) {
         const { bot, chatroom, args } = props
-        await logMessage([`> handleJoin(chatroom: ${chatroom}, args: '${args.join(`', '`)}')`])
+        await logMessage([`> handleJoin(chatroom: ${chatroom}, args: ${logArr(args)})`])
 
         const validUsers = args.map(arg => getUsername(arg)).filter(user => user)
         const alreadyJoined = validUsers.filter(channel => bot.channels.includes(`#${channel}`))
@@ -103,7 +103,7 @@ module.exports = {
     },
     handlePart(props) {
         const { bot, chatroom, args, channel } = props
-        logMessage([`> handlePart(chatroom: ${chatroom}, args: '${args.join(`', '`)}')`])
+        logMessage([`> handlePart(chatroom: ${chatroom}, args: ${logArr(args)})`])
 
         const validUsers = args.map(arg => getUsername(arg)).filter(user => user)
         const needToPart = validUsers.filter(user => bot.channels.includes(`#${user}`))

@@ -1,4 +1,4 @@
-const { getContextEmote, logMessage, arrToList } = require(`../utils`)
+const { getContextEmote, logMessage, arrToList, logArr } = require(`../utils`)
 
 const units = {
     [/\bf\b|\bfahrenheit\b/i]: { name: `Fahrenheit`, plural: `Fahrenheit`, type: `temperature` },
@@ -320,7 +320,7 @@ function validateUnit(str) {
 
 module.exports = function useConvert(props) {
     const { bot, chatroom, args, channel } = props
-    logMessage([`> convert(channel: '${channel}', args: [${args.length ? `'${args.join(`', '`)}'` : ``}])`])
+    logMessage([`> convert(channel: '${channel}', args: ${logArr(args)})`])
 
     const neutralEmote = getContextEmote(`neutral`, channel)
     const positiveEmote = getContextEmote(`positive`, channel)

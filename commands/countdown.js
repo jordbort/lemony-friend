@@ -1,6 +1,6 @@
 const { settings } = require(`../config`)
 const { lemonyFresh } = require(`../data`)
-const { getContextEmote, pluralize, logMessage } = require(`../utils`)
+const { getContextEmote, pluralize, logMessage, logArr } = require(`../utils`)
 
 function stopCountdown(bot, chatroom) {
     logMessage([`> stopCountdown(chatroom: '${chatroom}')`])
@@ -21,7 +21,7 @@ function stopCountdown(bot, chatroom) {
 
 module.exports = function useCountdown(props) {
     const { bot, chatroom, args, channel } = props
-    logMessage([`> countdown(channel: '${channel}', args: '${args.join(`', '`)}')`])
+    logMessage([`> countdown(channel: '${channel}', args: ${logArr(args)})`])
 
     const positiveEmote = getContextEmote(`positive`, channel)
     const negativeEmote = getContextEmote(`negative`, channel)

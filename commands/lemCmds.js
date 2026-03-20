@@ -1,7 +1,7 @@
 const { settings } = require(`../config`)
 const { lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
 
-const { getContextEmote, logMessage, pluralize } = require(`../utils`)
+const { getContextEmote, logMessage, pluralize, logArr } = require(`../utils`)
 
 const regexNumber = /\{\s?number\s?(-?\d+)\s?\}/gi
 const regexRandom = /\{\s?random\s?("[^"]+"\s?)+\s?\}/gi
@@ -10,7 +10,7 @@ const regexQuote = /"(.+?)"/
 
 function applyVariables(str, props) {
     const { args, channel, username, toUser } = props
-    logMessage([`-> applyVariables(str: ${str}, args: '${args.join(`', '`)}')`])
+    logMessage([`-> applyVariables(str: ${str}, args: ${logArr(args)})`])
 
     // Prepare viewers
     const viewers = lemonyFresh[channel].viewers.filter(viewer => !settings.ignoredBots.includes(viewer))
@@ -80,7 +80,7 @@ function applyVariables(str, props) {
 module.exports = {
     handleLemCmd(props) {
         const { bot, chatroom, args, channel, userNickname } = props
-        logMessage([`> handleLemCmd(chatroom: ${chatroom}, args: '${args.join(`', '`)}')`])
+        logMessage([`> handleLemCmd(chatroom: ${chatroom}, args: ${logArr(args)})`])
 
         const positiveEmote = getContextEmote(`positive`, channel)
         const neutralEmote = getContextEmote(`neutral`, channel)
@@ -139,7 +139,7 @@ module.exports = {
     },
     getLemCmds(props) {
         const { bot, chatroom, args, channel } = props
-        logMessage([`> getLemCmds(chatroom: ${chatroom}, args:`, `'${args.join(`', '`)}'`, `)`])
+        logMessage([`> getLemCmds(chatroom: ${chatroom}, args: ${logArr(args)})`])
 
         const negativeEmote = getContextEmote(`negative`, channel)
         const commands = /^a$|^alpha$|^alpabetical$/i.test(args[0])

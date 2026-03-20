@@ -3,7 +3,7 @@ const numbers = require(`../numbers`)
 const { lemonyFresh, users } = require(`../data`)
 const { settings, chatColors } = require(`../config`)
 
-const { getContextEmote, pluralize, getToUser, logMessage, arrToList } = require(`../utils`)
+const { getContextEmote, pluralize, getToUser, logMessage, arrToList, logArr } = require(`../utils`)
 
 module.exports = {
     sayOnlineTime(props) {
@@ -100,7 +100,7 @@ module.exports = {
                 : bot.say(chatroom, `${userObjNickname}'s chat color is hex code ${userObj.color}`)
     },
     getRandomUser(arrExclude) {
-        logMessage([`> getRandomUser(arrExclude:`, arrExclude.join(`, `), `)`])
+        logMessage([`> getRandomUser(arrExclude: ${logArr(arrExclude)})`])
 
         // Only search users who have chatted
         const arr = Object.keys(users).filter(username => Object.keys(users[username].channels).length)

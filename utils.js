@@ -124,6 +124,14 @@ module.exports = {
         await logMessage([err.stack])
     },
     coinFlip() { return Math.floor(Math.random() * 2) },
+    logArr(arr) {
+        const typeArr = arr.map(el => typeof el === `string`
+            ? `'${el}'`
+            : `${el}`)
+        return `[${typeArr.length
+            ? ` ${typeArr.join(`, `)} `
+            : ``}]`
+    },
     getContextEmote(type, channel) {
         const baseType = `${type}Emotes`
         const emotes = [...settings.baseEmotes[baseType]]

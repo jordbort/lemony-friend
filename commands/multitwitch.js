@@ -1,8 +1,8 @@
-const { twitchUsernamePattern, logMessage, getContextEmote } = require(`../utils`)
+const { twitchUsernamePattern, logMessage, getContextEmote, logArr } = require(`../utils`)
 
 module.exports = function makeMultiTwitchLink(props) {
     const { bot, chatroom, args } = props
-    logMessage([`> makeMultiTwitchLink(args: '${args.join(`', '`)}')`])
+    logMessage([`> makeMultiTwitchLink(args: ${logArr(args)})`])
 
     const channel = chatroom.substring(1)
     const negativeEmote = getContextEmote(`negative`, channel)
