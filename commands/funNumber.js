@@ -643,6 +643,50 @@ function rememberPastMessage(props) {
         : setTimeout(() => bot.say(chatroom, `I'm still thinking about when ${userNickname} said "... ${msg.splice(4, 6).join(` `)} ..." ${neutralEmote}`), 600000)
 }
 
+function lookForNumbers(props) {
+    const { bot, chatroom, message, username } = props
+    const msg = message.split(` `)
+    const numerals = []
+
+    for (let i = 0; i < msg.length; i++) {
+        for (let j = msg.length; j > i; j--) {
+            const len = numerals.length
+            const phrase = msg.slice(i, j).join(` `).toLowerCase()
+
+            switch (phrase) {
+                case `hundred`:
+                    numerals.push(100)
+                    break
+                case `thousand`:
+                    numerals.push(1000)
+                    break
+                case `million`:
+                    numerals.push(1000000)
+                    break
+                case `billion`:
+                    numerals.push(1000000000)
+                    break
+                case `trillion`:
+                    numerals.push(1000000000000)
+                    break
+                default:
+                    if (numbers.includes(phrase)) { numerals.push(numbers.indexOf(phrase)) }
+                    if (!isNaN(Number(phrase))) { numerals.push(Number(phrase)) }
+            }
+
+            if (numerals.length > len) {
+                i += j - i - 1
+                break
+            }
+        }
+    }
+    logMessage([`> lookForNumbers(username: '${username}', message: '${message}', numerals: ${logArr(numerals)})`])
+
+    numerals.length
+        ? bot.say(chatroom, numerals.join(` `))
+        : logMessage([`-> No numbers found in ${username} 's message`])
+}
+
 module.exports = function rollFunNumber(props, funNumber) {
     const { bot, chatroom, tags, message, channel, username, aprilFools } = props
     logMessage([`> rollFunNumber(channel: '${channel}', tags: ${Object.keys(tags).length}, username: '${username}', message: '${message}', funNumber: ${funNumber})`])
@@ -681,7 +725,8 @@ module.exports = function rollFunNumber(props, funNumber) {
         25: sayPastHangmanSpaces,
         26: sayPastHangmanGuessedLetters,
         27: sayGameId,
-        28: rememberPastMessage
+        28: rememberPastMessage,
+        29: lookForNumbers
     }
 
     if (funNumber in outcomes) {
