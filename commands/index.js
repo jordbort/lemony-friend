@@ -1,8 +1,9 @@
 const DEV = process.env.DEV
 
+const { lemCmds } = require(`../data`)
+
 const useList = require(`./list`)
 const useCount = require(`./count`)
-const lemCmds = require(`./lemCmds`)
 const useConvert = require(`./convert`)
 const rockPaperScissors = require(`./rps`)
 const useCountdown = require(`./countdown`)
@@ -198,7 +199,7 @@ module.exports = function useCommand(props) {
             logMessage([`MATCHED COMMAND:`, command, `[Function: ${commands[command].name}]`])
             commands[command](props)
             return true
-        } else if (/!.+lemon/i.test(command) in lemCmds) {
+        } else if (!/.+lemon/i.test(command) && !(command in lemCmds) && !(command in devCommands)) {
             logMessage([`COMMAND NOT RECOGNIZED`])
         }
     }
