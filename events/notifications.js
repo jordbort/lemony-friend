@@ -32,20 +32,24 @@ async function handleStreamOnline(bot, channel, event) {
         `first`
     ]
 
-    const channelData = await apiGetTwitchChannel(lemonyFresh[channel].id)
-    if (channelData) {
-        announcements.push(
-            `Have fun ${channelData.game_name
-                ? channelData.game_name === `Just Chatting`
-                    ? `chatting with viewers`
-                    : `playing ${channelData.game_name}`
-                : `doing nothing`
-            }, ${streamer}! ${greetingEmote}`
-        )
+    const randNum = Math.floor(Math.random() * announcements.length + 1)
+
+    // Optional channel data
+    if (randNum === announcements.length) {
+        const channelData = await apiGetTwitchChannel(lemonyFresh[channel].id)
+        if (channelData) {
+            announcements.push(
+                `Have fun ${channelData.game_name
+                    ? channelData.game_name === `Just Chatting`
+                        ? `chatting with viewers`
+                        : `playing ${channelData.game_name}`
+                    : `doing nothing`
+                }, ${streamer}! ${greetingEmote}`
+            )
+        }
     }
 
-    const reply = announcements[Math.floor(Math.random() * announcements.length)]
-
+    const reply = announcements[randNum]
     bot.say(`#${channel}`, reply)
 }
 
