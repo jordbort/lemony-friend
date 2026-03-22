@@ -138,5 +138,17 @@ module.exports = {
                     ? console.log(shardId, `Unassigned shard${sessionId ? ` - sessionId: ${sessionId}` : ``}`)
                     : console.log(shardId, `Error: '${channel}' not in webSockets{} - sessionId: ${sessionId || `(none)`}`)
         }
+    },
+    sayWebSocketSessionId(props) {
+        const { bot, chatroom, channel } = props
+        logMessage([`> sayWebSocketSessionId(channel: '${channel}')`])
+
+        const sessionId = channel in webSockets
+            ? webSockets[channel].sessionId
+            : ``
+
+        if (sessionId) {
+            bot.say(chatroom, sessionId)
+        }
     }
 }

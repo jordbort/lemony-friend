@@ -7,6 +7,7 @@ const numbers = require(`../numbers`)
 
 const { lemonify } = require(`./lemonify`)
 const { apiGetTwitchChannel } = require(`./twitch`)
+const { sayWebSocketSessionId } = require(`../events/webSockets`)
 const { getRandomUser, getRandomChannelMessage } = require(`./getInfo`)
 const { getContextEmote, pluralize, logMessage, logArr } = require(`../utils`)
 
@@ -726,7 +727,8 @@ module.exports = function rollFunNumber(props, funNumber) {
         26: sayPastHangmanGuessedLetters,
         27: sayGameId,
         28: rememberPastMessage,
-        29: lookForNumbers
+        29: lookForNumbers,
+        30: sayWebSocketSessionId
     }
 
     if (funNumber in outcomes) {
