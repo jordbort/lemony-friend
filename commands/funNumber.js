@@ -9,7 +9,7 @@ const { lemonify } = require(`./lemonify`)
 const { apiGetTwitchChannel } = require(`./twitch`)
 const { sayWebSocketSessionId } = require(`../events/webSockets`)
 const { getRandomUser, getRandomChannelMessage } = require(`./getInfo`)
-const { getContextEmote, pluralize, logMessage, logArr } = require(`../utils`)
+const { getContextEmote, pluralize, logMessage, logArr, coinFlip } = require(`../utils`)
 
 function makePyramid(props) {
     const { bot, chatroom, message, channel } = props
@@ -688,6 +688,21 @@ function lookForNumbers(props) {
         : logMessage([`-> No numbers found in ${username} 's message`])
 }
 
+function reportOneSixteenthChance(props) {
+    const bit1 = coinFlip()
+    const bit2 = coinFlip()
+    const bit3 = coinFlip()
+    const bit4 = coinFlip()
+    logMessage([`> reportOneSixteenthChance(funNumberCount: ${settings.funNumberCount}, funNumberTotal: ${settings.funNumberTotal}, bits: ${bit1}${bit2}${bit3}${bit4})`])
+
+    const { bot, chatroom, channel } = props
+    const hypeEmote = getContextEmote(`hype`, channel)
+    if (bit1 && bit2 && bit3 && bit4) {
+        bot.say(chatroom, `This message has a 1/${(settings.funNumberCount * settings.funNumberTotal * 16).toLocaleString()} chance of appearing ${hypeEmote}`)
+    }
+
+}
+
 module.exports = function rollFunNumber(props, funNumber) {
     const { bot, chatroom, tags, message, channel, username, aprilFools } = props
     logMessage([`> rollFunNumber(channel: '${channel}', tags: ${Object.keys(tags).length}, username: '${username}', message: '${message}', funNumber: ${funNumber})`])
@@ -728,7 +743,8 @@ module.exports = function rollFunNumber(props, funNumber) {
         27: sayGameId,
         28: rememberPastMessage,
         29: lookForNumbers,
-        30: sayWebSocketSessionId
+        30: sayWebSocketSessionId,
+        31: reportOneSixteenthChance
     }
 
     if (funNumber in outcomes) {
