@@ -27,10 +27,10 @@ function openWebSocket(bot, channel, path = `wss://eventsub.wss.twitch.tv/ws`) {
     webSockets[channel].arr.push(new WebSocket(path))
     const ws = webSockets[channel].arr[webSockets[channel].arr.length - 1]
 
-    // ws.onopen = () => { logMessage([`-> WebSocket connection established for '${channel}'`]) }
+    // ws.onopen = () => { logMessage([`> WebSocket connection established for '${channel}'`]) }
     ws.onmessage = (event) => { handleMessage(bot, channel, event) }
     ws.onclose = (event) => { handleClose(bot, channel, event) }
-    ws.onerror = (error) => { logMessage([`-> WebSocket error for '${channel}':`, error.message || `(no message)`]) }
+    ws.onerror = (error) => { logMessage([`> WebSocket error for '${channel}':`, error.message || `(no message)`]) }
 }
 
 function handleMessage(bot, channel, event) {
@@ -58,17 +58,16 @@ function handleMessage(bot, channel, event) {
 }
 
 function handleClose(bot, channel, event) {
-    const { code, reason, wasClean } = event
-    // logMessage([`-> WebSocket connection for ${channel} ${wasClean ? `closed` : `died unexpectedly`} with code ${code}${reason ? `: '${reason}'` : ``}`])
-
     const ws = webSockets[channel]
     ws.arr.shift()
 
-    // If not closed on purpose (unless keepAlive timed out)
-    if (code !== 1000 || ws.timedOut) {
-        if (ws.timedOut) { ws.timedOut = false }
-        openWebSocket(bot, channel)
-    }
+    // Reopen unless closed on purpose (unless keepAlive timed out)
+    const { code, reason, wasClean } = event
+    code === 1000
+        ? ws.timedOut
+            ? (ws.timedOut = false, openWebSocket(bot, channel))
+            : logMessage([`> WebSocket connection for '${channel}' ${wasClean ? `closed` : `died unexpectedly`} with code ${code}${reason ? `: '${reason}'` : ``}`])
+        : openWebSocket(bot, channel)
 }
 
 function handleWelcome(channel, event) {
@@ -133,7 +132,7 @@ module.exports = {
                     ws.arr.length,
                     ws.arr.map(ws => ws?._closeFrameSent || ws?._closeFrameReceived ? `CLOSED` : `OPEN`),
                     ws.sessionId,
-                    ws.sessionId === sessionId || sessionId
+                    ws.sessionId === sessionId || sessionId || `(NO SESSION ID)`
                 )
                 : !channel
                     ? console.log(shardId, `Unassigned shard${sessionId ? ` - sessionId: ${sessionId}` : ``}`)
