@@ -67,7 +67,9 @@ function handleClose(bot, channel, event) {
         ? ws.timedOut
             ? (ws.timedOut = false, openWebSocket(bot, channel))
             : logMessage([`> WebSocket connection for '${channel}' ${wasClean ? `closed` : `died unexpectedly`} with code ${code}${reason ? `: '${reason}'` : ``}`])
-        : openWebSocket(bot, channel)
+        : ws.timedOut
+            ? (ws.timedOut = false, openWebSocket(bot, channel))
+            : openWebSocket(bot, channel)
 }
 
 function handleWelcome(channel, event) {
