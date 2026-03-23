@@ -63,12 +63,10 @@ function handleClose(bot, channel, event) {
 
     // Reopen unless closed on purpose (unless keepAlive timed out)
     const { code, reason, wasClean } = event
-    code === 1000
-        ? ws.timedOut
-            ? (ws.timedOut = false, openWebSocket(bot, channel))
-            : logMessage([`> WebSocket connection for '${channel}' ${wasClean ? `closed` : `died unexpectedly`} with code ${code}${reason ? `: '${reason}'` : ``}`])
-        : ws.timedOut
-            ? (ws.timedOut = false, openWebSocket(bot, channel))
+    ws.timedOut
+        ? (ws.timedOut = false, openWebSocket(bot, channel))
+        : code === 1000
+            ? logMessage([`> WebSocket connection for '${channel}' ${wasClean ? `closed` : `died unexpectedly`} with code ${code}${reason ? `: '${reason}'` : ``}`])
             : openWebSocket(bot, channel)
 }
 
