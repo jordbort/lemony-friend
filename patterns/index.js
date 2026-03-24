@@ -189,6 +189,7 @@ module.exports = function usePattern(props) {
                 return true
             }
         }
+        logMessage([`BOT MENTION DID NOT MATCH REGEX PATTERNS`])
     }
 
     // Miscellaneous RegEx patterns
