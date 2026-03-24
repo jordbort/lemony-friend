@@ -1,6 +1,6 @@
 const { wordBank } = require(`../data`)
 
-const { logMessage, pluralize, getContextEmote } = require(`../utils`)
+const { logMessage, pluralize, getContextEmote, logArr } = require(`../utils`)
 
 const getIndefiniteArticle = (nextWord) => /^[aeiou]/i.test(nextWord) ? `an ${nextWord}` : `a ${nextWord}`
 
@@ -27,7 +27,7 @@ const addVerbSuffix = (verb, suffix) => suffix === `s`
 module.exports = {
     manageVerbs(props) {
         const { bot, chatroom, args, channel, userNickname } = props
-        logMessage([`> manageVerbs(args: [${args}])`])
+        logMessage([`> manageVerbs(args: ${logArr(args)})`])
 
         const neutralEmote = getContextEmote(`neutral`, channel)
         const positiveEmote = getContextEmote(`positive`, channel)
@@ -60,7 +60,7 @@ module.exports = {
     },
     manageNouns(props) {
         const { bot, chatroom, args, channel, userNickname } = props
-        logMessage([`> manageNouns(args: [${args}])`])
+        logMessage([`> manageNouns(args: ${logArr(args)})`])
 
         const neutralEmote = getContextEmote(`neutral`, channel)
         const positiveEmote = getContextEmote(`positive`, channel)
@@ -93,7 +93,7 @@ module.exports = {
     },
     manageAdjectives(props) {
         const { bot, chatroom, args, channel, userNickname } = props
-        logMessage([`> manageAdjectives(args: [${args}])`])
+        logMessage([`> manageAdjectives(args: ${logArr(args)})`])
 
         const neutralEmote = getContextEmote(`neutral`, channel)
         const positiveEmote = getContextEmote(`positive`, channel)

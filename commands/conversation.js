@@ -164,7 +164,7 @@ module.exports = {
     },
     handleGreet(props) {
         const { bot, chatroom, args, channel, username, userNickname, target, targetNickname } = props
-        logMessage([`> handleGreet(chatroom: '${chatroom}', args:`, args, `userNickname: ${userNickname}, targetNickname: ${targetNickname})`])
+        logMessage([`> handleGreet(channel: '${channel}', args: ${logArr(args)}, userNickname: ${userNickname}, targetNickname: ${targetNickname})`])
 
         // If !greet all
         if (/^all$/i.test(args[0])) { handleGreetAll(bot, chatroom, username) }
@@ -178,7 +178,7 @@ module.exports = {
     sayGoodnight(props) {
         const { bot, chatroom, message, args, channel, userNickname, toUser, targetNickname } = props
         const recipient = targetNickname || userNickname
-        logMessage([`> handleGreet(chatroom: ${chatroom}, args:`, args, `)`])
+        logMessage([`> handleGreet(chatroom: ${chatroom}, args: ${logArr(args)})`])
 
         if (lemonyFresh[channel].timers[`say-goodnight`].listening) {
             resetCooldownTimer(channel, `say-goodnight`)
@@ -397,7 +397,7 @@ module.exports = {
     },
     chant(props) {
         const { bot, chatroom, args } = props
-        logMessage([`> chant(chatroom: '${chatroom}', args:`, args, `)`])
+        logMessage([`> chant(chatroom: '${chatroom}', args: ${logArr(args)})`])
 
         const emotes = [
             ...Object.keys(lemonyFresh).map(channel => lemonyFresh[channel].followEmotes),
