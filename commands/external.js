@@ -94,14 +94,14 @@ module.exports = {
     },
     async getDefinition(props) {
         const { bot, chatroom, args, channel, aprilFools } = props
-        await logMessage([`> getDefinition(chatroom: ${chatroom}, args:`, args, `)`])
-        const str = args.join(` `).replace(/[\\{`}%^|]/g, ``)
-        if (!str) {
+        const query = args.join(` `).replace(/[\\{`}%^|]/g, ``)
+        await logMessage([`> getDefinition(chatroom: ${chatroom}, query: '${query}')`])
+        if (!query) {
             bot.say(chatroom, `Please give me a word to define! :)`)
             return
         }
 
-        const endpoint = `https://api.api-ninjas.com/v1/dictionary?word=${str}`
+        const endpoint = `https://api.api-ninjas.com/v1/dictionary?word=${query}`
         const options = {
             headers: {
                 'X-Api-Key': API_KEY
