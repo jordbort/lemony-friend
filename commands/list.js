@@ -1,6 +1,6 @@
 const { lemonyFresh } = require(`../data`)
 
-const { getContextEmote, logMessage, logArr } = require(`../utils`)
+const { getContextEmote, logMessage, logArr, arrToList } = require(`../utils`)
 
 function getItem(bot, chatroom, channel, idx) {
     logMessage([`-> getItem(idx: ${idx})`])
@@ -230,13 +230,37 @@ function clearList(bot, chatroom, channel, resetName, isModOrVIP) {
     bot.say(chatroom, `${listName} has been ${resetName ? `reset` : `cleared`}! ${positiveEmote}`)
 }
 
+function searchList(bot, chatroom, channel, query) {
+    logMessage([`-> searchList(query: '${query}')`])
+    const negativeEmote = getContextEmote(`negative`, channel)
+    if (!query) {
+        bot.say(chatroom, `Please give me something to search for! ${negativeEmote}`)
+        return
+    }
+
+    const indexes = []
+    for (const [idx, item] of lemonyFresh[channel].list.entries()) {
+        if (new RegExp(`^${query}$`, `i`).test(item)) {
+            indexes.push(idx)
+        }
+    }
+
+    const listName = lemonyFresh[channel].list[0] || `the list`
+    const positiveEmote = getContextEmote(`positive`, channel)
+    const reply = indexes.length
+        ? `"${query}" is ${arrToList(indexes.map(i => `#${i}`))} in ${listName}! ${positiveEmote}`
+        : `I couldn't find "${query}" in ${listName}! ${negativeEmote}`
+
+    bot.say(chatroom, reply)
+}
+
 function getListMethods(bot, chatroom, channel, isModOrVIP) {
     logMessage([`-> getListMethods(isModOrVIP? ${isModOrVIP})`])
     const neutralEmote = getContextEmote(`neutral`, channel)
 
     isModOrVIP
-        ? bot.say(chatroom, `You can use !list to show the full list, !list <number> or "random" to get a specific or random item from the list, or !list <number>-<number> to get a range of items! VIPs/mods can also use !list add <new item>, edit <number>, delete <number>, swap/switch <number1> <number2>, move <number1> <number2>, name/rename <list name>, clear (to empty list), and reset (to empty list and reset name)! ${neutralEmote}`)
-        : bot.say(chatroom, `You can use !list to show the full list, !list <number> or "random" to get a specific or random item from the list, or !list <number>-<number> to get a range of items! ${neutralEmote}`)
+        ? bot.say(chatroom, `You can use !list to show the full list, !list <number> or "random" to get a specific or random item from the list, !list <number>-<number> to get a range of items, and !list search <query> to find something in the list! VIPs/mods can also use !list add <new item>, edit <number>, delete <number>, swap/switch <number1> <number2>, move <number1> <number2>, name/rename <list name>, clear (to empty list), and reset (to empty list and reset name)! ${neutralEmote}`)
+        : bot.say(chatroom, `You can use !list to show the full list, !list <number> or "random" to get a specific or random item from the list, !list <number>-<number> to get a range of items, and !list search <query> to find something in the list! ${neutralEmote}`)
 }
 
 module.exports = function useList(props) {
@@ -312,6 +336,12 @@ module.exports = function useList(props) {
     // Clear list contents and reset name
     if (/^reset$/i.test(args[0])) {
         clearList(bot, chatroom, channel, true, isModOrVIP)
+        return
+    }
+
+    // Find/search for in list
+    if (/^find$|^search$/i.test(args[0])) {
+        searchList(bot, chatroom, channel, args.slice(1).join(` `))
         return
     }
 

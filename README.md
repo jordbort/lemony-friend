@@ -71,6 +71,7 @@ Each channel lemony_friend is in has a generic, unnamed list, empty by default. 
 - `!list <number>` - Recall a specific item from the list by its number.
 - `!list <number1> to <number2>` or `!list <number1>-<number2>` - Recall a range of items from the list. Both numbers must exist within the list.
 - `!list random` - Recall an item from the list at random.
+- `!list search <query>` or `!list find <query>` - Look for an item in the list. The query is not case-sensitive, but it must exactly match the item's spelling and punctuation. Will find all occurrences of the query.
 - `!list add <...>` - Add an item to the list. Only available to mods, VIPs, and the channel owner.
 - `!list edit <number> <...>` - Update the contents of a specific number in the list. Only available to mods, VIPs, and the channel owner.
 - `!list delete <number>` - Delete a specific item from the list, shifting the items after it back by one. Only available to mods, VIPs, and the channel owner.
