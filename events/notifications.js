@@ -307,8 +307,8 @@ function handleChannelGiftSub(bot, channel, event) {
 }
 
 function handleChannelSubscriptionMessage(bot, channel, event) {
-    const { broadcaster_user_name, user_login, user_name, cumulative_months } = event
-    logMessage([`* SUB MESSAGE: ${user_name} resubscribed to ${broadcaster_user_name}`])
+    const { broadcaster_user_name, user_login, user_name, cumulative_months, message } = event
+    logMessage([`* SUB MESSAGE: ${user_name} resubscribed to ${broadcaster_user_name}${text in message ? `: "${message.text}"` : ``}`])
 
     if (user_login in users && channel in users[user_login].channels) {
         users[user_login].channels[channel].sub = true
