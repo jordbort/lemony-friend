@@ -558,6 +558,21 @@ module.exports = {
             ? nicknames[str]
             : null
     },
+    parseTargetByNickname(arr) {
+        const nicknames = Object.fromEntries(
+            Object.entries(users)
+                .filter(arr => arr[1].nickname)
+                .map(arr => {
+                    return [[arr[1].nickname.toLowerCase()], arr[0]]
+                })
+        )
+        for (const nickname in nicknames) {
+            if (new RegExp(`^${nickname}$`, `i`).test(arr.join(` `))) {
+                return users[nicknames[nickname]]
+            }
+        }
+        return null
+    },
     containsInaccessibleEmotes(str, channel) {
         const inaccessibleEmotes = Object.keys(lemonyFresh)
             .filter(stream => !users[BOT_USERNAME].channels[stream].sub)

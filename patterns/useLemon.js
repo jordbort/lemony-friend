@@ -2,7 +2,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { lemonyFresh, users } = require(`../data`)
 
-const { logMessage, pluralize, coinFlip } = require(`../utils`)
+const { logMessage, pluralize, coinFlip, parseTargetByNickname, logArr, getContextEmote } = require(`../utils`)
 
 function stealLemon(bot, chatroom, user, suffix, target) {
     const allLemons = [`s`, `z`].includes(suffix)
@@ -1269,15 +1269,25 @@ function nullVerb(bot, chatroom, user, suffix, target, verb) {
 }
 
 module.exports = function useLemon(props, splitMessage) {
-    const { bot, chatroom, user, userNickname, target, targetNickname } = props
+    const { bot, chatroom, args, channel, user, userNickname } = props
     const verb = splitMessage[1].toLowerCase()
     const suffix = splitMessage[2].toLowerCase()
-    logMessage([`> useLemon(chatroom: '${chatroom}', userNickname: '${userNickname}'${suffix
+    const target = props.target ? props.target : parseTargetByNickname(args)
+
+    logMessage([`> useLemon(channel: '${channel}', user: '${user.displayName}'${suffix
         ? `, suffix: '${suffix}'`
-        : ``}${targetNickname
-            ? `, targetNickname: '${targetNickname}'`
-            : ``}, verb: '${verb}')`
+        : ``}${target
+            ? `, target: '${target.displayName}'`
+            : args.length
+                ? `, args: ${logArr(args)}`
+                : ``}, verb: '${verb}')`
     ])
+
+    const negativeEmote = getContextEmote(`negative`, channel)
+    if (args.length && !target) {
+        bot.say(chatroom, `I don't know who ${args.join(` `)} is, ${userNickname}! ${negativeEmote}`)
+        return
+    }
 
     // Stop if user doesn't have lemons, or doesn't try to steal from someone who does, or doesn't try and create one
     const theftVerbs = [`steal`, `take`, `grab`, `thieve`, `nab`, `pickpocket`, `purloin`, `abscondwith`, `loot`, `pilfer`, `runawaywith`, `runoffwith`, `makeoffwith`]
@@ -1285,9 +1295,9 @@ module.exports = function useLemon(props, splitMessage) {
     const cleanVerbs = [`clean`, `cleanup`, `cleanse`, `bathe`, `disinfect`, `rinse`, `soak`, `wash`, `washup`, `douse`, `drench`, `hose`, `shower`, `wet`]
     const touchVerbs = [`touch`, `feel`, `fiddle`, `fiddlewith`, `play`, `playwith`, `fidget`, `fidgetwith`, `tinker`, `tinkerwith`, `mess`, `messwith`, `toy`, `toywith`, `trifle`, `triflewith`, `grope`, `brush`, `finger`, `paw`, `thumb`, `poke`, `pokeat`, `pick`, `pickat`]
     if (user.lemons === 0
-        && (!theftVerbs.includes(verb) || (theftVerbs.includes(verb) && !targetNickname))
-        && (!cleanVerbs.includes(verb) || (cleanVerbs.includes(verb) && !targetNickname))
-        && (!touchVerbs.includes(verb) || (touchVerbs.includes(verb) && !targetNickname))
+        && (!theftVerbs.includes(verb) || (theftVerbs.includes(verb) && !target))
+        && (!cleanVerbs.includes(verb) || (cleanVerbs.includes(verb) && !target))
+        && (!touchVerbs.includes(verb) || (touchVerbs.includes(verb) && !target))
         && !creationVerbs.includes(verb)) {
         bot.say(chatroom, `${userNickname} has no lemons!`)
         return

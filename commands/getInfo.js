@@ -3,7 +3,7 @@ const numbers = require(`../numbers`)
 const { lemonyFresh, users } = require(`../data`)
 const { settings, chatColors } = require(`../config`)
 
-const { getContextEmote, pluralize, getToUser, logMessage, arrToList, logArr } = require(`../utils`)
+const { getContextEmote, pluralize, getToUser, logMessage, arrToList, logArr, parseTargetByNickname } = require(`../utils`)
 
 module.exports = {
     sayOnlineTime(props) {
@@ -143,8 +143,19 @@ module.exports = {
         )
     },
     getLemons(props) {
-        const { bot, chatroom, channel, username, user, toUser, target } = props
-        logMessage([`> getLemons(chatroom: '${chatroom}', username: '${username}', toUser: '${toUser}')`])
+        const { bot, chatroom, args, channel, user } = props
+        const target = props.target ? props.target : parseTargetByNickname(args)
+        logMessage([`> getLemons(chatroom: '${chatroom}', user: '${user.displayName}'${target
+            ? `, target: '${target.displayName}'`
+            : args.length
+                ? `, args: ${logArr(args)}`
+                : ``})`])
+
+        const negativeEmote = getContextEmote(`negative`, channel)
+        if (args.length && !target) {
+            bot.say(chatroom, `I don't know who ${args.join(` `)} is! ${negativeEmote}`)
+            return
+        }
 
         const lemonEmote = getContextEmote(`lemon`, channel)
         target
