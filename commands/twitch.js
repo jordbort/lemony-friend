@@ -32,7 +32,7 @@ async function apiGetTwitchAppAccessToken() {
 }
 
 async function apiGetOAUTHToken(username, authCode) {
-    await logMessage([`> apiGetOAUTHToken(username: ${username}, authCode: ${authCode})`])
+    await logMessage([`> apiGetOAUTHToken(username: '${username}', authCode: '${authCode}')`])
     const requestBody = `client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${authCode}&grant_type=authorization_code&redirect_uri=${REDIRECT_URI}`
     const endpoint = `https://id.twitch.tv/oauth2/token`
     const options = {
@@ -69,7 +69,7 @@ async function apiGetOAUTHToken(username, authCode) {
 }
 
 async function apiGetTwitchUser(username, attempt = 1) {
-    await logMessage([`> apiGetTwitchUser(username: ${username}, attempt: ${attempt})`])
+    await logMessage([`> apiGetTwitchUser(username: '${username}', attempt: ${attempt})`])
     const endpoint = `https://api.twitch.tv/helix/users?login=${username}`
     const options = {
         headers: {
@@ -238,7 +238,7 @@ async function apiGetGame(query, attempt = 1) {
 }
 
 async function apiRefreshToken(username, refreshToken) {
-    // await logMessage([`> apiRefreshToken(username: ${username})`])
+    // await logMessage([`> apiRefreshToken(username: '${username}')`])
 
     const endpoint = `https://id.twitch.tv/oauth2/token`
     const options = {
@@ -507,7 +507,7 @@ async function updateEventSubs(channel) {
 }
 
 async function apiShoutOut(fromId, toId, moderatorName, moderatorId, accessToken, refreshToken, attempt = 1) {
-    await logMessage([`> apiShoutOut(fromId: ${fromId}, toId: ${toId}, moderatorName: ${moderatorName}, moderatorId: ${moderatorId}, attempt: ${attempt})`])
+    await logMessage([`> apiShoutOut(fromId: ${fromId}, toId: ${toId}, moderatorName: '${moderatorName}', moderatorId: ${moderatorId}, attempt: ${attempt})`])
     const endpoint = `https://api.twitch.tv/helix/chat/shoutouts?from_broadcaster_id=${fromId}&to_broadcaster_id=${toId}&moderator_id=${moderatorId}`
     const options = {
         method: `POST`,
@@ -644,7 +644,7 @@ async function apiStartPoll(channel, broadcasterId, title, arrChoices, duration,
 }
 
 async function apiEndPoll(channel, broadcasterId, pollId, status, accessToken, refreshToken, attempt = 1) {
-    await logMessage([`channel: ${channel}, broadcasterId: ${broadcasterId}, pollId: ${pollId}, status: ${status}, attempt: ${attempt}`])
+    await logMessage([`channel: '${channel}', broadcasterId: ${broadcasterId}, pollId: ${pollId}, status: '${status}', attempt: ${attempt}`])
     const endpoint = `https://api.twitch.tv/helix/polls?broadcaster_id=${broadcasterId}&id=${pollId}&status=${status}`
     const options = {
         method: `PATCH`,
@@ -683,7 +683,7 @@ async function apiEndPoll(channel, broadcasterId, pollId, status, accessToken, r
 }
 
 async function apiBanUsers(broadcasterId, moderatorName, moderatorId, arrUsers, reason, accessToken, refreshToken, attempt = 1) {
-    await logMessage([`> apiBanUsers(broadcasterId: ${broadcasterId}, moderatorName: ${moderatorName}, moderatorId: ${moderatorId}, arrUsers: ${arrUsers.length}, attempt: ${attempt})`])
+    await logMessage([`> apiBanUsers(broadcasterId: ${broadcasterId}, moderatorName: '${moderatorName}', moderatorId: ${moderatorId}, arrUsers: ${logArr(arrUsers)}, attempt: ${attempt})`])
 
     // Look up/ban each user one-by-one
     const endpoint = `https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${broadcasterId}&moderator_id=${moderatorId}`
@@ -893,7 +893,7 @@ module.exports = {
     async startPoll(props) {
         const { bot, chatroom, args, channel, username, isMod } = props
         const str = args.join(` `)
-        await logMessage([`> startPoll(channel: '${channel}', username: ${username}, str: '${str}', isMod: ${isMod})`])
+        await logMessage([`> startPoll(channel: '${channel}', username: '${username}', str: '${str}', isMod: ${isMod})`])
 
         // Mods only
         if (!isMod) {
@@ -994,7 +994,7 @@ module.exports = {
     },
     async handleShoutout(props) {
         const { bot, chatroom, channel, username, toUser, isMod, isModOrVIP } = props
-        await logMessage([`> handleShoutout(channel: '${channel}', username: ${username}, toUser: ${toUser}, isMod: ${isMod}, isModOrVIP: ${isModOrVIP})`])
+        await logMessage([`> handleShoutout(channel: '${channel}', username: '${username}', toUser: '${toUser}', isMod: ${isMod}, isModOrVIP: ${isModOrVIP})`])
 
         if (!isModOrVIP) {
             await logMessage([`-> ${username} isn't a mod or VIP, ignoring`])
