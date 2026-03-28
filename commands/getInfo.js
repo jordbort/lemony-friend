@@ -67,10 +67,10 @@ module.exports = {
 
         otherChannel in lemonyFresh
             ? otherChannel in userChannels
-                ? bot.say(chatroom, `${userObjNickname} last said: "${userChannels[otherChannel].lastMessage}" in ${otherChannelNickname}'s chat ${arrToList(duration)}${!duration.length ? `just now` : ` ago`}!`)
+                ? bot.say(chatroom, `${userObjNickname} last said: " ${userChannels[otherChannel].lastMessage} " in ${otherChannelNickname}'s chat ${arrToList(duration)}${!duration.length ? `just now` : ` ago`}!`)
                 : bot.say(chatroom, `${userObjNickname} hasn't spoken in ${otherChannelNickname}'s chat!`)
             : channel in userChannels
-                ? bot.say(chatroom, `${userObjNickname} last said: "${userChannels[channel].lastMessage}" in ${channelNickname}'s chat ${arrToList(duration)}${!duration.length ? `just now` : ` ago`}!`)
+                ? bot.say(chatroom, `${userObjNickname} last said: " ${userChannels[channel].lastMessage} " in ${channelNickname}'s chat ${arrToList(duration)}${!duration.length ? `just now` : ` ago`}!`)
                 : bot.say(chatroom, `${userObjNickname} hasn't spoken in ${channelNickname}'s chat!`)
     },
     getMessageCount(props) {

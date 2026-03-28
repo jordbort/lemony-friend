@@ -640,7 +640,7 @@ function rememberPastMessage(props) {
     const msg = message.split(` `)
     const neutralEmote = getContextEmote(`neutral`, channel)
     msg.length < 10
-        ? setTimeout(() => bot.say(chatroom, `I'm still thinking about when ${userNickname} said "${msg.join(` `)}" ${neutralEmote}`), 600000)
+        ? setTimeout(() => bot.say(chatroom, `I'm still thinking about when ${userNickname} said " ${msg.join(` `)} " ${neutralEmote}`), 600000)
         : setTimeout(() => bot.say(chatroom, `I'm still thinking about when ${userNickname} said "... ${msg.splice(4, 6).join(` `)} ..." ${neutralEmote}`), 600000)
 }
 
