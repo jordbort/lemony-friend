@@ -39,7 +39,7 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!ud` - This command can be used followed by a word or phrase to look up its definition using the [Unofficial Urban Dictionary API]([https://api-ninjas.com](https://unofficialurbandictionaryapi.com)/).
 - `!lemon` (or `!lemons`) - This command can be used to check how many lemons the sender (or another user) has.
 - `!lemonboard` (or `!lemonrank`) - This command can be used to check who the top three users are that have the most lemons.
-- `![use]lemon[append?]` - This command is a wildcard that can be used. [Use] can be any verb (or verb phrase), and [append?] could be an optional suffix, if "lemon" is meant to be a descriptor, or possibly to pluralize "lemon" to all "lemons".
+- `![use]lemon[append?]` - This command is a wildcard that can be used. [Use] can be any verb (or verb phrase), and [append?] could be an optional suffix, if "lemon" is meant to be a descriptor, or possibly to pluralize "lemon" to all "lemons". You can also optionally @ a user by their username or known nickname.
 - `!lemonify` - This command can be used to transform another user's message into lemons.
 - `!countdown` (or `!timer`) - This command can be used to start a countdown timer, or check the remaining duration of the countdown timer already running. You can pass in a number (in seconds) to start a new countdown timer. For example, using `!countdown 300` would start a countdown timer that lasts for five minutes.
 - `!insult` - Use this command to generate a random, Mad Libs-style "insult" directed at yourself or another user. You can add your own verbs, nouns, and adjectives to its word bank by using the respective commands.
