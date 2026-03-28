@@ -11,9 +11,11 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Added new fun number outcome`,
-            `Cleaned up and reorganized code`,
-            `Bug fixes`
+            `Added search feature to lists`,
+            `Made it possible to use lemons with nicknames`,
+            `Changed !lastmsg quote spacing`,
+            `Updated RegEx`,
+            `Cleanup and bug fixes`
         ]
 
         const timeOptions = {
