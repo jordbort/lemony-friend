@@ -770,7 +770,7 @@ async function apiGetStreamTwitchEmotes(broadcasterId, attempt = 1) {
                     const retry = await apiGetTwitchAppAccessToken()
                     if (retry) {
                         attempt++
-                        return apiGetStreamTwitchEmotes(username, attempt)
+                        return apiGetStreamTwitchEmotes(broadcasterId, attempt)
                     }
                 } else {
                     await logMessage([`-> Failed to get channel emotes after ${pluralize(attempt, `attempt`, `attempts`)}`])
