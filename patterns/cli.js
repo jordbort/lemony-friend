@@ -470,8 +470,6 @@ function updateSettingsDev(props, args) {
         [/^funNumberCount$|^fnc$/i]: { name: `funNumberCount`, func: updateNum },
         [/^funNumberTotal$|^fnt$/i]: { name: `funNumberTotal`, func: updateNum },
         [/^streakMinutesThreshold$|^smt$/i]: { name: `streakMinutesThreshold`, func: updateNum },
-        [/^streakThreshold$|^st$/i]: { name: `streakThreshold`, func: updateNum },
-        [/^streamerEmoteStreakThreshold$|^sest$/i]: { name: `streamerEmoteStreakThreshold`, func: updateNum },
         // [/^hangmanChances?$|^hc$/i]: { name: `hangmanChances`, func: updateNum },
         // [/^hangmanSignupSeconds$|^hss$/i]: { name: `hangmanSignupSeconds`, func: updateNum },
         // [/^hangmanLemonThreshold$|^hlt$/i]: { name: `hangmanLemonThreshold`, func: updateNum },

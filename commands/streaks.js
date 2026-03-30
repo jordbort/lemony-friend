@@ -46,7 +46,7 @@ function checkStreamerEmoteStreak(bot, chatroom, channel, currentTime, emoteOwne
                 && users[username].channels[channel].lastMessage.includes(emote)
                 && currentTime - users[username].channels[channel].sentAt <= settings.streakMinutesThreshold * 60000) {
                 emoteStreakUsers.push(username)
-                if (emoteStreakUsers.length) { logMessage([`-> Found`, emoteStreakUsers.length, `out of`, settings.streamerEmoteStreakThreshold, `${emoteOwner} emotes: ${emoteStreakUsers.join(`, `)}`]) }
+                if (emoteStreakUsers.length) { logMessage([`-> Found`, emoteStreakUsers.length, `out of`, lemonyFresh[channel].streamerEmoteStreakThreshold, `${emoteOwner} emotes: ${emoteStreakUsers.join(`, `)}`]) }
                 break
             }
         }
