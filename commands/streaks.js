@@ -12,8 +12,8 @@ function checkStreak(bot, chatroom, message, currentTime, channel) {
             && channel in users[username].channels
             && users[username].channels[channel].lastMessage === message
             && currentTime - users[username].channels[channel].sentAt <= settings.streakMinutesThreshold * 60000) {
-            streakUsers.push(users[username].displayName)
-            if (streakUsers.length > 1) { logMessage([`> checkStreak("${message}")`, streakUsers.length, `/ ${settings.streakThreshold} - ${streakUsers.join(`, `)}`]) }
+            streakUsers.push(username)
+            if (streakUsers.length > 1) { logMessage([`> checkStreak("${message}")`, streakUsers.length, `/ ${lemonyFresh[channel].streakThreshold} - ${streakUsers.join(`, `)}`]) }
         }
         if (streakUsers.length >= lemonyFresh[channel].streakThreshold) {
             if (containsInaccessibleEmotes(message, channel)) {
