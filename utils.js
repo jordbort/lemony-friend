@@ -606,7 +606,7 @@ module.exports = {
         }
         return false
     },
-    appendLogs(chatroom, tags, msg, self, time, username, color) {
+    appendLogs(chatroom, tags, msg, self, timeStamp, username, color) {
         const channel = chatroom.substring(1)
         const sharedChat = `source-room-id` in tags
         const isOriginChannel = sharedChat && tags[`room-id`] === tags[`source-room-id`]
@@ -616,10 +616,10 @@ module.exports = {
 
         sharedChat
             ? isOriginChannel
-                ? logMessage([msg], time, channel, username, color, self)
+                ? logMessage([msg], timeStamp, channel, username, color, self)
                 : sourceChannel
                     ? logMessage([`${username}'s message also posted in ${channel}'s channel`])
-                    : logMessage([msg], time, tags[`source-room-id`], username, color, self)
-            : logMessage([msg], time, channel, username, color, self)
+                    : logMessage([msg], timeStamp, tags[`source-room-id`], username, color, self)
+            : logMessage([msg], timeStamp, channel, username, color, self)
     }
 }

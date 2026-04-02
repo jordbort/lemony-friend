@@ -126,7 +126,8 @@ module.exports = {
 
         const msg = message.replace(/ +/g, ` `)
         const channel = chatroom.substring(1)
-        const time = new Date().toLocaleTimeString(settings.timeLocale, { timeZone: settings.timeZone })
+        const date = new Date().toLocaleString(settings.timeLocale, { timeZone: settings.timeZone })
+        const timeStamp = new Date(date).toLocaleTimeString(settings.timeLocale, { timeZone: settings.timeZone })
         const color = tags.color || ``
         const username = tags.username
         if (!username) {
@@ -141,7 +142,7 @@ module.exports = {
         addSourceToKnownChannels(tags)
 
         // Log incoming message and capture message tags
-        appendLogs(chatroom, tags, msg, self, time, username, color)
+        appendLogs(chatroom, tags, msg, self, timeStamp, username, color)
 
         // Stop listening here if shared chat, and not the origin channel
         if (`source-room-id` in tags && tags[`source-room-id`] !== tags[`room-id`]) { return }
@@ -189,7 +190,7 @@ module.exports = {
             toUser: toUser,
             target: users?.[toUser] || null,
             targetNickname: users?.[toUser]?.nickname || users?.[toUser]?.displayName || null,
-            aprilFools: new Date(currentTime).getMonth() === 3 && new Date(currentTime).getDate() === 1
+            aprilFools: new Date(date).getMonth() === 3 && new Date(date).getDate() === 1
         }
 
         // User attribute change detection
