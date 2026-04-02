@@ -20,8 +20,8 @@ const { getDocs, getStats, accessInstructions } = require(`./help`)
 const { manageHangman, joinHangman } = require(`../patterns/hangman`)
 const { insultUser, manageVerbs, manageNouns, manageAdjectives } = require(`./insult`)
 const { getLastMessage, getMessageCount, sayOnlineTime, sayFriends, getColor, getLemons } = require(`./getInfo`)
-const { sayGoodnight, handleGreet, chant, handleRaid, setAway, yell, tiny, makeCursive } = require(`./conversation`)
 const { getDadJoke, getPokemon, getDefinition, getPokemonAbility, getUrbanDictionaryDefinition } = require(`./external`)
+const { sayGoodnight, handleGreet, chant, handleRaid, setAway, yell, tiny, huge, makeCursive } = require(`./conversation`)
 const { handleShoutout, getBotToken, makeAnnouncement, authorizeToken, banUsers, startPoll, endPoll, updateStreamGame, updateStreamTitle, checkToken } = require(`./twitch`)
 const { createConduit, getConduit, updateConduitShardCount, deleteConduit, getConduitShards, logJoinedChatrooms, getEventSubs, connectWebSocket, disconnectWebSocket, refreshEventSubs, shutdown, writeMemoryFile, kms, logOldMemoryTables, logChannelInfo, logUserInfo, logModInfo, logChannelViewers, logTags, logSettings, logBotChannels, yellAcrossChannels, streamFriendlyOn, streamFriendlyOff, testFunNumber, checkPoints } = require(`./dev`)
 
@@ -66,7 +66,10 @@ const commands = {
 
     '!lemonify': handleLemonify,
 
+    '!small': tiny,
     '!tiny': tiny,
+    '!big': huge,
+    '!huge': huge,
     '!cursive': makeCursive,
 
     '!lemoncommand': handleLemCmd,

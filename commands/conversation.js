@@ -479,6 +479,15 @@ module.exports = {
             }
         }
     },
+    huge(props) {
+        const { bot, chatroom, args } = props
+        const message = args.map(word => word.toUpperCase()).join(` `)
+        if (!message) {
+            bot.say(chatroom, `HOW AM I SUPPOSED TO MAKE TEXT BIGGER THAN THIS`)
+            return
+        }
+        bot.say(chatroom, message)
+    },
     tiny(props) {
         const { bot, chatroom, args } = props
         const message = superscript(args.join(` `))
