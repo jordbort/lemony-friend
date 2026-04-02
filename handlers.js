@@ -28,13 +28,19 @@ function acknowledgeGigantifiedEmote(bot, chatroom, msg) {
     if (users[BOT_USERNAME]?.channels[emoteOwner]?.sub) { bot.say(chatroom, `BEEG ${emoteUsed}`) }
 }
 
-async function addToKnownChannels(broadcasterId) {
-    const twitchChannel = await apiGetTwitchChannel(broadcasterId)
-    if (!twitchChannel) {
-        await logMessage([`-> Failed to get Twitch channel for knownChannels`])
-        return
+async function addSourceToKnownChannels(tags) {
+    const sourceId = tags[`source-room-id`]
+
+    if (sourceId
+        && !(sourceId in settings.knownChannels)
+        && !(Object.keys(lemonyFresh).map(chan => chan.id).includes(Number(sourceId)))) {
+        const twitchChannel = await apiGetTwitchChannel(sourceId)
+        if (!twitchChannel) {
+            await logMessage([`-> Failed to get Twitch channel for knownChannels`])
+            return
+        }
+        settings.knownChannels[sourceId] = twitchChannel.broadcaster_login
     }
-    settings.knownChannels[broadcasterId] = twitchChannel.broadcaster_login
 }
 
 async function getOrCreateConduit() {
@@ -128,20 +134,17 @@ module.exports = {
             return
         }
 
-        // Log incoming message and capture message tags
-        appendLogs(chatroom, tags, msg, self, time, username, color)
+        // Compile any available metadata from Twitch
         tagsListener(tags)
 
         // If shared chat, check for unknown channel ID's name
-        const originChat = !(`source-room-id` in tags) || (`source-room-id` in tags && tags[`room-id`] === tags[`source-room-id`])
-        if (!originChat
-            && !(tags[`source-room-id`] in settings.knownChannels)
-            && !(Object.keys(lemonyFresh).map(chan => chan.id).includes(Number(tags[`source-room-id`])))) {
-            addToKnownChannels(tags[`source-room-id`])
-        }
+        addSourceToKnownChannels(tags)
 
-        // If shared chat, stop listening here if not the origin channel
-        if (!originChat) { return }
+        // Log incoming message and capture message tags
+        appendLogs(chatroom, tags, msg, self, time, username, color)
+
+        // Stop listening here if shared chat, and not the origin channel
+        if (`source-room-id` in tags && tags[`source-room-id`] !== tags[`room-id`]) { return }
 
         // Initialize new user
         if (!(username in users)) { initUser(this, chatroom, tags, self) }
@@ -158,6 +161,10 @@ module.exports = {
         userChannel.lastMessage = msg
         userChannel.sentAt = currentTime
 
+        // Bot stops listening
+        if (self) { return }
+
+        // Parse args
         const args = msg.split(` `)
         const command = args.shift().toLowerCase()
         const toUser = getToUser(args[0])
@@ -184,9 +191,6 @@ module.exports = {
             targetNickname: users?.[toUser]?.nickname || users?.[toUser]?.displayName || null,
             aprilFools: new Date(currentTime).getMonth() === 3 && new Date(currentTime).getDate() === 1
         }
-
-        // Bot stops listening
-        if (self) { return }
 
         // User attribute change detection
         const subChange = userChannel.sub !== tags.subscriber
