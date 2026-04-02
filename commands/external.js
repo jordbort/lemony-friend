@@ -119,11 +119,10 @@ module.exports = {
             } else if (!data.valid || !data.definition) {
                 bot.say(chatroom, `I don't think "${data.word}" is a word! ${negativeEmote}`)
             } else if (aprilFools) {
-                bot.say(chatroom, `Definition of "${data.word}": ${data.definition}`)
+                bot.say(chatroom, `Definition of "${data.word}": ${data.definition.replace(/\n/g, ` `)}`)
             } else {
                 let definition = `Definition of "${data.word}": `
-                const regex = /\n/g
-                const splitDefinition = data.definition.replace(regex, ``).split(`. `).filter(el => el !== `\n`)
+                const splitDefinition = data.definition.replace(/\n/g, ` `).split(`. `).filter(el => el !== `\n`)
 
                 if (!splitDefinition.includes(`1`)) {
                     definition += splitDefinition[0]
