@@ -16,7 +16,7 @@ const { hangmanListener } = require(`./patterns/hangman`)
 const { initWebSocket, closeWebSocket } = require(`./events/webSockets`)
 const { apiGetConduits, apiCreateConduit } = require(`./events/conduits`)
 const { getGlobalBttvEmotes, getStreamBttvEmotes } = require(`./commands/external`)
-const { handleNewChatter, welcomeBack, reportAway, funTimerGuess } = require(`./commands/conversation`)
+const { handleNewChatter, welcomeBack, reportAway, funTimerGuess, pyramidListener } = require(`./commands/conversation`)
 const { apiGetTwitchChannel, getGlobalTwitchEmotes, getStreamTwitchEmotes } = require(`./commands/twitch`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
 const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, logMessage, appendLogs } = require(`./utils`)
@@ -161,6 +161,9 @@ module.exports = {
         userChannel.msgCount++
         userChannel.lastMessage = msg
         userChannel.sentAt = currentTime
+
+        // Listen for emote/text pyramid
+        pyramidListener(this, chatroom, channel, msg, self, username)
 
         // Bot stops listening
         if (self) { return }

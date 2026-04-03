@@ -510,5 +510,61 @@ module.exports = {
         const { bot, chatroom, channel } = props
         const emote = getContextEmote(context, channel)
         bot.say(chatroom, emote)
+    },
+    pyramidListener(bot, chatroom, channel, message, self, username) {
+        const userNickname = users[username].nickname || users[username].displayName
+        const userChannel = users[username].channels[channel]
+        const arr = message.split(` `)
+
+        // Interrupt other pyramids
+        for (const user in users) {
+            if (channel in users[user].channels && user !== username && users[user].channels[channel].pyramidWord) {
+                users[user].channels[channel].pyramidWord = ``
+                users[user].channels[channel].pyramidCount = 1
+                users[user].channels[channel].pyramidMaxCount = 0
+                users[user].channels[channel].pyramidAscending = true
+            }
+        }
+
+        if (arr.length === 1 && !userChannel.pyramidWord) {
+            // First step in pyramid
+            userChannel.pyramidWord = arr[0]
+            userChannel.pyramidCount++
+        } else if (userChannel.pyramidCount === 1 && arr.length === 1 && arr.filter(el => el === userChannel.pyramidWord).length === userChannel.pyramidCount) {
+            // Successfully completed pyramid
+            if (self) {
+                const delay = userChannel.mod || userChannel.vip || username === channel ? 1000 : 2000
+                setTimeout(() => bot.say(chatroom, `;)`), delay)
+            } else {
+                const positiveEmote = getContextEmote(`positive`, channel)
+                bot.say(chatroom, `Congrats on your ${userChannel.pyramidMaxCount}-length ${userChannel.pyramidWord} pyramid, ${userNickname}! ${positiveEmote}`)
+            }
+            userChannel.pyramidWord = ``
+            userChannel.pyramidCount = 1
+            userChannel.pyramidMaxCount = 0
+            userChannel.pyramidAscending = true
+        } else if (arr.length === userChannel.pyramidCount && arr.filter(el => el === userChannel.pyramidWord).length === userChannel.pyramidCount) {
+            // Successful next step in pyramid, expect next count
+            userChannel.pyramidAscending
+                ? userChannel.pyramidCount++
+                : userChannel.pyramidCount--
+        } else if (arr.length === userChannel.pyramidCount - 2 && arr.filter(el => el === userChannel.pyramidWord).length === 1) {
+            // Reset - Pyramid too short
+            userChannel.pyramidWord = ``
+            userChannel.pyramidCount = 1
+            userChannel.pyramidMaxCount = 0
+            userChannel.pyramidAscending = true
+        } else if (userChannel.pyramidAscending && arr.length === userChannel.pyramidCount - 2 && arr.filter(el => el === userChannel.pyramidWord).length === userChannel.pyramidCount - 2) {
+            // Pyramid is now going down
+            userChannel.pyramidAscending = false
+            userChannel.pyramidMaxCount = userChannel.pyramidCount - 1
+            userChannel.pyramidCount -= 3
+        } else if (userChannel.pyramidWord) {
+            // Reset - Pyramid aborted
+            userChannel.pyramidWord = ``
+            userChannel.pyramidCount = 1
+            userChannel.pyramidMaxCount = 0
+            userChannel.pyramidAscending = true
+        }
     }
 }

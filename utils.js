@@ -403,7 +403,11 @@ module.exports = {
             vip: !!tags.vip || !!tags.badges?.vip,
             away: false,
             awayMessage: ``,
-            msgCount: 0
+            msgCount: 0,
+            pyramidWord: ``,
+            pyramidCount: 1,
+            pyramidMaxCount: 0,
+            pyramidAscending: true
         }
     },
     initChannel(channel) {
