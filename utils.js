@@ -102,6 +102,131 @@ async function logMessage(messages, time, channel, username, color, self) {
     }
 }
 
+const superscriptTable = {
+    'a': `ᵃ`,
+    'b': `ᵇ`,
+    'c': `ᶜ`,
+    'd': `ᵈ`,
+    'e': `ᵉ`,
+    'f': `ᶠ`,
+    'g': `ᵍ`,
+    'h': `ʰ`,
+    'i': `ᶦ`,
+    'j': `ʲ`,
+    'k': `ᵏ`,
+    'l': `ˡ`,
+    'm': `ᵐ`,
+    'n': `ⁿ`,
+    'o': `ᵒ`,
+    'p': `ᵖ`,
+    'q': `ᑫ`,
+    'r': `ʳ`,
+    's': `ˢ`,
+    't': `ᵗ`,
+    'u': `ᵘ`,
+    'v': `ᵛ`,
+    'w': `ʷ`,
+    'x': `ˣ`,
+    'y': `ʸ`,
+    'z': `ᶻ`,
+    'A': `ᴬ`,
+    'B': `ᴮ`,
+    'C': `ᶜ`,
+    'D': `ᴰ`,
+    'E': `ᴱ`,
+    'F': `ᶠ`,
+    'G': `ᴳ`,
+    'H': `ᴴ`,
+    'I': `ᴵ`,
+    'J': `ᴶ`,
+    'K': `ᴷ`,
+    'L': `ᴸ`,
+    'M': `ᴹ`,
+    'N': `ᴺ`,
+    'O': `ᴼ`,
+    'P': `ᴾ`,
+    'Q': `Q`,
+    'R': `ᴿ`,
+    'S': `ˢ`,
+    'T': `ᵀ`,
+    'U': `ᵁ`,
+    'V': `ⱽ`,
+    'W': `ᵂ`,
+    'X': `ˣ`,
+    'Y': `ʸ`,
+    'Z': `ᶻ`,
+    '0': `⁰`,
+    '1': `¹`,
+    '2': `²`,
+    '3': `³`,
+    '4': `⁴`,
+    '5': `⁵`,
+    '6': `⁶`,
+    '7': `⁷`,
+    '8': `⁸`,
+    '9': `⁹`,
+    '(': `⁽`,
+    ')': `⁾`,
+    '-': `⁻`,
+    '=': `⁼`,
+    '+': `⁺`
+}
+
+const cursiveTable = {
+    a: `𝒶`,
+    b: `𝒷`,
+    c: `𝒸`,
+    d: `𝒹`,
+    e: `𝑒`,
+    f: `𝒻`,
+    g: `𝑔`,
+    h: `𝒽`,
+    i: `𝒾`,
+    j: `𝒿`,
+    k: `𝓀`,
+    l: `𝓁`,
+    m: `𝓂`,
+    n: `𝓃`,
+    o: `𝑜`,
+    p: `𝓅`,
+    q: `𝓆`,
+    r: `𝓇`,
+    s: `𝓈`,
+    t: `𝓉`,
+    u: `𝓊`,
+    v: `𝓋`,
+    w: `𝓌`,
+    x: `𝓍`,
+    y: `𝓎`,
+    z: `𝓏`,
+    A: `𝒜`,
+    B: `𝐵`,
+    C: `𝒞`,
+    D: `𝒟`,
+    E: `𝐸`,
+    F: `𝐹`,
+    G: `𝒢`,
+    H: `𝐻`,
+    I: `𝐼`,
+    J: `𝒥`,
+    K: `𝒦`,
+    L: `𝐿`,
+    M: `𝑀`,
+    N: `𝒩`,
+    O: `𝒪`,
+    P: `𝒫`,
+    Q: `𝒬`,
+    R: `𝑅`,
+    S: `𝒮`,
+    T: `𝒯`,
+    U: `𝒰`,
+    V: `𝒱`,
+    W: `𝒲`,
+    X: `𝒳`,
+    Y: `𝒴`,
+    Z: `𝒵`
+}
+
 module.exports = {
     twitchUsernamePattern,
     printMemory,
@@ -160,145 +285,28 @@ module.exports = {
         const emote = emotes[Math.floor(Math.random() * emotes.length)] || ``
         return emote
     },
-    superscript(str) {
-        const table = {
-            'a': `ᵃ`,
-            'b': `ᵇ`,
-            'c': `ᶜ`,
-            'd': `ᵈ`,
-            'e': `ᵉ`,
-            'f': `ᶠ`,
-            'g': `ᵍ`,
-            'h': `ʰ`,
-            'i': `ᶦ`,
-            'j': `ʲ`,
-            'k': `ᵏ`,
-            'l': `ˡ`,
-            'm': `ᵐ`,
-            'n': `ⁿ`,
-            'o': `ᵒ`,
-            'p': `ᵖ`,
-            'q': `ᑫ`,
-            'r': `ʳ`,
-            's': `ˢ`,
-            't': `ᵗ`,
-            'u': `ᵘ`,
-            'v': `ᵛ`,
-            'w': `ʷ`,
-            'x': `ˣ`,
-            'y': `ʸ`,
-            'z': `ᶻ`,
-            'A': `ᴬ`,
-            'B': `ᴮ`,
-            'C': `ᶜ`,
-            'D': `ᴰ`,
-            'E': `ᴱ`,
-            'F': `ᶠ`,
-            'G': `ᴳ`,
-            'H': `ᴴ`,
-            'I': `ᴵ`,
-            'J': `ᴶ`,
-            'K': `ᴷ`,
-            'L': `ᴸ`,
-            'M': `ᴹ`,
-            'N': `ᴺ`,
-            'O': `ᴼ`,
-            'P': `ᴾ`,
-            'Q': `Q`,
-            'R': `ᴿ`,
-            'S': `ˢ`,
-            'T': `ᵀ`,
-            'U': `ᵁ`,
-            'V': `ⱽ`,
-            'W': `ᵂ`,
-            'X': `ˣ`,
-            'Y': `ʸ`,
-            'Z': `ᶻ`,
-            '0': `⁰`,
-            '1': `¹`,
-            '2': `²`,
-            '3': `³`,
-            '4': `⁴`,
-            '5': `⁵`,
-            '6': `⁶`,
-            '7': `⁷`,
-            '8': `⁸`,
-            '9': `⁹`,
-            '(': `⁽`,
-            ')': `⁾`,
-            '-': `⁻`,
-            '=': `⁼`,
-            '+': `⁺`
-        }
+    transformText(type, str) {
         let output = ``
-        for (const char of str) {
-            char in table
-                ? output += table[char]
-                : output += char
+
+        switch (type) {
+            case `superscript`:
+                for (const char of str) {
+                    char in superscriptTable
+                        ? output += superscriptTable[char]
+                        : output += char
+                }
+                break
+            case `cursive`:
+                for (const char of str) {
+                    char in cursiveTable
+                        ? output += cursiveTable[char]
+                        : output += char
+                }
+                break
+            default:
+                logMessage([`> Type '${type}' not recognized`])
         }
-        return output
-    },
-    cursive(str) {
-        const table = {
-            a: `𝒶`,
-            b: `𝒷`,
-            c: `𝒸`,
-            d: `𝒹`,
-            e: `𝑒`,
-            f: `𝒻`,
-            g: `𝑔`,
-            h: `𝒽`,
-            i: `𝒾`,
-            j: `𝒿`,
-            k: `𝓀`,
-            l: `𝓁`,
-            m: `𝓂`,
-            n: `𝓃`,
-            o: `𝑜`,
-            p: `𝓅`,
-            q: `𝓆`,
-            r: `𝓇`,
-            s: `𝓈`,
-            t: `𝓉`,
-            u: `𝓊`,
-            v: `𝓋`,
-            w: `𝓌`,
-            x: `𝓍`,
-            y: `𝓎`,
-            z: `𝓏`,
-            A: `𝒜`,
-            B: `𝐵`,
-            C: `𝒞`,
-            D: `𝒟`,
-            E: `𝐸`,
-            F: `𝐹`,
-            G: `𝒢`,
-            H: `𝐻`,
-            I: `𝐼`,
-            J: `𝒥`,
-            K: `𝒦`,
-            L: `𝐿`,
-            M: `𝑀`,
-            N: `𝒩`,
-            O: `𝒪`,
-            P: `𝒫`,
-            Q: `𝒬`,
-            R: `𝑅`,
-            S: `𝒮`,
-            T: `𝒯`,
-            U: `𝒰`,
-            V: `𝒱`,
-            W: `𝒲`,
-            X: `𝒳`,
-            Y: `𝒴`,
-            Z: `𝒵`
-        }
-        let output = ``
-        for (const char of str) {
-            char in table
-                ? output += table[char]
-                : output += char
-        }
+
         return output
     },
     getMemoryUsage(props) {
