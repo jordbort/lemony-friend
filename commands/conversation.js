@@ -4,7 +4,7 @@ const { settings } = require(`../config`)
 const { users, lemonyFresh } = require(`../data`)
 
 const { autoBanUser } = require(`./twitch`)
-const { getContextEmote, pluralize, resetCooldownTimer, logMessage, superscript, cursive, logArr } = require(`../utils`)
+const { getContextEmote, pluralize, resetCooldownTimer, logMessage, transformText, logArr } = require(`../utils`)
 
 function handleGreetOne(props) {
     const { bot, chatroom, channel, command, userNickname, targetNickname } = props
@@ -490,7 +490,7 @@ module.exports = {
     },
     tiny(props) {
         const { bot, chatroom, args } = props
-        const message = superscript(args.join(` `))
+        const message = transformText(`superscript`, args.join(` `))
         if (!message) {
             bot.say(chatroom, `ᵗᶦⁿʸ`)
             return
@@ -499,7 +499,7 @@ module.exports = {
     },
     makeCursive(props) {
         const { bot, chatroom, args } = props
-        const message = cursive(args.join(` `))
+        const message = transformText(`cursive`, args.join(` `))
         if (!message) {
             bot.say(chatroom, `𝒸𝓊𝓇𝓈𝒾𝓋𝑒`)
             return
