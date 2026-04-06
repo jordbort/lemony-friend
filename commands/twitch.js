@@ -857,45 +857,53 @@ module.exports = {
     apiGetEventSubs, // used in dev.js
     updateEventSubs,
     async checkToken(props) {
-        const { bot, chatroom, channel } = props
-        const arrScope = await apiGetTokenScope(channel)
-        if (!arrScope) {
-            bot.say(chatroom, `Channel has no access token!`)
-            return
+        const { bot, chatroom, args, channel } = props
+        const streamers = args.length ? args.filter(arg => arg in lemonyFresh) : [channel]
+
+        for (const streamer of streamers) {
+            if (!lemonyFresh[streamer].accessToken || !lemonyFresh[streamer].refreshToken) {
+                bot.say(chatroom, `${streamer} has no access token!`)
+                continue
+            }
+            const arrScope = await apiGetTokenScope(streamer)
+            if (!arrScope) {
+                bot.say(chatroom, `Failed to get ${streamer}'s access token!`)
+                continue
+            }
+
+            const allScopes = [
+                `moderator:read:followers`,
+                `moderation:read`,
+                `channel:manage:vips`,
+                `moderator:manage:shoutouts`,
+                `channel:read:subscriptions`,
+                `bits:read`,
+                `moderator:manage:announcements`,
+                `moderator:manage:banned_users`,
+                `moderator:read:shoutouts`,
+                `channel:read:hype_train`,
+                `channel:manage:broadcast`
+            ].filter(el => !arrScope.includes(el))
+
+            const arrAbilities = allScopes.map(el => {
+                if (el === `moderator:read:followers`) { return `new followers` }
+                else if (el === `moderation:read`) { return `new mods` }
+                else if (el === `channel:manage:vips`) { return `new VIPs` }
+                else if (el === `moderator:manage:shoutouts`) { return `shoutouts from other streamers` }
+                else if (el === `channel:read:subscriptions`) { return `subs/gift subs` }
+                else if (el === `bits:read`) { return `cheering bits` }
+                else if (el === `moderator:manage:announcements`) { return `making announcements` }
+                else if (el === `moderator:manage:banned_users`) { return `banning spambots` }
+                else if (el === `moderator:read:shoutouts`) { return `receiving shoutouts` }
+                else if (el === `channel:read:hype_train`) { return `detecting hype trains` }
+                else if (el === `channel:manage:broadcast`) { return `updating your stream game or title` }
+            }).filter(el => el)
+
+            const reply = arrAbilities.length
+                ? `${streamer}'s token is unable to handle ${arrToList(arrAbilities, `or`)}. Please use !access to renew your token and get all the features!`
+                : `${streamer}'s token has all available features! Thanks for using ${BOT_USERNAME}!`
+            bot.say(chatroom, reply)
         }
-
-        const allScopes = [
-            `moderator:read:followers`,
-            `moderation:read`,
-            `channel:manage:vips`,
-            `moderator:manage:shoutouts`,
-            `channel:read:subscriptions`,
-            `bits:read`,
-            `moderator:manage:announcements`,
-            `moderator:manage:banned_users`,
-            `moderator:read:shoutouts`,
-            `channel:read:hype_train`,
-            `channel:manage:broadcast`
-        ].filter(el => !arrScope.includes(el))
-
-        const arrAbilities = allScopes.map(el => {
-            if (el === `moderator:read:followers`) { return `new followers` }
-            else if (el === `moderation:read`) { return `new mods` }
-            else if (el === `channel:manage:vips`) { return `new VIPs` }
-            else if (el === `moderator:manage:shoutouts`) { return `shoutouts from other streamers` }
-            else if (el === `channel:read:subscriptions`) { return `subs/gift subs` }
-            else if (el === `bits:read`) { return `cheering bits` }
-            else if (el === `moderator:manage:announcements`) { return `making announcements` }
-            else if (el === `moderator:manage:banned_users`) { return `banning spambots` }
-            else if (el === `moderator:read:shoutouts`) { return `receiving shoutouts` }
-            else if (el === `channel:read:hype_train`) { return `detecting hype trains` }
-            else if (el === `channel:manage:broadcast`) { return `updating your stream game or title` }
-        }).filter(el => el)
-
-        const reply = arrAbilities.length
-            ? `Token is unable to handle ${arrToList(arrAbilities, `or`)}. Please use !access to renew your token and get all the features!`
-            : `Token has all available features! Thanks for using ${BOT_USERNAME}!`
-        bot.say(chatroom, reply)
     },
     async deleteAllEventSubs(channel) {
         await logMessage([`> deleteAllEventSubs(channel: '${channel}')`])
