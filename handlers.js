@@ -127,7 +127,7 @@ module.exports = {
         const msg = message.replace(/ +/g, ` `)
         const channel = chatroom.substring(1)
         const date = new Date().toLocaleString(settings.timeLocale, { timeZone: settings.timeZone })
-        const timeStamp = new Date(date).toLocaleTimeString(settings.timeLocale, { timeZone: settings.timeZone })
+        const timeStamp = new Date(date).toLocaleTimeString(settings.timeLocale)
         const color = tags.color || ``
         const username = tags.username
         if (!username) {
