@@ -101,20 +101,11 @@ function handleChannelFollow(bot, channel, event) {
     const greetingEmote = getContextEmote(`greeting`, channel)
     const hypeEmote = getContextEmote(`hype`, channel)
 
-    if (!obj.timer) {
-        obj.timer = Number(setTimeout(() => {
-            bot.say(`#${channel}`, `Thank you ${arrToList(obj.names)} for following ${streamer}! ${obj.names >= 3 ? hypeEmote : greetingEmote}`)
-            resetChannelBatch(`follows`, channel)
-        }, 1000))
-    } else {
-        clearTimeout(obj.timer)
-        obj.timer = Number(setTimeout(() => {
-            bot.say(`#${channel}`, `Thank you ${arrToList(obj.names)} for following ${streamer}! ${obj.names >= 3 ? hypeEmote : greetingEmote}`)
-            resetChannelBatch(`follows`, channel)
-        }, 1000))
-    }
-
-    // logMessage([`> handleChannelFollow(channel: '${channel}', timer: ${obj.timer}, names: '${obj.names.join(`', '`)}')`])
+    clearTimeout(obj.timer)
+    obj.timer = setTimeout(() => {
+        bot.say(`#${channel}`, `Thank you ${arrToList(obj.names)} for following ${streamer}! ${obj.names >= 3 ? hypeEmote : greetingEmote}`)
+        resetChannelBatch(`follows`, channel)
+    }, 1000)
 }
 
 function handleChannelAddVIP(bot, channel, event) {
@@ -228,38 +219,20 @@ function handleChannelSubscription(bot, channel, event) {
     const positiveEmote = getContextEmote(`positive`, channel)
     const hypeEmote = getContextEmote(`hype`, channel)
 
+    const obj = is_gift ? batch[channel].giftedSubs : batch[channel].subs
+    obj.names.push(subscriberName)
+    clearTimeout(obj.timer)
+
     if (is_gift) {
-        const obj = batch[channel].giftedSubs
-        obj.names.push(subscriberName)
-        if (!obj.timer) {
-            obj.timer = Number(setTimeout(() => {
-                bot.say(`#${channel}`, `${arrToList(obj.gifters)} gifted ${obj.names.length === 1 ? `a sub` : `subs`} to ${arrToList(obj.names)}! ${obj.names >= 5 ? hypeEmote : positiveEmote}`)
-                resetChannelBatch(`giftedSubs`, channel)
-            }, 1000))
-        } else {
-            clearTimeout(obj.timer)
-            obj.timer = Number(setTimeout(() => {
-                bot.say(`#${channel}`, `${arrToList(obj.gifters)} gifted ${obj.names.length === 1 ? `a sub` : `subs`} to ${arrToList(obj.names)}! ${obj.names >= 5 ? hypeEmote : positiveEmote}`)
-                resetChannelBatch(`giftedSubs`, channel)
-            }, 1000))
-        }
-        // logMessage([`> handleChannelSubscription(channel: '${channel}', gift: ${is_gift}, timer: ${obj.timer}, gifters: '${obj.gifters.join(`', '`)}', names: '${obj.names.join(`', '`)}')`])
+        obj.timer = setTimeout(() => {
+            bot.say(`#${channel}`, `${arrToList(obj.gifters)} gifted ${obj.names.length === 1 ? `a sub` : `subs`} to ${arrToList(obj.names)}! ${obj.names >= 5 ? hypeEmote : positiveEmote}`)
+            resetChannelBatch(`giftedSubs`, channel)
+        }, 1000)
     } else {
-        const obj = batch[channel].subs
-        obj.names.push(subscriberName)
-        if (!obj.timer) {
-            obj.timer = Number(setTimeout(() => {
-                bot.say(`#${channel}`, `${arrToList(obj.names)} just subscribed to ${streamer}! ${obj.names >= 3 ? hypeEmote : positiveEmote}`)
-                resetChannelBatch(`subs`, channel)
-            }, 1000))
-        } else {
-            clearTimeout(obj.timer)
-            obj.timer = Number(setTimeout(() => {
-                bot.say(`#${channel}`, `${arrToList(obj.names)} just subscribed to ${streamer}! ${obj.names >= 3 ? hypeEmote : positiveEmote}`)
-                resetChannelBatch(`subs`, channel)
-            }, 1000))
-        }
-        // logMessage([`> handleChannelSubscription(channel: '${channel}', gift: ${is_gift}, timer: ${obj.timer}, names: '${obj.names.join(`', '`)}')`])
+        obj.timer = setTimeout(() => {
+            bot.say(`#${channel}`, `${arrToList(obj.names)} just subscribed to ${streamer}! ${obj.names >= 3 ? hypeEmote : positiveEmote}`)
+            resetChannelBatch(`subs`, channel)
+        }, 1000)
     }
 }
 
@@ -295,12 +268,10 @@ function handleChannelGiftSub(bot, channel, event) {
     const hypeEmote = getContextEmote(`hype`, channel)
 
     clearTimeout(obj.timer)
-    obj.timer = Number(setTimeout(() => {
+    obj.timer = setTimeout(() => {
         bot.say(`#${channel}`, `${arrToList(obj.gifters)} gifted ${obj.names.length === 1 ? `a sub` : `subs`} to ${arrToList(obj.names)}! ${obj.names >= 5 ? hypeEmote : positiveEmote}`)
         resetChannelBatch(`giftedSubs`, channel)
-    }, 1000))
-
-    // logMessage([`> handleChannelGiftSub(channel: '${channel}', timer: ${obj.timer}, gifters: '${obj.gifters.join(`', '`)}', names: '${obj.names.join(`', '`)}')`])
+    }, 1000)
 }
 
 function handleChannelSubscriptionMessage(bot, channel, event) {
