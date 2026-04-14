@@ -231,9 +231,10 @@ function clearList(bot, chatroom, channel, resetName, isModOrVIP) {
 
 function searchList(bot, chatroom, channel, query) {
     logMessage([`-> searchList(query: '${query}')`])
+    const neutralEmote = getContextEmote(`neutral`, channel)
     const negativeEmote = getContextEmote(`negative`, channel)
     if (!query) {
-        bot.say(chatroom, `Please give me something to search for! ${negativeEmote}`)
+        bot.say(chatroom, `Please give me something to search for! ${neutralEmote}`)
         return
     }
 
