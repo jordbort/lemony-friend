@@ -1,7 +1,6 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { lemonyFresh, users } = require(`../data`)
-
 const { logMessage, pluralize, coinFlip, parseTargetByNickname, logArr, getContextEmote } = require(`../utils`)
 
 function stealLemon(bot, chatroom, user, suffix, target) {
