@@ -2,12 +2,12 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 const BOT_NICKNAME_REGEX = process.env.BOT_NICKNAME_REGEX
 
 const { users } = require(`../data`)
+const { logMessage } = require(`../utils`)
 
 const sayButt = require(`./sayButt`)
 const useLemon = require(`./useLemon`)
 const commandLemonInterface = require(`./cli`)
 
-const { logMessage } = require(`../utils`)
 const { checkSentiment } = require(`../commands/external`)
 const { catchPokemon, buyPokeballs, acknowledgeCaughtPokemon } = require(`./pokemoncommunitygame`)
 const { handleSetPoints, handleGivenPoints, subtractPoints, handleLoseAllPoints, acceptDuel } = require(`./streamelements`)

@@ -3,6 +3,8 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 const { settings, lemonyFresh, users } = require(`../data`)
 const { pluralize, getContextEmote, logMessage, arrToList } = require(`../utils`)
 
+const { apiGetRandomWord } = require(`../commands/external`)
+
 const setDelay = (channel) => users[BOT_USERNAME].channels[channel].mod || users[BOT_USERNAME].channels[channel].vip || channel === BOT_USERNAME ? 1000 : 2000
 
 async function getRandomWord() {

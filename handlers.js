@@ -16,10 +16,9 @@ const { hangmanListener } = require(`./patterns/hangman`)
 const { initWebSocket, closeWebSocket } = require(`./events/webSockets`)
 const { apiGetConduits, apiCreateConduit } = require(`./events/conduits`)
 const { getGlobalBttvEmotes, getStreamBttvEmotes } = require(`./commands/external`)
-const { handleNewChatter, welcomeBack, reportAway, funTimerGuess, pyramidListener } = require(`./commands/conversation`)
 const { apiGetTwitchChannel, getGlobalTwitchEmotes, getStreamTwitchEmotes } = require(`./commands/twitch`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
-const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, logMessage, appendLogs } = require(`./utils`)
+const { handleNewChatter, welcomeBack, reportAway, funTimerGuess, pyramidListener } = require(`./commands/conversation`)
 
 function acknowledgeGigantifiedEmote(bot, chatroom, msg) {
     const emoteUsed = msg.split(` `)[msg.split(` `).length - 1]

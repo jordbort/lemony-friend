@@ -2,6 +2,7 @@ const CLIENT_ID = process.env.CLIENT_ID
 
 const { joinedChatrooms, settings } = require(`../data`)
 const { pluralize, logMessage, renderObj } = require(`../utils`)
+
 const { apiGetTwitchAppAccessToken } = require(`../commands/twitch`)
 
 async function apiGetConduits(attempt = 1) {

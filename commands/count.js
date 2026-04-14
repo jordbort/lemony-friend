@@ -1,5 +1,4 @@
 const { lemonyFresh } = require(`../data`)
-
 const { getContextEmote, logMessage, resetCooldownTimer, logArr } = require(`../utils`)
 
 module.exports = function useCount(props) {

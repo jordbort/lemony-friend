@@ -1,5 +1,4 @@
 const { lemonyFresh } = require(`../data`)
-
 const { getContextEmote, logMessage, logArr, arrToList } = require(`../utils`)
 
 function getItem(bot, chatroom, channel, idx) {

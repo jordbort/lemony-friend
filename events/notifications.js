@@ -1,9 +1,9 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { lemonyFresh, mods, users, joinedChatrooms } = require(`../data`)
+const { logMessage, getContextEmote, updateMod, pluralize, arrToList } = require(`../utils`)
 
 const { apiGetTwitchChannel } = require(`../commands/twitch`)
-const { logMessage, getContextEmote, updateMod, pluralize, arrToList } = require(`../utils`)
 
 const batch = {}
 function resetChannelBatch(type, channel) {

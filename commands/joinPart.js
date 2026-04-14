@@ -1,12 +1,11 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings, lemonyFresh, users, lemCmds } = require(`../data`)
-const { lemonyFresh, users, lemCmds } = require(`../data`)
+const { getUsername, getContextEmote, logMessage, pluralize, arrToList, logArr } = require(`../utils`)
 
 const numbers = require(`../numbers`)
 
 const { apiGetTwitchUser, deleteAllEventSubs } = require(`./twitch`)
-const { getUsername, getContextEmote, logMessage, pluralize, arrToList, logArr } = require(`../utils`)
 
 module.exports = {
     sayJoinMessage(bot, chatroom) {

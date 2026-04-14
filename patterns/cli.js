@@ -3,6 +3,8 @@ const DEV = process.env.DEV
 const { settings, lemonyFresh, users } = require(`../data`)
 const { getContextEmote, getToUser, pluralize, logMessage, logArr } = require(`../utils`)
 
+const { validTimeZones, validLocales } = require(`../commands/time`)
+
 const makeList = (obj) => Object.keys(obj)
     .map(pattern => pattern.split(/\^([^?]+)\??\$\|\^([^?]+)\$/i)
         .slice(1, 3))

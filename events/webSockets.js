@@ -1,8 +1,8 @@
 const WebSocket = require(`ws`)
 
+const { logMessage } = require(`../utils`)
 const { joinedChatrooms } = require(`../data`)
 
-const { logMessage } = require(`../utils`)
 const { assignToConduit } = require(`./conduits`)
 const { updateEventSubs } = require(`../commands/twitch`)
 const { handleNotification } = require(`./notifications`)

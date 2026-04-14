@@ -1,8 +1,8 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { users } = require(`../data`)
-
 const { getContextEmote, logMessage } = require(`../utils`)
+
 const { contextReact } = require(`../commands/conversation`)
 
 module.exports = {

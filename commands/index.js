@@ -1,6 +1,7 @@
 const DEV = process.env.DEV
 
 const { lemCmds } = require(`../data`)
+const { getMemoryUsage, logMessage } = require(`../utils`)
 
 const useList = require(`./list`)
 const useCount = require(`./count`)
@@ -15,7 +16,6 @@ const { getSubs } = require(`./help`)
 const { handleLemonify } = require(`./lemonify`)
 const { handleJoin, handlePart } = require(`./joinPart`)
 const { handleLemCmd, getLemCmds } = require(`./lemCmds`)
-const { getMemoryUsage, logMessage } = require(`../utils`)
 const { getDocs, getStats, accessInstructions } = require(`./help`)
 const { manageHangman, joinHangman } = require(`../patterns/hangman`)
 const { insultUser, manageVerbs, manageNouns, manageAdjectives } = require(`./insult`)

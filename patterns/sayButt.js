@@ -1,5 +1,4 @@
 const { lemonyFresh } = require(`../data`)
-
 const { getContextEmote, logMessage, resetCooldownTimer } = require(`../utils`)
 
 module.exports = function sayButt(props, splitMessage) {

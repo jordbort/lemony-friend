@@ -3,6 +3,8 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 const { settings, users, lemonyFresh } = require(`../data`)
 const { getContextEmote, pluralize, resetCooldownTimer, logMessage, transformText, logArr, containsInaccessibleEmotes } = require(`../utils`)
 
+const { autoBanUser } = require(`./twitch`)
+
 function handleGreetOne(props) {
     const { bot, chatroom, channel, command, userNickname, targetNickname } = props
     logMessage([`> handleGreetOne(chatroom: '${chatroom}', nickname: '${command === `!greet` ? targetNickname || userNickname : userNickname}')`])
