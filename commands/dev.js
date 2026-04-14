@@ -1,7 +1,6 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
-const { settings } = require(`../config`)
-const { lemonyFresh, users, mods, commonNicknames, startingLemons, hangmanWins, joinedChatrooms } = require(`../data`)
+const { settings, lemonyFresh, users, mods, commonNicknames, startingLemons, hangmanWins, joinedChatrooms } = require(`../data`)
 
 const rollFunNumber = require(`./funNumber`)
 

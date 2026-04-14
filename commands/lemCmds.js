@@ -1,7 +1,5 @@
-const { settings } = require(`../config`)
-const { lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
-
 const { getContextEmote, logMessage, pluralize, logArr } = require(`../utils`)
+const { settings, lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
 
 const regexNumber = /\{\s?number\s?(-?\d+)\s?\}/gi
 const regexRandom = /\{\s?random\s?("[^"]+"\s?)+\s?\}/gi

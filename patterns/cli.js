@@ -1,9 +1,6 @@
 const DEV = process.env.DEV
 
-const { settings } = require(`../config`)
-const { lemonyFresh, users } = require(`../data`)
-const { validTimeZones, validLocales } = require(`../commands/time`)
-
+const { settings, lemonyFresh, users } = require(`../data`)
 const { getContextEmote, getToUser, pluralize, logMessage, logArr } = require(`../utils`)
 
 const makeList = (obj) => Object.keys(obj)

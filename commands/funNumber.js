@@ -1,6 +1,6 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
-const { settings } = require(`../config`)
+const { settings, lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
 const { lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
 
 const numbers = require(`../numbers`)

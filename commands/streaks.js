@@ -1,8 +1,6 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
-const { settings } = require(`../config`)
-const { users, lemonyFresh } = require(`../data`)
-
+const { settings, users, lemonyFresh } = require(`../data`)
 const { resetCooldownTimer, logMessage, containsInaccessibleEmotes, containsUnrecognizedEmotes, renderObj } = require(`../utils`)
 
 function checkStreak(bot, chatroom, message, currentTime, channel) {

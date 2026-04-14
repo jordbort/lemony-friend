@@ -1,9 +1,6 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
-const { settings } = require(`../config`)
-const { users, lemonyFresh } = require(`../data`)
-
-const { autoBanUser } = require(`./twitch`)
+const { settings, users, lemonyFresh } = require(`../data`)
 const { getContextEmote, pluralize, resetCooldownTimer, logMessage, transformText, logArr, containsInaccessibleEmotes } = require(`../utils`)
 
 function handleGreetOne(props) {

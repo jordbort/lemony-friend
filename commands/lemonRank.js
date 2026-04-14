@@ -1,6 +1,4 @@
-const { users } = require(`../data`)
-const { settings } = require(`../config`)
-
+const { settings, users } = require(`../data`)
 const { getContextEmote, pluralize } = require(`../utils`)
 
 module.exports = function useLemonRank(props) {

@@ -4,6 +4,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 
 const fs = require(`fs/promises`)
 
+const { settings, lemonyFresh, mods, users, knownTags, lemCmds, wordBank, commonNicknames, startingLemons, hangmanWins } = require(`./data`)
 
 // Terminal colors
 const terminalColors = {

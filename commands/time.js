@@ -1,5 +1,4 @@
-const { settings } = require(`../config`)
-
+const { settings } = require(`../data`)
 const { getContextEmote, logMessage } = require(`../utils`)
 
 const validTimeZones = {

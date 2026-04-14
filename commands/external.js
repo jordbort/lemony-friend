@@ -1,8 +1,6 @@
 const API_KEY = process.env.API_KEY
 
-const { settings } = require(`../config`)
-const { lemonyFresh } = require(`../data`)
-
+const { settings, lemonyFresh } = require(`../data`)
 const { getContextEmote, renderObj, logMessage, pluralize } = require(`../utils`)
 
 async function apiGetGlobalBttvEmotes() {

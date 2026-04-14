@@ -1,8 +1,6 @@
 const CLIENT_ID = process.env.CLIENT_ID
 
-const { settings } = require(`../config`)
-const { joinedChatrooms } = require(`../data`)
-
+const { joinedChatrooms, settings } = require(`../data`)
 const { pluralize, logMessage, renderObj } = require(`../utils`)
 const { apiGetTwitchAppAccessToken } = require(`../commands/twitch`)
 

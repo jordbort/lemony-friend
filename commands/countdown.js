@@ -1,5 +1,4 @@
-const { settings } = require(`../config`)
-const { lemonyFresh } = require(`../data`)
+const { settings, lemonyFresh } = require(`../data`)
 const { getContextEmote, pluralize, logMessage, logArr } = require(`../utils`)
 
 function stopCountdown(bot, chatroom) {

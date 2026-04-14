@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
-const { settings } = require(`./config`)
-const { joinedChatrooms, lemonyFresh, users, lemCmds } = require(`./data`)
+const { settings, joinedChatrooms, lemonyFresh, users, lemCmds } = require(`./data`)
+const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, logMessage, appendLogs } = require(`./utils`)
 
 const useCommand = require(`./commands`)
 const usePattern = require(`./patterns`)
