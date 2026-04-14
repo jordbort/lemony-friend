@@ -4,8 +4,55 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 
 const fs = require(`fs/promises`)
 
-const { settings, resetTxt, grayTxt, whiteTxt, yellowBg, chatColors } = require(`./config`)
-const { lemonyFresh, mods, users, knownTags, lemCmds, wordBank, commonNicknames, startingLemons, hangmanWins } = require(`./data`)
+
+// Terminal colors
+const terminalColors = {
+    resetTxt: `\x1b[0m`,
+    boldTxt: `\x1b[1m`,
+    underlined: `\x1b[4m`,
+    inverted: `\x1b[7m`,
+
+    blackTxt: `\x1b[30m`,
+    redTxt: `\x1b[31m`,
+    greenTxt: `\x1b[32m`,
+    yellowTxt: `\x1b[33m`,
+    blueTxt: `\x1b[34m`,
+    magentaTxt: `\x1b[35m`,
+    cyanTxt: `\x1b[36m`,
+    whiteTxt: `\x1b[37m`,
+    grayTxt: `\x1b[90m`,
+    orangeTxt: `\x1b[38;5;208m`,
+
+    blackBg: `\x1b[40m`,
+    redBg: `\x1b[41m`,
+    greenBg: `\x1b[42m`,
+    yellowBg: `\x1b[43m`,
+    blueBg: `\x1b[44m`,
+    magentaBg: `\x1b[45m`,
+    cyanBg: `\x1b[46m`,
+    whiteBg: `\x1b[47m`,
+    grayBg: `\x1b[100m`,
+    orangeBg: `\x1b[48;2;255;164;0m`
+}
+
+// Twitch color names and terminal color references
+const chatColors = {
+    '#0000FF': { name: `blue`, terminalColor: terminalColors.blueTxt },
+    '#8A2BE2': { name: `blue-violet`, terminalColor: terminalColors.blueTxt },
+    '#5F9EA0': { name: `cadet blue`, terminalColor: terminalColors.cyanTxt },
+    '#D2691E': { name: `chocolate`, terminalColor: terminalColors.magentaTxt },
+    '#FF7F50': { name: `coral`, terminalColor: terminalColors.magentaTxt },
+    '#1E90FF': { name: `dodger blue`, terminalColor: terminalColors.cyanTxt },
+    '#B22222': { name: `firebrick`, terminalColor: terminalColors.redTxt },
+    '#DAA520': { name: `goldenrod`, terminalColor: terminalColors.yellowTxt },
+    '#008000': { name: `green`, terminalColor: terminalColors.greenTxt },
+    '#FF69B4': { name: `hot pink`, terminalColor: terminalColors.redTxt },
+    '#FF4500': { name: `orange-red`, terminalColor: terminalColors.orangeTxt },
+    '#FF0000': { name: `red`, terminalColor: terminalColors.redTxt },
+    '#2E8B57': { name: `sea green`, terminalColor: terminalColors.greenTxt },
+    '#00FF7F': { name: `spring green`, terminalColor: terminalColors.greenTxt },
+    '#ADFF2F': { name: `yellow-green`, terminalColor: terminalColors.yellowTxt }
+}
 
 const twitchUsernamePattern = /^[a-z0-9_]{4,25}$/i
 const emotePattern = /\b([a-z][a-z0-9]{2,9}[A-Z0-9][a-zA-Z0-9]{0,19})\b/
@@ -63,6 +110,9 @@ function renderObj(obj, objName, indentation = ``) {
 }
 
 async function logMessage(messages, time, channel, username, color, self) {
+    // Colorize chat messages
+    const { resetTxt, grayTxt, whiteTxt, yellowBg } = terminalColors
+
     // Display date change
     const currentDate = new Date().toLocaleDateString(settings.timeLocale, { year: `numeric`, month: `long`, day: `numeric`, timeZone: settings.timeZone })
     if (currentDate !== settings.currentDate) {
@@ -228,6 +278,8 @@ const cursiveTable = {
 }
 
 module.exports = {
+    terminalColors,
+    chatColors,
     twitchUsernamePattern,
     printMemory,
     pluralize,

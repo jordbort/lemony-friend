@@ -1,7 +1,5 @@
 const { mods } = require(`../data`)
-const { chatColors } = require(`../config`)
-
-const { getContextEmote, logMessage } = require(`../utils`)
+const { chatColors, getContextEmote, logMessage } = require(`../utils`)
 
 module.exports = {
     handleColorChange(props) {

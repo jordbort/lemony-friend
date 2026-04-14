@@ -1,3 +1,4 @@
+const { chatColors, getContextEmote, pluralize, getToUser, logMessage, arrToList, logArr, parseTargetByNickname } = require(`../utils`)
 const numbers = require(`../numbers`)
 
 const { lemonyFresh, users } = require(`../data`)
