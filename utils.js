@@ -4,7 +4,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 
 const fs = require(`fs/promises`)
 
-const { settings, lemonyFresh, mods, users, knownTags, lemCmds, wordBank, commonNicknames, startingLemons, hangmanWins } = require(`./data`)
+const { settings, lemonyFresh, mods, users, knownTags, lemCmds, wordBank } = require(`./data`)
 
 // Terminal colors
 const terminalColors = {
@@ -69,10 +69,7 @@ async function printMemory(arr) {
         users,
         knownTags,
         lemCmds,
-        wordBank,
-        commonNicknames,
-        startingLemons,
-        hangmanWins
+        wordBank
     }, null, 4))
 }
 
@@ -433,27 +430,6 @@ module.exports = {
                     }
                 }
             }
-        }
-
-        // Apply nickname
-        if (newUsername in commonNicknames) {
-            users[newUsername].nickname = commonNicknames[newUsername]
-            delete commonNicknames[newUsername]
-            logMessage([`-> ${newUsername}'s nickname has been restored (${users[newUsername].nickname}), ${Object.keys(commonNicknames).length} remain`])
-        }
-
-        // Restore lemons
-        if (newUsername in startingLemons) {
-            users[newUsername].lemons += startingLemons[newUsername]
-            delete startingLemons[newUsername]
-            logMessage([`-> ${newUsername}'s lemons have been restored (${users[newUsername].lemons}), ${Object.keys(startingLemons).length} remain`])
-        }
-
-        // Restore Hangman wins
-        if (newUsername in hangmanWins) {
-            users[newUsername].hangmanWins += hangmanWins[newUsername]
-            delete hangmanWins[newUsername]
-            logMessage([`-> ${newUsername}'s hangmanWins have been restored (${users[newUsername].hangmanWins}), ${Object.keys(hangmanWins).length} remain`])
         }
     },
     initUserChannel(tags, username, channel) {

@@ -15,11 +15,6 @@ const knownTags = getMemory(`knownTags`) || {}
 const lemCmds = getMemory(`lemCmds`) || {}
 const wordBank = getMemory(`wordBank`) || {}
 
-// Legacy memory tables (delete eventually)
-const commonNicknames = getMemory(`commonNicknames`) || {}
-const startingLemons = getMemory(`startingLemons`) || {}
-const hangmanWins = getMemory(`hangmanWins`) || {}
-
 // Set default values, if not set
 settings.botAccessToken = settings.botAccessToken || ""
 settings.conduitId = settings.conduitId || ""
@@ -85,8 +80,5 @@ module.exports = {
     users,
     knownTags,
     lemCmds,
-    wordBank,
-    commonNicknames,
-    startingLemons,
-    hangmanWins
+    wordBank
 }
