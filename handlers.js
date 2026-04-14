@@ -65,9 +65,9 @@ module.exports = {
         }
         settings.firstConnection = false
 
-        // Get global emotes
-        // getGlobalTwitchEmotes()
-        getGlobalBttvEmotes()
+        // Get global emotes, if not set
+        if (!settings.globalEmotes.twitch.length) { getGlobalTwitchEmotes() }
+        if (!settings.globalEmotes.bttv.length) { getGlobalBttvEmotes() }
     },
     onJoinedHandler(chatroom, username, self) {
         logMessage([`${username} joined ${chatroom}`])
