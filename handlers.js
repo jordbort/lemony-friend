@@ -163,7 +163,8 @@ module.exports = {
         userChannel.sentAt = currentTime
 
         // Listen for emote/text pyramid
-        pyramidListener(this, chatroom, channel, msg, self, username)
+        const aprilFools = new Date(date).getMonth() === 3 && new Date(date).getDate() === 1
+        pyramidListener(this, chatroom, channel, msg, self, username, aprilFools)
 
         // Bot stops listening
         if (self) { return }
@@ -193,7 +194,7 @@ module.exports = {
             toUser: toUser,
             target: users?.[toUser] || null,
             targetNickname: users?.[toUser]?.nickname || users?.[toUser]?.displayName || null,
-            aprilFools: new Date(date).getMonth() === 3 && new Date(date).getDate() === 1
+            aprilFools: aprilFools
         }
 
         // User attribute change detection

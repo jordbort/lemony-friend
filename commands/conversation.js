@@ -4,7 +4,7 @@ const { settings } = require(`../config`)
 const { users, lemonyFresh } = require(`../data`)
 
 const { autoBanUser } = require(`./twitch`)
-const { getContextEmote, pluralize, resetCooldownTimer, logMessage, transformText, logArr } = require(`../utils`)
+const { getContextEmote, pluralize, resetCooldownTimer, logMessage, transformText, logArr, containsInaccessibleEmotes } = require(`../utils`)
 
 function handleGreetOne(props) {
     const { bot, chatroom, channel, command, userNickname, targetNickname } = props
@@ -511,7 +511,7 @@ module.exports = {
         const emote = getContextEmote(context, channel)
         bot.say(chatroom, emote)
     },
-    pyramidListener(bot, chatroom, channel, message, self, username) {
+    pyramidListener(bot, chatroom, channel, message, self, username, aprilFools) {
         const userNickname = users[username].nickname || users[username].displayName
         const userChannel = users[username].channels[channel]
         const arr = message.split(` `)
@@ -565,6 +565,22 @@ module.exports = {
             userChannel.pyramidCount = 1
             userChannel.pyramidMaxCount = 0
             userChannel.pyramidAscending = true
+        }
+
+        if (aprilFools && arr.length === 2 && !userChannel.pyramidAscending) {
+            const interruptions = [
+                `oh`,
+                `oops`,
+                `whoops`,
+                `no`,
+                `stop`,
+                `:)`
+            ]
+            if (!containsInaccessibleEmotes(arr[0], channel)) {
+                interruptions.push(arr[0], arr[0], arr[0], arr[0], arr[0], arr[0])
+            }
+            const interruption = interruptions[Math.floor(Math.random() * interruptions.length)]
+            bot.say(chatroom, interruption)
         }
     }
 }
