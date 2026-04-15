@@ -684,7 +684,7 @@ function lookForNumbers(props) {
 
     numerals.length
         ? bot.say(chatroom, numerals.join(` `))
-        : logMessage([`-> No numbers found in ${username} 's message`])
+        : logMessage([`-> No numbers found in ${username}'s message`])
 }
 
 function reportOneSixteenthChance(props) {

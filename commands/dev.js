@@ -1,12 +1,12 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings, lemonyFresh, users, mods, joinedChatrooms } = require(`../data`)
+const { logMessage, printMemory, pluralize, getContextEmote, getToUser } = require(`../utils`)
 
 const rollFunNumber = require(`./funNumber`)
 
 const { updateEventSubs, apiGetEventSubs } = require(`./twitch`)
 const { initWebSocket, closeWebSocket, checkWebSockets } = require(`../events/webSockets`)
-const { logMessage, printMemory, pluralize, getContextEmote, getToUser } = require(`../utils`)
 const { apiCreateConduit, apiGetConduits, apiUpdateConduit, apiDeleteConduit, apiGetConduitShards } = require(`../events/conduits`)
 
 module.exports = {

@@ -356,8 +356,7 @@ module.exports = {
         }
     },
     handleNotification(bot, payload) {
-        const { subscription, event } = payload
-        const { type, condition } = subscription
+        const { subscription, event } = payload, { type, condition } = subscription
         const fromChannel = Object.keys(lemonyFresh).filter(key => lemonyFresh[key].id === Number(condition.broadcaster_user_id))[0]
 
         switch (type) {

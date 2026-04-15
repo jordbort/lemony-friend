@@ -1,5 +1,6 @@
-const { getRandomChannelMessage } = require(`./getInfo`)
 const { getContextEmote, logMessage } = require(`../utils`)
+
+const { getRandomChannelMessage } = require(`./getInfo`)
 
 function lemonify(str) {
     logMessage([`> lemonify(str: ${str})`])
