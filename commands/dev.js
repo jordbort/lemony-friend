@@ -1,6 +1,6 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
-const { settings, lemonyFresh, users, mods, commonNicknames, startingLemons, hangmanWins, joinedChatrooms } = require(`../data`)
+const { settings, lemonyFresh, users, mods, joinedChatrooms } = require(`../data`)
 
 const rollFunNumber = require(`./funNumber`)
 
@@ -155,11 +155,6 @@ module.exports = {
                 : `s`} '${props.args.join(`', '`)}'`
             : ``}`
         throw Error(message)
-    },
-    logOldMemoryTables() {
-        console.log(Object.keys(commonNicknames).length, `unapplied nicknames:`, commonNicknames)
-        console.log(Object.keys(startingLemons).length, `unclaimed lemons:`, startingLemons)
-        console.log(Object.keys(hangmanWins).length, `unapplied Hangman wins:`, hangmanWins)
     },
     logChannelInfo(props) {
         const { channel, toUser } = props
