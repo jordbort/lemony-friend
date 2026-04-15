@@ -1,8 +1,8 @@
 function getMemory(str) {
-    let modulePath
-    try { modulePath = require.resolve(`./memory.json`) }
+    let path
+    try { path = require.resolve(`./memory.json`) }
     catch (err) { return null }
-    return require(modulePath)[str]
+    return require(path)[str]
 }
 
 // Initialize memory
@@ -56,7 +56,7 @@ settings.baseEmotes.hypeEmotes = settings.baseEmotes.hypeEmotes || [`:D`]
 settings.baseEmotes.positiveEmotes = settings.baseEmotes.positiveEmotes || [`:)`]
 settings.baseEmotes.upsetEmotes = settings.baseEmotes.upsetEmotes || [`>(`, `:(`]
 settings.baseEmotes.negativeEmotes = settings.baseEmotes.negativeEmotes || [`:(`, `:O`]
-settings.baseEmotes.greetingEmotes = settings.baseEmotes.greetingEmotes || [`HeyGuys`, `<3`]
+settings.baseEmotes.greetingEmotes = settings.baseEmotes.greetingEmotes || [`HeyGuys`, `<3`, `FishMoley`]
 settings.baseEmotes.byeEmotes = settings.baseEmotes.byeEmotes || [`HeyGuys`, `<3`]
 settings.baseEmotes.dumbEmotes = settings.baseEmotes.dumbEmotes || [`:p`, `4Head`, `Kappa`]
 
