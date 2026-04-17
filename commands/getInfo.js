@@ -101,22 +101,15 @@ module.exports = {
     },
     getRandomUser(arrExclude) {
         logMessage([`> getRandomUser(arrExclude: ${logArr(arrExclude)})`])
-
-        // Only search users who have chatted
-        const arr = Object.keys(users).filter(username => Object.keys(users[username].channels).length)
-        for (const name of arrExclude) {
-            if (arr.includes(name)) { arr.splice(arr.indexOf(name), 1) }
-        }
+        // Only search non-excluded users who have chatted
+        const arr = Object.keys(users).filter(username => !arrExclude.includes(username) && Object.keys(users[username].channels).length)
         const randomUser = arr[Math.floor(Math.random() * arr.length)]
-
-        logMessage([`-> randomUser: ${randomUser}`])
         return randomUser
     },
     getRandomChannelMessage(user) {
-        logMessage([`> getRandomChannelMessage(user: ${user.displayName})`])
+        logMessage([`> getRandomChannelMessage(user: '${user.displayName}')`])
         const channels = Object.keys(user.channels)
         const channel = channels[Math.floor(Math.random() * channels.length)]
-        logMessage([`-> channel: ${channel}`])
         const randomMessage = user.channels[channel].lastMessage
         return randomMessage
     },
