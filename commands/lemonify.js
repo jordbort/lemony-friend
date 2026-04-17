@@ -189,7 +189,7 @@ module.exports = {
         const lemonEmote = getContextEmote(`lemon`, channel)
         const positiveEmote = getContextEmote(`positive`, channel)
 
-        if (!target) {
+        if (!target || !Object.keys(target.channels).length) {
             bot.say(chatroom, `${lemonEmote}${lemonEmote}${lemonEmote} ${positiveEmote}`)
             return
         }
