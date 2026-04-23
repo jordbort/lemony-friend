@@ -7,7 +7,7 @@ const { autoBanUser } = require(`./twitch`)
 
 function handleGreetOne(props) {
     const { bot, chatroom, channel, command, userNickname, targetNickname } = props
-    logMessage([`> handleGreetOne(chatroom: '${chatroom}', nickname: '${command === `!greet` ? targetNickname || userNickname : userNickname}')`])
+    logMessage([`> handleGreetOne(channel: '${channel}', nickname: '${command === `!greet` ? targetNickname || userNickname : userNickname}')`])
 
     if (lemonyFresh[channel].timers[`greet`].listening) {
         resetCooldownTimer(channel, `greet`)
@@ -58,9 +58,8 @@ function handleGreetOne(props) {
     } else { logMessage([`-> Timer in ${channel} 'greet' is not currently listening`]) }
 }
 
-function handleGreetMany(bot, chatroom, arr) {
-    logMessage([`> handleGreetMany(chatroom: ${chatroom}, arr: ${arr})`])
-    const channel = chatroom.substring(1)
+function handleGreetMany(bot, chatroom, arr, channel) {
+    logMessage([`> handleGreetMany(channel: '${channel}', arr: ${logArr(arr)})`])
 
     if (lemonyFresh[channel].timers[`mass-greet`].listening) {
         resetCooldownTimer(channel, `mass-greet`)
@@ -86,9 +85,8 @@ function handleGreetMany(bot, chatroom, arr) {
     } else { logMessage([`-> Timer in ${channel} 'massGreet' is not currently listening`]) }
 }
 
-function handleGreetAll(bot, chatroom, username) {
-    logMessage([`> handleGreetAll(chatroom: ${chatroom}, username: ${username})`])
-    const channel = chatroom.substring(1)
+function handleGreetAll(bot, chatroom, channel, username) {
+    logMessage([`> handleGreetAll(channel: '${channel}', username: '${username}')`])
 
     if (lemonyFresh[channel].timers[`mass-greet`].listening) {
         resetCooldownTimer(channel, `mass-greet`)
@@ -127,8 +125,8 @@ function handleGreetAll(bot, chatroom, username) {
 module.exports = {
     handleGreetOne,
     handleNewChatter(props) {
-        const { bot, chatroom, username, message } = props
-        logMessage([`> handleNewChatter(chatroom: ${chatroom}, username: ${username})`])
+        const { bot, chatroom, username, message, channel } = props
+        logMessage([`> handleNewChatter(channel: '${channel}', username: '${username}')`])
 
         // Check for automatic ban phrase
         for (const phrase of settings.autoBan) {
@@ -140,7 +138,6 @@ module.exports = {
             }
         }
 
-        const channel = chatroom.substring(1)
         if (lemonyFresh[channel].timers[`new-chatter`].listening) {
             resetCooldownTimer(channel, `new-chatter`)
 
@@ -163,21 +160,21 @@ module.exports = {
     },
     handleGreet(props) {
         const { bot, chatroom, args, channel, username, userNickname, target, targetNickname } = props
-        logMessage([`> handleGreet(channel: '${channel}', args: ${logArr(args)}, userNickname: ${userNickname}, targetNickname: ${targetNickname})`])
+        logMessage([`> handleGreet(channel: '${channel}', args: ${logArr(args)}, userNickname: '${userNickname}', targetNickname: '${targetNickname}')`])
 
         // If !greet all
-        if (/^all$/i.test(args[0])) { handleGreetAll(bot, chatroom, username) }
+        if (/^all$/i.test(args[0])) { handleGreetAll(bot, chatroom, channel, username) }
         // If one (known) username is used, greet normally
         else if (target && !args[1]) { handleGreetOne(props) }
         // If multiple args are used, or toUser is not known
-        else if (args.length) { handleGreetMany(bot, chatroom, args) }
+        else if (args.length) { handleGreetMany(bot, chatroom, args, channel) }
         // If no args are used
         else { bot.say(chatroom, `Greetings, ${userNickname}! ${getContextEmote(`greeting`, channel)}`) }
     },
     sayGoodnight(props) {
         const { bot, chatroom, message, args, channel, userNickname, toUser, targetNickname } = props
         const recipient = targetNickname || userNickname
-        logMessage([`> handleGreet(chatroom: ${chatroom}, args: ${logArr(args)})`])
+        logMessage([`> handleGreet(channel: '${channel}', args: ${logArr(args)})`])
 
         if (lemonyFresh[channel].timers[`say-goodnight`].listening) {
             resetCooldownTimer(channel, `say-goodnight`)
@@ -214,7 +211,7 @@ module.exports = {
     },
     sayYoureWelcome(props) {
         const { bot, chatroom, channel, user, userNickname } = props
-        logMessage([`> sayYoureWelcome(chatroom: ${chatroom}, userNickname: ${userNickname})`])
+        logMessage([`> sayYoureWelcome(channel: '${channel}', userNickname: '${userNickname}')`])
 
         if (lemonyFresh[channel].timers[`say-youre-welcome`].listening) {
             resetCooldownTimer(channel, `say-youre-welcome`)
@@ -244,7 +241,7 @@ module.exports = {
     },
     sayThanks(props) {
         const { bot, chatroom, channel, user, userNickname } = props
-        logMessage([`> sayThanks(chatroom: ${chatroom}, userNickname: ${userNickname})`])
+        logMessage([`> sayThanks(channel: '${channel}', userNickname: '${userNickname}')`])
 
         if (lemonyFresh[channel].timers[`say-thanks`].listening) {
             resetCooldownTimer(channel, `say-thanks`)
@@ -280,7 +277,7 @@ module.exports = {
     },
     sayMood(props) {
         const { bot, chatroom, channel, user, userNickname } = props
-        logMessage([`> sayMood(chatroom: '${chatroom}', userNickname: ${userNickname})`])
+        logMessage([`> sayMood(channel: '${channel}', userNickname: '${userNickname}')`])
 
         if (lemonyFresh[channel].timers[`say-mood`].listening) {
             resetCooldownTimer(channel, `say-mood`)
@@ -370,7 +367,7 @@ module.exports = {
     },
     welcomeBack(props) {
         const { bot, chatroom, channel, userChannel, userNickname } = props
-        logMessage([`> welcomeBack(chatroom: '${chatroom}', userNickname: '${userNickname}')`])
+        logMessage([`> welcomeBack(channel: '${channel}', userNickname: '${userNickname}')`])
 
         const greetingEmote = getContextEmote(`greeting`, channel)
         userChannel.away = false
@@ -379,7 +376,7 @@ module.exports = {
     },
     funTimerGuess(props) {
         const { bot, chatroom, message, channel, user, userNickname } = props
-        logMessage([`> funTimerGuess(chatroom: '${chatroom}', message: ${message}, userNickname: '${userNickname}', number: ${lemonyFresh[channel].funTimer})`])
+        logMessage([`> funTimerGuess(channel: '${channel}', message: '${message}', userNickname: '${userNickname}', number: ${lemonyFresh[channel].funTimer})`])
 
         const regex = new RegExp(`\\b${lemonyFresh[channel].funTimer}\\b`)
 
@@ -442,7 +439,7 @@ module.exports = {
     },
     setAway(props) {
         const { bot, chatroom, args, command, channel, username, userChannel, userNickname } = props
-        logMessage([`> setAway(chatroom: '${chatroom}', username: '${username}', args: ${logArr(args)})`])
+        logMessage([`> setAway(channel: '${channel}', username: '${username}', args: ${logArr(args)})`])
 
         userChannel.away = true
         if (args.length) { userChannel.awayMessage = args.join(` `) }
@@ -469,20 +466,21 @@ module.exports = {
             const regex = new RegExp(`\\b(@?${targetName}|${targetNickname})\\b`, `i`)
 
             if (target.channels[channel]?.away && regex.test(message)) {
-                logMessage([`> reportAway(chatroom: '${chatroom}', targetNickname: '${targetNickname}')`])
                 const elapsedTime = Math.round((currentTime - target.channels[channel].sentAt) / 60000)
-                const reply = `${targetNickname} has been away for ~${pluralize(elapsedTime, `minute`, `minutes`)}!${target.channels[channel].awayMessage ? ` Their away message: "${target.channels[channel].awayMessage}"` : ``}`
-                elapsedTime > 1
-                    ? bot.say(chatroom, reply)
-                    : logMessage([`-> ${targetName} has been away for less than one-minute grace period`])
+                logMessage([`> reportAway(channel: '${channel}', targetNickname: '${targetNickname}', elapsedTime: ${pluralize(elapsedTime, `minute`, `minutes`)})`])
+                if (elapsedTime > 1) {
+                    const reply = `${targetNickname} has been away for ~${pluralize(elapsedTime, `minute`, `minutes`)}!${target.channels[channel].awayMessage ? ` Their away message: "${target.channels[channel].awayMessage}"` : ``}`
+                    bot.say(chatroom, reply)
+                } else {
+                    logMessage([`-> ${targetName} has been away for less than one-minute grace period`])
+                }
             }
         }
     },
     makeMultiTwitchLink(props) {
-        const { bot, chatroom, args } = props
+        const { bot, chatroom, args, channel } = props
         logMessage([`> makeMultiTwitchLink(args: ${logArr(args)})`])
 
-        const channel = chatroom.substring(1)
         const negativeEmote = getContextEmote(`negative`, channel)
         const neutralEmote = getContextEmote(`neutral`, channel)
         const dumbEmote = getContextEmote(`dumb`, channel)
