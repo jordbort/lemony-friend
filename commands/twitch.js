@@ -166,29 +166,31 @@ async function apiUpdateTwitchChannel(channel, requestBody, attempt = 1) {
     try {
         const response = await fetch(endpoint, options)
 
-        if (response.status === 401 && twitchData.message === `Invalid OAuth token`) {
-            if (attempt < 3) {
-                const retry = await apiRefreshToken(channel, streamer.refreshToken)
-                if (retry) {
-                    attempt++
-                    return apiUpdateTwitchChannel(channel, requestBody, attempt)
+        if (response.status !== 204) {
+            const twitchData = await response.json()
+            if (response.status === 401 && twitchData.message === `Invalid OAuth token`) {
+                if (attempt < 3) {
+                    const retry = await apiRefreshToken(channel, streamer.refreshToken)
+                    if (retry) {
+                        attempt++
+                        return apiUpdateTwitchChannel(channel, requestBody, attempt)
+                    }
+                } else {
+                    await logMessage([`-> Failed to update Twitch channel after ${pluralize(attempt, `attempt`, `attempts`)}`])
+                    return null
                 }
             } else {
-                await logMessage([`-> Failed to update Twitch channel after ${pluralize(attempt, `attempt`, `attempts`)}`])
+                await logMessage([
+                    `apiUpdateTwitchChannel`,
+                    response.status,
+                    `data` in twitchData
+                        ? twitchData.data.length
+                            ? renderObj(twitchData.data[0], `twitchData.data[0]`)
+                            : `twitchData.data: []`
+                        : renderObj(twitchData, `twitchData`)
+                ])
                 return null
             }
-        } else if (response.status !== 204) {
-            const twitchData = await response.json()
-            await logMessage([
-                `apiUpdateTwitchChannel`,
-                response.status,
-                `data` in twitchData
-                    ? twitchData.data.length
-                        ? renderObj(twitchData.data[0], `twitchData.data[0]`)
-                        : `twitchData.data: []`
-                    : renderObj(twitchData, `twitchData`)
-            ])
-            return null
         }
         return true
     } catch (err) {
