@@ -96,12 +96,11 @@ async function apiGetTwitchUser(username, attempt = 1) {
                     }
                 } else {
                     await logMessage([`-> Failed to get Twitch user after ${pluralize(attempt, `attempt`, `attempts`)}`])
-                    return null
                 }
             } else {
                 await logMessage([`apiGetTwitchUser`, response.status, renderObj(twitchData, `twitchData`)])
-                return null
             }
+            return null
         }
     } catch (err) {
         logMessage([`apiGetTwitchUser ${err}`])
@@ -135,12 +134,11 @@ async function apiGetTwitchChannel(broadcasterId, attempt = 1) {
                     }
                 } else {
                     await logMessage([`-> Failed to get Twitch channel after ${pluralize(attempt, `attempt`, `attempts`)}`])
-                    return null
                 }
             } else {
                 await logMessage([`apiGetTwitchChannel`, response.status, renderObj(twitchData, `twitchData`)])
-                return null
             }
+            return null
         }
     } catch (err) {
         logMessage([`apiGetTwitchChannel ${err}`])
@@ -177,7 +175,6 @@ async function apiUpdateTwitchChannel(channel, requestBody, attempt = 1) {
                     }
                 } else {
                     await logMessage([`-> Failed to update Twitch channel after ${pluralize(attempt, `attempt`, `attempts`)}`])
-                    return null
                 }
             } else {
                 await logMessage([
@@ -189,8 +186,8 @@ async function apiUpdateTwitchChannel(channel, requestBody, attempt = 1) {
                             : `twitchData.data: []`
                         : renderObj(twitchData, `twitchData`)
                 ])
-                return null
             }
+            return null
         }
         return true
     } catch (err) {
@@ -230,12 +227,11 @@ async function apiGetGame(query, attempt = 1) {
                     }
                 } else {
                     await logMessage([`-> Failed to get game info after ${pluralize(attempt, `attempt`, `attempts`)}`])
-                    return null
                 }
             } else {
                 await logMessage([`apiGetGame`, response.status, renderObj(twitchData, `twitchData`)])
-                return null
             }
+            return null
         }
     } catch (err) {
         logMessage([`apiGetGame ${err}`])
@@ -308,12 +304,11 @@ async function apiGetTokenScope(channel, attempt = 1) {
                     }
                 } else {
                     await logMessage([`-> Failed to parse ${channel}'s access token after ${pluralize(attempt, `attempt`, `attempts`)}`])
-                    return null
                 }
             } else {
                 await logMessage([`apiGetTokenScope ${channel}`, response.status, renderObj(twitchData, `twitchData`)])
-                return null
             }
+            return null
         }
     } catch (err) {
         logMessage([`apiGetTokenScope ${err}`])
@@ -370,13 +365,12 @@ async function apiCreateEventSub(userId, type, version, attempt = 1) {
                     }
                 } else {
                     await logMessage([`-> Failed to create '${type}' EventSub for ${channel} after ${pluralize(attempt, `attempt`, `attempts`)}`])
-                    return null
                 }
             } else {
                 const twitchData = await response.json()
                 await logMessage([`createEventSub '${type}'`, response.status, renderObj(twitchData, `twitchData`)])
-                return null
             }
+            return null
         }
     } catch (err) {
         logMessage([`apiCreateEventSub ${channel} '${type}' ${err}`])
@@ -411,12 +405,11 @@ async function apiGetEventSubs(userId = null, attempt = 1) {
                     }
                 } else {
                     await logMessage([`-> Failed to get event subscriptions after ${pluralize(attempt, `attempt`, `attempts`)}`])
-                    return null
                 }
             } else {
                 await logMessage([`apiGetEventSubs`, response.status, renderObj(twitchData, `twitchData`)])
-                return null
             }
+            return null
         }
     } catch (err) {
         logMessage([`apiGetEventSubs ${err}`])
@@ -448,13 +441,12 @@ async function apiDeleteEventSub(id, type, status, attempt = 1) {
                     }
                 } else {
                     await logMessage([`-> Failed to delete '${type}' EventSub after ${pluralize(attempt, `attempt`, `attempts`)}`])
-                    return null
                 }
             } else {
                 const twitchData = await response.json()
                 await logMessage([`apiDeleteEventSub`, response.status, renderObj(twitchData, `twitchData`)])
-                return null
             }
+            return null
         }
     } catch (err) {
         logMessage([`apiDeleteEventSub '${type}' ${err}`])
@@ -547,12 +539,11 @@ async function apiShoutOut(fromId, toId, moderatorName, moderatorId, accessToken
                 } else {
                     const twitchData = await response.json()
                     await logMessage([`apiShoutOut`, response.status, renderObj(twitchData, `twitchData`)])
-                    return null
                 }
             } else {
                 await logMessage([`-> Failed to post shoutout after ${pluralize(attempt, `attempt`, `attempts`)}`])
-                return null
             }
+            return null
         }
     } catch (err) {
         logMessage([`apiShoutOut ${err}`])
@@ -595,12 +586,11 @@ async function apiPostAnnouncement(channel, broadcasterId, moderatorId, moderato
                 } else {
                     const twitchData = await response.json()
                     await logMessage([`apiPostAnnouncement`, response.status, renderObj(twitchData, `twitchData`)])
-                    return null
                 }
             } else {
                 await logMessage([`-> Failed to post announcement after ${pluralize(attempt, `attempt`, `attempts`)}`])
-                return null
             }
+            return null
         }
     } catch (err) {
         logMessage([`apiPostAnnouncement ${err}`])
@@ -648,12 +638,11 @@ async function apiStartPoll(channel, broadcasterId, title, arrChoices, duration,
                     }
                 } else {
                     await logMessage([`-> Failed to start poll after ${pluralize(attempt, `attempt`, `attempts`)}`])
-                    return null
                 }
             } else {
                 await logMessage([`apiStartPoll`, response.status, renderObj(twitchData, `twitchData`)])
-                return null
             }
+            return null
         }
     } catch (err) {
         logMessage([`apiStartPoll ${err}`])
@@ -692,12 +681,11 @@ async function apiEndPoll(channel, broadcasterId, pollId, status, accessToken, r
                     }
                 } else {
                     await logMessage([`-> Failed to end poll after ${pluralize(attempt, `attempt`, `attempts`)}`])
-                    return null
                 }
             } else {
                 await logMessage([`apiEndPoll`, response.status, renderObj(twitchData, `twitchData`)])
-                return null
             }
+            return null
         }
     } catch (err) {
         logMessage([`apiEndPoll ${err}`])
@@ -756,12 +744,11 @@ async function apiBanUsers(broadcasterId, moderatorName, moderatorId, arrUsers, 
                         }
                     } else {
                         await logMessage([`-> Failed to ban user after ${pluralize(attempt, `attempt`, `attempts`)}`])
-                        return null
                     }
                 } else {
                     await logMessage([`apiBanUsers`, response.status, renderObj(twitchData, `twitchData`)])
-                    return null
                 }
+                return null
             }
         } catch (err) {
             logMessage([`apiBanUsers ${err}`])
@@ -798,12 +785,11 @@ async function apiGetStreamTwitchEmotes(broadcasterId, attempt = 1) {
                     }
                 } else {
                     await logMessage([`-> Failed to get channel emotes after ${pluralize(attempt, `attempt`, `attempts`)}`])
-                    return null
                 }
             } else {
                 await logMessage([`apiGetStreamTwitchEmotes`, response.status, renderObj(twitchData, `twitchData`)])
-                return null
             }
+            return null
         }
     } catch (err) {
         logMessage([`apiGetStreamTwitchEmotes ${err}`])
@@ -837,12 +823,11 @@ async function apiGetGlobalTwitchEmotes(attempt = 1) {
                     }
                 } else {
                     await logMessage([`-> Failed to get channel emotes after ${pluralize(attempt, `attempt`, `attempts`)}`])
-                    return null
                 }
             } else {
                 await logMessage([`apiGetGlobalTwitchEmotes`, response.status, renderObj(twitchData, `twitchData`)])
-                return null
             }
+            return null
         }
     } catch (err) {
         logMessage([`apiGetGlobalTwitchEmotes ${err}`])
