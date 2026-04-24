@@ -1,3 +1,4 @@
+const DEV = process.env.DEV
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings, lemonyFresh, users, mods, joinedChatrooms } = require(`../data`)
@@ -224,5 +225,40 @@ module.exports = {
         users[BOT_USERNAME].channels?.[channel].points || users[BOT_USERNAME].channels?.[channel].points === 0
             ? bot.say(chatroom, `I have ${pluralize(users[BOT_USERNAME].channels[channel].points, `point`, `points`)}!`)
             : bot.say(chatroom, `I don't know how many points I have!`)
+    },
+    collectUserData(props) {
+        const floatTwo = (num) => Math.round(num * 100) / 100
+
+        const totalUsers = Object.keys(users).length
+        const usersNicknames = Object.keys(users).map(user => users[user].nickname)
+        const usersLemons = Object.keys(users).map(user => users[user].lemons)
+        const usersHangmanWins = Object.keys(users).map(user => users[user].hangmanWins)
+        const usersChannels = Object.keys(users).filter(user => ![BOT_USERNAME, DEV].includes(user)).map(user => Object.keys(users[user].channels).length)
+
+        const usersWithNicknames = usersNicknames.filter(el => el).length
+        const percentUsersWithNicknames = floatTwo(usersWithNicknames / totalUsers * 100)
+        console.log(`${percentUsersWithNicknames}% of users have nicknames (${usersWithNicknames} out of ${totalUsers})`)
+
+        const totalUsersLemons = usersLemons.reduce((acc, curr) => acc + curr, 0)
+        const averageUsersLemons = floatTwo(totalUsersLemons / totalUsers)
+        console.log(`The average user has ${averageUsersLemons} lemons - ${totalUsersLemons} total`)
+
+        const usersWithLemons = usersLemons.filter(el => el)
+        const averageLemonsOfUsersWithLemons = floatTwo(usersWithLemons.reduce((acc, curr) => acc + curr, 0) / usersWithLemons.length)
+        console.log(`${floatTwo(usersWithLemons.length / totalUsers * 100)}% of users have 1+ lemons (${usersWithLemons.length}) - the average user with lemons has ${averageLemonsOfUsersWithLemons}`, totalUsersLemons === usersWithLemons.reduce((acc, curr) => acc + curr, 0))
+
+        const totalUsersHangmanWins = usersHangmanWins.reduce((acc, curr) => acc + curr, 0)
+        const averageUsersHangmanWins = floatTwo(totalUsersHangmanWins / usersHangmanWins.length)
+        console.log(`The average user has ${averageUsersHangmanWins} Hangman wins - ${totalUsersHangmanWins} total`)
+
+        const usersWithHangmanWins = usersHangmanWins.filter(el => el)
+        const averageHangmanWinsOfUsersWithHangmanWins = floatTwo(usersWithHangmanWins.filter(el => el).reduce((acc, curr) => acc + curr, 0) / usersWithHangmanWins.length)
+        console.log(`${floatTwo(usersWithHangmanWins.length / totalUsers * 100)}% of users have 1+ Hangman wins (${usersWithHangmanWins.length}) - the average user with Hangman wins has ${averageHangmanWinsOfUsersWithHangmanWins}`, totalUsersHangmanWins === usersWithHangmanWins.reduce((acc, curr) => acc + curr, 0))
+
+        const usersWithChannels = usersChannels.filter(el => el)
+        const usersWithNoChannels = usersChannels.filter(el => el === 0)
+        const averageChannelsOfUsersWithChannels = floatTwo(usersWithChannels.filter(el => el).reduce((acc, curr) => acc + curr, 0) / usersWithChannels.length)
+        console.log(`${floatTwo(usersWithNoChannels.length / (totalUsers - 2) * 100)}% of users are in zero channels (${usersWithNoChannels.length}) - ${floatTwo(usersWithChannels.length / (totalUsers - 2) * 100)}% of users are in 1+ channel (${usersWithChannels.length})`)
+        console.log(`The average user with channels is in ${averageChannelsOfUsersWithChannels} channels`)
     }
 }
