@@ -119,6 +119,7 @@ const commands = {
 
     '!lemonboard': useLemonRank,
     '!lemonrank': useLemonRank,
+    '!toplemons': useLemonRank,
 
     '!friend': sayFriends,
     '!friends': sayFriends,
