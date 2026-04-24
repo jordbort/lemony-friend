@@ -25,6 +25,10 @@ module.exports = {
             const maxUses = Math.max(...Object.keys(lemCmds).map(cmd => lemCmds[cmd].uses))
             const mostUsedLemcmd = Object.keys(lemCmds).filter(cmd => lemCmds[cmd].uses === maxUses)
             const randNum = Math.floor(Math.random() * numbers.length)
+            const totalLemons = Object.keys(users).map(user => users[user].lemons).reduce((acc, curr) => acc + curr, 0)
+            const percentNicknames = Math.round(Object.keys(users).map(user => users[user].nickname).filter(el => el).length / Object.keys(users).length * 10000) / 100
+            const hangmanWinners = Object.keys(users).filter(user => users[user].hangmanWins).length
+            const hangmanAverageWins = Math.round(Object.keys(users).map(user => users[user].hangmanWins).reduce((acc, curr) => acc + curr, 0) / hangmanWinners * 100) / 100
 
             const joinMessages = [
                 `Let's see how long before I crash ${dumbEmote}`,
@@ -60,7 +64,22 @@ module.exports = {
                         ? neutralEmote
                         : maxUses < 100
                             ? positiveEmote
-                            : hypeEmote}`
+                            : hypeEmote}`,
+                `${percentNicknames}% of users have nicknames! ${percentNicknames === 0
+                    ? dumbEmote
+                    : percentNicknames < 4
+                        ? neutralEmote
+                        : percentNicknames < 8
+                            ? positiveEmote
+                            : hypeEmote}`,
+                `${hangmanWinners} of users have won a game of Hangman, and among them the average total wins is ${hangmanAverageWins}! ${hangmanAverageWins === 0
+                    ? dumbEmote
+                    : hangmanAverageWins < 3
+                        ? neutralEmote
+                        : hangmanAverageWins < 6
+                            ? positiveEmote
+                            : hypeEmote}`,
+                `${pluralize(totalLemons, `lemon is`, `lemons are`)} in circulation! ${lemonEmote}`
             ]
 
             if (lemonyFresh[channel].followEmotes.length) { joinMessages.push(`I know ${pluralize(lemonyFresh[channel].followEmotes.length, `follow emote`, `follow emotes`)} in ${channel}'s channel! ${positiveEmote}`) }
