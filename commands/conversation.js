@@ -529,15 +529,6 @@ module.exports = {
         const url = `https://multitwitch.live/${usernames}`
         bot.say(chatroom, url)
     },
-    huge(props) {
-        const { bot, chatroom, args } = props
-        const message = args.map(word => word.toUpperCase()).join(` `)
-        if (!message) {
-            bot.say(chatroom, `HOW AM I SUPPOSED TO MAKE TEXT BIGGER THAN THIS`)
-            return
-        }
-        bot.say(chatroom, message)
-    },
     tiny(props) {
         const { bot, chatroom, args } = props
         const message = transformText(`superscript`, args.join(` `))
@@ -552,6 +543,15 @@ module.exports = {
         const message = transformText(`cursive`, args.join(` `))
         if (!message) {
             bot.say(chatroom, `𝒸𝓊𝓇𝓈𝒾𝓋𝑒`)
+            return
+        }
+        bot.say(chatroom, message)
+    },
+    bold(props) {
+        const { bot, chatroom, args, command } = props
+        const message = transformText(`bold`, args.join(` `))
+        if (!message) {
+            bot.say(chatroom, command === `!big` ? `𝐇𝐔𝐆𝐄` : command === `!huge` ? `𝐁𝐈𝐆` : `𝐁𝐎𝐋𝐃`)
             return
         }
         bot.say(chatroom, message)

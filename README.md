@@ -36,6 +36,7 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!chant` - Use this command to have lemony_friend chant a phrase in all caps in chat.
 - `!cursive` - Use this command with a message to have lemony_friend repeat it in cursive text.
 - `!tiny` (or `!small`) - Use this command with a message to have lemony_friend repeat it in superscript text.
+- `!bold` (or `!big` or `!huge`) - Use this command with a message to have lemony_friend repeat it in bold text.
 - `!yell` - Use this command with a message to send that message across all channels where someone has chatted in the past hour.
 - `!define` (or `!definition` or `!meaning`) - This command can be used followed by a word to look up its definition using an API from [API Ninjas](https://api-ninjas.com/).
 - `!ud` - This command can be used followed by a word or phrase to look up its definition using the [Unofficial Urban Dictionary API]([https://api-ninjas.com](https://unofficialurbandictionaryapi.com)/).
