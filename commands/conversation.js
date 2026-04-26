@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings, users, lemonyFresh } = require(`../data`)
-const { getContextEmote, pluralize, resetCooldownTimer, logMessage, transformText, logArr, twitchUsernamePattern, containsInaccessibleEmotes } = require(`../utils`)
+const { getContextEmote, pluralize, resetCooldownTimer, logMessage, transformText, logArr, twitchUsernamePattern, containsInaccessibleEmotes, arrToList } = require(`../utils`)
 
 const { autoBanUser } = require(`./twitch`)
 
@@ -122,8 +122,22 @@ function handleGreetAll(bot, chatroom, channel, username) {
     } else { logMessage([`-> Timer in ${channel} 'greetAll' is not currently listening`]) }
 }
 
+const newChatters = {}
+function resetNewChatters(channel) {
+    newChatters[channel].timer = 0
+    newChatters[channel].names = []
+}
+
 module.exports = {
     handleGreetOne,
+    addNewChattersBatch(channel) {
+        if (!(channel in newChatters)) {
+            newChatters[channel] = {
+                timer: 0,
+                names: []
+            }
+        }
+    },
     handleNewChatter(props) {
         const { bot, chatroom, username, message, channel } = props
         logMessage([`> handleNewChatter(channel: '${channel}', username: '${username}')`])
@@ -133,28 +147,33 @@ module.exports = {
             const regex = new RegExp(phrase, `i`)
             if (regex.test(message)) {
                 logMessage([`${username.toUpperCase()} MATCHED AUTO-BAN PATTERN:`, regex])
-                autoBanUser(props)
+                // autoBanUser(props)
                 return
             }
         }
 
         if (lemonyFresh[channel].timers[`new-chatter`].listening) {
-            resetCooldownTimer(channel, `new-chatter`)
-
-            const user = users[username]
             const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
-            const greetings = [
-                `Hi ${user.displayName}, welcome to the stream!`,
-                `Hey ${user.displayName}, welcome to the stream!`,
-                `Welcome to the stream, ${user.displayName}!`,
-                `Hi ${user.displayName}, welcome in!`,
-                `Hi @${user.displayName}`,
-                `Hello @${user.displayName} welcome in!`,
-                `@${user.displayName} welcome 2 ${channelNickname} strem`,
-            ]
-            const greeting = greetings[Math.floor(Math.random() * greetings.length)]
-            const greetingEmote = getContextEmote(`greeting`, channel)
-            setTimeout(() => bot.say(chatroom, `${greeting} ${greetingEmote}`), 5000)
+            const obj = newChatters[channel]
+            obj.names.push(username)
+            clearTimeout(obj.timer)
+
+            obj.timer = setTimeout(() => {
+                resetCooldownTimer(channel, `new-chatter`)
+                const greetingEmote = getContextEmote(`greeting`, channel)
+                const greetings = [
+                    `Hi there ${arrToList(obj.names.map(name => users[name].nickname || users[name].displayName))}, welcome to the stream! ${greetingEmote}`,
+                    `Hey ${arrToList(obj.names.map(name => users[name].nickname || users[name].displayName))}, welcome to the stream! ${greetingEmote}`,
+                    `Welcome to the stream, ${arrToList(obj.names.map(name => users[name].nickname || users[name].displayName))}! ${greetingEmote}`,
+                    `Hi ${arrToList(obj.names.map(name => users[name].nickname || users[name].displayName))}, welcome in! ${greetingEmote}`,
+                    `Hi ${obj.names.map(name => `@${users[name].displayName}`).join(` ${greetingEmote} hi `)} ${greetingEmote}`,
+                    `Hello ${obj.names.map(name => `@${users[name].displayName}`).join(` ${greetingEmote} hello `)} ${obj.names.length === 1 ? `welcome in! ${greetingEmote}` : `${greetingEmote} welcome in!`}`,
+                    `${obj.names.map(name => `@${users[name].nickname || users[name].displayName}`).join(` `)} welcome 2 ${channelNickname} strem ${greetingEmote}`
+                ]
+                const greeting = greetings[Math.floor(Math.random() * greetings.length)]
+                bot.say(chatroom, `${greeting}`)
+                resetNewChatters(channel)
+            }, 5000)
 
         } else { logMessage([`-> Timer in ${channel} 'newChatter' is not currently listening`]) }
     },
