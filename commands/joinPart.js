@@ -72,7 +72,7 @@ module.exports = {
                         : percentNicknames < 8
                             ? positiveEmote
                             : hypeEmote}`,
-                `${hangmanWinners} of users have won a game of Hangman, and among them the average total wins is ${hangmanAverageWins}! ${hangmanAverageWins === 0
+                `${pluralize(hangmanWinners, `user has`, `users have`)} won a game of Hangman, and among them the average total wins is ${hangmanAverageWins}! ${hangmanAverageWins === 0
                     ? dumbEmote
                     : hangmanAverageWins < 3
                         ? neutralEmote
