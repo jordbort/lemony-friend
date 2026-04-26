@@ -346,7 +346,7 @@ function handleShardDisabled(event) {
 }
 
 module.exports = {
-    addToBatch(channel) {
+    addNotificationsBatch(channel) {
         if (!(channel in batch)) {
             batch[channel] = {
                 follows: { timer: 0, names: [] },

@@ -10,9 +10,9 @@ const streakListener = require(`./commands/streaks`)
 const rollFunNumber = require(`./commands/funNumber`)
 
 const { useLemCmd } = require(`./commands/lemCmds`)
-const { addToBatch } = require(`./events/notifications`)
 const { sayJoinMessage } = require(`./commands/joinPart`)
 const { hangmanListener } = require(`./patterns/hangman`)
+const { addNotificationsBatch } = require(`./events/notifications`)
 const { initWebSocket, closeWebSocket } = require(`./events/webSockets`)
 const { apiGetConduits, apiCreateConduit } = require(`./events/conduits`)
 const { getGlobalBttvEmotes, getStreamBttvEmotes } = require(`./commands/external`)
@@ -87,7 +87,7 @@ module.exports = {
             if (settings.sayJoinMessage) { sayJoinMessage(this, chatroom) }
 
             // Create WebSocket session
-            addToBatch(channel)
+            addNotificationsBatch(channel)
             initWebSocket(this, channel)
         }
 
