@@ -128,7 +128,7 @@ module.exports = {
                 ? console.log(
                     shardId,
                     channel,
-                    ws.timer._destroyed ? `INACTIVE` : `ACTIVE`,
+                    ws.timer?._destroyed ? `INACTIVE` : ws.timer?._destroyed === undefined ? `NONE` : `ACTIVE`,
                     ws.arr.length,
                     ws.arr.map(ws => ws?._closeFrameSent || ws?._closeFrameReceived ? `CLOSED` : `OPEN`),
                     ws.sessionId,
