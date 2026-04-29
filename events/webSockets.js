@@ -1,7 +1,7 @@
 const WebSocket = require(`ws`)
 
 const { logMessage } = require(`../utils`)
-const { joinedChatrooms } = require(`../data`)
+const { joinedChatrooms, settings } = require(`../data`)
 
 const { assignToConduit } = require(`./conduits`)
 const { updateEventSubs } = require(`../commands/twitch`)
@@ -15,7 +15,8 @@ function initWebSocket(bot, channel) {
             sessionId: ``,
             arr: [],
             timer: null,
-            timedOut: false
+            timedOut: false,
+            reportClosure: false
         }
     }
     if (!webSockets[channel].sessionId) {
@@ -27,10 +28,10 @@ function openWebSocket(bot, channel, path = `wss://eventsub.wss.twitch.tv/ws`) {
     webSockets[channel].arr.push(new WebSocket(path))
     const ws = webSockets[channel].arr[webSockets[channel].arr.length - 1]
 
-    // ws.onopen = () => { logMessage([`> WebSocket connection established for '${channel}'`]) }
-    ws.onmessage = (event) => { handleMessage(bot, channel, event) }
-    ws.onclose = (event) => { handleClose(bot, channel, event) }
-    ws.onerror = (error) => { logMessage([`> WebSocket error for '${channel}':`, error.message || `(no message)`]) }
+    ws.onopen = function () { if (settings.reportWebSocketActivity) logMessage([`> WebSocket connection established for '${channel}'`]) }
+    ws.onmessage = function (event) { handleMessage(bot, channel, event) }
+    ws.onclose = function (event) { handleClose(bot, channel, event) }
+    ws.onerror = function (error) { if (settings.reportWebSocketActivity) logMessage([`> WebSocket error for '${channel}':`, error.message || `(no message)`]) }
 }
 
 function handleMessage(bot, channel, event) {
@@ -63,11 +64,16 @@ function handleClose(bot, channel, event) {
 
     // Reopen unless closed on purpose (unless keepAlive timed out)
     const { code, reason, wasClean } = event
-    ws.timedOut
-        ? (ws.timedOut = false, openWebSocket(bot, channel))
-        : code === 1000
-            ? logMessage([`> WebSocket connection for '${channel}' ${wasClean ? `closed` : `died unexpectedly`} with code ${code}${reason ? `: '${reason}'` : ``}`])
-            : openWebSocket(bot, channel)
+    if (settings.reportWebSocketActivity || ws.reportClosure) {
+        logMessage([`> WebSocket connection for '${channel}' ${wasClean ? `closed` : `died unexpectedly`} with code ${code}${reason ? `: '${reason}'` : ``}`])
+        if (ws.reportClosure) ws.reportClosure = false
+    }
+    if (ws.timedOut) {
+        ws.timedOut = false
+        openWebSocket(bot, channel)
+    } else if (code !== 1000) {
+        openWebSocket(bot, channel)
+    }
 }
 
 function handleWelcome(channel, event) {
@@ -105,10 +111,11 @@ function keepAlive(channel) {
     }, 35000)
 }
 
-function closeWebSocket(channel) {
+function closeWebSocket(channel, onPurpose = false) {
     const ws = webSockets[channel]
     clearTimeout(ws.timer)
     ws.sessionId = ``
+    if (onPurpose) ws.reportClosure = true
     ws.arr.length
         ? ws.arr[ws.arr.length - 1].close()
         : logMessage([`Warning: No WebSocket to close for '${channel}'`])

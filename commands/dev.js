@@ -111,15 +111,15 @@ module.exports = {
         if (args.length) {
             if (args[0] === `all`) {
                 for (const chatroom of bot.channels) {
-                    if (chatroom.substring(1) in lemonyFresh) { closeWebSocket(chatroom.substring(1)) }
+                    if (chatroom.substring(1) in lemonyFresh) { closeWebSocket(chatroom.substring(1), true) }
                 }
             } else {
                 for (const arg of args) {
                     const streamer = getToUser(arg)
-                    if (streamer in lemonyFresh) { closeWebSocket(streamer) }
+                    if (streamer in lemonyFresh) { closeWebSocket(streamer, true) }
                 }
             }
-        } else { closeWebSocket(channel) }
+        } else { closeWebSocket(channel, true) }
     },
     refreshEventSubs(props) {
         const { bot, args, channel } = props

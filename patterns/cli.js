@@ -455,6 +455,7 @@ function updateSettingsDev(props, args) {
         [/^debug$|^d$/i]: { name: `debug`, func: updateBool },
         [/^autoBan$|^ab$/i]: { name: `autoBan`, func: updatePhraseArr },
         [/^ignoredBots?$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
+        [/^reportWebSocketActivity$|^rwsa$/i]: { name: `reportWebSocketActivity`, func: updateBool },
         // [/^chantEmote$|^ce$/i]: { name: `chantEmote`, func: updateStr },
         [/^lemonLeaderCount$|^llc$/i]: { name: `lemonLeaderCount`, func: updateNum },
         [/^timeZone$|^tz$/i]: { name: `timeZone`, func: updateTimeZone },

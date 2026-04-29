@@ -28,6 +28,7 @@ settings.currentDate = new Date().toLocaleDateString(settings.timeLocale, { year
 settings.usedPokeball = settings.usedPokeball || ""
 settings.firstConnection = true
 settings.debug = settings.debug || true
+settings.reportWebSocketActivity = settings.reportWebSocketActivity || true
 settings.hideNonDevChannel = settings.hideNonDevChannel || false
 settings.highlightBotMessage = settings.highlightBotMessage || true
 settings.logTime = settings.logTime || true
