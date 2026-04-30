@@ -16,38 +16,38 @@ const lemCmds = getMemory(`lemCmds`) || {}
 const wordBank = getMemory(`wordBank`) || {}
 
 // Set default values, if not set
-settings.botAccessToken = settings.botAccessToken || ""
-settings.conduitId = settings.conduitId || ""
-settings.botMood = settings.botMood || "happy"
-settings.chantEmote = settings.chantEmote || "👏️"
-settings.joinMessage = settings.joinMessage || ""
-settings.timeLocale = settings.timeLocale || "en-US"
-settings.timeZone = settings.timeZone || "America/New_York"
+settings.botAccessToken = settings.botAccessToken || ``
+settings.conduitId = settings.conduitId || ``
+settings.botMood = settings.botMood || `happy`
+settings.chantEmote = settings.chantEmote || `👏️`
+settings.joinMessage = settings.joinMessage || ``
+settings.timeLocale = settings.timeLocale || `en-US`
+settings.timeZone = settings.timeZone || `America/New_York`
 settings.startDate = new Date()
 settings.currentDate = new Date().toLocaleDateString(settings.timeLocale, { year: `numeric`, month: `long`, day: `numeric`, timeZone: settings.timeZone })
-settings.usedPokeball = settings.usedPokeball || ""
+settings.usedPokeball = settings.usedPokeball || ``
 settings.firstConnection = true
-settings.debug = settings.debug || true
-settings.reportWebSocketActivity = settings.reportWebSocketActivity || true
-settings.hideNonDevChannel = settings.hideNonDevChannel || false
-settings.highlightBotMessage = settings.highlightBotMessage || true
-settings.logTime = settings.logTime || true
-settings.playPCG = settings.playPCG || true
-settings.realRPS = settings.realRPS || true
-settings.sayJoinMessage = settings.sayJoinMessage || true
-settings.sayPartMessage = settings.sayPartMessage || true
-settings.chantCount = settings.chantCount || 8
-settings.funNumberCount = settings.funNumberCount || 75
-settings.funNumberTotal = settings.funNumberTotal || 75
-settings.funTimerDuration = settings.funTimerDuration || 1800000
-settings.hangmanChances = settings.hangmanChances || 6
-settings.hangmanLemonThreshold = settings.hangmanLemonThreshold || 2
-settings.hangmanSignupSeconds = settings.hangmanSignupSeconds || 30
-settings.lemonLeaderCount = settings.lemonLeaderCount || 5
-settings.maxCountdownDuration = settings.maxCountdownDuration || 7200000
-settings.maxWelcomeBackMinutes = settings.maxWelcomeBackMinutes || 640
-settings.minWelcomeBackMinutes = settings.minWelcomeBackMinutes || 120
-settings.pokeballQuantity = settings.pokeballQuantity || 10
+settings.debug = settings.debug === undefined ? true : settings.debug
+settings.reportWebSocketActivity = settings.reportWebSocketActivity === undefined ? true : settings.reportWebSocketActivity
+settings.hideNonDevChannel = settings.hideNonDevChannel === undefined ? false : settings.hideNonDevChannel
+settings.highlightBotMessage = settings.highlightBotMessage === undefined ? true : settings.highlightBotMessage
+settings.logTime = settings.logTime === undefined ? true : settings.logTime
+settings.playPCG = settings.playPCG === undefined ? true : settings.playPCG
+settings.realRPS = settings.realRPS === undefined ? true : settings.realRPS
+settings.sayJoinMessage = settings.sayJoinMessage === undefined ? true : settings.sayJoinMessage
+settings.sayPartMessage = settings.sayPartMessage === undefined ? true : settings.sayPartMessage
+settings.chantCount = settings.chantCount === undefined ? 8 : settings.chantCount
+settings.funNumberCount = settings.funNumberCount === undefined ? 75 : settings.funNumberCount
+settings.funNumberTotal = settings.funNumberTotal === undefined ? 75 : settings.funNumberTotal
+settings.funTimerDuration = settings.funTimerDuration === undefined ? 1800000 : settings.funTimerDuration
+settings.hangmanChances = settings.hangmanChances === undefined ? 6 : settings.hangmanChances
+settings.hangmanLemonThreshold = settings.hangmanLemonThreshold === undefined ? 2 : settings.hangmanLemonThreshold
+settings.hangmanSignupSeconds = settings.hangmanSignupSeconds === undefined ? 30 : settings.hangmanSignupSeconds
+settings.lemonLeaderCount = settings.lemonLeaderCount === undefined ? 5 : settings.lemonLeaderCount
+settings.maxCountdownDuration = settings.maxCountdownDuration === undefined ? 7200000 : settings.maxCountdownDuration
+settings.maxWelcomeBackMinutes = settings.maxWelcomeBackMinutes === undefined ? 640 : settings.maxWelcomeBackMinutes
+settings.minWelcomeBackMinutes = settings.minWelcomeBackMinutes === undefined ? 120 : settings.minWelcomeBackMinutes
+settings.pokeballQuantity = settings.pokeballQuantity === undefined ? 10 : settings.pokeballQuantity
 settings.autoBan = settings.autoBan || []
 
 settings.baseEmotes = settings.baseEmotes || {}
@@ -67,7 +67,7 @@ settings.globalEmotes.bttv = settings.globalEmotes.bttv || []
 
 settings.ignoredBots = settings.ignoredBots || []
 settings.knownChannels = settings.knownChannels || {}
-settings.streakMinutesThreshold = settings.streakMinutesThreshold || 10
+settings.streakMinutesThreshold = settings.streakMinutesThreshold === undefined ? 10 : settings.streakMinutesThreshold
 
 wordBank.nouns = wordBank.nouns || []
 wordBank.verbs = wordBank.verbs || []
