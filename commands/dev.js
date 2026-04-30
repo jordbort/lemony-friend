@@ -260,5 +260,21 @@ module.exports = {
         const averageChannelsOfUsersWithChannels = floatTwo(usersWithChannels.filter(el => el).reduce((acc, curr) => acc + curr, 0) / usersWithChannels.length)
         console.log(`${floatTwo(usersWithNoChannels.length / (totalUsers - 2) * 100)}% of users are in zero channels (${usersWithNoChannels.length}) - ${floatTwo(usersWithChannels.length / (totalUsers - 2) * 100)}% of users are in 1+ channel (${usersWithChannels.length})`)
         console.log(`The average user with channels is in ${averageChannelsOfUsersWithChannels} channels`)
+    },
+    countEmptyUsers(props) {
+        const { bot, chatroom, channel } = props
+        const emptyUsers = Object.keys(users).filter(user => !users[user].nickname && !users[user].lemons && !users[user].hangmanWins && !Object.keys(users[user].channels).length)
+        const emote = emptyUsers.length ? getContextEmote(`negative`, channel) : getContextEmote(`positive`, channel)
+        const reply = `There ${emptyUsers.length === 1 ? `is` : `are`} ${pluralize(emptyUsers.length, `empty user`, `empty users`)}! ${emote}`
+        bot.say(chatroom, reply)
+    },
+    deleteEmptyUsers(props) {
+        const { bot, chatroom, channel } = props
+        const emptyUsers = Object.keys(users).filter(user => !users[user].nickname && !users[user].lemons && !users[user].hangmanWins && !Object.keys(users[user].channels).length)
+        emptyUsers.forEach(username => delete users[username])
+
+        const neutralEmote = getContextEmote(`neutral`, channel)
+        const reply = `Deleted ${pluralize(emptyUsers.length, `empty user`, `empty users`)}! ${neutralEmote}`
+        bot.say(chatroom, reply)
     }
 }
