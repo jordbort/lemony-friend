@@ -150,6 +150,11 @@ async function logMessage(messages, time, channel, username, color, self) {
     }
 }
 
+function logArr(arr) {
+    const typeArr = arr.map(el => typeof el === `string` ? `'${el}'` : `${el}`)
+    return `[${typeArr.length ? ` ${typeArr.join(`, `)} ` : ``}]`
+}
+
 const superscriptTable = {
     'a': `ᵃ`,
     'b': `ᵇ`,
@@ -348,6 +353,7 @@ module.exports = {
     pluralize,
     renderObj,
     logMessage,
+    logArr,
     async handleUncaughtException(bot, err, location) {
         await printMemory(bot.channels)
         await logMessage([`> handleUncaughtException(err.message: '${err.message}', location: '${location}')`])
@@ -364,14 +370,6 @@ module.exports = {
         await logMessage([err.stack])
     },
     coinFlip() { return Math.floor(Math.random() * 2) },
-    logArr(arr) {
-        const typeArr = arr.map(el => typeof el === `string`
-            ? `'${el}'`
-            : `${el}`)
-        return `[${typeArr.length
-            ? ` ${typeArr.join(`, `)} `
-            : ``}]`
-    },
     getContextEmote(type, channel) {
         const baseType = `${type}Emotes`
         const emotes = [...settings.baseEmotes[baseType]]
@@ -404,7 +402,7 @@ module.exports = {
                 }
             }
         }
-        // logMessage([`> getContextEmote(type: '${type}', channel: '${channel}', emotes: '${emotes.join(`', '`)}')`])
+        // logMessage([`> getContextEmote(type: '${type}', channel: '${channel}', emotes: ${logArr(emotes)})`])
 
         const emote = emotes[Math.floor(Math.random() * emotes.length)] || ``
         return emote
@@ -710,7 +708,7 @@ module.exports = {
                 .filter((el, idx, self) => self.indexOf(el) === idx)
 
             if (unrecognizedEmotes.length) {
-                logMessage([`> containsUnrecognizedEmotes: ${unrecognizedEmotes.join(`, `)}`])
+                logMessage([`> containsUnrecognizedEmotes: ${logArr(unrecognizedEmotes)}`])
                 return true
             }
         }
