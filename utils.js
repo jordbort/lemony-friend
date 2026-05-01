@@ -384,14 +384,23 @@ module.exports = {
         }
 
         for (const member in lemonyFresh) {
-            for (const emote of lemonyFresh[member].contextEmotes[baseType]) {
-                if ((lemonyFresh[member].followEmotes.includes(emote) && member === channel)
-                    || (lemonyFresh[member].followEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
-                    || (lemonyFresh[member].subEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
-                    || (lemonyFresh[member].bttvEmotes.includes(emote) && member === channel)
+            const stream = lemonyFresh[member]
+            for (const emote of stream.contextEmotes[baseType]) {
+                if ((stream.followEmotes.includes(emote) && member === channel)
+                    || (stream.followEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
+                    || (stream.subEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
+                    || (stream.bttvEmotes.includes(emote) && member === channel)
                     || settings.globalEmotes.twitch.includes(emote)
                     || settings.globalEmotes.bttv.includes(emote)) {
                     emotes.push(emote)
+                }
+                if (!stream.followEmotes.includes(emote)
+                    && !stream.subEmotes.includes(emote)
+                    && !stream.bttvEmotes.includes(emote)
+                    && !settings.globalEmotes.twitch.includes(emote)
+                    && !settings.globalEmotes.bttv.includes(emote)) {
+                    stream.contextEmotes[baseType].splice(stream.contextEmotes[baseType].indexOf(emote))
+                    logMessage([`-> Deleted unrecognized emote '${emote}' from ${baseType}`])
                 }
             }
         }
