@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings, lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
-const { getContextEmote, pluralize, logMessage, logArr, coinFlip } = require(`../utils`)
+const { getContextEmote, pluralize, logMessage, logArr, coinFlip, transformText } = require(`../utils`)
 
 const numbers = require(`../numbers`)
 
@@ -702,6 +702,20 @@ function reportOneSixteenthChance(props) {
 
 }
 
+function transformMessage(props) {
+    const { bot, chatroom, message } = props
+    const types = [
+        `superscript`,
+        `cursive`,
+        `bold`,
+        `double-struck`
+    ]
+    const type = types[Math.floor(Math.random() * types.length)]
+    logMessage([`> transformMessage(type: '${type}')`])
+    const reply = transformText(type, message)
+    bot.say(chatroom, reply)
+}
+
 module.exports = function rollFunNumber(props, funNumber) {
     const { bot, chatroom, tags, message, channel, username, aprilFools } = props
     logMessage([`> rollFunNumber(channel: '${channel}', tags: ${Object.keys(tags).length}, username: '${username}', message: '${message}', funNumber: ${funNumber})`])
@@ -743,7 +757,8 @@ module.exports = function rollFunNumber(props, funNumber) {
         28: rememberPastMessage,
         29: lookForNumbers,
         30: sayWebSocketSessionId,
-        31: reportOneSixteenthChance
+        31: reportOneSixteenthChance,
+        32: transformMessage
     }
 
     if (funNumber in outcomes) {
