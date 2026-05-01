@@ -9,7 +9,9 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
-            `Add !bold command`,
+            `Implemented new fun number outcome`,
+            `Added !doublestruck command`,
+            `Added !bold command`,
             `Batched greeting first-time chatters`,
             `Implemented emote/text pyramid detection`,
             `Added search feature to lists`,
