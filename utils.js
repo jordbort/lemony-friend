@@ -517,13 +517,13 @@ module.exports = {
     initChannel(channel) {
         logMessage([`> initChannel(channel: '${channel}')`])
         lemonyFresh[channel] = { ...lemonyFresh[channel] }
-        lemonyFresh[channel].accessToken = lemonyFresh[channel]?.accessToken || mods[channel]?.accessToken || ``
-        lemonyFresh[channel].refreshToken = lemonyFresh[channel]?.refreshToken || mods[channel]?.refreshToken || ``
-        lemonyFresh[channel].subRaidMessage = lemonyFresh[channel]?.subRaidMessage || ``
-        lemonyFresh[channel].noSubRaidMessage = lemonyFresh[channel]?.noSubRaidMessage || ``
-        lemonyFresh[channel].followEmotes = lemonyFresh[channel]?.followEmotes || []
-        lemonyFresh[channel].subEmotes = lemonyFresh[channel]?.subEmotes || []
-        lemonyFresh[channel].bttvEmotes = lemonyFresh[channel]?.bttvEmotes || []
+        lemonyFresh[channel].accessToken = lemonyFresh[channel].accessToken || mods[channel].accessToken || ``
+        lemonyFresh[channel].refreshToken = lemonyFresh[channel].refreshToken || mods[channel].refreshToken || ``
+        lemonyFresh[channel].subRaidMessage = lemonyFresh[channel].subRaidMessage || ``
+        lemonyFresh[channel].noSubRaidMessage = lemonyFresh[channel].noSubRaidMessage || ``
+        lemonyFresh[channel].followEmotes = lemonyFresh[channel].followEmotes || []
+        lemonyFresh[channel].subEmotes = lemonyFresh[channel].subEmotes || []
+        lemonyFresh[channel].bttvEmotes = lemonyFresh[channel].bttvEmotes || []
         lemonyFresh[channel].contextEmotes = {
             lemonEmotes: [],
             neutralEmotes: [],
@@ -536,21 +536,21 @@ module.exports = {
             dumbEmotes: [],
             ...lemonyFresh[channel].contextEmotes
         }
-        lemonyFresh[channel].funnyCommands = lemonyFresh[channel]?.funnyCommands || []
-        lemonyFresh[channel].redeems = lemonyFresh[channel]?.redeems || []
-        lemonyFresh[channel].rollFunNumber = lemonyFresh[channel]?.rollFunNumber || true
-        lemonyFresh[channel].funTimer = 0
-        lemonyFresh[channel].funTimerGuesser = ``
-        lemonyFresh[channel].pollId = ``
-        lemonyFresh[channel].viewers = []
-        lemonyFresh[channel].streakThreshold = lemonyFresh[channel]?.streakThreshold || 3
-        lemonyFresh[channel].streamerEmoteStreakThreshold = lemonyFresh[channel]?.streamerEmoteStreakThreshold || 4
+        lemonyFresh[channel].funnyCommands = lemonyFresh[channel].funnyCommands || []
+        lemonyFresh[channel].redeems = lemonyFresh[channel].redeems || []
+        lemonyFresh[channel].rollFunNumber = lemonyFresh[channel].rollFunNumber === undefined ? true : lemonyFresh[channel].rollFunNumber
+        lemonyFresh[channel].funTimer = lemonyFresh[channel].funTimer === undefined ? 0 : lemonyFresh[channel].funTimer
+        lemonyFresh[channel].funTimerGuesser = lemonyFresh[channel].funTimerGuesser === undefined ? `` : lemonyFresh[channel].funTimerGuesser
+        lemonyFresh[channel].pollId = lemonyFresh[channel].pollId === undefined ? `` : lemonyFresh[channel].pollId
+        lemonyFresh[channel].viewers = lemonyFresh[channel].viewers || []
+        lemonyFresh[channel].streakThreshold = lemonyFresh[channel].streakThreshold === undefined ? 3 : lemonyFresh[channel].streakThreshold
+        lemonyFresh[channel].streamerEmoteStreakThreshold = lemonyFresh[channel].streamerEmoteStreakThreshold === undefined ? 4 : lemonyFresh[channel].streamerEmoteStreakThreshold
         lemonyFresh[channel].count = {
             name: ``,
             value: 0,
             ...lemonyFresh[channel].count
         }
-        lemonyFresh[channel].list = lemonyFresh[channel]?.list || [``]
+        lemonyFresh[channel].list = lemonyFresh[channel].list || [``]
         lemonyFresh[channel].hangman = {
             listening: false,
             signup: false,
