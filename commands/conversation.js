@@ -556,6 +556,15 @@ module.exports = {
         }
         bot.say(chatroom, message)
     },
+    doubleStruck(props) {
+        const { bot, chatroom, args, command } = props
+        const message = transformText(`double-struck`, args.join(` `))
+        if (!message) {
+            bot.say(chatroom, `𝕎𝕠𝕨`)
+            return
+        }
+        bot.say(chatroom, message)
+    },
     contextReact(props, context) {
         const { bot, chatroom, channel } = props
         const emote = getContextEmote(context, channel)
