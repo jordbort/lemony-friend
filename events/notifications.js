@@ -3,7 +3,8 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 const { lemonyFresh, mods, users, joinedChatrooms } = require(`../data`)
 const { logMessage, getContextEmote, updateMod, pluralize, arrToList } = require(`../utils`)
 
-const { apiGetTwitchChannel } = require(`../commands/twitch`)
+const { getStreamBttvEmotes } = require(`../commands/external`)
+const { apiGetTwitchChannel, getStreamTwitchEmotes } = require(`../commands/twitch`)
 
 const batch = {}
 function resetChannelBatch(type, channel) {
@@ -17,6 +18,8 @@ function resetChannelBatch(type, channel) {
 
 async function handleStreamOnline(bot, channel, event) {
     logMessage([`* ONLINE: ${event.broadcaster_user_login} started streaming`])
+    await getStreamTwitchEmotes(channel)
+    await getStreamBttvEmotes(channel)
 
     const streamer = channel in users
         ? users[channel].nickname || users[channel].displayName
