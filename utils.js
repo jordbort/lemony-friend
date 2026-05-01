@@ -592,8 +592,8 @@ module.exports = {
     initChannel(channel) {
         logMessage([`> initChannel(channel: '${channel}')`])
         lemonyFresh[channel] = { ...lemonyFresh[channel] }
-        lemonyFresh[channel].accessToken = lemonyFresh[channel].accessToken || mods[channel].accessToken || ``
-        lemonyFresh[channel].refreshToken = lemonyFresh[channel].refreshToken || mods[channel].refreshToken || ``
+        lemonyFresh[channel].accessToken = lemonyFresh[channel].accessToken || mods[channel]?.accessToken || ``
+        lemonyFresh[channel].refreshToken = lemonyFresh[channel].refreshToken || mods[channel]?.refreshToken || ``
         lemonyFresh[channel].subRaidMessage = lemonyFresh[channel].subRaidMessage || ``
         lemonyFresh[channel].noSubRaidMessage = lemonyFresh[channel].noSubRaidMessage || ``
         lemonyFresh[channel].followEmotes = lemonyFresh[channel].followEmotes || []
