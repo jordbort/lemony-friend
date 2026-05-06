@@ -1263,7 +1263,7 @@ module.exports = {
         const accessToken = lemonyFresh[channel].accessToken
         const refreshToken = lemonyFresh[channel].refreshToken
 
-        const greetingEmote = getContextEmote(`greeting`, channel)
+        const byeEmote = getContextEmote(`bye`, channel)
         const negativeEmote = getContextEmote(`negative`, channel)
         const dumbEmote = getContextEmote(`dumb`, channel)
 
@@ -1280,7 +1280,7 @@ module.exports = {
 
         if (success) {
             delete users[username]
-            const reply = `Begone, spammer! ${greetingEmote}`
+            const reply = `Begone, spammer! ${byeEmote}`
             bot.say(chatroom, reply)
         } else if (success === null) {
             bot.say(chatroom, `Failed to autoban user! ${negativeEmote} Please update ${channel in users ? users[channel].displayName : channel}'s credentials by using !access again!`)
