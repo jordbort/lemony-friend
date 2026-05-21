@@ -1,4 +1,5 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
+const REDIRECT_URI = process.env.REDIRECT_URI
 
 const { users } = require(`../data`)
 const { getContextEmote, logMessage, renderObj } = require(`../utils`)
