@@ -92,7 +92,7 @@ function handleWelcome(channel, event) {
 
 function handleReconnect(bot, channel, event) {
     const { status, reconnect_url } = event.payload.session
-    logMessage([`* RECONNECT '${channel}' status: ${status}, reconnect_url: ${reconnect_url}`])
+    logMessage([`* RECONNECT '${channel}' status: ${status}`])
     openWebSocket(bot, channel, reconnect_url)
 }
 
