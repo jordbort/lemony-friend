@@ -1085,7 +1085,7 @@ module.exports = {
         } else { await logMessage([`-> Timer in ${channel} '!so' is not currently listening`]) }
     },
     async updateStreamGame(props) {
-        const { bot, chatroom, args, channel, isMod } = props
+        const { bot, chatroom, args, username, channel, isMod } = props
         if (!isMod) {
             await logMessage([`-> ${username} isn't a mod, ignoring`])
             return
