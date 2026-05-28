@@ -9,6 +9,7 @@ const { lemonify } = require(`./lemonify`)
 const { apiGetTwitchChannel } = require(`./twitch`)
 const { sayWebSocketSessionId } = require(`../events/webSockets`)
 const { getRandomUser, getRandomChannelMessage } = require(`./getInfo`)
+const { getIndefiniteArticle, makePlural, addVerbSuffix } = require(`./insult`)
 
 function makePyramid(props) {
     const { bot, chatroom, message, channel } = props
@@ -716,6 +717,23 @@ function transformMessage(props) {
     bot.say(chatroom, reply)
 }
 
+function makeInsultPhrase(props) {
+    const { bot, chatroom } = props
+    const { nouns, verbs, adjectives } = wordBank
+    const getRandomNoun = () => nouns[Math.floor(Math.random() * nouns.length)] || `friend`
+    const getRandomVerb = () => verbs[Math.floor(Math.random() * verbs.length)] || `squeeze`
+    const getRandomAdjective = () => adjectives[Math.floor(Math.random() * adjectives.length)] || `lemony`
+    const phrases = [
+        `${getRandomAdjective()} ${getRandomNoun()}`,
+        `${getIndefiniteArticle(getRandomAdjective())} ${getRandomNoun()}`,
+        `${getRandomVerb()} ${getIndefiniteArticle(getRandomNoun())}`,
+        `${getRandomAdjective()} ${makePlural(getRandomNoun())}`,
+        `${addVerbSuffix(getRandomVerb(), `ing`)} ${getRandomAdjective()} ${makePlural(getRandomNoun())}`
+    ]
+    const reply = phrases[Math.floor(Math.random() * phrases.length)]
+    bot.say(chatroom, reply)
+}
+
 module.exports = function rollFunNumber(props, funNumber) {
     const { bot, chatroom, tags, message, channel, username, aprilFools } = props
     logMessage([`> rollFunNumber(channel: '${channel}', tags: ${Object.keys(tags).length}, username: '${username}', message: '${message}', funNumber: ${funNumber})`])
@@ -758,7 +776,8 @@ module.exports = function rollFunNumber(props, funNumber) {
         29: lookForNumbers,
         30: sayWebSocketSessionId,
         31: reportOneSixteenthChance,
-        32: transformMessage
+        32: transformMessage,
+        33: makeInsultPhrase
     }
 
     if (funNumber in outcomes) {
