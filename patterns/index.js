@@ -29,10 +29,10 @@ const seSplitMessagePatterns = {
 }
 
 const pcgPatterns = {
-    [/Catch it using !pokecatch \(winners revealed in 90s\)/i]: catchPokemon,
-    [/Purchase successful!/i]: catchPokemon,
-    [/You don't own that ball. Check the extension to see your items/i]: buyPokeballs,
-    [/has been caught by/i]: acknowledgeCaughtPokemon
+    [/Catch it using !pokecatch \(winners revealed in 90s\)/]: catchPokemon,
+    [/lemony_friend Purchase successful!/]: catchPokemon,
+    [/lemony_friend You don.t own that ball\. Check the extension to see your items\./]: buyPokeballs,
+    [/[a-z]+ has been caught by: .*lemony_friend/i]: acknowledgeCaughtPokemon
 }
 
 const mentionedPatterns = {
@@ -177,7 +177,7 @@ module.exports = function usePattern(props) {
     }
 
     // Interaction with PokemonCommunityGame
-    if (username === `pokemoncommunitygame` && message.includes(BOT_USERNAME)) {
+    if (username === `pokemoncommunitygame`) {
         for (const pattern in pcgPatterns) {
             const regex = new RegExp(pattern.split(`/`)[1], pattern.split(`/`)[2])
             if (regex.test(message)) {
