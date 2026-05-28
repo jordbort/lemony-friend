@@ -26,6 +26,8 @@ const { createConduit, getConduit, updateConduitShardCount, deleteConduit, getCo
 
 const commands = {
     '!so': handleShoutout,
+    '!shoutout': handleShoutout,
+
     '!token': getBotToken,
     '!checktoken': checkToken,
 
