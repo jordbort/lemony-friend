@@ -707,9 +707,19 @@ function transformMessage(props) {
     const { bot, chatroom, message } = props
     const types = [
         `superscript`,
-        `cursive`,
         `bold`,
-        `double-struck`
+        `italic`,
+        `bold-italic`,
+        `sans-normal`,
+        `sans-bold`,
+        `sans-italic`,
+        `sans-bold-italic`,
+        `script-normal`,
+        `script-bold`,
+        `fraktur-normal`,
+        `fraktur-bold`,
+        `monospace`,
+        `doubleStruck`
     ]
     const type = types[Math.floor(Math.random() * types.length)]
     logMessage([`> transformMessage(type: '${type}')`])
