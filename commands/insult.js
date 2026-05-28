@@ -24,6 +24,9 @@ const addVerbSuffix = (verb, suffix) => suffix === `s`
             : `${verb}${suffix}`
 
 module.exports = {
+    getIndefiniteArticle,
+    makePlural,
+    addVerbSuffix,
     manageVerbs(props) {
         const { bot, chatroom, args, channel, userNickname } = props
         logMessage([`> manageVerbs(args: ${logArr(args)})`])
