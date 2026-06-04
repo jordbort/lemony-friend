@@ -11,7 +11,7 @@ module.exports = {
             return
         }
 
-        const reply = `!pokecatch ${settings.usedPokeball}`
+        const reply = `!pokecatch${settings.usedPokeball ? ` ${settings.usedPokeball}` : ``}`
         bot.say(chatroom, reply)
     },
     buyPokeballs(props) {
