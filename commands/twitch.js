@@ -1035,7 +1035,9 @@ module.exports = {
             const twitchUser = await apiGetTwitchUser(toUser)
             if (!twitchUser) {
                 await logMessage([`-> No user '${toUser}' found, exiting handleShoutout function`])
-                bot.say(chatroom, `No user ${toUser} was found! :O`)
+                twitchUser === false
+                    ? bot.say(chatroom, `Failed to fetch user! :O`)
+                    : bot.say(chatroom, `No user ${toUser} was found! :O`)
                 return
             }
 
@@ -1106,7 +1108,9 @@ module.exports = {
 
         const game = await apiGetGame(query)
         if (!game) {
-            bot.say(chatroom, `No game found ${negativeEmote}`)
+            game === false
+                ? bot.say(chatroom, `Failed to look up game! ${negativeEmote}`)
+                : bot.say(chatroom, `No game found ${negativeEmote}`)
             return
         }
 
