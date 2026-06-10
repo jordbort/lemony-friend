@@ -325,20 +325,29 @@ function handleChannelCheer(bot, channel, event) {
 }
 
 function handleChannelHypeTrainBegin(bot, channel, event) {
-    const { broadcaster_user_login, top_contributions } = event
-    logMessage([`* HYPE TRAIN: A hype train started for ${broadcaster_user_login} thanks to ${arrToList(top_contributions.map(obj => obj.user_login))}`])
+    const { broadcaster_user_login, top_contributions, shared_train_participants, is_shared_train, level } = event
 
-    const streamer = channel in users
-        ? users[channel].nickname || users[channel].displayName
-        : channel
+    const streamers = is_shared_train
+        ? shared_train_participants.map(obj => obj.broadcaster_user_login)
+        : [broadcaster_user_login]
 
-    const contributors = top_contributions.map(obj => obj.user_login in users
-        ? users[obj.user_login].nickname || users[obj.user_login].displayName
-        : obj.user_name
-    )
+    const contributors = top_contributions
+        .map(obj => obj.user_login)
+        .filter((el, idx, self) => idx === self.indexOf(el))
+
+    logMessage([`* HYPE TRAIN: A hype train started for ${arrToList(streamers)}, thanks to ${arrToList(contributors)}`])
+
+    if (is_shared_train && !shared_train_participants.map(obj => obj.broadcaster_user_login).includes(broadcaster_user_login)) {
+        logMessage([`-> Hype train is not for ${broadcaster_user_login}`])
+        return
+    }
 
     const hypeEmote = getContextEmote(`hype`, channel)
-    const reply = `A hype train just started for ${streamer}, thanks to ${arrToList(contributors.filter((str, idx) => idx === contributors.indexOf(str)))}! ${hypeEmote}`
+    const reply = `A ${level !== 1 ? `level ${level} ` : ``}hype train just started for ${arrToList(streamers.map(streamer => streamer in users
+        ? users[streamer].nickname || users[streamer].displayName
+        : streamer))}, thanks to ${arrToList(contributors.map(contributor => contributor in users
+            ? users[contributor].nickname || users[contributor].displayName
+            : contributor))}! ${hypeEmote}`
     bot.say(`#${channel}`, reply)
 }
 
