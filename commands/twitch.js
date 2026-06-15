@@ -331,10 +331,6 @@ async function apiCreateEventSub(userId, type, version, attempt = 1) {
     }
 
     switch (type) {
-        case `conduit.shard.disabled`:
-            requestBody.condition.client_id = CLIENT_ID
-            requestBody.condition.conduit_id = settings.conduitId
-            break
         case `channel.follow`:
         case `channel.shoutout.receive`:
             requestBody.condition.moderator_user_id = `${userId}`

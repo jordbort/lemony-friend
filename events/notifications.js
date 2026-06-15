@@ -351,12 +351,6 @@ function handleChannelHypeTrainBegin(bot, channel, event) {
     bot.say(`#${channel}`, reply)
 }
 
-function handleShardDisabled(event) {
-    const shardId = Number(event.shard_id)
-    const disabledChannel = joinedChatrooms[shardId].substring(1)
-    logMessage([`* SHARD DISABLED: Conduit shard ID ${shardId} belonging to ${disabledChannel} was disabled`])
-}
-
 module.exports = {
     addNotificationsBatch(channel) {
         if (!(channel in batch)) {
@@ -412,10 +406,7 @@ module.exports = {
                 handleChannelCheer(bot, fromChannel, event)
                 break
             case `channel.hype_train.begin`:
-                handleChannelHypeTrainBegin(bot, fromChannel, event)
-                break
-            case `conduit.shard.disabled`:
-                handleShardDisabled(event)
+                handleChannelHypeTrainBegin(bot, event)
                 break
             default:
                 logMessage([`* '${fromChannel}' ${subscription.type} is not a recognized EventSub`])
