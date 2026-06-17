@@ -16,23 +16,23 @@ const { checkEmotes, checkSelfSub, checkSelfMod, checkSelfVIP, checkTargetSub, c
 
 const sePatterns = {
     [/lost (every|it)/i]: handleLoseAllPoints,
-    [/^@?lemony_friend, .* wants to duel you/i]: acceptDuel
+    [new RegExp(`^@?${BOT_USERNAME}, .* wants to duel you`, `i`)]: acceptDuel
 }
 
 const seSplitMessagePatterns = {
     [/now ha(?:s|ve) \[*(\d*)/i]: handleSetPoints,
-    [/lemony_friend has ([^a-z]\d*)/i]: handleSetPoints,
-    [/set lemony_friend .* to /i]: handleSetPoints,
-    [/^@?lemony_friend, you only have ([^a-z]\d*)/i]: handleSetPoints,
-    [/^(?!lemony_friend).* gave (\d*)/i]: handleGivenPoints,
-    [/lemony_friend gave ([^a-z]\d*)/i]: subtractPoints
+    [new RegExp(`${BOT_USERNAME} has ([^a-z]\d*)`, `i`)]: handleSetPoints,
+    [new RegExp(`set ${BOT_USERNAME} .* to `, `i`)]: handleSetPoints,
+    [new RegExp(`^@?${BOT_USERNAME}, you only have ([^a-z]\d*)`, `i`)]: handleSetPoints,
+    [new RegExp(`^(?!${BOT_USERNAME}).* gave (\d*)`, `i`)]: handleGivenPoints,
+    [new RegExp(`${BOT_USERNAME} gave ([^a-z]\d*)`, `i`)]: subtractPoints
 }
 
 const pcgPatterns = {
     [/Catch it using !pokecatch \(winners revealed in 90s\)/]: catchPokemon,
-    [/lemony_friend Purchase successful!/]: catchPokemon,
-    [/lemony_friend You don.t own that ball\. Check the extension to see your items\./]: buyPokeballs,
-    [/[a-z]+ has been caught by: .*lemony_friend/i]: acknowledgeCaughtPokemon
+    [new RegExp(`${BOT_USERNAME} Purchase successful!`)]: catchPokemon,
+    [new RegExp(`${BOT_USERNAME} You don.t own that ball\. Check the extension to see your items\.`)]: buyPokeballs,
+    [new RegExp(`has been caught by: .*${BOT_USERNAME}`, `i`)]: acknowledgeCaughtPokemon
 }
 
 const mentionedPatterns = {
