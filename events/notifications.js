@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { lemonyFresh, mods, users, joinedChatrooms } = require(`../data`)
-const { logMessage, getContextEmote, updateMod, pluralize, arrToList } = require(`../utils`)
+const { logMessage, getContextEmote, updateMod, pluralize, arrToList, renderObj, printMemory } = require(`../utils`)
 
 const { getStreamBttvEmotes } = require(`../commands/external`)
 const { apiGetTwitchChannel, getStreamTwitchEmotes } = require(`../commands/twitch`)
@@ -61,6 +61,7 @@ async function handleStreamOnline(bot, event) {
 function handleStreamOffline(bot, event) {
     const { broadcaster_user_login: channel } = event
     logMessage([`* OFFLINE: ${channel} stopped streaming`])
+    printMemory(bot.channels)
 
     const streamer = channel in users
         ? users[channel].nickname || users[channel].displayName
@@ -411,7 +412,8 @@ module.exports = {
                 handleChannelHypeTrainBegin(bot, event)
                 break
             default:
-                logMessage([`* '${fromChannel}' ${subscription.type} is not a recognized EventSub`])
+                logMessage([renderObj(event, `event`)])
+                logMessage([`* ${event.broadcaster_user_login}: ${subscription.type} is not a recognized EventSub`])
         }
     }
 }
