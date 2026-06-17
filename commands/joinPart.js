@@ -108,7 +108,7 @@ module.exports = {
                 const username = twitchUser.login
                 successfullyJoined.push(channel)
                 lemonyFresh[username] = { id: Number(twitchUser.id), ...lemonyFresh[username] }
-                bot.join(username)
+                bot.join(`#${username}`)
             }
         }
 

@@ -1139,8 +1139,9 @@ module.exports = {
                 if (oldUsername in lemonyFresh) {
                     logMessage([`-> Merging channel '${oldUsername}' into '${newUsername}' and re-joining`])
                     lemonyFresh[newUsername] = { ...lemonyFresh[oldUsername] }
+                    bot.part(`#${oldUsername}`)
                     delete lemonyFresh[oldUsername]
-                    bot.join(newUsername)
+                    bot.join(`#${newUsername}`)
 
                     // Update potential channel data for all users
                     for (const user of Object.keys(users)) {
