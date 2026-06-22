@@ -1,4 +1,5 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
+const BOT_NICKNAME_REGEX = process.env.BOT_NICKNAME_REGEX
 
 const { settings, users, lemonyFresh } = require(`../data`)
 const { getContextEmote, pluralize, resetCooldownTimer, logMessage, transformText, logArr, twitchUsernamePattern, containsInaccessibleEmotes, arrToList } = require(`../utils`)
@@ -254,7 +255,7 @@ module.exports = {
             resetCooldownTimer(channel, `say-goodnight`)
 
             // In case unknown user is mentioned
-            if (!targetNickname && toUser && !/\b(@?lemony_friend|l+e+m+o+n+y*|m+e+l+o+n+|l+e+m+f+r+i+e+n+d+)\b/i.test(message)) {
+            if (!targetNickname && toUser && !new RegExp(`\\b${BOT_NICKNAME_REGEX}\\b`, `i`).test(message)) {
                 bot.say(chatroom, `see ya ${args[0]}`)
                 return
             }
