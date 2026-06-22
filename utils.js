@@ -1342,11 +1342,11 @@ module.exports = {
         const inaccessibleEmotes = Object.keys(lemonyFresh)
             .filter(stream => !users[BOT_USERNAME].channels[stream].sub)
             .map(stream => stream === channel
-                ? lemonyFresh[stream].subEmotes
+                ? [...lemonyFresh[stream].subEmotes]
                 : [...lemonyFresh[stream].followEmotes, ...lemonyFresh[stream].subEmotes])
             .flat()
         if (inaccessibleEmotes.some(emote => str.includes(emote))) {
-            logMessage([`> containsInaccessibleEmotes(str: '${str}')`])
+            logMessage([`> containsInaccessibleEmotes: ${logArr(inaccessibleEmotes.filter(emote => str.includes(emote)))}`])
             return true
         }
         return false

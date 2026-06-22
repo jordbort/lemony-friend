@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings, lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
-const { getContextEmote, pluralize, logMessage, logArr, coinFlip, transformText } = require(`../utils`)
+const { getContextEmote, pluralize, logMessage, logArr, coinFlip, transformText, containsInaccessibleEmotes, containsUnrecognizedEmotes } = require(`../utils`)
 
 const numbers = require(`../numbers`)
 
@@ -634,6 +634,9 @@ async function sayGameId(props) {
 
 function rememberPastMessage(props) {
     const { bot, chatroom, channel, userNickname, message } = props
+    if (containsInaccessibleEmotes(message, channel) || containsUnrecognizedEmotes(message)) { return }
+    logMessage([`> rememberPastMessage(message: '${message}')`])
+
     const msg = message.split(` `)
     const neutralEmote = getContextEmote(`neutral`, channel)
     msg.length < 10
