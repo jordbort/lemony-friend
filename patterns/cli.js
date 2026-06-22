@@ -250,8 +250,9 @@ function updateChannelDev(props, args) {
     args.shift()
     logMessage([`> updateChannelDev(username, '${username}', channel, '${channel}', args: ${logArr(args)})`])
 
-    let toUser = getToUser(args.shift())
-    if (!(toUser in lemonyFresh)) { toUser = channel }
+    const toUser = getToUser(args[0]) in lemonyFresh
+        ? getToUser(args.shift())
+        : channel
 
     const options = {
         [/^followEmotes?$|^fe$/i]: { name: `followEmotes`, func: updateArr },
