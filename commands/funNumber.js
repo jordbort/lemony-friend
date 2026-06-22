@@ -191,7 +191,7 @@ function giveMeMoney(props) {
     const currency = currencies[Math.floor(Math.random() * currencies.length)]
     logMessage([`> giveMeMoney(msgCount: ${msgCount}, currency: '${currency.abbreviation.toUpperCase()}')`])
 
-    bot.say(chatroom, `Give me ${currency.symbol}${msgCount}${currency.zeroes} ${currency.abbreviation.toUpperCase()}`)
+    setTimeout(() => bot.say(chatroom, `Give me ${currency.symbol}${msgCount}${currency.zeroes} ${currency.abbreviation.toUpperCase()}`), 3000)
 }
 function transferMeMoney(props) {
     const { bot, chatroom, userChannel } = props
@@ -216,7 +216,7 @@ function transferMeMoney(props) {
         `write me a travelers check for`
     ]
     const paymentMethod = Math.floor(Math.random() * paymentMethods.length)
-    bot.say(chatroom, `${paymentMethods[paymentMethod]} ${msgCount}${currency.zeroes} ${currency.name}`)
+    setTimeout(() => bot.say(chatroom, `${paymentMethods[paymentMethod]} ${msgCount}${currency.zeroes} ${currency.name}`), 3000)
 }
 
 function useRedemption(props) {
@@ -228,7 +228,7 @@ function useRedemption(props) {
     }
 
     const redeem = lemonyFresh[channel].redeems[Math.floor(Math.random() * lemonyFresh[channel].redeems.length)]
-    bot.say(chatroom, redeem)
+    setTimeout(() => bot.say(chatroom, redeem), 3000)
 }
 
 function givePoints(props) {
@@ -247,7 +247,7 @@ function givePoints(props) {
                 ? `all`
                 : `${msgCount * 25}`
             : `${msgCount * 25}`
-        bot.say(chatroom, `!give ${username} ${pointsToGive}`)
+        setTimeout(() => bot.say(chatroom, `!give ${username} ${pointsToGive}`), 3000)
     } else { logMessage([`-> StreamElements not present in ${channel}'s channel`]) }
 }
 
@@ -258,7 +258,7 @@ function lemonifyRandomUser(props) {
     const randomUser = getRandomUser([BOT_USERNAME])
     const randomMsg = getRandomChannelMessage(users[randomUser])
     const lemonMsg = lemonify(randomMsg)
-    bot.say(chatroom, lemonMsg)
+    setTimeout(() => bot.say(chatroom, lemonMsg), 3000)
 }
 
 function useUndertaleBot(props) {
@@ -272,29 +272,26 @@ function useUndertaleBot(props) {
             `!act ${randomUser}`,
             `!mercy ${randomUser}`
         ]
-        bot.say(chatroom, actions[Math.floor(Math.random() * actions.length)])
+        setTimeout(() => bot.say(chatroom, actions[Math.floor(Math.random() * actions.length)]), 3000)
     } else { logMessage([`-> UndertaleBot not present in ${channel}'s channel`]) }
 }
 
 function reportChance(props) {
     const { bot, chatroom } = props
     logMessage([`> reportChance(funNumberCount: ${settings.funNumberCount}, funNumberTotal: ${settings.funNumberTotal})`])
-
-    bot.say(chatroom, `This message has a 1/${(settings.funNumberCount * settings.funNumberTotal).toLocaleString()} chance of appearing`)
+    setTimeout(() => bot.say(chatroom, `This message has a 1/${(settings.funNumberCount * settings.funNumberTotal).toLocaleString()} chance of appearing`), 3000)
 }
 
 function sayMessageID(props) {
     const { bot, chatroom, tags } = props
     logMessage([`> sayMessageID(tags: ${Object.keys(tags)})`])
-
-    bot.say(chatroom, `${tags.id}`)
+    setTimeout(() => bot.say(chatroom, `${tags.id}`), 3000)
 }
 
 function sayTime(props) {
     const { bot, chatroom, currentTime } = props
     logMessage([`> sayTime(currentTime: ${currentTime})`])
-
-    bot.say(chatroom, `${currentTime}`)
+    setTimeout(() => bot.say(chatroom, `${currentTime}`), 3000)
 }
 
 async function askAboutGame(props) {
@@ -313,7 +310,8 @@ async function askAboutGame(props) {
     const reply = game_name === `Just Chatting`
         ? `How is everyone doing? ${neutralEmote}`
         : `How are you enjoying ${game_name || `the game`}? ${neutralEmote}`
-    bot.say(chatroom, reply)
+
+    setTimeout(() => bot.say(chatroom, reply), 3000)
 }
 
 function awardLemon(props) {
@@ -339,7 +337,7 @@ function useBTTVEmote(props) {
 
     const emotes = lemonyFresh[channel].bttvEmotes
     const emote = emotes[Math.floor(Math.random() * emotes.length)]
-    bot.say(chatroom, `w! h! ${effect}${emote}`)
+    setTimeout(() => bot.say(chatroom, `w! h! ${effect}${emote}`), 3000)
 }
 
 function restartFunTimer(props) {
@@ -381,13 +379,13 @@ function getViewers(props) {
     const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
 
     if (viewers.length > 4) {
-        bot.say(chatroom,
+        setTimeout(() => bot.say(chatroom,
             `${channelNickname} has ${pluralize(viewers.length, `viewer`, `viewers`)}! ${viewers.length < 10
                 ? neutralEmote
                 : viewers.length < 20
                     ? positiveEmote
                     : hypeEmote}`
-        )
+        ), 3000)
     } else { logMessage([`-> ${channel} only has ${pluralize(viewers.length, `viewer`, `viewers`)}`]) }
 }
 
@@ -404,7 +402,7 @@ function getLurker(props) {
     }
 
     const dumbEmote = getContextEmote(`dumb`, channel)
-    bot.say(chatroom, `Has anyone heard from ${lurker}? ${dumbEmote}`)
+    setTimeout(() => bot.say(chatroom, `Has anyone heard from ${lurker}? ${dumbEmote}`), 3000)
 }
 
 function awardLemonToRecentChatters(props) {
@@ -441,7 +439,7 @@ function useTwoEmotes(props) {
 
     const emoteOne = emotes[Math.floor(Math.random() * emotes.length)]
     const emoteTwo = emotes[Math.floor(Math.random() * emotes.length)]
-    bot.say(chatroom, `${emoteOne} ${emoteTwo}`)
+    setTimeout(() => bot.say(chatroom, `${emoteOne} ${emoteTwo}`), 3000)
 }
 
 function useFunnyCommand(props) {
@@ -457,7 +455,6 @@ function useFunnyCommand(props) {
 
     if (channel === `jpegstripes`) {
         const arrStaleHangmanAnswers = Object.keys(lemonyFresh)
-            .filter(chan => typeof lemonyFresh[chan] === `object` && !Array.isArray(lemonyFresh[chan]))
             .filter(chan => lemonyFresh[chan].hangman?.answer && !lemonyFresh[chan].hangman?.listening)
             .map(chan => lemonyFresh[chan].hangman.answer.split(``))
 
@@ -515,7 +512,7 @@ function useFunnyCommand(props) {
 
     const response = arrFunnyCommands[Math.floor(Math.random() * arrFunnyCommands.length)]
 
-    bot.say(chatroom, response)
+    setTimeout(() => bot.say(chatroom, response), 3000)
 }
 
 function imagineLemons(props) {
@@ -523,7 +520,7 @@ function imagineLemons(props) {
     const randNum = Math.floor(Math.random() * numbers.length)
     const lemonEmote = getContextEmote(`lemon`, channel)
     logMessage([`> imagineLemons(chatroom: '${chatroom}', randNum: ${randNum})`])
-    bot.say(chatroom, `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${numbers[randNum + 1] || `one thousand`} lemons... ${lemonEmote}`)
+    setTimeout(() => bot.say(chatroom, `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${numbers[randNum + 1] || `one thousand`} lemons... ${lemonEmote}`), 3000)
 }
 
 function makeInsultSentence(props) {
@@ -555,7 +552,7 @@ function makeInsultSentence(props) {
     const pronoun = [`she`, `he`, `they`][Math.floor(Math.random() * 3)]
     const message = `${pronoun} ${verb1} on my ${noun} till i ${verb2}`
 
-    bot.say(chatroom, message)
+    setTimeout(() => bot.say(chatroom, message), 3000)
 }
 
 function reportRandomLemCmdUsage(props) {
@@ -578,7 +575,7 @@ function reportRandomLemCmdUsage(props) {
                 : lemCmds[randomCommand].uses < 100
                     ? positiveEmote
                     : hypeEmote}`
-    bot.say(chatroom, reply)
+    setTimeout(() => bot.say(chatroom, reply), 3000)
 }
 
 function sayPastHangmanAnswer(props) {
@@ -591,7 +588,7 @@ function sayPastHangmanAnswer(props) {
     }
     const neutralEmote = getContextEmote(`neutral`, channel)
     if (pastAnswer) {
-        bot.say(chatroom, `Do you remember when the Hangman answer was ${pastAnswer}? ${neutralEmote}`)
+        setTimeout(() => bot.say(chatroom, `Do you remember when the Hangman answer was ${pastAnswer}? ${neutralEmote}`), 3000)
     }
 }
 
@@ -604,7 +601,7 @@ function sayPastHangmanSpaces(props) {
         return
     }
     if (arr.length) {
-        bot.say(chatroom, `${arr.join(` `)}`)
+        setTimeout(() => bot.say(chatroom, `${arr.join(` `)}`), 3000)
     }
 }
 
@@ -617,7 +614,7 @@ function sayPastHangmanGuessedLetters(props) {
         return
     }
     if (arr.length) {
-        bot.say(chatroom, `${arr.join(``)}`)
+        setTimeout(() => bot.say(chatroom, `${arr.join(``)}`), 3000)
     }
 }
 
@@ -632,7 +629,7 @@ async function sayGameId(props) {
     await logMessage([`> sayGameId(channel: '${channel}', game_name: '${twitchChannel.game_name}', game_id: '${twitchChannel.game_id}')`])
 
     const reply = twitchChannel.game_id
-    bot.say(chatroom, reply)
+    setTimeout(() => bot.say(chatroom, reply), 3000)
 }
 
 function rememberPastMessage(props) {
@@ -698,7 +695,7 @@ function reportOneSixteenthChance(props) {
     const { bot, chatroom, channel } = props
     const hypeEmote = getContextEmote(`hype`, channel)
     if (bit1 && bit2 && bit3 && bit4) {
-        bot.say(chatroom, `This message has a 1/${(settings.funNumberCount * settings.funNumberTotal * 16).toLocaleString()} chance of appearing ${hypeEmote}`)
+        setTimeout(() => bot.say(chatroom, `This message has a 1/${(settings.funNumberCount * settings.funNumberTotal * 16).toLocaleString()} chance of appearing ${hypeEmote}`), 3000)
     }
 
 }
@@ -724,7 +721,7 @@ function transformMessage(props) {
     const type = types[Math.floor(Math.random() * types.length)]
     logMessage([`> transformMessage(type: '${type}')`])
     const reply = transformText(type, message)
-    bot.say(chatroom, reply)
+    setTimeout(() => bot.say(chatroom, reply), 3000)
 }
 
 function makeInsultPhrase(props) {
@@ -741,7 +738,7 @@ function makeInsultPhrase(props) {
         `${addVerbSuffix(getRandomVerb(), `ing`)} ${getRandomAdjective()} ${makePlural(getRandomNoun())}`
     ]
     const reply = phrases[Math.floor(Math.random() * phrases.length)]
-    bot.say(chatroom, reply)
+    setTimeout(() => bot.say(chatroom, reply), 3000)
 }
 
 module.exports = function rollFunNumber(props, funNumber) {
@@ -797,6 +794,6 @@ module.exports = function rollFunNumber(props, funNumber) {
     }
 
     aprilFools
-        ? bot.say(chatroom, `${funNumber}`)
+        ? setTimeout(() => bot.say(chatroom, `${funNumber}`), 3000)
         : logMessage([`-> Fun number`, funNumber, `is unused`])
 }

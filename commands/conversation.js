@@ -280,7 +280,7 @@ module.exports = {
             }
             const byeEmote = getContextEmote(`bye`, channel)
             response += `! ${byeEmote}`
-            bot.say(chatroom, response)
+            setTimeout(() => bot.say(chatroom, response), 1000)
 
         } else { logMessage([`-> Timer in ${channel} 'sayGoodnight' is not currently listening`]) }
     },
@@ -310,7 +310,7 @@ module.exports = {
             }
             const positiveEmote = getContextEmote(`positive`, channel)
             response += `! ${positiveEmote}`
-            bot.say(chatroom, response)
+            setTimeout(() => bot.say(chatroom, response), 1000)
 
         } else { logMessage([`-> Timer in ${channel} 'sayYoureWelcome' is not currently listening`]) }
     },
@@ -346,7 +346,7 @@ module.exports = {
             }
             const positiveEmote = getContextEmote(`positive`, channel)
             response += `! ${positiveEmote}`
-            bot.say(chatroom, response)
+            setTimeout(() => bot.say(chatroom, response), 1000)
 
         } else { logMessage([`-> Timer in ${channel} 'sayThanks' is not currently listening`]) }
     },
@@ -404,7 +404,7 @@ module.exports = {
             if (numReply === 0) { reply += ` ${appends[Math.floor(Math.random() * appends.length)]}` }
 
             reply += ` ${botMoods[settings.botMood].emote}`
-            bot.say(chatroom, reply)
+            setTimeout(() => bot.say(chatroom, reply), 1000)
 
         } else { logMessage([`-> Timer in ${channel} 'sayMood' is not currently listening`]) }
     },
