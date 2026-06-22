@@ -1,9 +1,9 @@
 const { lemonyFresh } = require(`../data`)
-const { getContextEmote, logMessage, resetCooldownTimer } = require(`../utils`)
+const { getContextEmote, logMessage, resetCooldownTimer, logArr } = require(`../utils`)
 
 module.exports = function sayButt(props, splitMessage) {
     const { bot, chatroom, channel } = props
-    logMessage([`> sayButt(channel: '${channel}', splitMessage: '${splitMessage}')`])
+    logMessage([`> sayButt(channel: '${channel}', splitMessage: ${logArr(splitMessage)})`])
 
     if (lemonyFresh[channel].timers[`say-butt`].listening) {
         resetCooldownTimer(channel, `say-butt`)
