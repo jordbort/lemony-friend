@@ -4,7 +4,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 
 const fs = require(`fs/promises`)
 
-const { settings, lemonyFresh, mods, users, knownTags, lemCmds, wordBank } = require(`./data`)
+const { settings, lemonyFresh, mods, users, knownTags, lemCmds, wordBank, joinedChatrooms } = require(`./data`)
 
 // Terminal colors
 const terminalColors = {
@@ -1141,6 +1141,7 @@ module.exports = {
                     lemonyFresh[newUsername] = { ...lemonyFresh[oldUsername] }
                     bot.part(`#${oldUsername}`)
                     delete lemonyFresh[oldUsername]
+                    joinedChatrooms[joinedChatrooms.indexOf(oldUsername)] = newUsername
                     bot.join(`#${newUsername}`)
 
                     // Update potential channel data for all users

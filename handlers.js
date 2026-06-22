@@ -12,10 +12,10 @@ const rollFunNumber = require(`./commands/funNumber`)
 const { useLemCmd } = require(`./commands/lemCmds`)
 const { sayJoinMessage } = require(`./commands/joinPart`)
 const { hangmanListener } = require(`./patterns/hangman`)
-const { addNotificationsBatch } = require(`./events/notifications`)
-const { initWebSocket, closeWebSocket } = require(`./events/webSockets`)
 const { apiGetConduits, apiCreateConduit } = require(`./events/conduits`)
 const { getGlobalBttvEmotes, getStreamBttvEmotes } = require(`./commands/external`)
+const { initWebSocket, closeWebSocket, removeWebSocket } = require(`./events/webSockets`)
+const { addNotificationsBatch, deleteNotificationsBatch } = require(`./events/notifications`)
 const { apiGetTwitchChannel, getGlobalTwitchEmotes, getStreamTwitchEmotes } = require(`./commands/twitch`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
 const { addNewChattersBatch, handleNewChatter, welcomeBack, reportAway, funTimerGuess, pyramidListener } = require(`./commands/conversation`)
@@ -100,9 +100,11 @@ module.exports = {
         logMessage([`${username} parted from ${chatroom}`])
         const channel = chatroom.substring(1)
 
-        // Close WebSocket connection
+        // Uninitialize WebSocket connection
         if (self) {
-            closeWebSocket(channel)
+            closeWebSocket(channel, true)
+            removeWebSocket(channel)
+            removeNotificationsBatch(channel)
         }
 
         while (lemonyFresh[channel].viewers.includes(username)) {

@@ -365,6 +365,11 @@ module.exports = {
             }
         }
     },
+    removeNotificationsBatch(channel) {
+        if (channel in batch) {
+            delete batch[channel]
+        }
+    },
     handleNotification(bot, payload) {
         const { subscription, event } = payload, { type } = subscription
 

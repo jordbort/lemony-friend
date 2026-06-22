@@ -124,6 +124,11 @@ function closeWebSocket(channel, onPurpose = false) {
 module.exports = {
     initWebSocket, // is in: handlers.js, dev.js
     closeWebSocket, // is in: handlers.js, dev.js
+    removeWebSocket(channel) { // is in: handlers.js
+        if (channel in webSockets) {
+            delete webSockets[channel]
+        }
+    },
     checkWebSockets(arrShards) { // is in: dev.js
         const channels = joinedChatrooms.map(str => str.substring(1))
         for (const shard of arrShards) {
