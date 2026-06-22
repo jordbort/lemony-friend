@@ -5,6 +5,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 const fs = require(`fs/promises`)
 
 const { settings, lemonyFresh, mods, users, knownTags, lemCmds, wordBank, joinedChatrooms } = require(`./data`)
+const { indexOf } = require("./numbers")
 
 // Terminal colors
 const terminalColors = {
@@ -1134,6 +1135,12 @@ module.exports = {
                     mods[newUsername] = { ...mods[oldUsername] }
                     delete mods[oldUsername]
                 }
+                for (const mod in mods) {
+                    if (mods[mod].isModIn.includes(`#${oldUsername}`)) {
+                        logMessage([`-> Removing '#${oldUsername}' from ${mod}'s moderated channels`])
+                        mods[mod].isModIn.splice(mods[mod].isModIn.indexOf(`#${oldUsername}`), 1)
+                    }
+                }
 
                 // Update if bot is in also channel
                 if (oldUsername in lemonyFresh) {
@@ -1145,12 +1152,20 @@ module.exports = {
                     bot.join(`#${newUsername}`)
 
                     // Update potential channel data for all users
-                    for (const user of Object.keys(users)) {
+                    for (const user in users) {
                         if (oldUsername in users[user].channels) {
                             logMessage([`-> Merging user ${user}'s '${oldUsername}' data into '${newUsername}'`])
                             users[user].channels[newUsername] = { ...users[user].channels[oldUsername] }
                             delete users[user].channels[oldUsername]
                         }
+                    }
+                }
+
+                // Rename any lemon command's origin channel
+                for (const cmd in lemCmds) {
+                    if (lemCmds[cmd].origin === oldUsername) {
+                        logMessage([`-> Renaming lemon command ${cmd}'s origin to '${newUsername}'`])
+                        lemCmds[cmd].origin = newUsername
                     }
                 }
             }
