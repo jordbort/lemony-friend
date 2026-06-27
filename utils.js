@@ -61,19 +61,6 @@ const emotePattern = /\b([a-z][a-z0-9]{2,9}[A-Z0-9][a-zA-Z0-9]{0,19})\b/
 
 const formatMegabytes = (num) => Math.round(num / 1024 / 1024 * 100) / 100
 
-async function printMemory(arr) {
-    await fs.writeFile(`./memory.json`, JSON.stringify({
-        joinedChatrooms: arr,
-        settings,
-        lemonyFresh,
-        mods,
-        users,
-        knownTags,
-        lemCmds,
-        wordBank
-    }, null, 4))
-}
-
 function pluralize(num, singularForm, pluralForm) {
     return Number(num) === 1
         ? `${Number(num).toLocaleString(settings.timeLocale)} ${singularForm}`
@@ -154,6 +141,20 @@ async function logMessage(messages, time, channel, username, color, self) {
 function logArr(arr) {
     const typeArr = arr.map(el => typeof el === `string` ? `'${el}'` : `${el}`)
     return `[${typeArr.length ? ` ${typeArr.join(`, `)} ` : ``}]`
+}
+
+async function printMemory(arr) {
+    await logMessage([`> printMemory(joinedChatrooms: ${logArr(arr)})`])
+    await fs.writeFile(`./memory.json`, JSON.stringify({
+        joinedChatrooms: arr,
+        settings,
+        lemonyFresh,
+        mods,
+        users,
+        knownTags,
+        lemCmds,
+        wordBank
+    }, null, 4))
 }
 
 const superscriptTable = {
