@@ -331,7 +331,7 @@ module.exports = {
         lemonyFresh[channel].bttvEmotes = [...bttvEmotes]
         await logMessage([`-> ${pluralize(lemonyFresh[channel].bttvEmotes.length, `BTTV emote`, `BTTV emotes`)} for '${channel}'`])
     },
-    async apiGetRandomWord(aprilFools) {
+    async apiGetRandomWord(bot, chatroom, aprilFools) {
         await logMessage([`> apiGetRandomWord()`])
         const endpoint = `https://api.api-ninjas.com/v2/randomword`
         const options = {
@@ -348,10 +348,11 @@ module.exports = {
                 const data = await response.json()
                 await logMessage([`-> Random word:`, data])
 
-                if (aprilFools) { return data[0] }
+                if (aprilFools) { return data[0].toLowerCase() }
 
                 if (data[0] !== data[0].toLowerCase()) {
                     await logMessage([`--> '${data[0]}' may be a proper noun, retrying...`])
+                    bot.say(chatroom, `Not doing "${data[0]}"...`)
                     continue
                 }
                 word = data[0]
@@ -360,7 +361,10 @@ module.exports = {
                     const endpoint = `https://api.api-ninjas.com/v1/dictionary?word=${word}`
                     const response = await fetch(endpoint, options)
                     const data = await response.json()
-                    if (!data.valid) { await logMessage([`--> No defininition for '${word}', retrying...`]) }
+                    if (!data.valid) {
+                        await logMessage([`--> No defininition for '${word}', retrying...`])
+                        bot.say(chatroom, `Not doing "${word}"...`)
+                    }
                     valid = data.valid
                 } catch (err) {
                     logMessage([`(Validating word) ${err}`])

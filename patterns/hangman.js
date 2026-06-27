@@ -21,12 +21,12 @@ async function getRandomWord() {
     }
 }
 
-async function hangmanInit(channel, username, aprilFools) {
+async function hangmanInit(bot, chatroom, channel, username, aprilFools) {
     await logMessage([`> hangmanInit(channel: '${channel}', username: '${username}')`])
     const hangman = lemonyFresh[channel].hangman
 
     let randomWord = await getRandomWord()
-    if (!randomWord) { randomWord = await apiGetRandomWord(aprilFools) }
+    if (!randomWord) { randomWord = await apiGetRandomWord(bot, chatroom, aprilFools) }
     if (!randomWord) { return false }
 
     hangman.listening = true
@@ -208,7 +208,7 @@ module.exports = {
             return
         }
 
-        const success = await hangmanInit(channel, username, aprilFools)
+        const success = await hangmanInit(bot, chatroom, channel, username, aprilFools)
         if (!success) {
             const negativeEmote = getContextEmote(`negative`, channel)
             bot.say(chatroom, `Failed to start Hangman! ${negativeEmote}`)
