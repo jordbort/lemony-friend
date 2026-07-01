@@ -67,6 +67,7 @@ module.exports = {
                 : bot.say(chatroom, `:O`)
         } catch (err) {
             logMessage([`checkSentiment ${err}`])
+            bot.say(chatroom, `:O`)
         }
     },
     async getDadJoke(props) {
