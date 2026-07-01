@@ -9,13 +9,9 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
+            `Updated PokemonCommunityGame responses`,
             `Improved auto-ban functionality`,
-            `Implemented new fun number outcome`,
-            `Fixed PokemonCommunityGame RegEx`,
-            `Batched greeting first-time chatters`,
-            `Implemented emote/text pyramid detection`,
-            `Added search feature to lists`,
-            `Made it possible to use lemons with nicknames`,
+            `Implemented new fun number outcomes`,
             `Cleanup and bug fixes`
         ]
 
