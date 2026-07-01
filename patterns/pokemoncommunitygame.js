@@ -2,6 +2,12 @@ const { settings } = require(`../data`)
 const { getContextEmote, logMessage } = require(`../utils`)
 
 module.exports = {
+    checkPokemon(props) {
+        const { bot, chatroom } = props
+        settings.playPCG
+            ? bot.say(chatroom, `!pokecheck`)
+            : logMessage([`-> Playing PokemonCommunityGame is disabled, ignoring`])
+    },
     catchPokemon(props) {
         const { bot, chatroom, channel } = props
         logMessage([`> catchPokemon(channel: '${channel}', playPCG: ${settings.playPCG})`])
@@ -18,7 +24,7 @@ module.exports = {
         const { bot, chatroom, channel } = props
         logMessage([`> buyPokeballs(channel: '${channel}')`])
 
-        const reply = `!pokeshop pokeball ${settings.pokeballQuantity}`
+        const reply = `!pokeshop ${settings.usedPokeball || `pokeball`} ${settings.pokeballQuantity}`
         bot.say(chatroom, reply)
     },
     acknowledgeCaughtPokemon(props) {

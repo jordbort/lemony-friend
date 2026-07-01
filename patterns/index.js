@@ -9,7 +9,7 @@ const useLemon = require(`./useLemon`)
 const commandLemonInterface = require(`./cli`)
 
 const { checkSentiment } = require(`../commands/external`)
-const { catchPokemon, buyPokeballs, acknowledgeCaughtPokemon } = require(`./pokemoncommunitygame`)
+const { checkPokemon, catchPokemon, buyPokeballs, acknowledgeCaughtPokemon } = require(`./pokemoncommunitygame`)
 const { handleSetPoints, handleGivenPoints, subtractPoints, handleLoseAllPoints, acceptDuel } = require(`./streamelements`)
 const { handleGreetOne, sayGoodnight, sayThanks, sayYoureWelcome, sayMood, contextReact } = require(`../commands/conversation`)
 const { checkEmotes, checkSelfSub, checkSelfMod, checkSelfVIP, checkTargetSub, checkTargetMod, checkTargetVIP } = require(`./checkChannelInfo`)
@@ -29,7 +29,8 @@ const seSplitMessagePatterns = {
 }
 
 const pcgPatterns = {
-    [/Catch it using !pokecatch \(winners revealed in 90s\)/]: catchPokemon,
+    [/Catch it using !pokecatch \(winners revealed in 90s\)/]: checkPokemon,
+    [new RegExp(`${BOT_USERNAME} .+ registered in Pokédex: ❌`)]: catchPokemon,
     [new RegExp(`${BOT_USERNAME} Purchase successful!`)]: catchPokemon,
     [new RegExp(`${BOT_USERNAME} You don.t own that ball\. Check the extension to see your items\.`)]: buyPokeballs,
     [new RegExp(`has been caught by: .*${BOT_USERNAME}`, `i`)]: acknowledgeCaughtPokemon
