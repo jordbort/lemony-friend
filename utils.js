@@ -5,7 +5,6 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 const fs = require(`fs/promises`)
 
 const { settings, lemonyFresh, mods, users, knownTags, lemCmds, wordBank, joinedChatrooms } = require(`./data`)
-const { indexOf } = require("./numbers")
 
 // Terminal colors
 const terminalColors = {
