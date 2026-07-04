@@ -1,9 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings, lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
-const { getContextEmote, pluralize, logMessage, logArr, coinFlip, transformText, containsInaccessibleEmotes, containsUnrecognizedEmotes } = require(`../utils`)
-
-const numbers = require(`../numbers`)
+const { getContextEmote, pluralize, logMessage, logArr, coinFlip, transformText, containsInaccessibleEmotes, containsUnrecognizedEmotes, numbers, spellOutNumber } = require(`../utils`)
 
 const { lemonify } = require(`./lemonify`)
 const { apiGetTwitchChannel } = require(`./twitch`)
@@ -284,7 +282,7 @@ function reportChance(props) {
 
 function sayMessageID(props) {
     const { bot, chatroom, tags } = props
-    logMessage([`> sayMessageID(tags: ${Object.keys(tags)})`])
+    logMessage([`> sayMessageID(tags: ${logArr(Object.keys(tags))})`])
     setTimeout(() => bot.say(chatroom, `${tags.id}`), 3000)
 }
 
@@ -517,10 +515,10 @@ function useFunnyCommand(props) {
 
 function imagineLemons(props) {
     const { bot, chatroom, channel } = props
-    const randNum = Math.floor(Math.random() * numbers.length)
+    const randNum = Math.ceil(Math.random() * 999)
     const lemonEmote = getContextEmote(`lemon`, channel)
     logMessage([`> imagineLemons(chatroom: '${chatroom}', randNum: ${randNum})`])
-    setTimeout(() => bot.say(chatroom, `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${numbers[randNum + 1] || `one thousand`} lemons... ${lemonEmote}`), 3000)
+    setTimeout(() => bot.say(chatroom, `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${spellOutNumber(randNum + 1)} lemons... ${lemonEmote}`), 3000)
 }
 
 function makeInsultSentence(props) {
@@ -744,6 +742,21 @@ function makeInsultPhrase(props) {
     setTimeout(() => bot.say(chatroom, reply), 3000)
 }
 
+function lookForNumerals(props) {
+    const { bot, chatroom, message } = props
+    logMessage([`> lookForNumerals()`])
+
+    console.log(`message pre-map.():`, message.split(/(-?\d*\.?\d*)/g).map(el => el.trim()).filter(el => el && !isNaN(Number(el))))
+    const split = message.split(/(-?\d*\.?\d*)/g)
+        .map(el => el.trim())
+        .filter(el => el && !isNaN(Number(el)))
+        .map(el => spellOutNumber(Number(el)))
+
+    split.length
+        ? bot.say(chatroom, split.join(` `))
+        : logMessage([`-> No numerals found`])
+}
+
 module.exports = function rollFunNumber(props, funNumber) {
     const { bot, chatroom, tags, message, channel, username, aprilFools } = props
     logMessage([`> rollFunNumber(channel: '${channel}', tags: ${Object.keys(tags).length}, username: '${username}', message: '${message}', funNumber: ${funNumber})`])
@@ -787,7 +800,8 @@ module.exports = function rollFunNumber(props, funNumber) {
         30: sayWebSocketSessionId,
         31: reportOneSixteenthChance,
         32: transformMessage,
-        33: makeInsultPhrase
+        33: makeInsultPhrase,
+        34: lookForNumerals
     }
 
     if (funNumber in outcomes) {

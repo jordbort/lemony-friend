@@ -1,7 +1,5 @@
 const { settings, lemonyFresh, users } = require(`../data`)
-const { chatColors, getContextEmote, pluralize, getToUser, logMessage, arrToList, logArr, parseTargetByNickname } = require(`../utils`)
-
-const numbers = require(`../numbers`)
+const { chatColors, getContextEmote, pluralize, getToUser, logMessage, arrToList, logArr, parseTargetByNickname, spellOutNumber } = require(`../utils`)
 
 module.exports = {
     sayOnlineTime(props) {
@@ -9,6 +7,7 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
+            `Reworked how spelled-out numbers are rendered`,
             `Updated PokemonCommunityGame responses`,
             `Improved auto-ban functionality`,
             `Implemented new fun number outcomes`,
@@ -120,19 +119,9 @@ module.exports = {
         const neutralEmote = getContextEmote(`neutral`, channel)
         const positiveEmote = getContextEmote(`positive`, channel)
         const hypeEmote = getContextEmote(`hype`, channel)
+        const reply = `I have ${spellOutNumber(numUsers)} (${numUsers.toLocaleString(settings.timeLocale)}) friend${numUsers === 1 ? `` : `s`}! ${numUsers === 0 ? dumbEmote : numUsers < 25 ? neutralEmote : numUsers < 50 ? positiveEmote : hypeEmote}`
 
-        bot.say(
-            chatroom,
-            `I have ${numUsers < numbers.length
-                ? `${numbers[numUsers]} (${numUsers.toLocaleString(settings.timeLocale)}) friend${numUsers === 1 ? `` : `s`}`
-                : pluralize(numUsers, `friend`, `friends`)}! ${numUsers === 0
-                    ? dumbEmote
-                    : numUsers < 25
-                        ? neutralEmote
-                        : numUsers < 50
-                            ? positiveEmote
-                            : hypeEmote}`
-        )
+        bot.say(chatroom, reply)
     },
     getLemons(props) {
         const { bot, chatroom, args, channel, user } = props

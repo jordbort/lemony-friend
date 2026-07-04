@@ -137,6 +137,187 @@ async function logMessage(messages, time, channel, username, color, self) {
     }
 }
 
+const numbers = [
+    `zero`,
+    `one`,
+    `two`,
+    `three`,
+    `four`,
+    `five`,
+    `six`,
+    `seven`,
+    `eight`,
+    `nine`,
+    `ten`,
+    `eleven`,
+    `twelve`,
+    `thirteen`,
+    `fourteen`,
+    `fifteen`,
+    `sixteen`,
+    `seventeen`,
+    `eighteen`,
+    `nineteen`,
+    `twenty`,
+    `twenty-one`,
+    `twenty-two`,
+    `twenty-three`,
+    `twenty-four`,
+    `twenty-five`,
+    `twenty-six`,
+    `twenty-seven`,
+    `twenty-eight`,
+    `twenty-nine`,
+    `thirty`,
+    `thirty-one`,
+    `thirty-two`,
+    `thirty-three`,
+    `thirty-four`,
+    `thirty-five`,
+    `thirty-six`,
+    `thirty-seven`,
+    `thirty-eight`,
+    `thirty-nine`,
+    `forty`,
+    `forty-one`,
+    `forty-two`,
+    `forty-three`,
+    `forty-four`,
+    `forty-five`,
+    `forty-six`,
+    `forty-seven`,
+    `forty-eight`,
+    `forty-nine`,
+    `fifty`,
+    `fifty-one`,
+    `fifty-two`,
+    `fifty-three`,
+    `fifty-four`,
+    `fifty-five`,
+    `fifty-six`,
+    `fifty-seven`,
+    `fifty-eight`,
+    `fifty-nine`,
+    `sixty`,
+    `sixty-one`,
+    `sixty-two`,
+    `sixty-three`,
+    `sixty-four`,
+    `sixty-five`,
+    `sixty-six`,
+    `sixty-seven`,
+    `sixty-eight`,
+    `sixty-nine`,
+    `seventy`,
+    `seventy-one`,
+    `seventy-two`,
+    `seventy-three`,
+    `seventy-four`,
+    `seventy-five`,
+    `seventy-six`,
+    `seventy-seven`,
+    `seventy-eight`,
+    `seventy-nine`,
+    `eighty`,
+    `eighty-one`,
+    `eighty-two`,
+    `eighty-three`,
+    `eighty-four`,
+    `eighty-five`,
+    `eighty-six`,
+    `eighty-seven`,
+    `eighty-eight`,
+    `eighty-nine`,
+    `ninety`,
+    `ninety-one`,
+    `ninety-two`,
+    `ninety-three`,
+    `ninety-four`,
+    `ninety-five`,
+    `ninety-six`,
+    `ninety-seven`,
+    `ninety-eight`,
+    `ninety-nine`
+]
+
+function spellOutNumber(num) {
+    if (isNaN(Number(num))) { return NaN }
+
+    const output = []
+    if (num < 0) {
+        output.push(`negative`)
+        num = Math.abs(num)
+    }
+    if (num === Infinity) {
+        output.push(`infinity`)
+        return output.join(` `)
+    }
+    if (num >= 10 ** 15) {
+        output.push(`uncountable`)
+        return output.join(` `)
+    }
+
+    const placeValues = {
+        hundred: 0,
+        thousand: 0,
+        million: 0,
+        billion: 0,
+        trillion: 0
+    }
+
+    while (num >= 10 ** 12) {
+        placeValues.trillion++
+        num -= 10 ** 12
+    }
+    while (num >= 10 ** 9) {
+        placeValues.billion++
+        num -= 10 ** 9
+    }
+    while (num >= 10 ** 6) {
+        placeValues.million++
+        num -= 10 ** 6
+    }
+    while (num >= 10 ** 3) {
+        placeValues.thousand++
+        num -= 10 ** 3
+    }
+    while (num >= 100) {
+        placeValues.hundred++
+        num -= 100
+    }
+
+    if (placeValues.trillion) {
+        output.push(spellOutNumber(placeValues.trillion), `trillion`)
+    }
+    if (placeValues.billion) {
+        output.push(spellOutNumber(placeValues.billion), `billion`)
+    }
+    if (placeValues.million) {
+        output.push(spellOutNumber(placeValues.million), `million`)
+    }
+    if (placeValues.thousand) {
+        output.push(spellOutNumber(placeValues.thousand), `thousand`)
+    }
+    if (placeValues.hundred) {
+        output.push(spellOutNumber(placeValues.hundred), `hundred`)
+    }
+
+    const afterDecimal = num.toString().split(`.`)[1] || ``
+    num = Math.trunc(num)
+
+    if (num || num === 0) {
+        output.push(numbers[num])
+    }
+    if (afterDecimal.length) {
+        output.push(`point`)
+        for (const digit of afterDecimal) {
+            output.push(numbers[Number(digit)])
+        }
+    }
+
+    return output.join(` `)
+}
+
 function logArr(arr) {
     const typeArr = arr.map(el => typeof el === `string` ? `'${el}'` : `${el}`)
     return `[${typeArr.length ? ` ${typeArr.join(`, `)} ` : ``}]`
@@ -977,6 +1158,8 @@ module.exports = {
     renderObj,
     logMessage,
     logArr,
+    numbers,
+    spellOutNumber,
     async handleUncaughtException(bot, err, location) {
         await printMemory(bot.channels)
         await logMessage([`> handleUncaughtException(err.message: '${err.message}', location: '${location}')`])

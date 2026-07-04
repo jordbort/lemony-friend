@@ -1,9 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings, lemonyFresh, users, lemCmds } = require(`../data`)
-const { getUsername, getContextEmote, logMessage, pluralize, arrToList, logArr } = require(`../utils`)
-
-const numbers = require(`../numbers`)
+const { getUsername, getContextEmote, logMessage, pluralize, arrToList, logArr, spellOutNumber } = require(`../utils`)
 
 const { apiGetTwitchUser, deleteAllEventSubs } = require(`./twitch`)
 
@@ -24,7 +22,7 @@ module.exports = {
             const numLemCmds = Object.keys(lemCmds).length
             const maxUses = Math.max(...Object.keys(lemCmds).map(cmd => lemCmds[cmd].uses))
             const mostUsedLemcmd = Object.keys(lemCmds).filter(cmd => lemCmds[cmd].uses === maxUses)
-            const randNum = Math.floor(Math.random() * numbers.length)
+            const randNum = Math.ceil(Math.random() * 999)
             const totalLemons = Object.keys(users).map(user => users[user].lemons).reduce((acc, curr) => acc + curr, 0)
             const percentNicknames = Math.round(Object.keys(users).map(user => users[user].nickname).filter(el => el).length / Object.keys(users).length * 10000) / 100
             const hangmanWinners = Object.keys(users).filter(user => users[user].hangmanWins).length
@@ -37,7 +35,7 @@ module.exports = {
                 `(Windows XP startup sound plays)`,
                 `I'm onl`,
                 `I have ${numUsers <= 999
-                    ? `${numbers[numUsers]} (${numUsers}) friend${numUsers === 1 ? `` : `s`}`
+                    ? `${spellOutNumber(numUsers)} (${numUsers}) friend${numUsers === 1 ? `` : `s`}`
                     : pluralize(numUsers, `friend`, `friends`)}! ${numUsers === 0
                         ? dumbEmote
                         : numUsers < 25
@@ -57,7 +55,7 @@ module.exports = {
                 `${BOT_USERNAME} has entered the chat ${lemonEmote}`,
                 `${BOT_USERNAME in users
                     ? `I have ${pluralize(users[BOT_USERNAME].lemons, `lemon`, `lemons`)}! ${lemonEmote}`
-                    : `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${numbers[randNum + 1] || `one thousand`} lemons... ${lemonEmote}`}`,
+                    : `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${spellOutNumber(randNum + 1)} lemons... ${lemonEmote}`}`,
                 Object.keys(lemCmds).length === 0 || maxUses === 0
                     ? `No lemon commands have been used! ${dumbEmote}`
                     : `Most-used lemon command${mostUsedLemcmd.length === 1 ? `` : `s`} ${arrToList(mostUsedLemcmd)} ${mostUsedLemcmd.length === 1 ? `has` : `have`} been used ${pluralize(maxUses, `time`, `times`)}! ${maxUses < 50
