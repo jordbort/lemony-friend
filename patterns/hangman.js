@@ -242,13 +242,13 @@ module.exports = {
     },
     hangmanListener(props) {
         const { bot, chatroom, message, channel, username, userNickname } = props
-        const hangman = lemonyFresh[channel].hangman
-        if (hangman.listening && !hangman.signup && username === hangman.players[hangman.currentPlayer]) {
+        const { listening, signup, players, currentPlayer, spaces } = lemonyFresh[channel].hangman
+        if (listening && !signup && username === players[currentPlayer]) {
             if (/^[a-z]$/i.test(message)) {
                 checkLetter(bot, chatroom, message, channel, username, userNickname)
                 return true
             }
-            if (/^[a-z]{2,}$/i.test(message) && message.length === hangman.answer.length) {
+            if (new RegExp(`^${spaces.join(``).replace(/_/g, `[a-z]`)}$`, `i`).test(message)) {
                 checkWord(bot, chatroom, message, channel, username, userNickname)
                 return true
             }
