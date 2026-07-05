@@ -337,6 +337,30 @@ async function printMemory(arr) {
     }, null, 4))
 }
 
+function findEmotePrefix(username) {
+    const arr = [...lemonyFresh[username].followEmotes, ...lemonyFresh[username].subEmotes]
+    if (arr.length < 2) {
+        const prefix = [...lemonyFresh[username].followEmotes, ...lemonyFresh[username].subEmotes]
+            .map(str => str.search(/[A-Z]/))
+            .filter((el, idx, self) => self.indexOf(el) === idx && el !== -1)
+            .map(num => [...lemonyFresh[username].followEmotes, ...lemonyFresh[username].subEmotes][0].substring(0, num))
+        return prefix[0] || ``
+    } else {
+        const firstEmote = arr[0]
+        const lengths = []
+        for (let j = 1; j < arr.length; j++) {
+            let i = 0
+            while (i < arr[j].length && firstEmote[i] === arr[j][i] && !/[A-Z]/.test(arr[j][i])) { i++ }
+            lengths.push(i)
+        }
+        const prefixLengths = lengths.filter((el, idx, self) => idx === self.indexOf(el))
+        if (!prefixLengths.length !== 1) {
+            logMessage([`Warning: Consensus for ${username}'s emote prefix length was not reached: ${logArr(prefixLengths)} Returning '${arr[0].substring(0, prefixLengths[0])}'`])
+        }
+        return arr[0].substring(0, prefixLengths[0])
+    }
+}
+
 const superscriptTable = {
     a: `ᵃ`,
     b: `ᵇ`,
@@ -1189,7 +1213,10 @@ module.exports = {
 
         for (const member in lemonyFresh) {
             const stream = lemonyFresh[member]
-            for (const emote of stream.contextEmotes[baseType]) {
+            for (let i = stream.contextEmotes[baseType].length - 1; i >= 0; i--) {
+                const emote = stream.contextEmotes[baseType][i]
+
+                // If the context emote can be used
                 if ((stream.followEmotes.includes(emote) && member === channel)
                     || (stream.followEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
                     || (stream.subEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
@@ -1198,13 +1225,22 @@ module.exports = {
                     || settings.globalEmotes.bttv.includes(emote)) {
                     emotes.push(emote)
                 }
+
+                // If the context emote doesn't exist, remove it or rename (username/emote prefix change)
                 if (!stream.followEmotes.includes(emote)
                     && !stream.subEmotes.includes(emote)
                     && !stream.bttvEmotes.includes(emote)
                     && !settings.globalEmotes.twitch.includes(emote)
                     && !settings.globalEmotes.bttv.includes(emote)) {
-                    stream.contextEmotes[baseType].splice(stream.contextEmotes[baseType].indexOf(emote))
-                    logMessage([`-> Deleted unrecognized emote '${emote}' from ${baseType}`])
+                    const prefix = findEmotePrefix(member)
+                    const replacementEmotes = [...stream.followEmotes, ...stream.subEmotes].filter(el => new RegExp(`${el.split(prefix)[1]}$`).test(emote))
+                    if (replacementEmotes.length === 1) {
+                        stream.contextEmotes[baseType][i] = replacementEmotes[0]
+                        logMessage([`-> Renaming ${member}'s emote '${emote}' to '${replacementEmotes[0]}' in ${baseType}`])
+                    } else {
+                        stream.contextEmotes[baseType].splice(i, 1)
+                        logMessage([`-> Deleted ${member}'s unrecognized emote '${emote}' from ${baseType}`])
+                    }
                 }
             }
         }
