@@ -354,7 +354,7 @@ function findEmotePrefix(username) {
             lengths.push(i)
         }
         const prefixLengths = lengths.filter((el, idx, self) => idx === self.indexOf(el))
-        if (!prefixLengths.length !== 1) {
+        if (prefixLengths.length !== 1) {
             logMessage([`Warning: Consensus for ${username}'s emote prefix length was not reached: ${logArr(prefixLengths)} Returning '${arr[0].substring(0, prefixLengths[0])}'`])
         }
         return arr[0].substring(0, prefixLengths[0])
