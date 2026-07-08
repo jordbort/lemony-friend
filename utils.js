@@ -1433,7 +1433,7 @@ module.exports = {
         lemonyFresh[channel].funTimer = lemonyFresh[channel].funTimer === undefined ? 0 : lemonyFresh[channel].funTimer
         lemonyFresh[channel].funTimerGuesser = lemonyFresh[channel].funTimerGuesser === undefined ? `` : lemonyFresh[channel].funTimerGuesser
         lemonyFresh[channel].pollId = lemonyFresh[channel].pollId === undefined ? `` : lemonyFresh[channel].pollId
-        lemonyFresh[channel].viewers = lemonyFresh[channel].viewers || []
+        lemonyFresh[channel].viewers = []
         lemonyFresh[channel].streakThreshold = lemonyFresh[channel].streakThreshold === undefined ? 3 : lemonyFresh[channel].streakThreshold
         lemonyFresh[channel].streamerEmoteStreakThreshold = lemonyFresh[channel].streamerEmoteStreakThreshold === undefined ? 4 : lemonyFresh[channel].streamerEmoteStreakThreshold
         lemonyFresh[channel].count = {
