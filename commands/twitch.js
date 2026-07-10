@@ -1024,25 +1024,30 @@ module.exports = {
             return
         }
 
+        // Stop if user doesn't exist
+        const twitchUser = await apiGetTwitchUser(toUser)
+        if (!twitchUser) {
+            if (twitchUser === false) {
+                await logMessage([`-> Data fetch for '${toUser}' failed, exiting handleShoutout function`])
+                bot.say(chatroom, `Failed to look up user, please try again! :O`)
+            } else {
+                await logMessage([`-> No user '${toUser}' exists, exiting handleShoutout function`])
+                bot.say(chatroom, `No user ${toUser} was found! :O`)
+            }
+            return
+        }
+
+        // Get stream information
+        const stream = await apiGetTwitchChannel(twitchUser.id)
+        if (!stream) {
+            await logMessage([`-> Failed to get ${toUser}'s channel, exiting handleShoutout function`])
+            bot.say(chatroom, `Failed to get ${toUser}'s stream information! :O`)
+            return
+        }
+
         if (lemonyFresh[channel].timers[`!so`].listening) {
             resetCooldownTimer(channel, `!so`)
 
-            // Stop if user doesn't exist
-            const twitchUser = await apiGetTwitchUser(toUser)
-            if (!twitchUser) {
-                await logMessage([`-> No user '${toUser}' found, exiting handleShoutout function`])
-                twitchUser === false
-                    ? bot.say(chatroom, `Failed to fetch user! :O`)
-                    : bot.say(chatroom, `No user ${toUser} was found! :O`)
-                return
-            }
-
-            const stream = await apiGetTwitchChannel(twitchUser.id)
-            if (!stream) {
-                await logMessage([`-> Failed to get ${toUser}'s channel, exiting handleShoutout function`])
-                bot.say(chatroom, `Failed to get ${toUser}'s stream information! :O`)
-                return
-            }
             const neutralEmote = getContextEmote(`neutral`, channel)
             const reply = `Let's give a shoutout to ${stream.broadcaster_name}! ${stream.game_name
                 ? `They were last ${stream.game_name === `Just Chatting`
