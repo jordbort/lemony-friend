@@ -1359,6 +1359,9 @@ const keyVerbs = {
     'manufacture': createLemon,
     'generate': createLemon,
     'manifest': createLemon,
+    'conjure': createLemon,
+    'invoke': createLemon,
+    'summon': createLemon,
     'farm': createLemon,
     'find': createLemon,
     'giveme': createLemon,
@@ -1703,6 +1706,6 @@ module.exports = function useLemon(props, splitMessage) {
         keyVerbs[verb](bot, chatroom, user, suffix, target, verb)
         return
     }
-    logMessage([`-> Couldn't use verb: ${verb} on lemon${suffix}:`, `[Function: ${nullVerb.name}]`])
+    logMessage([`-> Couldn't use verb '${verb}' on lemon${suffix}:`, `[Function: ${nullVerb.name}]`])
     nullVerb(bot, chatroom, user, suffix, target, verb)
 }
