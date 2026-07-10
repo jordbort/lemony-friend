@@ -7,6 +7,7 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
+            `Added more lemon uses`,
             `Built attempt to salvage context emotes if emote prefix changes`,
             `Made Hangman whole word guesses have to match given clues`,
             `Reworked how spelled-out numbers are rendered`,
