@@ -746,7 +746,6 @@ function lookForNumerals(props) {
     const { bot, chatroom, message } = props
     logMessage([`> lookForNumerals()`])
 
-    console.log(`message pre-map.():`, message.split(/(-?\d*\.?\d*)/g).map(el => el.trim()).filter(el => el && !isNaN(Number(el))))
     const split = message.split(/(-?\d*\.?\d*)/g)
         .map(el => el.trim())
         .filter(el => el && !isNaN(Number(el)))
