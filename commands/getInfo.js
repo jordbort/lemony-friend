@@ -7,13 +7,10 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
+            `Implemented created/last used dates for lemon commands`,
             `Added more lemon uses`,
             `Built attempt to salvage context emotes if emote prefix changes`,
             `Made Hangman whole word guesses have to match given clues`,
-            `Reworked how spelled-out numbers are rendered`,
-            `Updated PokemonCommunityGame responses`,
-            `Improved auto-ban functionality`,
-            `Implemented new fun number outcomes`,
             `Cleanup and bug fixes`
         ]
 
