@@ -77,7 +77,7 @@ function applyVariables(str, props) {
 
 module.exports = {
     handleLemCmd(props) {
-        const { bot, chatroom, args, channel, userNickname } = props
+        const { bot, chatroom, args, channel, username, userNickname, currentTime } = props
         logMessage([`> handleLemCmd(chatroom: ${chatroom}, args: ${logArr(args)})`])
 
         const positiveEmote = getContextEmote(`positive`, channel)
@@ -87,14 +87,12 @@ module.exports = {
             return
         }
 
-
         const negativeEmote = getContextEmote(`negative`, channel)
         if (/^delete$/i.test(args[0])) {
             if (!(args[1].toLowerCase() in lemCmds)) {
                 bot.say(chatroom, `No command "${args[1].toLowerCase()}" was found! ${negativeEmote}`)
                 return
             }
-
             delete lemCmds[args[1].toLowerCase()]
             bot.say(chatroom, `Command "${args[1].toLowerCase()}" has been deleted! ${positiveEmote}`)
         } else if (/^check$/i.test(args[0])) {
@@ -102,24 +100,20 @@ module.exports = {
                 bot.say(chatroom, `No command "${args[1].toLowerCase()}" was found! ${negativeEmote}`)
                 return
             }
-
             bot.say(chatroom, `Command "${args[1].toLowerCase()}" => ${lemCmds[args[1].toLowerCase()].response}`)
         } else if (/^rename$/i.test(args[0])) {
             if (!(args[1].toLowerCase() in lemCmds)) {
                 bot.say(chatroom, `No command "${args[1].toLowerCase()}" was found! ${negativeEmote}`)
                 return
             }
-
             if (!args[2]) {
                 bot.say(chatroom, `Hey ${userNickname}, I need to know what you want me to rename ${args[1].toLowerCase()} to! :O`)
                 return
             }
-
             if (args[2].toLowerCase() in lemCmds) {
                 bot.say(chatroom, `A command called ${args[2].toLowerCase()} already exists! Try deleting or editing it! ${negativeEmote}`)
                 return
             }
-
             lemCmds[args[2].toLowerCase()] = lemCmds[args[1].toLowerCase()]
             delete lemCmds[args[1].toLowerCase()]
             bot.say(chatroom, `Command "${args[1].toLowerCase()}" has been renamed to "${args[2].toLowerCase()}"! ${positiveEmote}`)
@@ -130,6 +124,9 @@ module.exports = {
             lemCmds[args[0].toLowerCase()] = {
                 response: args.slice(1).join(` `),
                 origin: channel,
+                createdBy: username,
+                createdDate: currentTime,
+                lastUsedDate: currentTime,
                 uses: 0
             }
             bot.say(chatroom, `Lemon command "${args[0].toLowerCase()}" has been added! ${positiveEmote}`)
@@ -146,10 +143,11 @@ module.exports = {
         bot.say(chatroom, `There ${commands.length === 1 ? `is` : `are`} ${pluralize(commands.length, `lemon command`, `lemon commands`)}${commands.length === 0 ? `! ${negativeEmote}` : `: ${commands.join(`, `)}`}`)
     },
     useLemCmd(props) {
-        const { bot, chatroom, command } = props
+        const { bot, chatroom, command, currentTime } = props
         logMessage([`> useLemCmd(command: ${command}, response: '${lemCmds[command].response}', origin: '${lemCmds[command].origin}', uses: ${lemCmds[command].uses})`])
 
         const response = applyVariables(lemCmds[command].response, props)
+        lemCmds[command].lastUsedDate = currentTime
         lemCmds[command].uses++
         bot.say(chatroom, response)
     }
