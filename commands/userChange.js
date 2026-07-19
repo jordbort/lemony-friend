@@ -1,4 +1,4 @@
-const { mods } = require(`../data`)
+const { mods, users } = require(`../data`)
 const { chatColors, getContextEmote, logMessage } = require(`../utils`)
 
 module.exports = {
@@ -21,7 +21,8 @@ module.exports = {
 
         const positiveEmote = getContextEmote(`positive`, channel)
         if (subStatus) {
-            bot.say(chatroom, `Wow, ${userNickname} is subbed now! ${positiveEmote}`)
+            const channelNickname = channel in users ? users[channel].nickname || users[channel].displayName : channel
+            bot.say(chatroom, `Wow, ${userNickname} is subbed to ${channelNickname}! ${positiveEmote}`)
         }
     },
     handleModChange(props) {
@@ -47,7 +48,7 @@ module.exports = {
 
         const positiveEmote = getContextEmote(`positive`, channel)
         if (vipStatus) {
-            bot.say(chatroom, `Wow, ${userNickname} became a VIP! ${positiveEmote}`)
+            bot.say(chatroom, `Wow, ${userNickname} is a VIP! ${positiveEmote}`)
         }
     }
 }
