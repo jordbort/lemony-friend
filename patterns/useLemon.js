@@ -1238,6 +1238,49 @@ function pickleLemon(bot, chatroom, user, suffix, target) {
                 ? bot.say(chatroom, `${userNickname} turned a lemon into a pickle.`)
                 : bot.say(chatroom, `${userNickname} cut up a lemon and preserved it in salt.`)
 }
+function fascinateLemon(bot, chatroom, user, suffix, target) {
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName || null
+    const badResultAppend = [`Bye!`, `See ya!`, `Oops!`, `Whoops!`, `Dang!`, user.lemons === 1 ? `It's outta here!` : `They're outta here!`][Math.floor(Math.random() * 6)]
+
+    allLemons
+        ? target
+            ? coinFlip()
+                ? bot.say(chatroom, `${userNickname}'s ${user.lemons} lemon${user.lemons === 1 ? `` : `s`} found ${targetNickname} very alluring!`)
+                : (bot.say(chatroom, `${userNickname} showed ${targetNickname} to their lemon${user.lemons === 1 ? `` : `s`}, but ${user.lemons === 1 ? `it wasn't` : `they weren't`} intruiged... ${badResultAppend}`), user.lemons = 0)
+            : coinFlip()
+                ? bot.say(chatroom, `${userNickname} caught the attention of their ${user.lemons} lemon${user.lemons === 1 ? `` : `s`}!`)
+                : (bot.say(chatroom, `${userNickname}'s ${user.lemons} lemon${user.lemons === 1 ? ` was` : `s were`} not roused... ${badResultAppend}`), user.lemons = 0)
+        : target
+            ? coinFlip()
+                ? bot.say(chatroom, `${userNickname}'s lemon found ${targetNickname} very captivating!`)
+                : (bot.say(chatroom, `${userNickname} showed ${targetNickname} to their lemon, but ${user.lemons === 1 ? `it wasn't` : `they weren't`} interested... ${badResultAppend}`), user.lemons--)
+            : coinFlip()
+                ? bot.say(chatroom, `${userNickname}'s lemon was fascinated!`)
+                : (bot.say(chatroom, `${userNickname}'s lemon was disinterested... ${badResultAppend}`), user.lemons--)
+}
+function drawLemon(bot, chatroom, user, suffix, target) {
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName || null
+
+    allLemons
+        ? target
+            ? coinFlip()
+                ? bot.say(chatroom, `${userNickname} drew ${targetNickname} a picture of their ${user.lemons} lemon${user.lemons === 1 ? `` : `s`}!`)
+                : bot.say(chatroom, `${userNickname} sketched ${targetNickname} looking at their ${user.lemons} lemon${user.lemons === 1 ? `` : `s`}.`)
+            : coinFlip()
+                ? bot.say(chatroom, `${userNickname} illustrated a comic of their ${user.lemons} lemon${user.lemons === 1 ? `` : `s`}!`)
+                : bot.say(chatroom, `${userNickname} made a drawing of their ${user.lemons} lemon${user.lemons === 1 ? `` : `s`}.`)
+        : target
+            ? coinFlip()
+                ? bot.say(chatroom, `${userNickname} made a picture of a lemon for ${targetNickname}.`)
+                : bot.say(chatroom, `${userNickname} drew a picture of their lemon and showed it to ${targetNickname}.`)
+            : coinFlip()
+                ? bot.say(chatroom, `${userNickname} drew a picture of ${user.lemons === 1 ? `their lemon`: `one of their lemons`}.`)
+                : bot.say(chatroom, `${userNickname} sketched ${user.lemons === 1 ? `their lemon`: `one of their lemons`} on a piece of paper.`)
+}
 function nullVerb(bot, chatroom, user, suffix, target, verb) {
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
@@ -1449,6 +1492,7 @@ const keyVerbs = {
     'sleepwith': sexLemon,
     'fornicate': sexLemon,
     'screw': sexLemon,
+    'pleasure': sexLemon,
 
     'date': dateLemon,
     'gooutwith': dateLemon,
@@ -1633,9 +1677,13 @@ const keyVerbs = {
     'change': exchangeLemon,
     'convert': exchangeLemon,
     'trade': exchangeLemon,
+    'cash': exchangeLemon,
+    'cashin': exchangeLemon,
+    'givein': exchangeLemon,
     'swap': exchangeLemon,
     'barter': exchangeLemon,
     'sell': exchangeLemon,
+    'redeem': exchangeLemon,
     'resell': exchangeLemon,
     'retail': exchangeLemon,
     'merchandise': exchangeLemon,
@@ -1649,6 +1697,7 @@ const keyVerbs = {
     'mislay': loseLemon,
 
     'bowl': bowlLemon,
+    'roll': bowlLemon,
     'tenpin': bowlLemon,
 
     'weigh': weighLemon,
@@ -1663,7 +1712,66 @@ const keyVerbs = {
     'exercise': walkLemon,
 
     'pickle': pickleLemon,
-    'preserve': pickleLemon
+    'preserve': pickleLemon,
+
+    'interest': fascinateLemon,
+    'intrigue': fascinateLemon,
+    'fascinate': fascinateLemon,
+    'allure': fascinateLemon,
+    'appeal': fascinateLemon,
+    'appealto': fascinateLemon,
+    'beappealingto': fascinateLemon,
+    'beofinterestto': fascinateLemon,
+    'attract': fascinateLemon,
+    'drawattentionto': fascinateLemon,
+    'lure': fascinateLemon,
+    'enrapture': fascinateLemon,
+    'rouse': fascinateLemon,
+    'arouse': fascinateLemon,
+    'charm': fascinateLemon,
+    'delight': fascinateLemon,
+    'rizz': fascinateLemon,
+    'enchant': fascinateLemon,
+    'thrill': fascinateLemon,
+    'ravish': fascinateLemon,
+    'captivate': fascinateLemon,
+    'beguile': fascinateLemon,
+    'deceive': fascinateLemon,
+    'entrance': fascinateLemon,
+    'excite': fascinateLemon,
+    'please': fascinateLemon,
+    'mesmerize': fascinateLemon,
+    'enthuse': fascinateLemon,
+    'satisfy': fascinateLemon,
+    'engage': fascinateLemon,
+    'bore': fascinateLemon,
+    'disinterest': fascinateLemon,
+    'uninterest': fascinateLemon,
+    'unappeal': fascinateLemon,
+    'unappealto': fascinateLemon,
+    'beunappealingto': fascinateLemon,
+    'dissatisfy': fascinateLemon,
+    'disengage': fascinateLemon,
+    'weary': fascinateLemon,
+    'tire': fascinateLemon,
+    'pall': fascinateLemon,
+    'dull': fascinateLemon,
+    'displease': fascinateLemon,
+    'displeasure': fascinateLemon,
+
+    'draw': drawLemon,
+    'sketch': drawLemon,
+    'drawpictureof': drawLemon,
+    'drawapictureof': drawLemon,
+    'drawapictureofa': drawLemon,
+    'illustrate': drawLemon,
+    'depict': drawLemon,
+    'portray': drawLemon,
+    'trace': drawLemon,
+    'design': drawLemon,
+    'represent': drawLemon,
+    'outline': drawLemon,
+    'draft': drawLemon
 }
 
 module.exports = function useLemon(props, splitMessage) {
