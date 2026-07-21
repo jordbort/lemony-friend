@@ -7,6 +7,7 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
+            `Added "length" as !list keyword`,
             `Implemented created/last used dates for lemon commands`,
             `Added more lemon uses`,
             `Built attempt to salvage context emotes if emote prefix changes`,
