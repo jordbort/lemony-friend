@@ -1,5 +1,5 @@
 const { lemonyFresh } = require(`../data`)
-const { getContextEmote, logMessage, logArr, arrToList } = require(`../utils`)
+const { getContextEmote, logMessage, logArr, arrToList, pluralize } = require(`../utils`)
 
 function getItem(bot, chatroom, channel, idx) {
     logMessage([`-> getItem(idx: ${idx})`])
@@ -257,10 +257,9 @@ function searchList(bot, chatroom, channel, query) {
 function getListMethods(bot, chatroom, channel, isModOrVIP) {
     logMessage([`-> getListMethods(isModOrVIP? ${isModOrVIP})`])
     const neutralEmote = getContextEmote(`neutral`, channel)
-
-    isModOrVIP
-        ? bot.say(chatroom, `You can use !list to show the full list, !list <number> or "random" to get a specific or random item from the list, !list <number>-<number> to get a range of items, and !list search <query> to find something in the list! VIPs/mods can also use !list add <new item>, edit <number>, delete <number>, swap/switch <number1> <number2>, move <number1> <number2>, name/rename <list name>, clear (to empty list), and reset (to empty list and reset name)! ${neutralEmote}`)
-        : bot.say(chatroom, `You can use !list to show the full list, !list <number> or "random" to get a specific or random item from the list, !list <number>-<number> to get a range of items, and !list search <query> to find something in the list! ${neutralEmote}`)
+    bot.say(chatroom, `Use !list to show the full list, !list <number> or "random" to get a specific or random item from the list, !list <number>-<number> to get a range of items, !list search <query> to find something in the list, and !list length to get its length! ${isModOrVIP
+        ? `VIPs/mods can also use !list add <new item>, edit <number>, delete <number>, swap/switch <number1> <number2>, move <number1> <number2>, name/rename <list name>, clear (to empty list), and reset (to empty list and reset name)! `
+        : ``}${neutralEmote}`)
 }
 
 module.exports = function useList(props) {
@@ -270,6 +269,12 @@ module.exports = function useList(props) {
     // Get list of all methods
     if (/^help$/i.test(args[0])) {
         getListMethods(bot, chatroom, channel, isModOrVIP)
+        return
+    }
+
+    // Get length of list
+    if (/^length$/i.test(args[0])) {
+        bot.say(chatroom, `${lemonyFresh[channel].list[0] || `The list`} is ${pluralize(lemonyFresh[channel].list.length - 1, `item`, `items`)} long! ${getContextEmote(`neutral`, channel)}`)
         return
     }
 
