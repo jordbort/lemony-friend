@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings, lemonyFresh, users, lemCmds } = require(`../data`)
-const { getUsername, getContextEmote, logMessage, pluralize, arrToList, logArr, spellOutNumber } = require(`../utils`)
+const { getUsername, getContextEmote, logMessage, pluralize, arrToList, logArr, spellOutNumber, msToElapsedTime } = require(`../utils`)
 
 const { apiGetTwitchUser, deleteAllEventSubs } = require(`./twitch`)
 
@@ -19,14 +19,15 @@ module.exports = {
             const greetingEmote = getContextEmote(`greeting`, channel)
             const dumbEmote = getContextEmote(`dumb`, channel)
             const numUsers = Object.keys(users).length
-            const numLemCmds = Object.keys(lemCmds).length
-            const maxUses = Math.max(...Object.keys(lemCmds).map(cmd => lemCmds[cmd].uses))
-            const mostUsedLemcmd = Object.keys(lemCmds).filter(cmd => lemCmds[cmd].uses === maxUses)
             const randNum = Math.ceil(Math.random() * 999)
             const totalLemons = Object.keys(users).map(user => users[user].lemons).reduce((acc, curr) => acc + curr, 0)
             const percentNicknames = Math.round(Object.keys(users).map(user => users[user].nickname).filter(el => el).length / Object.keys(users).length * 10000) / 100
             const hangmanWinners = Object.keys(users).filter(user => users[user].hangmanWins).length
             const hangmanAverageWins = Math.round(Object.keys(users).map(user => users[user].hangmanWins).reduce((acc, curr) => acc + curr, 0) / hangmanWinners * 100) / 100
+            const arrLemCmds = Object.keys(lemCmds)
+            const maxUses = Math.max(...arrLemCmds.map(cmd => lemCmds[cmd].uses))
+            const mostUsedLemcmd = arrLemCmds.filter(cmd => lemCmds[cmd].uses === maxUses)
+            const randomLemCmd = arrLemCmds[Math.floor(Math.random() * arrLemCmds.length)]
 
             const joinMessages = [
                 `Let's see how long before I crash ${dumbEmote}`,
@@ -34,6 +35,11 @@ module.exports = {
                 `Hi ${channel}, I'm ${BOT_USERNAME}! ${greetingEmote} ${lemonEmote}`,
                 `(Windows XP startup sound plays)`,
                 `I'm onl`,
+                `Let's play Hangman! ${positiveEmote}`,
+                `It has been ${Date.now().toLocaleString(`en-US`)} milliseconds since January 1, 1970, 12:00:00 AM UTC ${lemonEmote}`,
+                `${BOT_USERNAME} has entered the chat ${lemonEmote}`,
+                `${pluralize(totalLemons, `lemon is`, `lemons are`)} in circulation! ${lemonEmote}`,
+                `Lemon command "${randomLemCmd}" was last used ${msToElapsedTime(Date.now() - lemCmds[randomLemCmd].lastUsedDate)}!`,
                 `I have ${numUsers <= 999
                     ? `${spellOutNumber(numUsers)} (${numUsers}) friend${numUsers === 1 ? `` : `s`}`
                     : pluralize(numUsers, `friend`, `friends`)}! ${numUsers === 0
@@ -43,20 +49,17 @@ module.exports = {
                             : numUsers < 50
                                 ? positiveEmote
                                 : hypeEmote}`,
-                `There ${numLemCmds === 1 ? `is` : `are`} ${pluralize(numLemCmds, `lemon command`, `lemon commands`)}! ${numLemCmds === 0
+                `There ${arrLemCmds.length === 1 ? `is` : `are`} ${pluralize(arrLemCmds.length, `lemon command`, `lemon commands`)}! ${arrLemCmds.length === 0
                     ? dumbEmote
-                    : numLemCmds < 10
+                    : arrLemCmds.length < 10
                         ? neutralEmote
-                        : numLemCmds < 100
+                        : arrLemCmds.length < 100
                             ? positiveEmote
                             : hypeEmote}`,
-                `Let's play Hangman! ${positiveEmote}`,
-                `It has been ${Date.now().toLocaleString(`en-US`)} milliseconds since January 1, 1970, 12:00:00 AM UTC ${lemonEmote}`,
-                `${BOT_USERNAME} has entered the chat ${lemonEmote}`,
                 `${BOT_USERNAME in users
                     ? `I have ${pluralize(users[BOT_USERNAME].lemons, `lemon`, `lemons`)}! ${lemonEmote}`
                     : `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${spellOutNumber(randNum + 1)} lemons... ${lemonEmote}`}`,
-                Object.keys(lemCmds).length === 0 || maxUses === 0
+                arrLemCmds.length === 0 || maxUses === 0
                     ? `No lemon commands have been used! ${dumbEmote}`
                     : `Most-used lemon command${mostUsedLemcmd.length === 1 ? `` : `s`} ${arrToList(mostUsedLemcmd)} ${mostUsedLemcmd.length === 1 ? `has` : `have`} been used ${pluralize(maxUses, `time`, `times`)}! ${maxUses < 50
                         ? neutralEmote
@@ -76,8 +79,7 @@ module.exports = {
                         ? neutralEmote
                         : hangmanAverageWins < 6
                             ? positiveEmote
-                            : hypeEmote}`,
-                `${pluralize(totalLemons, `lemon is`, `lemons are`)} in circulation! ${lemonEmote}`
+                            : hypeEmote}`
             ]
 
             if (lemonyFresh[channel].followEmotes.length) { joinMessages.push(`I know ${pluralize(lemonyFresh[channel].followEmotes.length, `follow emote`, `follow emotes`)} in ${channel}'s channel! ${positiveEmote}`) }

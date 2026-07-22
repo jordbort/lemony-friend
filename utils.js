@@ -337,6 +337,16 @@ async function printMemory(arr) {
     }, null, 4))
 }
 
+function arrToList(arr, conjunction = `and`) {
+    return arr
+        .map((element, idx) => idx !== 0 && idx + 1 === arr.length
+            ? `${conjunction} ${element}`
+            : element)
+        .join(arr.length > 2
+            ? `, `
+            : ` `)
+}
+
 function findEmotePrefix(username) {
     const arr = [...lemonyFresh[username].followEmotes, ...lemonyFresh[username].subEmotes]
     if (arr.length < 2) {
@@ -1184,6 +1194,7 @@ module.exports = {
     logArr,
     numbers,
     spellOutNumber,
+    arrToList,
     async handleUncaughtException(bot, err, location) {
         await printMemory(bot.channels)
         await logMessage([`> handleUncaughtException(err.message: '${err.message}', location: '${location}')`])
@@ -1312,15 +1323,6 @@ module.exports = {
         return str
             ? str.replace(/^[@#]/g, ``).toLowerCase()
             : null
-    },
-    arrToList(arr, conjunction = `and`) {
-        return arr
-            .map((element, idx) => idx !== 0 && idx + 1 === arr.length
-                ? `${conjunction} ${element}`
-                : element)
-            .join(arr.length > 2
-                ? `, `
-                : ` `)
     },
     initUser(bot, chatroom, tags, self) {
         const newUsername = tags.username
@@ -1675,5 +1677,19 @@ module.exports = {
             .replace(/ˣ|𝐗|𝑋|𝑿|𝖷|𝗫|𝘟|𝙓|𝒳|𝓧|𝔛|𝖃|𝚇|𝕏/g, `X`)
             .replace(/ʸ|𝐘|𝑌|𝒀|𝖸|𝗬|𝘠|𝙔|𝒴|𝓨|𝔜|𝖄|𝚈|𝕐/g, `Y`)
             .replace(/ᶻ|𝐙|𝑍|𝒁|𝖹|𝗭|𝘡|𝙕|𝒵|𝓩|ℨ|𝖅|𝚉|ℤ/g, `Z`)
+    },
+    msToElapsedTime(ms) {
+        const days = Math.floor(ms / (1000 * 60 * 60 * 24))
+        const hours = Math.floor((ms / (1000 * 60 * 60)) % 24)
+        const minutes = Math.floor((ms / (1000 * 60)) % 60)
+        const seconds = Math.floor((ms / 1000) % 60)
+
+        const duration = []
+        if (days) { duration.push(pluralize(days, `day`, `days`)) }
+        if (hours) { duration.push(pluralize(hours, `hour`, `hours`)) }
+        if (minutes) { duration.push(pluralize(minutes, `minute`, `minutes`)) }
+        if (seconds) { duration.push(pluralize(seconds, `second`, `seconds`)) }
+
+        return duration.length ? `${arrToList(duration)} ago` : `just now`
     }
 }
