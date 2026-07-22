@@ -144,7 +144,7 @@ module.exports = {
     },
     useLemCmd(props) {
         const { bot, chatroom, command, currentTime } = props
-        logMessage([`> useLemCmd(command: ${command}, response: '${lemCmds[command].response}', origin: '${lemCmds[command].origin}', uses: ${lemCmds[command].uses})`])
+        logMessage([`> useLemCmd(command: ${command}, response: '${lemCmds[command].response}', origin: '${lemCmds[command].origin}', createdBy: '${lemCmds[command].createdBy}', uses: ${lemCmds[command].uses})`])
 
         const response = applyVariables(lemCmds[command].response, props)
         lemCmds[command].lastUsedDate = currentTime
