@@ -719,8 +719,15 @@ function transformMessage(props) {
         `monospace`,
         `doubleStruck`
     ]
+
     const type = types[Math.floor(Math.random() * types.length)]
-    logMessage([`> transformMessage(type: '${type}')`])
+    logMessage([`> transformMessage(type: '${type}', message: '${message}')`])
+
+    if (message.startsWith(`@`)) {
+        logMessage([`-> Message is to another user, ignoring`])
+        return
+    }
+
     const reply = transformText(type, message)
     setTimeout(() => bot.say(chatroom, reply), 3000)
 }
