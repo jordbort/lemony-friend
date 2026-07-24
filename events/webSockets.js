@@ -131,7 +131,7 @@ module.exports = {
     },
     checkWebSockets(arrShards) { // is in: dev.js
         const channels = joinedChatrooms.map(str => str.substring(1))
-        for (const shard of arrShards) {
+        arrShards.forEach(shard => {
             const shardId = Number(shard.id)
             const channel = channels[shardId]
             const ws = webSockets[channel]
@@ -146,10 +146,10 @@ module.exports = {
                     ws.sessionId,
                     ws.sessionId === sessionId || sessionId || `(NO SESSION ID)`
                 )
-                : !channel
-                    ? console.log(shardId, `Unassigned shard${sessionId ? ` - sessionId: ${sessionId}` : ``}`)
-                    : console.log(shardId, `Error: '${channel}' not in webSockets{} - sessionId: ${sessionId || `(none)`}`)
-        }
+                : channel
+                    ? console.log(shardId, `Error: '${channel}' not in webSockets{} - sessionId: ${sessionId || `(none)`}`)
+                    : console.log(shardId, `Unassigned shard${sessionId ? ` - sessionId: ${sessionId}` : ``}`)
+        })
     },
     sayWebSocketSessionId(props) {
         const { bot, chatroom, channel } = props

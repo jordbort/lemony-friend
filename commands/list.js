@@ -239,11 +239,11 @@ function searchList(bot, chatroom, channel, query) {
     }
 
     const indexes = []
-    for (const [idx, item] of lemonyFresh[channel].list.entries()) {
+    lemonyFresh[channel].list.forEach((item, idx) => {
         if (new RegExp(`^${query}$`, `i`).test(item)) {
             indexes.push(idx)
         }
-    }
+    })
 
     const listName = lemonyFresh[channel].list[0] || `the list`
     const positiveEmote = getContextEmote(`positive`, channel)

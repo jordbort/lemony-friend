@@ -75,12 +75,12 @@ function handleGreetMany(bot, chatroom, arr, channel) {
         const greetingEmote = getContextEmote(`greeting`, channel)
 
         const response = []
-        for (let str of arr) {
+        arr.forEach(str => {
             while (str.startsWith(`@`)) { str = str.substring(1) }
             str.toLowerCase() in users
                 ? response.push(`${randomGreeting} ${users[str.toLowerCase()].nickname || users[str.toLowerCase()].displayName} ${greetingEmote}`)
                 : response.push(`${randomGreeting} ${str} ${greetingEmote}`)
-        }
+        })
         bot.say(chatroom, response.join(` `))
 
     } else { logMessage([`-> Timer in ${channel} 'massGreet' is not currently listening`]) }
@@ -437,20 +437,23 @@ module.exports = {
     yell(props) {
         const { bot, message, userNickname, currentTime } = props
 
-        // Collect channels bot is currently joined to
-        const mostRecentMessages = {}
-        for (const channel of bot.channels) { mostRecentMessages[channel.substring(1)] = 0 }
-
         // Create table of most recently-sent message times from non-bots
-        for (const channel in mostRecentMessages) {
-            for (const username in users) {
-                if (channel in users[username].channels
-                    && !settings.ignoredBots.includes(username)
-                    && users[username].channels[channel].sentAt > mostRecentMessages[channel]) {
-                    mostRecentMessages[channel] = users[username].channels[channel].sentAt
-                }
-            }
-        }
+        const mostRecentMessages = {}
+        bot.channels.forEach(chatroom => {
+            const channel = chatroom.substring(1)
+            Object.keys(users)
+                .filter(username => channel in users[username].channels)
+                .forEach(username => {
+                    console.log(username, `spoke in`, channel)
+                    if (channel in mostRecentMessages) {
+                        if (users[username].channels[channel].sentAt > mostRecentMessages[channel]) {
+                            mostRecentMessages[channel] = users[username].channels[channel].sentAt
+                        }
+                    } else {
+                        mostRecentMessages[channel] = users[username].channels[channel].sentAt
+                    }
+                })
+        })
 
         // Filter out channels that have had message activity more than an hour ago
         const recentChannels = Object.keys(mostRecentMessages).filter(channel => currentTime - mostRecentMessages[channel] < 3600000)
@@ -481,16 +484,18 @@ module.exports = {
     reportAway(props) {
         const { bot, chatroom, message, channel, currentTime } = props
 
-        for (const targetName of Object.keys(users)) {
+        for (const targetName in users) {
             const target = users[targetName]
-            const targetNickname = target.nickname || target.displayName
-            const regex = new RegExp(`\\b(@?${targetName}|${targetNickname})\\b`, `i`)
+            const targetNames = [targetName, target.displayName, target.nickname]
+                .filter(el => el)
+                .filter((el, idx, self) => idx === self.indexOf(el))
+            const regex = new RegExp(`\\b(@?${targetNames.join(`|`)})\\b`, `i`)
 
             if (target.channels[channel]?.away && regex.test(message)) {
                 const elapsedTime = Math.round((currentTime - target.channels[channel].sentAt) / 60000)
-                logMessage([`> reportAway(channel: '${channel}', targetNickname: '${targetNickname}', elapsedTime: ${pluralize(elapsedTime, `minute`, `minutes`)})`])
+                logMessage([`> reportAway(channel: '${channel}', targetNames: ${logArr(targetNames)}, elapsedTime: ${pluralize(elapsedTime, `minute`, `minutes`)})`])
                 if (elapsedTime > 1) {
-                    const reply = `${targetNickname} has been away for ~${pluralize(elapsedTime, `minute`, `minutes`)}!${target.channels[channel].awayMessage ? ` Their away message: "${target.channels[channel].awayMessage}"` : ``}`
+                    const reply = `${target.nickname || target.displayName} has been away for ~${pluralize(elapsedTime, `minute`, `minutes`)}!${target.channels[channel].awayMessage ? ` Their away message: "${target.channels[channel].awayMessage}"` : ``}`
                     bot.say(chatroom, reply)
                 } else {
                     logMessage([`-> ${targetName} has been away for less than one-minute grace period`])

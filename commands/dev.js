@@ -97,7 +97,7 @@ module.exports = {
         const { bot, args, channel } = props
         if (args.length) {
             if (args[0] === `all`) {
-                for (const chatroom of bot.channels) { initWebSocket(bot, chatroom.substring(1)) }
+                bot.channels.forEach(chatroom => initWebSocket(bot, chatroom.substring(1)))
             } else {
                 for (const arg of args) {
                     const streamer = getToUser(arg)
@@ -110,9 +110,7 @@ module.exports = {
         const { bot, args, channel } = props
         if (args.length) {
             if (args[0] === `all`) {
-                for (const chatroom of bot.channels) {
-                    if (chatroom.substring(1) in lemonyFresh) { closeWebSocket(chatroom.substring(1), true) }
-                }
+                bot.channels.forEach(chatroom => closeWebSocket(chatroom.substring(1), true))
             } else {
                 for (const arg of args) {
                     const streamer = getToUser(arg)
@@ -125,9 +123,7 @@ module.exports = {
         const { bot, args, channel } = props
         if (args.length) {
             if (args[0] === `all`) {
-                for (const chatroom of bot.channels) {
-                    if (chatroom.substring(1) in lemonyFresh) { updateEventSubs(chatroom.substring(1)) }
-                }
+                bot.channels.forEach(chatroom => updateEventSubs(chatroom.substring(1)))
             } else {
                 for (const arg of args) {
                     const streamer = getToUser(arg)
@@ -192,9 +188,7 @@ module.exports = {
     },
     yellAcrossChannels(props) {
         const { bot, message } = props
-        for (const chatroom of bot.channels) {
-            if (chatroom.substring(1) in lemonyFresh) { bot.say(chatroom, `${message.substring(11)}`) }
-        }
+        bot.channels.forEach(chatroom => bot.say(chatroom, `${message.substring(11)}`))
     },
     streamFriendlyOn(props) {
         const { bot, chatroom } = props

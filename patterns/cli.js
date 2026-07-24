@@ -79,14 +79,14 @@ function updateArr(bot, chatroom, obj, message, name, args) {
         args.shift()
         const removals = []
         const notFound = []
-        for (const element of args) {
+        args.forEach(element => {
             if (obj[name].includes(element)) {
                 obj[name].splice(obj[name].indexOf(element), 1)
                 removals.push(element)
             } else {
                 if (!notFound.includes(element)) { notFound.push(element) }
             }
-        }
+        })
         bot.say(chatroom, `/me ${message} (${pluralize(obj[name].length, `item`, `items`)}), removed ${removals.length}${removals.length ? `: ${removals.join(` `)}` : ``}${notFound.length ? `, not found: ${notFound.join(` `)}` : ``}`)
         return
     }

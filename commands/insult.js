@@ -47,17 +47,17 @@ module.exports = {
         if (/^delete$|^d$/i.test(args[0])) {
             args.shift()
             const removals = []
-            for (const element of args) {
-                if (wordBank.verbs.includes(element)) {
-                    wordBank.verbs.splice(wordBank.verbs.indexOf(element), 1)
-                    removals.push(element)
+            args.forEach(el => {
+                if (wordBank.verbs.includes(el)) {
+                    wordBank.verbs.splice(wordBank.verbs.indexOf(el), 1)
+                    removals.push(el)
                 }
-            }
+            })
             bot.say(chatroom, `I forgot ${pluralize(removals.length, `verb`, `verbs`)}${removals.length ? `: ${removals.join(`, `)}` : `!`} ${neutralEmote}`)
             return
         }
 
-        for (const word of args) { wordBank.verbs.push(word.toLowerCase()) }
+        args.forEach(word => wordBank.verbs.push(word.toLowerCase()))
         bot.say(chatroom, `Added ${pluralize(args.length, `verb`, `verbs`)}: ${args.join(`, `)} ${positiveEmote}`)
     },
     manageNouns(props) {
@@ -80,17 +80,17 @@ module.exports = {
         if (/^delete$|^d$/i.test(args[0])) {
             args.shift()
             const removals = []
-            for (const element of args) {
-                if (wordBank.nouns.includes(element)) {
-                    wordBank.nouns.splice(wordBank.nouns.indexOf(element), 1)
-                    removals.push(element)
+            args.forEach(el => {
+                if (wordBank.nouns.includes(el)) {
+                    wordBank.nouns.splice(wordBank.nouns.indexOf(el), 1)
+                    removals.push(el)
                 }
-            }
+            })
             bot.say(chatroom, `I forgot ${pluralize(removals.length, `noun`, `nouns`)}${removals.length ? `: ${removals.join(`, `)}` : `!`} ${neutralEmote}`)
             return
         }
 
-        for (const word of args) { wordBank.nouns.push(word.toLowerCase()) }
+        args.forEach(word => wordBank.nouns.push(word.toLowerCase()))
         bot.say(chatroom, `Added ${pluralize(args.length, `noun`, `nouns`)}: ${args.join(`, `)} ${positiveEmote}`)
     },
     manageAdjectives(props) {
@@ -113,17 +113,17 @@ module.exports = {
         if (/^delete$|^d$/i.test(args[0])) {
             args.shift()
             const removals = []
-            for (const element of args) {
-                if (wordBank.adjectives.includes(element)) {
-                    wordBank.adjectives.splice(wordBank.adjectives.indexOf(element), 1)
-                    removals.push(element)
+            args.forEach(el => {
+                if (wordBank.adjectives.includes(el)) {
+                    wordBank.adjectives.splice(wordBank.adjectives.indexOf(el), 1)
+                    removals.push(el)
                 }
-            }
+            })
             bot.say(chatroom, `I forgot ${pluralize(removals.length, `adjective`, `adjectives`)}${removals.length ? `: ${removals.join(`, `)}` : `!`} ${neutralEmote}`)
             return
         }
 
-        for (const word of args) { wordBank.adjectives.push(word.toLowerCase()) }
+        args.forEach(word => wordBank.adjectives.push(word.toLowerCase()))
         bot.say(chatroom, `Added ${pluralize(args.length, `adjective`, `adjectives`)}: ${args.join(`, `)} ${positiveEmote}`)
     },
     insultUser(props) {

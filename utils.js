@@ -310,9 +310,7 @@ function spellOutNumber(num) {
     }
     if (afterDecimal.length) {
         output.push(`point`)
-        for (const digit of afterDecimal) {
-            output.push(numbers[Number(digit)])
-        }
+        afterDecimal.forEach(digit => output.push(numbers[Number(digit)]))
     }
 
     return output.join(` `)
@@ -1205,9 +1203,7 @@ module.exports = {
                     : users[BOT_USERNAME]?.channels.domonintendo1?.sub ? `domoni6Sneeze`
                         : `>(`
 
-        for (const chatroom of bot.channels) {
-            bot.say(chatroom, `Oops, I just crashed! ${emote} ${err.message} ${location}`)
-        }
+        bot.channels.forEach(chatroom => bot.say(chatroom, `Oops, I just crashed! ${emote} ${err.message} ${location}`))
         await logMessage([err.stack])
     },
     coinFlip() { return Math.floor(Math.random() * 2) },
@@ -1224,20 +1220,10 @@ module.exports = {
 
         for (const member in lemonyFresh) {
             const stream = lemonyFresh[member]
+
+            // If the context emote doesn't exist, remove it or rename (username/emote prefix change)
             for (let i = stream.contextEmotes[baseType].length - 1; i >= 0; i--) {
                 const emote = stream.contextEmotes[baseType][i]
-
-                // If the context emote can be used
-                if ((stream.followEmotes.includes(emote) && member === channel)
-                    || (stream.followEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
-                    || (stream.subEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
-                    || (stream.bttvEmotes.includes(emote) && member === channel)
-                    || settings.globalEmotes.twitch.includes(emote)
-                    || settings.globalEmotes.bttv.includes(emote)) {
-                    emotes.push(emote)
-                }
-
-                // If the context emote doesn't exist, remove it or rename (username/emote prefix change)
                 if (!stream.followEmotes.includes(emote)
                     && !stream.subEmotes.includes(emote)
                     && !stream.bttvEmotes.includes(emote)
@@ -1254,6 +1240,18 @@ module.exports = {
                     }
                 }
             }
+
+            // If the context emote can be used
+            stream.contextEmotes[baseType].forEach(emote => {
+                if ((stream.followEmotes.includes(emote) && member === channel)
+                    || (stream.followEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
+                    || (stream.subEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
+                    || (stream.bttvEmotes.includes(emote) && member === channel)
+                    || settings.globalEmotes.twitch.includes(emote)
+                    || settings.globalEmotes.bttv.includes(emote)) {
+                    emotes.push(emote)
+                }
+            })
         }
         // logMessage([`> getContextEmote(type: '${type}', channel: '${channel}', emotes: ${logArr(emotes)})`])
 
@@ -1338,9 +1336,9 @@ module.exports = {
         }
 
         // Check if user ID already exists, and merge their data
-        for (const oldUsername of Object.keys(users)) {
+        for (const oldUsername in users) {
             if (users[newUsername].id === users[oldUsername].id && oldUsername !== newUsername) {
-                logMessage([`-> Merging '${oldUsername}' (ID: ${users[oldUsername].id}) into '${newUsername}'`])
+                logMessage([`-> Merging user '${oldUsername}' (ID: ${users[oldUsername].id}) into '${newUsername}'`])
                 users[newUsername] = {
                     ...users[oldUsername],
                     displayName: tags[`display-name`],
@@ -1358,8 +1356,9 @@ module.exports = {
                 }
                 for (const mod in mods) {
                     if (mods[mod].isModIn.includes(`#${oldUsername}`)) {
-                        logMessage([`-> Removing '#${oldUsername}' from ${mod}'s moderated channels`])
-                        mods[mod].isModIn.splice(mods[mod].isModIn.indexOf(`#${oldUsername}`), 1)
+                        console.log(`-> Swapping '#${newUsername}' in for '#${oldUsername}' from ${mod}'s moderated channels`)
+                        mods[mod].isModIn[mods[mod].isModIn.indexOf(`#${oldUsername}`)] = `#${newUsername}`
+                        while (mods[mod].isModIn.includes(`#${oldUsername}`)) mods[mod].isModIn.splice(mods[mod].isModIn.indexOf(`#${oldUsername}`), 1)
                     }
                 }
 
@@ -1510,7 +1509,7 @@ module.exports = {
     },
     // (For debugging/discovery) Add to list of known message tags
     tagsListener(tags) {
-        for (const tag of Object.keys(tags)) {
+        for (const tag in tags) {
             const type = typeof tags[tag] === `object`
                 ? tags[tag] === null
                     ? `null`

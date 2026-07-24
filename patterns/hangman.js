@@ -84,9 +84,10 @@ function checkLetter(bot, chatroom, message, channel, username, userNickname) {
 
     if (hangman.answer.includes(guess.toLowerCase())) {
         // Correct guess
-        for (const [i, letter] of hangman.answer.split(``).entries()) {
-            if (letter === guess.toLowerCase()) { hangman.spaces[i] = guess }
-        }
+        hangman.answer.split(``).forEach((letter, i) => {
+            if (letter === guess.toLowerCase()) hangman.spaces[i] = guess
+        })
+
         // If no spaces left, puzzle has been solved
         if (!hangman.spaces.includes(`_`)) {
             solvePuzzle(bot, chatroom, channel, username, userNickname)

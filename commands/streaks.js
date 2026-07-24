@@ -61,22 +61,14 @@ function emoteReply(bot, chatroom, channel, emoteOwner, emoteArr) {
     const applicableUsers = Object.keys(users).filter(username => channel in users[username].channels)
 
     const usedEmotes = {}
-    for (const emote of emoteArr) {
-        for (const username of applicableUsers) {
-            for (const word of users[username].channels[channel].lastMessage.split(` `)) {
-                if (word === emote) {
-                    emote in usedEmotes
-                        ? usedEmotes[emote]++
-                        : usedEmotes[emote] = 1
-                }
-            }
-        }
-    }
+    emoteArr.forEach(emote => applicableUsers.forEach(username => users[username].channels[channel].lastMessage.split(` `).forEach(word => {
+        if (word === emote) emote in usedEmotes ? usedEmotes[emote]++ : usedEmotes[emote] = 1
+    })))
     logMessage([renderObj(usedEmotes, `usedEmotes`)])
 
-    const mostUsed = Math.max(...Object.keys(usedEmotes).map(emote => usedEmotes[emote]))
-    const mostPopularEmote = Object.keys(usedEmotes).filter(emote => usedEmotes[emote] === mostUsed)[0]
-    const reply = Array(mostUsed).fill(mostPopularEmote).join(` `)
+    const mostTimesUsed = Math.max(...Object.keys(usedEmotes).map(emote => usedEmotes[emote]))
+    const mostPopularEmote = Object.keys(usedEmotes).filter(emote => usedEmotes[emote] === mostTimesUsed)[0]
+    const reply = Array(mostTimesUsed).fill(mostPopularEmote).join(` `)
     bot.say(chatroom, reply)
 }
 
