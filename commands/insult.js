@@ -197,7 +197,10 @@ module.exports = {
             `your ${adjective1} ${noun1} can't ${verb1}, ${noun2}-${addVerbSuffix(verb2, `er`)}!`,
             `you're ${getIndefiniteArticle(adjective1)} ${noun1} whose ${adjective2} ${noun2} couldn't ${verb1}!`,
             `your ${adjective1} ${noun1} is ${addVerbSuffix(verb1, `ing`)} like ${getIndefiniteArticle(adjective2)} ${noun2}!`,
-            `I hope ${getIndefiniteArticle(noun1)} ${addVerbSuffix(verb1, `s`)} your ${adjective1} ${noun2} while ${getIndefiniteArticle(noun2)} ${addVerbSuffix(verb2, `s`)}!`
+            `I hope ${getIndefiniteArticle(noun1)} ${addVerbSuffix(verb1, `s`)} your ${adjective1} ${noun2} while ${getIndefiniteArticle(noun2)} ${addVerbSuffix(verb2, `s`)}!`,
+            `did you ${verb1} ${[`in `, `on `, `with `, `at `, ``, ``][Math.floor(Math.random() * 6)]}${getIndefiniteArticle(adjective1)} ${noun1} or ${[`what`, `what`, `something`, `something`, `not`][Math.floor(Math.random() * 5)]}?`,
+            `you coudn't ${verb1} ${getIndefiniteArticle(noun1)}, you ${adjective1} ${noun2}!`,
+            `${getIndefiniteArticle(adjective1)} ${noun1} ${[`could`, `would`, `should`][Math.floor(Math.random() * 3)]} ${[`probably `, ``, ``, ``][Math.floor(Math.random() * 4)]}${verb1} your ${adjective2} ${noun2}!`
         ]
 
         const insult = insults[Math.floor(Math.random() * insults.length)]
