@@ -159,71 +159,87 @@ module.exports = {
             }
             const data = await response.json()
 
+            const generations = {
+                'generation-i': 1,
+                'generation-ii': 2,
+                'generation-iii': 3,
+                'generation-iv': 4,
+                'generation-v': 5,
+                'generation-vi': 6,
+                'generation-vii': 7,
+                'generation-viii': 8,
+                'generation-ix': 9,
+                'generation-x': 10,
+                'generation-xi': 11,
+                'generation-xii': 12,
+                'generation-xiii': 13,
+                'generation-xiv': 14,
+                'generation-xv': 15,
+                'generation-xvi': 16,
+                'generation-xvii': 17,
+                'generation-xviii': 18,
+                'generation-xix': 19,
+                'generation-xx': 20
+            }
+
+            // Build response
             let reply = `#${data.id} ${pokemon.toUpperCase()} `
+            const pokemonTypes = data.types.map(obj => obj.type.name)
+            reply += `(${pokemonTypes.join(`/`)}) `
 
-            const pokemonTypes = []
-            for (const types of data.types) { pokemonTypes.push(types.type.name) }
-            reply += `(${pokemonTypes.join(`/`)}) - ${data.abilities.length === 1 ? `Ability` : `Abilities`}: `
+            // Look up generation
+            try {
+                const response = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${data.species.name}`)
+                const species = await response.json()
+                reply += `Gen ${generations[species.generation.name]} - `
+            } catch (err) {
+                logMessage([`getPokemon species '${data.species.name}' ${err}`])
+            }
 
-            const pokemonAbilities = []
-            for (const abilities of data.abilities) { pokemonAbilities.push(`${abilities.ability.name}${abilities.is_hidden ? ` (hidden)` : ``}`) }
-            reply += `${pokemonAbilities.join(`, `)}. `
+            // Add abilities and stats
+            const pokemonAbilities = data.abilities.map(obj => obj.ability.name)
+            reply += `${pokemonAbilities.length === 1 ? `Ability` : `Abilities`}: ${pokemonAbilities.join(`, `)} - `
+            reply += `Base stats: ${data.stats.map(obj => `${obj.base_stat} ${obj.stat.name}`).join(`, `)} - `
 
-            const doubleDamageTo = []
-            const doubleDamageFrom = []
-            const halfDamageTo = []
-            const halfDamageFrom = []
-            const immuneTo = []
+            // Look up type weaknesses and resistances
+            const doubleDamageFrom = {}
+            const halfDamageFrom = {}
             const immuneFrom = []
-
-            if (pokemonTypes[0]) {
+            for (const type of pokemonTypes) {
                 try {
-                    const response1 = await fetch(`https://pokeapi.co/api/v2/type/${pokemonTypes[0]}`)
-                    const type1Data = await response1.json()
-                    for (const damageType of type1Data.damage_relations.double_damage_to) { if (!doubleDamageTo.includes(damageType.name)) { doubleDamageTo.push(damageType.name) } }
-                    for (const damageType of type1Data.damage_relations.double_damage_from) { if (!doubleDamageFrom.includes(damageType.name)) { doubleDamageFrom.push(damageType.name) } }
-                    for (const damageType of type1Data.damage_relations.half_damage_to) { if (!halfDamageTo.includes(damageType.name)) { halfDamageTo.push(damageType.name) } }
-                    for (const damageType of type1Data.damage_relations.half_damage_from) { if (!halfDamageFrom.includes(damageType.name)) { halfDamageFrom.push(damageType.name) } }
-                    for (const damageType of type1Data.damage_relations.no_damage_to) { if (!immuneTo.includes(damageType.name)) { immuneTo.push(damageType.name) } }
-                    for (const damageType of type1Data.damage_relations.no_damage_from) { if (!immuneFrom.includes(damageType.name)) { immuneFrom.push(damageType.name) } }
+                    const response = await fetch(`https://pokeapi.co/api/v2/type/${type}`)
+                    const typeData = await response.json()
+                    typeData.damage_relations.double_damage_from.forEach(damageType => damageType.name in doubleDamageFrom ? doubleDamageFrom[damageType.name]++ : doubleDamageFrom[damageType.name] = 1)
+                    typeData.damage_relations.half_damage_from.forEach(damageType => damageType.name in halfDamageFrom ? halfDamageFrom[damageType.name]++ : halfDamageFrom[damageType.name] = 1)
+                    typeData.damage_relations.no_damage_from.forEach(damageType => { if (!immuneFrom.includes(damageType.name)) immuneFrom.push(damageType.name) })
                 } catch (err) {
-                    logMessage([`getPokemon type1Data ${err}`])
-                }
-            }
-            if (pokemonTypes[1]) {
-                try {
-                    const response2 = await fetch(`https://pokeapi.co/api/v2/type/${pokemonTypes[1]}`)
-                    const type2Data = await response2.json()
-                    for (const damageType of type2Data.damage_relations.double_damage_to) { if (!doubleDamageTo.includes(damageType.name)) { doubleDamageTo.push(damageType.name) } }
-                    for (const damageType of type2Data.damage_relations.double_damage_from) { if (!doubleDamageFrom.includes(damageType.name)) { doubleDamageFrom.push(damageType.name) } }
-                    for (const damageType of type2Data.damage_relations.half_damage_to) { if (!halfDamageTo.includes(damageType.name)) { halfDamageTo.push(damageType.name) } }
-                    for (const damageType of type2Data.damage_relations.half_damage_from) { if (!halfDamageFrom.includes(damageType.name)) { halfDamageFrom.push(damageType.name) } }
-                    for (const damageType of type2Data.damage_relations.no_damage_to) { if (!immuneTo.includes(damageType.name)) { immuneTo.push(damageType.name) } }
-                    for (const damageType of type2Data.damage_relations.no_damage_from) { if (!immuneFrom.includes(damageType.name)) { immuneFrom.push(damageType.name) } }
-                } catch (err) {
-                    logMessage([`getPokemon type2Data ${err}`])
+                    logMessage([`getPokemon type '${type}' ${err}`])
                 }
             }
 
-            // if it TAKES double damage AND half damage FROM a type, remove from BOTH arrays
-            const nullify = doubleDamageFrom.filter(el => halfDamageFrom.includes(el))
-            for (const dupe of nullify) {
-                doubleDamageFrom.splice(doubleDamageFrom.indexOf(dupe), 1)
-                halfDamageFrom.splice(halfDamageFrom.indexOf(dupe), 1)
+            // Normal damage when both weak and resistant
+            for (const dupe in doubleDamageFrom) {
+                if (dupe in halfDamageFrom) {
+                    delete doubleDamageFrom[dupe]
+                    delete halfDamageFrom[dupe]
+                }
             }
 
             // Cleaning up immunities
             for (const type of immuneFrom) {
-                if (halfDamageFrom.includes(type)) { halfDamageFrom.splice(halfDamageFrom.indexOf(type), 1) }
-                if (doubleDamageFrom.includes(type)) { doubleDamageFrom.splice(doubleDamageFrom.indexOf(type), 1) }
+                if (type in halfDamageFrom) { delete halfDamageFrom[type] }
+                if (type in doubleDamageFrom) { delete doubleDamageFrom[type] }
             }
 
-            if (doubleDamageTo.length > 0) { reply += `Super effective to ${doubleDamageTo.join(`/`)}-type Pokemon. ` }
-            if (doubleDamageFrom.length > 0) { reply += `Weak to ${doubleDamageFrom.join(`/`)}-type moves. ` }
-            if (halfDamageTo.length > 0) { reply += `Not very effective to ${halfDamageTo.join(`/`)}-type Pokemon. ` }
-            if (halfDamageFrom.length > 0) { reply += `Resistant to ${halfDamageFrom.join(`/`)}-type moves. ` }
-            if (immuneTo.length > 0) { reply += `No effect to ${immuneTo.join(`/`)}-type Pokemon. ` }
+            // Calculate weaknesses and resistances
+            const quadrupleDamageFrom = Object.keys(doubleDamageFrom).filter(typeName => doubleDamageFrom[typeName] === 2)
+            if (quadrupleDamageFrom.length) { reply += `4x weak to ${quadrupleDamageFrom.join(`/`)}-type moves. ` }
+            if (Object.keys(doubleDamageFrom).filter(typeName => doubleDamageFrom[typeName] === 1).length) { reply += `2x weak to ${Object.keys(doubleDamageFrom).filter(typeName => doubleDamageFrom[typeName] === 1).join(`/`)}-type moves. ` }
+            if (Object.keys(halfDamageFrom).filter(typeName => halfDamageFrom[typeName] === 1).length) { reply += `2x resistance to ${Object.keys(halfDamageFrom).filter(typeName => halfDamageFrom[typeName] === 1).join(`/`)}-type moves. ` }
+            const quarterDamageFrom = Object.keys(halfDamageFrom).filter(typeName => halfDamageFrom[typeName] === 2)
+            if (quarterDamageFrom.length) { reply += `4x resistance to ${quarterDamageFrom.join(`/`)}-type moves. ` }
             if (immuneFrom.length > 0) { reply += `No effect from ${immuneFrom.join(`/`)}-type moves.` }
+
             bot.say(chatroom, reply)
         } catch (err) {
             logMessage([`getPokemon ${err}`])
