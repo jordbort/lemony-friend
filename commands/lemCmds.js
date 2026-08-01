@@ -7,7 +7,7 @@ const regexExclusion = /^$|^\s$|^\s?\}$|^\{\s?random\s?$/i
 const regexQuote = /"(.+?)"/
 
 function applyVariables(str, props) {
-    const { args, channel, username, toUser } = props
+    const { args, channel, channelNickname, username, toUser } = props
     logMessage([`-> applyVariables(str: ${str}, args: ${logArr(args)})`])
 
     // Prepare viewers
@@ -37,7 +37,7 @@ function applyVariables(str, props) {
         .replace(/\{\s?touser\s?\}/gi, users[toUser]?.displayName || args[0] || users[username].displayName)
         .replace(/\{\s?usernn\s?\}/gi, users[username].nickname || users[username].displayName)
         .replace(/\{\s?tousernn\s?\}/gi, users[toUser]?.nickname || users[toUser]?.displayName || args[0] || users[username].nickname || users[username].displayName)
-        .replace(/\{\s?streamer\s?\}/gi, users[channel]?.nickname || users[channel]?.displayName || channel)
+        .replace(/\{\s?streamer\s?\}/gi, channelNickname)
         .replace(/\{\s?viewer\s?\}/gi, users[randomViewerOne]?.nickname || users[randomViewerOne]?.displayName || randomViewerOne)
         .replace(/\{\s?viewer\s?1\s?\}/gi, users[randomViewerOne]?.nickname || users[randomViewerOne]?.displayName || randomViewerOne)
         .replace(/\{\s?viewer\s?2\s?\}/gi, users[randomViewerTwo]?.nickname || users[randomViewerTwo]?.displayName || randomViewerTwo)
