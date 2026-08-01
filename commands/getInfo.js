@@ -39,13 +39,12 @@ module.exports = {
         bot.say(chatroom, reply)
     },
     getLastMessage(props) {
-        const { bot, chatroom, args, currentTime, channel, username, user, userNickname, toUser, target, targetNickname } = props
+        const { bot, chatroom, args, currentTime, channel, channelNickname, username, user, userNickname, toUser, target, targetNickname } = props
         const otherChannel = getToUser(args[1])
         const userChannels = target ? target.channels : user.channels
         const userObjNickname = targetNickname || userNickname
         logMessage([`> getLastMessage(chatroom: '${chatroom}', userChannels: '${target ? toUser : username}, otherChannel: '${otherChannel}')`])
 
-        const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
         const otherChannelNickname = otherChannel in lemonyFresh
             ? users[otherChannel]?.nickname || users[otherChannel]?.displayName || otherChannel
             : null

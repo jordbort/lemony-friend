@@ -14,14 +14,13 @@ module.exports = {
             : bot.say(chatroom, `Acknowledging ${userNickname}'s color change ${neutralEmote}`)
     },
     handleSubChange(props) {
-        const { bot, chatroom, tags, channel, userChannel, userNickname } = props
+        const { bot, chatroom, tags, channel, channelNickname, userChannel, userNickname } = props
         const subStatus = tags.subscriber
         logMessage([`> handleSubChange(chatroom: '${chatroom}', userNickname: '${userNickname}', subStatus: ${subStatus})`])
         userChannel.sub = subStatus
 
         const positiveEmote = getContextEmote(`positive`, channel)
         if (subStatus) {
-            const channelNickname = channel in users ? users[channel].nickname || users[channel].displayName : channel
             bot.say(chatroom, `Wow, ${userNickname} is subbed to ${channelNickname}! ${positiveEmote}`)
         }
     },

@@ -909,7 +909,7 @@ module.exports = {
         bot.say(chatroom, reply)
     },
     async startPoll(props) {
-        const { bot, chatroom, args, channel, username, isMod } = props
+        const { bot, chatroom, args, channel, channelNickname, username, isMod } = props
         const str = args.join(` `)
         await logMessage([`> startPoll(channel: '${channel}', username: '${username}', str: '${str}', isMod: ${isMod})`])
 
@@ -962,7 +962,7 @@ module.exports = {
         // Stop if the channel has no access token
         if (!accessToken || !refreshToken) {
             await logMessage([`-> ${channel} has no access and/or refresh token, can't make create poll`])
-            bot.say(chatroom, `No access token found for ${channel in users ? users[channel].displayName : channel}'s channel! ${negativeEmote} Please use !access to renew your credentials!`)
+            bot.say(chatroom, `No access token found for ${channelNickname}'s channel! ${negativeEmote} Please use !access to renew your credentials!`)
             return
         }
 
@@ -1088,7 +1088,7 @@ module.exports = {
         } else { await logMessage([`-> Timer in ${channel} '!so' is not currently listening`]) }
     },
     async updateStreamGame(props) {
-        const { bot, chatroom, args, username, channel, isMod } = props
+        const { bot, chatroom, args, username, channel, channelNickname, isMod } = props
         if (!isMod) {
             await logMessage([`-> ${username} isn't a mod, ignoring`])
             return
@@ -1099,11 +1099,8 @@ module.exports = {
         const negativeEmote = getContextEmote(`negative`, channel)
         const positiveEmote = getContextEmote(`positive`, channel)
         if (!query) {
-            const streamer = channel in users
-                ? users[channel].nickname || users[channel].displayName
-                : channel
             const stream = await apiGetTwitchChannel(lemonyFresh[channel].id)
-            bot.say(chatroom, `${streamer} is currently playing ${stream.game_name}!`)
+            bot.say(chatroom, `${channelNickname} is currently playing ${stream.game_name}!`)
             return
         }
 
@@ -1111,7 +1108,7 @@ module.exports = {
         if (!game) {
             game === false
                 ? bot.say(chatroom, `Failed to look up game! ${negativeEmote}`)
-                : bot.say(chatroom, `No game found ${negativeEmote}`)
+                : bot.say(chatroom, `No game found by that name! ${negativeEmote}`)
             return
         }
 
@@ -1261,7 +1258,7 @@ module.exports = {
         }
     },
     async autoBanUser(props) {
-        const { bot, chatroom, username, channel } = props
+        const { bot, chatroom, username, channel, channelNickname } = props
         await logMessage([`> newAutoBanUser(channel: '${channel}', username: '${username}')`])
 
         const broadcasterId = lemonyFresh[channel].id
@@ -1288,7 +1285,7 @@ module.exports = {
             const reply = `Begone, spammer! ${byeEmote}`
             bot.say(chatroom, reply)
         } else if (success === null) {
-            bot.say(chatroom, `Failed to autoban user! ${negativeEmote} Please update ${channel in users ? users[channel].displayName : channel}'s credentials by using !access again!`)
+            bot.say(chatroom, `Failed to autoban user! ${negativeEmote} Please update ${channelNickname}'s credentials by using !access again!`)
         } else {
             bot.say(chatroom, `Failed to autoban user! ${dumbEmote}`)
         }

@@ -140,7 +140,7 @@ module.exports = {
         }
     },
     handleNewChatter(props) {
-        const { bot, chatroom, username, message, channel } = props
+        const { bot, chatroom, username, message, channel, channelNickname } = props
         logMessage([`> handleNewChatter(channel: '${channel}', username: '${username}')`])
 
         // Decode message in case of weird characters, for automatic ban phrase
@@ -155,7 +155,6 @@ module.exports = {
         }
 
         if (lemonyFresh[channel].timers[`new-chatter`].listening) {
-            const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
             const obj = newChatters[channel]
             obj.names.push(username)
             clearTimeout(obj.timer)

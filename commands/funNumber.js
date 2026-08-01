@@ -367,14 +367,13 @@ function restartFunTimer(props) {
 }
 
 function getViewers(props) {
-    const { bot, chatroom, channel } = props
+    const { bot, chatroom, channel, channelNickname } = props
     const viewers = lemonyFresh[channel].viewers.filter(viewer => viewer !== channel && !settings.ignoredBots.includes(viewer))
     logMessage([`> getViewers(channel: '${channel}', viewers: ${viewers.length})`])
 
     const hypeEmote = getContextEmote(`hype`, channel)
     const positiveEmote = getContextEmote(`positive`, channel)
     const neutralEmote = getContextEmote(`neutral`, channel)
-    const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
 
     if (viewers.length > 4) {
         setTimeout(() => bot.say(chatroom,

@@ -186,6 +186,7 @@ module.exports = {
             currentTime: currentTime,
             command: command,
             channel: channel,
+            channelNickname: users[channel]?.nickname || users[channel]?.displayName || channel,
             username: tags.username,
             isMod: tags.mod || username === channel,
             isModOrVIP: !!tags.badges?.vip || !!tags.vip || tags.mod || username === channel,

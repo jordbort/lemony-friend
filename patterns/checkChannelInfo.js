@@ -26,8 +26,7 @@ module.exports = {
         }
     },
     checkSelfSub(props, splitMessage) {
-        const { bot, chatroom, channel, user, userChannel, userNickname } = props
-        const currentChannelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
+        const { bot, chatroom, channel, channelNickname, user, userChannel, userNickname } = props
 
         // Possible other channel name or nickname
         const otherChannel = getToUser(splitMessage[splitMessage.length - 1].split(` `)[0].replace(/'s|\?/g, ``))
@@ -52,12 +51,11 @@ module.exports = {
                     : bot.say(chatroom, `No ${userNickname}, you are not subbed to ${otherChannelNickname}! ${negativeEmote}`)
                 : bot.say(chatroom, `I don't know whether you are subbed to ${otherChannelNickname}, ${userNickname}! ${dumbEmote}`)
             : userChannel.sub
-                ? bot.say(chatroom, `Yes ${userNickname}, you are subbed to ${currentChannelNickname}! ${hypeEmote}`)
-                : bot.say(chatroom, `No ${userNickname}, you are not subbed to ${currentChannelNickname}! ${negativeEmote}`)
+                ? bot.say(chatroom, `Yes ${userNickname}, you are subbed to ${channelNickname}! ${hypeEmote}`)
+                : bot.say(chatroom, `No ${userNickname}, you are not subbed to ${channelNickname}! ${negativeEmote}`)
     },
     checkSelfMod(props, splitMessage) {
-        const { bot, chatroom, channel, user, userChannel, userNickname } = props
-        const currentChannelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
+        const { bot, chatroom, channel, channelNickname, user, userChannel, userNickname } = props
 
         // Possible other channel name or nickname
         const otherChannel = getToUser(splitMessage[splitMessage.length - 1].split(` `)[0].replace(/'s|\?/g, ``))
@@ -82,12 +80,11 @@ module.exports = {
                     : bot.say(chatroom, `No ${userNickname}, you are not a mod in ${otherChannelNickname}'s chat! ${negativeEmote}`)
                 : bot.say(chatroom, `I don't know whether you are a mod in ${otherChannelNickname}'s chat, ${userNickname}! ${dumbEmote}`)
             : userChannel.mod
-                ? bot.say(chatroom, `Yes ${userNickname}, you are a mod in ${currentChannelNickname}'s chat! ${hypeEmote}`)
-                : bot.say(chatroom, `No ${userNickname}, you are not a mod in ${currentChannelNickname}'s chat! ${negativeEmote}`)
+                ? bot.say(chatroom, `Yes ${userNickname}, you are a mod in ${channelNickname}'s chat! ${hypeEmote}`)
+                : bot.say(chatroom, `No ${userNickname}, you are not a mod in ${channelNickname}'s chat! ${negativeEmote}`)
     },
     checkSelfVIP(props, splitMessage) {
-        const { bot, chatroom, channel, user, userChannel, userNickname } = props
-        const currentChannelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
+        const { bot, chatroom, channel, channelNickname, user, userChannel, userNickname } = props
 
         // Possible other channel name or nickname
         const otherChannel = getToUser(splitMessage[splitMessage.length - 1].split(` `)[0].replace(/'s|\?/g, ``))
@@ -112,12 +109,11 @@ module.exports = {
                     : bot.say(chatroom, `No ${userNickname}, you are not a VIP in ${otherChannelNickname}'s chat! ${negativeEmote}`)
                 : bot.say(chatroom, `I don't know whether you are a VIP in ${otherChannelNickname}'s chat, ${userNickname}! ${dumbEmote}`)
             : userChannel.vip
-                ? bot.say(chatroom, `Yes ${userNickname}, you are a VIP in ${currentChannelNickname}'s chat! ${hypeEmote}`)
-                : bot.say(chatroom, `No ${userNickname}, you are not a VIP in ${currentChannelNickname}'s chat! ${negativeEmote}`)
+                ? bot.say(chatroom, `Yes ${userNickname}, you are a VIP in ${channelNickname}'s chat! ${hypeEmote}`)
+                : bot.say(chatroom, `No ${userNickname}, you are not a VIP in ${channelNickname}'s chat! ${negativeEmote}`)
     },
     checkTargetSub(props, splitMessage) {
-        const { bot, chatroom, channel, userNickname } = props
-        const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
+        const { bot, chatroom, channel, channelNickname, userNickname } = props
 
         // Parse target user
         const toUser = getToUser(splitMessage[1])
@@ -160,8 +156,7 @@ module.exports = {
         }
     },
     checkTargetMod(props, splitMessage) {
-        const { bot, chatroom, channel, userNickname } = props
-        const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
+        const { bot, chatroom, channel, channelNickname, userNickname } = props
 
         // Parse target user
         const toUser = getToUser(splitMessage[1])
@@ -204,8 +199,7 @@ module.exports = {
         }
     },
     checkTargetVIP(props, splitMessage) {
-        const { bot, chatroom, channel, userNickname } = props
-        const channelNickname = users[channel]?.nickname || users[channel]?.displayName || channel
+        const { bot, chatroom, channel, channelNickname, userNickname } = props
 
         // Parse target user
         const toUser = getToUser(splitMessage[1])
