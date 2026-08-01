@@ -1,46 +1,46 @@
 const { lemonyFresh } = require(`../data`)
 const { getContextEmote, logMessage, logArr, arrToList, pluralize } = require(`../utils`)
 
-function getItem(bot, chatroom, channel, idx) {
+function getItem(bot, chatroom, channel, list, idx) {
     logMessage([`-> getItem(idx: ${idx})`])
-    const listName = lemonyFresh[channel].list[0] || `the list`
+    const listName = list[0] || `the list`
     const negativeEmote = getContextEmote(`negative`, channel)
 
-    lemonyFresh[channel].list[idx] && idx !== 0
-        ? bot.say(chatroom, `#${idx} from ${listName}: ${lemonyFresh[channel].list[idx]}`)
+    list[idx] && idx !== 0
+        ? bot.say(chatroom, `#${idx} from ${listName}: ${list[idx]}`)
         : bot.say(chatroom, `#${idx} doesn't exist in ${listName}! ${negativeEmote}`)
 }
 
-function getItemRange(bot, chatroom, channel, range) {
+function getItemRange(bot, chatroom, channel, list, range) {
     const regex = /(-?\d+)(-|to)(-?\d+)/i
     const idx1 = Number(range.split(regex)[1])
     const idx2 = Number(range.split(regex)[3])
     logMessage([`-> getItemRange(idx1: ${idx1}, idx2: ${idx2})`])
 
-    const listName = lemonyFresh[channel].list[0] || `the list`
+    const listName = list[0] || `the list`
     const negativeEmote = getContextEmote(`negative`, channel)
 
-    if (!idx1 || !lemonyFresh[channel].list[idx1]) {
+    if (!idx1 || !list[idx1]) {
         bot.say(chatroom, `#${idx1} not found in ${listName}! ${negativeEmote}`)
         return
     }
 
-    if (!idx2 || !lemonyFresh[channel].list[idx2]) {
+    if (!idx2 || !list[idx2]) {
         bot.say(chatroom, `#${idx2} not found in ${listName}! ${negativeEmote}`)
         return
     }
 
-    const listSegment = lemonyFresh[channel].list
+    const listSegment = list
         .slice(idx1, idx2 + 1)
         .map((el, idx) => `${idx + idx1}) ${el}`)
 
     const dumbEmote = getContextEmote(`dumb`, channel)
     listSegment.length
         ? bot.say(chatroom, `Items #${idx1} to #${idx2} from ${listName}: ${listSegment.join(`, `)}`)
-        : bot.say(chatroom, `No items found in ${lemonyFresh[channel].list[0] || `the list`}! ${dumbEmote}`)
+        : bot.say(chatroom, `No items found in ${list[0] || `the list`}! ${dumbEmote}`)
 }
 
-function addItem(bot, chatroom, channel, args, isModOrVIP) {
+function addItem(bot, chatroom, channel, list, args, isModOrVIP) {
     logMessage([`-> addItem(args: ${logArr(args)}, isModOrVIP? ${isModOrVIP})`])
     const negativeEmote = getContextEmote(`negative`, channel)
     if (!isModOrVIP) {
@@ -48,18 +48,18 @@ function addItem(bot, chatroom, channel, args, isModOrVIP) {
         return
     }
 
-    const listName = lemonyFresh[channel].list[0] || `the list`
+    const listName = list[0] || `the list`
     const newItem = args.slice(1).join(` `)
     const positiveEmote = getContextEmote(`positive`, channel)
     const dumbEmote = getContextEmote(`dumb`, channel)
 
     if (newItem) {
-        lemonyFresh[channel].list.push(newItem)
-        bot.say(chatroom, `Added #${lemonyFresh[channel].list.length - 1} "${newItem}" to ${listName}! ${positiveEmote}`)
+        list.push(newItem)
+        bot.say(chatroom, `Added #${list.length - 1} "${newItem}" to ${listName}! ${positiveEmote}`)
     } else { bot.say(chatroom, `Nothing added to ${listName}! ${dumbEmote}`) }
 }
 
-function editItem(bot, chatroom, channel, args, isModOrVIP) {
+function editItem(bot, chatroom, channel, list, args, isModOrVIP) {
     logMessage([`-> editItem(args: ${logArr(args)}, isModOrVIP? ${isModOrVIP})`])
     const negativeEmote = getContextEmote(`negative`, channel)
     if (!isModOrVIP) {
@@ -67,13 +67,13 @@ function editItem(bot, chatroom, channel, args, isModOrVIP) {
         return
     }
 
-    const listName = lemonyFresh[channel].list[0] || `the list`
+    const listName = list[0] || `the list`
     const positiveEmote = getContextEmote(`positive`, channel)
     const dumbEmote = getContextEmote(`dumb`, channel)
 
     const idx = Number(args[1])
     // Index is NaN, zero, or doesn't exist in array
-    if (!idx || !lemonyFresh[channel].list[idx]) {
+    if (!idx || !list[idx]) {
         bot.say(chatroom, `${args[1] ? `#${args[1]}` : `Item`} not found in ${listName}! ${negativeEmote}`)
         return
     }
@@ -85,11 +85,11 @@ function editItem(bot, chatroom, channel, args, isModOrVIP) {
         return
     }
 
-    lemonyFresh[channel].list[idx] = updatedItem
+    list[idx] = updatedItem
     bot.say(chatroom, `Updated #${idx} in ${listName} to: "${updatedItem}" ${positiveEmote}`)
 }
 
-function deleteItem(bot, chatroom, channel, args, isModOrVIP) {
+function deleteItem(bot, chatroom, channel, list, args, isModOrVIP) {
     logMessage([`-> deleteItem(args: ${logArr(args)}, isModOrVIP? ${isModOrVIP})`])
     const negativeEmote = getContextEmote(`negative`, channel)
     if (!isModOrVIP) {
@@ -97,22 +97,22 @@ function deleteItem(bot, chatroom, channel, args, isModOrVIP) {
         return
     }
 
-    const listName = lemonyFresh[channel].list[0] || `the list`
+    const listName = list[0] || `the list`
     const positiveEmote = getContextEmote(`positive`, channel)
 
     const idx = Number(args[1])
     // Index is NaN, zero, or doesn't exist in array
-    if (!idx || !lemonyFresh[channel].list[idx]) {
+    if (!idx || !list[idx]) {
         bot.say(chatroom, `${args[1] ? `#${args[1]}` : `Item`} not found in ${listName}! ${negativeEmote}`)
         return
     }
 
-    const deletedItem = lemonyFresh[channel].list[idx]
-    lemonyFresh[channel].list.splice(idx, 1)
+    const deletedItem = list[idx]
+    list.splice(idx, 1)
     bot.say(chatroom, `Deleted #${idx} "${deletedItem}" from ${listName}! ${positiveEmote}`)
 }
 
-function swapItems(bot, chatroom, channel, args, isModOrVIP) {
+function swapItems(bot, chatroom, channel, list, args, isModOrVIP) {
     logMessage([`-> swapItems(args: ${logArr(args)}, isModOrVIP? ${isModOrVIP})`])
     const negativeEmote = getContextEmote(`negative`, channel)
     if (!isModOrVIP) {
@@ -120,7 +120,7 @@ function swapItems(bot, chatroom, channel, args, isModOrVIP) {
         return
     }
 
-    const listName = lemonyFresh[channel].list[0] || `the list`
+    const listName = list[0] || `the list`
     const positiveEmote = getContextEmote(`positive`, channel)
     const neutralEmote = getContextEmote(`neutral`, channel)
 
@@ -132,23 +132,23 @@ function swapItems(bot, chatroom, channel, args, isModOrVIP) {
     const idxOne = Number(args[1])
     const idxTwo = Number(args[2])
     // Either index is NaN, zero, or doesn't exist in array
-    if (!idxOne || !lemonyFresh[channel].list[idxOne]) {
+    if (!idxOne || !list[idxOne]) {
         bot.say(chatroom, `${args[1] ? `#${args[1]}` : `Item`} not found in ${listName}! ${negativeEmote}`)
         return
     }
-    if (!idxTwo || !lemonyFresh[channel].list[idxTwo]) {
+    if (!idxTwo || !list[idxTwo]) {
         bot.say(chatroom, `${args[2] ? `#${args[2]}` : `Item`} not found in ${listName}! ${negativeEmote}`)
         return
     }
 
-    const value = lemonyFresh[channel].list[idxOne]
-    lemonyFresh[channel].list[idxOne] = lemonyFresh[channel].list[idxTwo]
-    lemonyFresh[channel].list[idxTwo] = value
+    const value = list[idxOne]
+    list[idxOne] = list[idxTwo]
+    list[idxTwo] = value
 
     bot.say(chatroom, `Swapped #${idxOne} and #${idxTwo} in ${listName}! ${positiveEmote}`)
 }
 
-function moveItems(bot, chatroom, channel, args, isModOrVIP) {
+function moveItems(bot, chatroom, channel, list, args, isModOrVIP) {
     const negativeEmote = getContextEmote(`negative`, channel)
     logMessage([`-> moveItems(args: ${logArr(args)}, isModOrVIP? ${isModOrVIP})`])
     if (!isModOrVIP) {
@@ -156,7 +156,7 @@ function moveItems(bot, chatroom, channel, args, isModOrVIP) {
         return
     }
 
-    const listName = lemonyFresh[channel].list[0] || `the list`
+    const listName = list[0] || `the list`
     const positiveEmote = getContextEmote(`positive`, channel)
     const neutralEmote = getContextEmote(`neutral`, channel)
 
@@ -168,30 +168,30 @@ function moveItems(bot, chatroom, channel, args, isModOrVIP) {
     const idxOne = Number(args[1])
     const idxTwo = Number(args[2])
     // Either index is NaN, zero, or doesn't exist in array
-    if (!idxOne || !lemonyFresh[channel].list[idxOne]) {
+    if (!idxOne || !list[idxOne]) {
         bot.say(chatroom, `${args[1] ? `#${args[1]}` : `Item`} not found in ${listName}! ${negativeEmote}`)
         return
     }
-    if (!idxTwo || !lemonyFresh[channel].list[idxTwo]) {
+    if (!idxTwo || !list[idxTwo]) {
         bot.say(chatroom, `${args[2] ? `#${args[2]}` : `Item`} not found in ${listName}! ${negativeEmote}`)
         return
     }
 
-    const movedItem = lemonyFresh[channel].list[idxOne]
+    const movedItem = list[idxOne]
     if (idxOne > idxTwo) {
-        const value = lemonyFresh[channel].list[idxOne]
-        for (let i = idxOne; i > idxTwo; i--) { lemonyFresh[channel].list[i] = lemonyFresh[channel].list[i - 1] }
-        lemonyFresh[channel].list[idxTwo] = value
+        const value = list[idxOne]
+        for (let i = idxOne; i > idxTwo; i--) { list[i] = list[i - 1] }
+        list[idxTwo] = value
     } else if (idxOne < idxTwo) {
-        const value = lemonyFresh[channel].list[idxOne]
-        for (let i = idxOne; i < idxTwo; i++) { lemonyFresh[channel].list[i] = lemonyFresh[channel].list[i + 1] }
-        lemonyFresh[channel].list[idxTwo] = value
+        const value = list[idxOne]
+        for (let i = idxOne; i < idxTwo; i++) { list[i] = list[i + 1] }
+        list[idxTwo] = value
     }
 
     bot.say(chatroom, `Moved #${idxOne} "${movedItem}" in ${listName} to position #${idxTwo}! ${positiveEmote}`)
 }
 
-function renameList(bot, chatroom, channel, args, isModOrVIP) {
+function renameList(bot, chatroom, channel, list, args, isModOrVIP) {
     const negativeEmote = getContextEmote(`negative`, channel)
     logMessage([`-> renameList(args: ${logArr(args)}, isModOrVIP? ${isModOrVIP})`])
     if (!isModOrVIP) {
@@ -202,17 +202,17 @@ function renameList(bot, chatroom, channel, args, isModOrVIP) {
     const neutralEmote = getContextEmote(`neutral`, channel)
     const positiveEmote = getContextEmote(`positive`, channel)
 
-    const currentName = lemonyFresh[channel].list[0]
+    const currentName = list[0]
     const newName = args.slice(1).join(` `)
     if (currentName === newName) {
         bot.say(chatroom, `List name is already ${currentName ? `"${currentName}"` : `blank`}! ${neutralEmote}`)
         return
     }
-    lemonyFresh[channel].list[0] = newName
+    list[0] = newName
     bot.say(chatroom, `List name ${newName ? `updated ${currentName ? `from "${currentName}" ` : ``}to "${newName}"` : `has been reset from "${currentName}"`}! ${positiveEmote}`)
 }
 
-function clearList(bot, chatroom, channel, resetName, isModOrVIP) {
+function clearList(bot, chatroom, channel, list, resetName, isModOrVIP) {
     logMessage([`-> clearList(resetName? ${resetName}, isModOrVIP? ${isModOrVIP})`])
     const negativeEmote = getContextEmote(`negative`, channel)
     if (!isModOrVIP) {
@@ -222,9 +222,9 @@ function clearList(bot, chatroom, channel, resetName, isModOrVIP) {
 
     const positiveEmote = getContextEmote(`positive`, channel)
 
-    lemonyFresh[channel].list.length = 1
-    if (resetName) { lemonyFresh[channel].list[0] = `` }
-    const listName = lemonyFresh[channel].list[0] || `The list`
+    list.length = 1
+    if (resetName) { list[0] = `` }
+    const listName = list[0] || `The list`
 
     bot.say(chatroom, `${listName} has been ${resetName ? `reset` : `cleared`}! ${positiveEmote}`)
 }
@@ -264,7 +264,8 @@ function getListMethods(bot, chatroom, channel, isModOrVIP) {
 
 module.exports = function useList(props) {
     const { bot, chatroom, args, channel, isModOrVIP } = props
-    logMessage([`> useList(channel: '${channel}', listName: '${lemonyFresh[channel].list[0]}', items: ${lemonyFresh[channel].list.slice(1).length}, args: ${logArr(args)})`])
+    const list = lemonyFresh[channel].list
+    logMessage([`> useList(channel: '${channel}', listName: '${list[0]}', items: ${list.slice(1).length}, args: ${logArr(args)})`])
 
     // Get list of all methods
     if (/^help$/i.test(args[0])) {
@@ -274,87 +275,87 @@ module.exports = function useList(props) {
 
     // Get length of list
     if (/^length$/i.test(args[0])) {
-        bot.say(chatroom, `${lemonyFresh[channel].list[0] || `The list`} is ${pluralize(lemonyFresh[channel].list.length - 1, `item`, `items`)} long! ${getContextEmote(`neutral`, channel)}`)
+        bot.say(chatroom, `${list[0] || `The list`} is ${pluralize(list.length - 1, `item`, `items`)} long! ${getContextEmote(`neutral`, channel)}`)
         return
     }
 
     // Get range of items by numbers
     if (/^-?\d+(-|to)-?\d+$/i.test(args.join(``))) {
-        getItemRange(bot, chatroom, channel, args.join(``))
+        getItemRange(bot, chatroom, channel, list, args.join(``))
         return
     }
 
     // Get item by number
     if (/^-?\d+$/i.test(args[0])) {
-        getItem(bot, chatroom, channel, Number(args[0]))
+        getItem(bot, chatroom, channel, list, Number(args[0]))
         return
     }
 
     // Get random item
     if (/^random$/i.test(args[0])) {
-        getItem(bot, chatroom, channel, Math.ceil(Math.random() * (lemonyFresh[channel].list.length - 1)))
+        getItem(bot, chatroom, channel, list, Math.ceil(Math.random() * (list.length - 1)))
         return
     }
 
     // Add item to list
     if (/^add$/i.test(args[0])) {
-        addItem(bot, chatroom, channel, args, isModOrVIP)
+        addItem(bot, chatroom, channel, list, args, isModOrVIP)
         return
     }
 
     // Edit item in list
     if (/^edit$/i.test(args[0])) {
-        editItem(bot, chatroom, channel, args, isModOrVIP)
+        editItem(bot, chatroom, channel, list, args, isModOrVIP)
         return
     }
 
     // Delete item from list
     if (/^delete$/i.test(args[0])) {
-        deleteItem(bot, chatroom, channel, args, isModOrVIP)
+        deleteItem(bot, chatroom, channel, list, args, isModOrVIP)
         return
     }
 
     // Swap/switch items in list
     if (/^swap$|^switch$/i.test(args[0])) {
-        swapItems(bot, chatroom, channel, args, isModOrVIP)
+        swapItems(bot, chatroom, channel, list, args, isModOrVIP)
         return
     }
 
     // Move items in list
     if (/^move$/i.test(args[0])) {
-        moveItems(bot, chatroom, channel, args, isModOrVIP)
+        moveItems(bot, chatroom, channel, list, args, isModOrVIP)
         return
     }
 
     // Name/rename list
     if (/^(re)?name$/i.test(args[0])) {
-        renameList(bot, chatroom, channel, args, isModOrVIP)
+        renameList(bot, chatroom, channel, list, args, isModOrVIP)
         return
     }
 
     // Clear list contents
     if (/^clear$/i.test(args[0])) {
-        clearList(bot, chatroom, channel, false, isModOrVIP)
+        clearList(bot, chatroom, channel, list, false, isModOrVIP)
         return
     }
 
     // Clear list contents and reset name
     if (/^reset$/i.test(args[0])) {
-        clearList(bot, chatroom, channel, true, isModOrVIP)
+        clearList(bot, chatroom, channel, list, true, isModOrVIP)
         return
     }
 
     // Find/search for in list
     if (/^find$|^search$/i.test(args[0])) {
-        searchList(bot, chatroom, channel, args.slice(1).join(` `))
+        searchList(bot, chatroom, channel, list, args.slice(1).join(` `))
         return
     }
 
     // No args, or keyword not recognized
-    const listContents = lemonyFresh[channel].list.slice(1).map((el, idx) => `${idx + 1}) ${el}`)
+    const listContents = list.slice(1).map((el, idx) => `${idx + 1}) ${el}`)
     const dumbEmote = getContextEmote(`dumb`, channel)
 
     listContents.length
-        ? bot.say(chatroom, `${lemonyFresh[channel].list[0] || `Here's the list`}: ${listContents.join(`, `)}`)
-        : bot.say(chatroom, `No items are in ${lemonyFresh[channel].list[0] || `the list`}! ${dumbEmote}`)
+        ? bot.say(chatroom, `${list[0] || `Here's the list`}: ${listContents.join(`, `)}`)
+        : bot.say(chatroom, `No items are in ${list[0] || `the list`}! ${dumbEmote}`)
 }
