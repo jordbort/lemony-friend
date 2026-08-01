@@ -1,5 +1,5 @@
-const { getContextEmote, logMessage, pluralize, logArr } = require(`../utils`)
 const { settings, lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
+const { getContextEmote, logMessage, pluralize, logArr, chooseFrom } = require(`../utils`)
 
 const regexNumber = /\{\s?number\s?(-?\d+)\s?\}/gi
 const regexRandom = /\{\s?random\s?("[^"]+"\s?)+\s?\}/gi
@@ -12,17 +12,17 @@ function applyVariables(str, props) {
 
     // Prepare viewers
     const viewers = lemonyFresh[channel].viewers.filter(viewer => !settings.ignoredBots.includes(viewer))
-    const randomViewerOne = viewers[Math.floor(Math.random() * viewers.length)]
-    let randomViewerTwo = viewers[Math.floor(Math.random() * viewers.length)]
+    const randomViewerOne = chooseFrom(viewers)
+    let randomViewerTwo = chooseFrom(viewers)
     if (viewers.length > 1) {
         while (randomViewerTwo === randomViewerOne) {
-            randomViewerTwo = viewers[Math.floor(Math.random() * viewers.length)]
+            randomViewerTwo = chooseFrom(viewers)
         }
     }
-    let randomViewerThree = viewers[Math.floor(Math.random() * viewers.length)]
+    let randomViewerThree = chooseFrom(viewers)
     if (viewers.length > 2) {
         while (randomViewerThree === randomViewerOne || randomViewerThree === randomViewerTwo) {
-            randomViewerThree = viewers[Math.floor(Math.random() * viewers.length)]
+            randomViewerThree = chooseFrom(viewers)
         }
     }
 
@@ -52,9 +52,9 @@ function applyVariables(str, props) {
         .replace(/\{\s?greet(ing)?\s?\}/gi, () => getContextEmote(`greeting`, channel))
         .replace(/\{\s?bye\s?\}/gi, () => getContextEmote(`bye`, channel))
         .replace(/\{\s?dumb?\s?\}/gi, () => getContextEmote(`dumb`, channel))
-        .replace(/\{\s?n(oun)?\s?\}/gi, () => nouns[Math.floor(Math.random() * nouns.length)])
-        .replace(/\{\s?v(erb)?\s?\}/gi, () => verbs[Math.floor(Math.random() * verbs.length)])
-        .replace(/\{\s?adj(ective)?\s?\}/gi, () => adjectives[Math.floor(Math.random() * adjectives.length)])
+        .replace(/\{\s?n(oun)?\s?\}/gi, () => chooseFrom(nouns))
+        .replace(/\{\s?v(erb)?\s?\}/gi, () => chooseFrom(verbs))
+        .replace(/\{\s?adj(ective)?\s?\}/gi, () => chooseFrom(adjectives))
         .replace(/\{\s?1\s?\}/g, args[0] || ``)
         .replace(/\{\s?2\s?\}/g, args[1] || ``)
         .replace(/\{\s?3\s?\}/g, args[2] || ``)
@@ -68,7 +68,7 @@ function applyVariables(str, props) {
             const capturedArr = occurrence
                 .split(regexQuote)
                 .filter(element => !regexExclusion.test(element))
-            const randomPick = capturedArr[Math.floor(Math.random() * capturedArr.length)]
+            const randomPick = chooseFrom(capturedArr)
             return randomPick
         })
 

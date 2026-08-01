@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { lemonyFresh, mods, users, joinedChatrooms } = require(`../data`)
-const { logMessage, getContextEmote, updateMod, pluralize, arrToList, renderObj, printMemory } = require(`../utils`)
+const { logMessage, getContextEmote, updateMod, pluralize, arrToList, renderObj, printMemory, chooseFrom } = require(`../utils`)
 
 const { getStreamBttvEmotes } = require(`../commands/external`)
 const { apiGetTwitchChannel, getStreamTwitchEmotes } = require(`../commands/twitch`)
@@ -81,7 +81,7 @@ function handleStreamOffline(bot, event) {
         `Hope you had a good stream, ${streamer} ${neutralEmote}`,
         `last`
     ]
-    const reply = announcements[Math.floor(Math.random() * announcements.length)]
+    const reply = chooseFrom(announcements)
 
     bot.say(`#${channel}`, reply)
 }

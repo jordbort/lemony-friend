@@ -1,5 +1,5 @@
 const { wordBank } = require(`../data`)
-const { logMessage, pluralize, getContextEmote, logArr } = require(`../utils`)
+const { logMessage, pluralize, getContextEmote, logArr, chooseFrom } = require(`../utils`)
 
 const getIndefiniteArticle = (nextWord) => /^[aeiou]/i.test(nextWord) ? `an ${nextWord}` : `a ${nextWord}`
 
@@ -157,28 +157,28 @@ module.exports = {
             ...wordBank.verbs.map(word => `${addVerbSuffix(word, `y`)}`)
         ]
 
-        const verb1 = verbs[Math.floor(Math.random() * verbs.length)] || `squeeze`
-        let verb2 = verbs[Math.floor(Math.random() * verbs.length)] || `juice`
+        const verb1 = chooseFrom(verbs) || `squeeze`
+        let verb2 = chooseFrom(verbs) || `juice`
         while (verb2 === verb1) {
             verbs.push(`squeeze`, `juice`)
             logMessage([`-> Changing verb 2 from "${verb2}"`, verbs])
-            verb2 = verbs[Math.floor(Math.random() * verbs.length)]
+            verb2 = chooseFrom(verbs)
         }
 
-        const noun1 = nouns[Math.floor(Math.random() * nouns.length)] || `lemon`
-        let noun2 = nouns[Math.floor(Math.random() * nouns.length)] || `friend`
+        const noun1 = chooseFrom(nouns) || `lemon`
+        let noun2 = chooseFrom(nouns) || `friend`
         while (noun2 === noun1) {
             nouns.push(`lemon`, `friend`)
             logMessage([`-> Changing noun 2 from "${noun2}"`, nouns])
-            noun2 = nouns[Math.floor(Math.random() * nouns.length)]
+            noun2 = chooseFrom(nouns)
         }
 
-        const adjective1 = adjectives[Math.floor(Math.random() * adjectives.length)] || `lemony`
-        let adjective2 = adjectives[Math.floor(Math.random() * adjectives.length)] || `fresh`
+        const adjective1 = chooseFrom(adjectives) || `lemony`
+        let adjective2 = chooseFrom(adjectives) || `fresh`
         while (adjective2 === adjective1) {
             adjectives.push(`lemony`, `fresh`)
             logMessage([`-> Changing adjective 2 from "${adjective2}"`, adjectives])
-            adjective2 = adjectives[Math.floor(Math.random() * adjectives.length)]
+            adjective2 = chooseFrom(adjectives)
         }
 
         const insults = [
@@ -192,18 +192,18 @@ module.exports = {
             `you're ${getIndefiniteArticle(adjective1)} ${noun1} ${addVerbSuffix(verb1, `ing`)} ${noun2}. And you're ${adjective2}!`,
             `you're not just ${getIndefiniteArticle(adjective1)} ${noun1} ${addVerbSuffix(verb1, `er`)}, but ${getIndefiniteArticle(adjective2)} ${noun2} too!`,
             `try ${addVerbSuffix(verb1, `ing`)} ${getIndefiniteArticle(adjective1)} ${noun1}, you ${adjective2} ${noun2}-${addVerbSuffix(verb2), `er`}!`,
-            `go get ${addVerbSuffix(verb1, `ed`)} by a ${[`hundred`, `hundred`, `hundred`, `thousand`, `thousand`, `thousand`, `million`, `million`, `billion`, `billion`, `trillion`][Math.floor(Math.random() * 7)]} ${adjective1} ${makePlural(noun1)}!`,
+            `go get ${addVerbSuffix(verb1, `ed`)} by a ${chooseFrom([`hundred`, `hundred`, `hundred`, `thousand`, `thousand`, `thousand`, `million`, `million`, `billion`, `billion`, `trillion`])} ${adjective1} ${makePlural(noun1)}!`,
             `I bet your ${noun1} ${addVerbSuffix(verb1, `s`)} like ${getIndefiniteArticle(adjective1)} ${noun2}!`,
             `your ${adjective1} ${noun1} can't ${verb1}, ${noun2}-${addVerbSuffix(verb2, `er`)}!`,
             `you're ${getIndefiniteArticle(adjective1)} ${noun1} whose ${adjective2} ${noun2} couldn't ${verb1}!`,
             `your ${adjective1} ${noun1} is ${addVerbSuffix(verb1, `ing`)} like ${getIndefiniteArticle(adjective2)} ${noun2}!`,
             `I hope ${getIndefiniteArticle(noun1)} ${addVerbSuffix(verb1, `s`)} your ${adjective1} ${noun2} while ${getIndefiniteArticle(noun2)} ${addVerbSuffix(verb2, `s`)}!`,
-            `did you ${verb1} ${[`in `, `on `, `with `, `at `, ``, ``][Math.floor(Math.random() * 6)]}${getIndefiniteArticle(adjective1)} ${noun1} or ${[`what`, `what`, `something`, `something`, `not`][Math.floor(Math.random() * 5)]}?`,
+            `did you ${verb1} ${chooseFrom([`in `, `on `, `with `, `at `, ``, ``])}${getIndefiniteArticle(adjective1)} ${noun1} or ${chooseFrom([`what`, `what`, `something`, `something`, `not`])}?`,
             `you coudn't ${verb1} ${getIndefiniteArticle(noun1)}, you ${adjective1} ${noun2}!`,
-            `${getIndefiniteArticle(adjective1)} ${noun1} ${[`could`, `would`, `should`][Math.floor(Math.random() * 3)]} ${[`probably `, ``, ``, ``][Math.floor(Math.random() * 4)]}${verb1} your ${adjective2} ${noun2}!`
+            `${getIndefiniteArticle(adjective1)} ${noun1} ${chooseFrom([`could`, `would`, `should`])} ${chooseFrom([`probably `, ``, ``, ``])}${verb1} your ${adjective2} ${noun2}!`
         ]
 
-        const insult = insults[Math.floor(Math.random() * insults.length)]
+        const insult = chooseFrom(insults)
 
         bot.say(chatroom, `Hey ${targetNickname || toUser || userNickname} ${insult}`)
     }

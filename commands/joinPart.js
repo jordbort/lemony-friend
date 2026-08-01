@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings, lemonyFresh, users, lemCmds } = require(`../data`)
-const { getUsername, getContextEmote, logMessage, pluralize, arrToList, logArr, spellOutNumber, msToElapsedTime } = require(`../utils`)
+const { getUsername, getContextEmote, logMessage, pluralize, arrToList, logArr, spellOutNumber, msToElapsedTime, chooseFrom } = require(`../utils`)
 
 const { apiGetTwitchUser, deleteAllEventSubs } = require(`./twitch`)
 
@@ -27,7 +27,7 @@ module.exports = {
             const arrLemCmds = Object.keys(lemCmds)
             const maxUses = Math.max(...arrLemCmds.map(cmd => lemCmds[cmd].uses))
             const mostUsedLemcmd = arrLemCmds.filter(cmd => lemCmds[cmd].uses === maxUses)
-            const randomLemCmd = arrLemCmds[Math.floor(Math.random() * arrLemCmds.length)]
+            const randomLemCmd = chooseFrom(arrLemCmds)
             const lastUsed = msToElapsedTime(Date.now() - lemCmds[randomLemCmd].lastUsedDate)
 
             const joinMessages = [
@@ -87,7 +87,7 @@ module.exports = {
             if (lemonyFresh[channel].subEmotes.length) { joinMessages.push(`I know ${pluralize(lemonyFresh[channel].subEmotes.length, `sub emote`, `sub emotes`)} in ${channel}'s channel! ${positiveEmote}`) }
             if (lemonyFresh[channel].bttvEmotes.length) { joinMessages.push(`I know ${pluralize(lemonyFresh[channel].bttvEmotes.length, `BTTV emote`, `BTTV emotes`)} in ${channel}'s channel! ${positiveEmote}`) }
 
-            const joinMessage = joinMessages[Math.floor(Math.random() * joinMessages.length)]
+            const joinMessage = chooseFrom(joinMessages)
             bot.say(chatroom, joinMessage)
         }
     },

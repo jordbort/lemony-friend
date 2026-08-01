@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { lemonyFresh, users } = require(`../data`)
-const { logMessage, pluralize, coinFlip, parseTargetByNickname, logArr, getContextEmote } = require(`../utils`)
+const { logMessage, pluralize, coinFlip, parseTargetByNickname, logArr, getContextEmote, chooseFrom } = require(`../utils`)
 
 function stealLemon(bot, chatroom, user, suffix, target) {
     const allLemons = [`s`, `z`].includes(suffix)
@@ -161,7 +161,7 @@ function makeLemon(bot, chatroom, user, suffix, target, verb) {
             `Delicious`,
             `Exquisite`
         ]
-        const yummySound = yummySounds[Math.floor(Math.random() * yummySounds.length)]
+        const yummySound = chooseFrom(yummySounds)
         if (foodPatterns.test(suffix)) {
             target
                 ? coinFlip()
@@ -998,8 +998,8 @@ function touchLemon(bot, chatroom, user, suffix, target) {
                 return
             }
             coinFlip()
-                ? bot.say(chatroom, `${userNickname} poked one of ${targetNickname}'s lemons.`)
-                : bot.say(chatroom, `${userNickname} picked at one of ${targetNickname}'s lemons.`)
+                ? bot.say(chatroom, `${userNickname} poked ${target.lemons === 1 ? `${targetNickname}'s lemon` : `one of ${targetNickname}'s lemons`}.`)
+                : bot.say(chatroom, `${userNickname} picked at ${target.lemons === 1 ? `${targetNickname}'s lemon` : `one of ${targetNickname}'s lemons`}.`)
         } else {
             coinFlip()
                 ? bot.say(chatroom, `${userNickname} fidgeted with their lemon.`)
@@ -1017,7 +1017,7 @@ function exchangeLemon(bot, chatroom, user, suffix, target) {
     exchangeRates.push(-100)
     exchangeRates.push(0)
     exchangeRates.push(500000)
-    const exchangeRate = exchangeRates[Math.floor(Math.random() * exchangeRates.length)]
+    const exchangeRate = chooseFrom(exchangeRates)
     logMessage([`--> streamelementsInChat: ${streamelementsInChat}, lemonIsMod: ${lemonIsMod}, exchangeRate: ${exchangeRate}`])
 
     const allLemons = [`s`, `z`].includes(suffix)
@@ -1242,23 +1242,24 @@ function fascinateLemon(bot, chatroom, user, suffix, target) {
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
     const targetNickname = target?.nickname || target?.displayName || null
-    const badResultAppend = [`Bye!`, `See ya!`, `Oops!`, `Whoops!`, `Dang!`, user.lemons === 1 ? `It's outta here!` : `They're outta here!`][Math.floor(Math.random() * 6)]
+    const pluralBadResultAppend = chooseFrom([`Bye!`, `See ya!`, `Oops!`, `Whoops!`, `Dang!`, user.lemons === 1 ? `It's outta here!` : `They're outta here!`])
+    const singularBadResultAppend = chooseFrom([`Bye!`, `See ya!`, `Oops!`, `Whoops!`, `Dang!`, `It's outta here!`])
 
     allLemons
         ? target
             ? coinFlip()
-                ? bot.say(chatroom, `${userNickname}'s ${user.lemons} lemon${user.lemons === 1 ? `` : `s`} found ${targetNickname} very alluring!`)
-                : (bot.say(chatroom, `${userNickname} showed ${targetNickname} to their lemon${user.lemons === 1 ? `` : `s`}, but ${user.lemons === 1 ? `it wasn't` : `they weren't`} intruiged... ${badResultAppend}`), user.lemons = 0)
+                ? bot.say(chatroom, `${userNickname}'s ${pluralize(user.lemons, `lemon`, `lemons`)} found ${targetNickname} very alluring!`)
+                : (bot.say(chatroom, `${userNickname} showed ${targetNickname} to their lemon${user.lemons === 1 ? `` : `s`}, but ${user.lemons === 1 ? `it wasn't` : `they weren't`} intruiged... ${pluralBadResultAppend}`), user.lemons = 0)
             : coinFlip()
-                ? bot.say(chatroom, `${userNickname} caught the attention of their ${user.lemons} lemon${user.lemons === 1 ? `` : `s`}!`)
-                : (bot.say(chatroom, `${userNickname}'s ${user.lemons} lemon${user.lemons === 1 ? ` was` : `s were`} not roused... ${badResultAppend}`), user.lemons = 0)
+                ? bot.say(chatroom, `${userNickname} caught the attention of their ${pluralize(user.lemons, `lemon`, `lemons`)}!`)
+                : (bot.say(chatroom, `${userNickname}'s ${pluralize(user.lemons, `lemon was`, `lemons were`)} not roused... ${pluralBadResultAppend}`), user.lemons = 0)
         : target
             ? coinFlip()
                 ? bot.say(chatroom, `${userNickname}'s lemon found ${targetNickname} very captivating!`)
-                : (bot.say(chatroom, `${userNickname} showed ${targetNickname} to their lemon, but ${user.lemons === 1 ? `it wasn't` : `they weren't`} interested... ${badResultAppend}`), user.lemons--)
+                : (bot.say(chatroom, `${userNickname} showed ${targetNickname} to their lemon, but ${user.lemons === 1 ? `it wasn't` : `they weren't`} interested... ${singularBadResultAppend}`), user.lemons--)
             : coinFlip()
                 ? bot.say(chatroom, `${userNickname}'s lemon was fascinated!`)
-                : (bot.say(chatroom, `${userNickname}'s lemon was disinterested... ${badResultAppend}`), user.lemons--)
+                : (bot.say(chatroom, `${userNickname}'s lemon was disinterested... ${singularBadResultAppend}`), user.lemons--)
 }
 function drawLemon(bot, chatroom, user, suffix, target) {
     const allLemons = [`s`, `z`].includes(suffix)
@@ -1268,11 +1269,11 @@ function drawLemon(bot, chatroom, user, suffix, target) {
     allLemons
         ? target
             ? coinFlip()
-                ? bot.say(chatroom, `${userNickname} drew ${targetNickname} a picture of their ${user.lemons} lemon${user.lemons === 1 ? `` : `s`}!`)
-                : bot.say(chatroom, `${userNickname} sketched ${targetNickname} looking at their ${user.lemons} lemon${user.lemons === 1 ? `` : `s`}.`)
+                ? bot.say(chatroom, `${userNickname} drew ${targetNickname} a picture of their ${pluralize(user.lemons, `lemon`, `lemons`)}!`)
+                : bot.say(chatroom, `${userNickname} sketched ${targetNickname} looking at their ${pluralize(user.lemons, `lemon`, `lemons`)}.`)
             : coinFlip()
-                ? bot.say(chatroom, `${userNickname} illustrated a comic of their ${user.lemons} lemon${user.lemons === 1 ? `` : `s`}!`)
-                : bot.say(chatroom, `${userNickname} made a drawing of their ${user.lemons} lemon${user.lemons === 1 ? `` : `s`}.`)
+                ? bot.say(chatroom, `${userNickname} illustrated a comic of their ${pluralize(user.lemons, `lemon`, `lemons`)}!`)
+                : bot.say(chatroom, `${userNickname} made a drawing of their ${pluralize(user.lemons, `lemon`, `lemons`)}.`)
         : target
             ? coinFlip()
                 ? bot.say(chatroom, `${userNickname} made a picture of a lemon for ${targetNickname}.`)
@@ -1296,7 +1297,7 @@ function nullVerb(bot, chatroom, user, suffix, target, verb) {
         `melted`,
         `declined the offer`
     ]
-    const nullOutcome = nullOutcomes[Math.floor(Math.random() * nullOutcomes.length)]
+    const nullOutcome = chooseFrom(nullOutcomes)
     if (allLemons) {
         user.lemons = 0
         target

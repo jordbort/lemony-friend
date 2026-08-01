@@ -1,5 +1,5 @@
 const { settings, lemonyFresh, users } = require(`../data`)
-const { chatColors, getContextEmote, pluralize, getToUser, logMessage, arrToList, logArr, parseTargetByNickname, spellOutNumber, msToElapsedTime } = require(`../utils`)
+const { chatColors, getContextEmote, pluralize, getToUser, logMessage, arrToList, logArr, parseTargetByNickname, spellOutNumber, msToElapsedTime, chooseFrom } = require(`../utils`)
 
 module.exports = {
     sayOnlineTime(props) {
@@ -90,14 +90,13 @@ module.exports = {
     getRandomUser(arrExclude) {
         logMessage([`> getRandomUser(arrExclude: ${logArr(arrExclude)})`])
         // Only search non-excluded users who have chatted
-        const arr = Object.keys(users).filter(username => !arrExclude.includes(username) && Object.keys(users[username].channels).length)
-        const randomUser = arr[Math.floor(Math.random() * arr.length)]
+        const randomUsers = Object.keys(users).filter(username => !arrExclude.includes(username) && Object.keys(users[username].channels).length)
+        const randomUser = chooseFrom(randomUsers)
         return randomUser
     },
     getRandomChannelMessage(user) {
         logMessage([`> getRandomChannelMessage(user: '${user.displayName}')`])
-        const channels = Object.keys(user.channels)
-        const channel = channels[Math.floor(Math.random() * channels.length)]
+        const channel = chooseFrom(Object.keys(user.channels))
         const randomMessage = user.channels[channel].lastMessage
         return randomMessage
     },

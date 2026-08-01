@@ -1,9 +1,9 @@
-const { getContextEmote, logMessage } = require(`../utils`)
+const { getContextEmote, logMessage, chooseFrom } = require(`../utils`)
 
 const rps = [`rock`, `paper`, `scissors`]
 
 function realRPS(playerChoice, channel) {
-    const botChoice = rps[Math.floor(Math.random() * rps.length)]
+    const botChoice = chooseFrom(rps)
     const neutralEmote = getContextEmote(`neutral`, channel)
     const hypeEmote = getContextEmote(`hype`, channel)
 
@@ -42,7 +42,7 @@ module.exports = function rockPaperScissors(props) {
         ? args.join(` `) || `nothing`
         : rps.includes(args[0]?.toLowerCase())
             ? args[0].toLowerCase()
-            : rps[Math.floor(Math.random() * rps.length)]
+            : chooseFrom(rps)
 
     logMessage([`> rockPaperScissors(channel: '${channel}', userNickname: '${userNickname}', playerChoice: '${playerChoice}', aprilFools? ${aprilFools})`])
 

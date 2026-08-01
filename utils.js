@@ -60,6 +60,10 @@ const emotePattern = /\b([a-z][a-z0-9]{2,9}[A-Z0-9][a-zA-Z0-9]{0,19})\b/
 
 const formatMegabytes = (num) => Math.round(num / 1024 / 1024 * 100) / 100
 
+const chooseFrom = (arr) => arr[Math.floor(Math.random() * arr.length)]
+
+const coinFlip = () => chooseFrom([true, false])
+
 function pluralize(num, singularForm, pluralForm) {
     return Number(num) === 1
         ? `${Number(num).toLocaleString(settings.timeLocale)} ${singularForm}`
@@ -1193,6 +1197,8 @@ module.exports = {
     numbers,
     spellOutNumber,
     arrToList,
+    chooseFrom,
+    coinFlip,
     async handleUncaughtException(bot, err, location) {
         await printMemory(bot.channels)
         await logMessage([`> handleUncaughtException(err.message: '${err.message}', location: '${location}')`])
@@ -1206,7 +1212,6 @@ module.exports = {
         bot.channels.forEach(chatroom => bot.say(chatroom, `Oops, I just crashed! ${emote} ${err.message} ${location}`))
         await logMessage([err.stack])
     },
-    coinFlip() { return Math.floor(Math.random() * 2) },
     getContextEmote(type, channel) {
         const baseType = `${type}Emotes`
         const emotes = [...settings.baseEmotes[baseType]]
@@ -1255,7 +1260,7 @@ module.exports = {
         }
         // logMessage([`> getContextEmote(type: '${type}', channel: '${channel}', emotes: ${logArr(emotes)})`])
 
-        const emote = emotes[Math.floor(Math.random() * emotes.length)] || ``
+        const emote = chooseFrom(emotes) || ``
         return emote
     },
     transformText(type, str) {

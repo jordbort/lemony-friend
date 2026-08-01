@@ -1,7 +1,7 @@
 const API_KEY = process.env.API_KEY
 
 const { settings, lemonyFresh } = require(`../data`)
-const { getContextEmote, renderObj, logMessage, pluralize } = require(`../utils`)
+const { getContextEmote, renderObj, logMessage, pluralize, chooseFrom } = require(`../utils`)
 
 async function apiGetGlobalBttvEmotes() {
     await logMessage([`> apiGetGlobalBttvEmotes()`])
@@ -311,9 +311,9 @@ module.exports = {
                 bot.say(chatroom, `Error getting definition! ${negativeEmote}`)
             }
 
-            const objDefinition = data.data[Math.floor(Math.random() * data.data.length)]
+            const objDefinition = chooseFrom(data.data)
             const reply = data.found
-                ? `"${query}" (${pluralize(data.data.length, `definition`, `definitions`)} found): ${objDefinition.meaning} - ex: "${objDefinition.example}" (${objDefinition.date})`
+                ? `"${query}" (${pluralize(data.data.length, `definition`, `definitions`)} found): ${objDefinition.meaning} - ex: "${objDefinition.example.replace(/[\t\n]/, ` `)}"${objDefinition.date ? ` (${objDefinition.date})` : ``}`
                 : `No definition found! ${negativeEmote}`
 
             bot.say(chatroom, reply)

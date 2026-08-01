@@ -2,7 +2,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME
 const BOT_NICKNAME_REGEX = process.env.BOT_NICKNAME_REGEX
 
 const { settings, users, lemonyFresh } = require(`../data`)
-const { getContextEmote, pluralize, resetCooldownTimer, logMessage, transformText, logArr, twitchUsernamePattern, containsInaccessibleEmotes, arrToList, normalize } = require(`../utils`)
+const { getContextEmote, pluralize, resetCooldownTimer, logMessage, transformText, logArr, twitchUsernamePattern, containsInaccessibleEmotes, arrToList, normalize, chooseFrom } = require(`../utils`)
 
 const { autoBanUser } = require(`./twitch`)
 
@@ -40,7 +40,7 @@ function handleGreetOne(props) {
                 `How's it going?`,
                 `How goes it?`
             ]
-            response += `! ${appends[Math.floor(Math.random() * appends.length)]} ${greetingEmote}`
+            response += `! ${chooseFrom(appends)} ${greetingEmote}`
         }
         // If there's no comma after the greeting
         else {
@@ -52,7 +52,7 @@ function handleGreetOne(props) {
                 `how's it going?`,
                 `how goes it?`
             ]
-            response += `, ${appends[Math.floor(Math.random() * appends.length)]} ${greetingEmote}`
+            response += `, ${chooseFrom(appends)} ${greetingEmote}`
         }
         bot.say(chatroom, response)
 
@@ -71,7 +71,7 @@ function handleGreetMany(bot, chatroom, arr, channel) {
             `hey`,
             `hi`
         ]
-        const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)]
+        const randomGreeting = chooseFrom(greetings)
         const greetingEmote = getContextEmote(`greeting`, channel)
 
         const response = []
@@ -115,7 +115,7 @@ function handleGreetAll(bot, chatroom, channel, username) {
             `hey`,
             `hi`
         ]
-        const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)]
+        const randomGreeting = chooseFrom(greetings)
         const greetingEmote = getContextEmote(`greeting`, channel)
         const response = usersToGreet.map((user) => `${randomGreeting} ${user} ${greetingEmote}`)
         bot.say(chatroom, response.join(` `))
@@ -171,7 +171,7 @@ module.exports = {
                     `Hello ${obj.names.map(name => `@${users[name].displayName}`).join(` ${greetingEmote} hello `)} ${obj.names.length === 1 ? `welcome in! ${greetingEmote}` : `${greetingEmote} welcome in!`}`,
                     `${obj.names.map(name => `@${users[name].nickname || users[name].displayName}`).join(` `)} welcome 2 ${channelNickname} strem ${greetingEmote}`
                 ]
-                const greeting = greetings[Math.floor(Math.random() * greetings.length)]
+                const greeting = chooseFrom(greetings)
                 bot.say(chatroom, `${greeting}`)
                 resetNewChatters(channel)
             }, 5000)
@@ -221,7 +221,7 @@ module.exports = {
                     `see you next time`,
                     `have a good night`,
                 ]
-                response += `, ${appends[Math.floor(Math.random() * appends.length)]}`
+                response += `, ${chooseFrom(appends)}`
             }
             const byeEmote = getContextEmote(`bye`, channel)
             response += `! ${byeEmote}`
@@ -251,7 +251,7 @@ module.exports = {
                     `no problem`,
                     `my pleasure`
                 ]
-                response += ` ${appends[Math.floor(Math.random() * appends.length)]}`
+                response += ` ${chooseFrom(appends)}`
             }
             const positiveEmote = getContextEmote(`positive`, channel)
             response += `! ${positiveEmote}`
@@ -287,7 +287,7 @@ module.exports = {
                     `thank you`,
                     `thank you so much`
                 ]
-                response += ` ${appends[Math.floor(Math.random() * appends.length)]}`
+                response += ` ${chooseFrom(appends)}`
             }
             const positiveEmote = getContextEmote(`positive`, channel)
             response += `! ${positiveEmote}`
@@ -346,7 +346,7 @@ module.exports = {
             const numReply = Math.floor(Math.random() * replies.length)
 
             let reply = `${replies[numReply]}`
-            if (numReply === 0) { reply += ` ${appends[Math.floor(Math.random() * appends.length)]}` }
+            if (numReply === 0) { reply += ` ${chooseFrom(appends)}` }
 
             reply += ` ${botMoods[settings.botMood].emote}`
             setTimeout(() => bot.say(chatroom, reply), 1000)
@@ -644,7 +644,7 @@ module.exports = {
             if (!containsInaccessibleEmotes(arr[0], channel)) {
                 interruptions.push(arr[0], arr[0], arr[0], arr[0], arr[0], arr[0])
             }
-            const interruption = interruptions[Math.floor(Math.random() * interruptions.length)]
+            const interruption = chooseFrom(interruptions)
             bot.say(chatroom, interruption)
         }
     }

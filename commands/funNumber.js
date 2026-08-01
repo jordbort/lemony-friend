@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings, lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
-const { getContextEmote, pluralize, logMessage, logArr, coinFlip, transformText, containsInaccessibleEmotes, containsUnrecognizedEmotes, numbers, spellOutNumber } = require(`../utils`)
+const { getContextEmote, pluralize, logMessage, logArr, coinFlip, transformText, containsInaccessibleEmotes, containsUnrecognizedEmotes, numbers, spellOutNumber, chooseFrom } = require(`../utils`)
 
 const { lemonify } = require(`./lemonify`)
 const { apiGetTwitchChannel } = require(`./twitch`)
@@ -186,7 +186,7 @@ const currencies = [
 function giveMeMoney(props) { // funNumber 1
     const { bot, chatroom, userChannel } = props
     const msgCount = userChannel.msgCount
-    const currency = currencies[Math.floor(Math.random() * currencies.length)]
+    const currency = chooseFrom(currencies)
     logMessage([`> giveMeMoney(msgCount: ${msgCount}, currency: '${currency.abbreviation.toUpperCase()}')`])
 
     setTimeout(() => bot.say(chatroom, `Give me ${currency.symbol}${msgCount}${currency.zeroes} ${currency.abbreviation.toUpperCase()}`), 3000)
@@ -194,7 +194,7 @@ function giveMeMoney(props) { // funNumber 1
 function transferMeMoney(props) { // funNumber 2
     const { bot, chatroom, userChannel } = props
     const msgCount = userChannel.msgCount
-    const currency = currencies[Math.floor(Math.random() * currencies.length)]
+    const currency = chooseFrom(currencies)
     logMessage([`> transferMeMoney(msgCount: ${msgCount}, currency: '${currency.abbreviation.toUpperCase()}')`])
 
     const paymentMethods = [
@@ -213,8 +213,8 @@ function transferMeMoney(props) { // funNumber 2
         `pls email me`,
         `write me a travelers check for`
     ]
-    const paymentMethod = Math.floor(Math.random() * paymentMethods.length)
-    setTimeout(() => bot.say(chatroom, `${paymentMethods[paymentMethod]} ${msgCount}${currency.zeroes} ${currency.name}`), 3000)
+    const paymentMethod = chooseFrom(paymentMethods)
+    setTimeout(() => bot.say(chatroom, `${paymentMethod} ${msgCount}${currency.zeroes} ${currency.name}`), 3000)
 }
 
 function useRedemption(props) { // funNumber 3
@@ -225,7 +225,7 @@ function useRedemption(props) { // funNumber 3
         return
     }
 
-    const redeem = lemonyFresh[channel].redeems[Math.floor(Math.random() * lemonyFresh[channel].redeems.length)]
+    const redeem = chooseFrom(lemonyFresh[channel].redeems)
     setTimeout(() => bot.say(chatroom, redeem), 3000)
 }
 
@@ -270,7 +270,7 @@ function useUndertaleBot(props) { // funNumber 6
             `!act ${randomUser}`,
             `!mercy ${randomUser}`
         ]
-        setTimeout(() => bot.say(chatroom, actions[Math.floor(Math.random() * actions.length)]), 3000)
+        setTimeout(() => bot.say(chatroom, chooseFrom(actions)), 3000)
     } else { logMessage([`-> UndertaleBot not present in ${channel}'s channel`]) }
 }
 
@@ -331,10 +331,10 @@ function useBTTVEmote(props) { // funNumber 12
     }
 
     const effectChance = [`c! s! `, `p! `, ``, ``, ``, ``, ``, ``]
-    const effect = effectChance[Math.floor(Math.random() * effectChance.length)]
+    const effect = chooseFrom(effectChance)
 
     const emotes = lemonyFresh[channel].bttvEmotes
-    const emote = emotes[Math.floor(Math.random() * emotes.length)]
+    const emote = chooseFrom(emotes)
     setTimeout(() => bot.say(chatroom, `w! h! ${effect}${emote}`), 3000)
 }
 
@@ -391,7 +391,7 @@ function getLurker(props) { // funNumber 17
     const notChatted = lemonyFresh[channel].viewers.filter(username => !(username in users) || !(channel in users[username].channels))
     if (notChatted.includes(channel)) { notChatted.splice(notChatted.indexOf(channel), 1) }
 
-    const lurker = notChatted[Math.floor(Math.random() * notChatted.length)]
+    const lurker = chooseFrom(notChatted)
     logMessage([`> getLurker(channel: '${channel}', lurker: '${lurker}', notChatted.length: ${notChatted.length})`])
     if (!notChatted.length) {
         logMessage([`-> No lurkers found!`])
@@ -434,8 +434,8 @@ function useTwoEmotes(props) { // funNumber 19
         return
     }
 
-    const emoteOne = emotes[Math.floor(Math.random() * emotes.length)]
-    const emoteTwo = emotes[Math.floor(Math.random() * emotes.length)]
+    const emoteOne = chooseFrom(emotes)
+    const emoteTwo = chooseFrom(emotes)
     setTimeout(() => bot.say(chatroom, `${emoteOne} ${emoteTwo}`), 3000)
 }
 
@@ -456,7 +456,7 @@ function useFunnyCommand(props) { // funNumber 20
             .map(chan => lemonyFresh[chan].hangman.answer.split(``))
 
         if (arrStaleHangmanAnswers.length) {
-            const guess = arrStaleHangmanAnswers[Math.floor(Math.random() * arrStaleHangmanAnswers.length)]
+            const guess = chooseFrom(arrStaleHangmanAnswers)
             guess.length = 4
             arrFunnyCommands.push(`!fourdle ${guess.join(` `)}`)
         }
@@ -507,7 +507,7 @@ function useFunnyCommand(props) { // funNumber 20
         )
     }
 
-    const response = arrFunnyCommands[Math.floor(Math.random() * arrFunnyCommands.length)]
+    const response = chooseFrom(arrFunnyCommands)
 
     setTimeout(() => bot.say(chatroom, response), 3000)
 }
@@ -534,20 +534,19 @@ function makeInsultSentence(props) { // funNumber 22
         return
     }
 
-    const noun = filteredNouns[Math.floor(Math.random() * filteredNouns.length)]
+    const noun = chooseFrom(filteredNouns)
 
-    const verb1 = filteredVerbs[Math.floor(Math.random() * filteredVerbs.length)]
+    const verb1 = chooseFrom(filteredVerbs)
 
-    let verb2 = filteredVerbs[Math.floor(Math.random() * filteredVerbs.length)]
+    let verb2 = chooseFrom(filteredVerbs)
     if (filteredVerbs.length > 1) {
         while (verb2 === verb1) {
             logMessage([`-> Verb 1: '${verb1}', verb 2: '${verb2}', re-rolling verb 2...`])
-            verb2 = filteredVerbs[Math.floor(Math.random() * filteredVerbs.length)]
+            verb2 = chooseFrom(filteredVerbs)
         }
     }
 
-    const pronoun = [`she`, `he`, `they`][Math.floor(Math.random() * 3)]
-    const message = `${pronoun} ${verb1} on my ${noun} till i ${verb2}`
+    const message = `she ${verb1} on my ${noun} till i ${verb2}`
 
     setTimeout(() => bot.say(chatroom, message), 3000)
 }
@@ -560,7 +559,7 @@ function reportRandomLemCmdUsage(props) { // funNumber 23
     const hypeEmote = getContextEmote(`hype`, channel)
     const dumbEmote = getContextEmote(`dumb`, channel)
 
-    const randomCommand = Object.keys(lemCmds)[Math.floor(Math.random() * Object.keys(lemCmds).length)]
+    const randomCommand = chooseFrom(Object.keys(lemCmds))
     logMessage([`> reportRandomLemCmdUsage(randomCommand: '${randomCommand}', uses: ${lemCmds[randomCommand].uses})`])
 
     const reply = Object.keys(lemCmds).length === 0
@@ -719,7 +718,7 @@ function transformMessage(props) { // funNumber 32
         `doubleStruck`
     ]
 
-    const type = types[Math.floor(Math.random() * types.length)]
+    const type = chooseFrom(types)
     logMessage([`> transformMessage(type: '${type}', message: '${message}')`])
 
     if (message.startsWith(`@`)) {
@@ -734,9 +733,9 @@ function transformMessage(props) { // funNumber 32
 function makeInsultPhrase(props) { // funNumber 33
     const { bot, chatroom } = props
     const { nouns, verbs, adjectives } = wordBank
-    const getRandomNoun = () => nouns[Math.floor(Math.random() * nouns.length)] || `friend`
-    const getRandomVerb = () => verbs[Math.floor(Math.random() * verbs.length)] || `squeeze`
-    const getRandomAdjective = () => adjectives[Math.floor(Math.random() * adjectives.length)] || `lemony`
+    const getRandomNoun = () => chooseFrom(nouns) || `friend`
+    const getRandomVerb = () => chooseFrom(verbs) || `squeeze`
+    const getRandomAdjective = () => chooseFrom(adjectives) || `lemony`
     const phrases = [
         `${getRandomAdjective()} ${getRandomNoun()}`,
         `${getIndefiniteArticle(getRandomAdjective())} ${getRandomNoun()}`,
@@ -744,7 +743,7 @@ function makeInsultPhrase(props) { // funNumber 33
         `${getRandomAdjective()} ${makePlural(getRandomNoun())}`,
         `${addVerbSuffix(getRandomVerb(), `ing`)} ${getRandomAdjective()} ${makePlural(getRandomNoun())}`
     ]
-    const reply = phrases[Math.floor(Math.random() * phrases.length)]
+    const reply = chooseFrom(phrases)
     setTimeout(() => bot.say(chatroom, reply), 3000)
 }
 
