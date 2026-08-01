@@ -1279,8 +1279,44 @@ function drawLemon(bot, chatroom, user, suffix, target) {
                 ? bot.say(chatroom, `${userNickname} made a picture of a lemon for ${targetNickname}.`)
                 : bot.say(chatroom, `${userNickname} drew a picture of their lemon and showed it to ${targetNickname}.`)
             : coinFlip()
-                ? bot.say(chatroom, `${userNickname} drew a picture of ${user.lemons === 1 ? `their lemon`: `one of their lemons`}.`)
-                : bot.say(chatroom, `${userNickname} sketched ${user.lemons === 1 ? `their lemon`: `one of their lemons`} on a piece of paper.`)
+                ? bot.say(chatroom, `${userNickname} drew a picture of ${user.lemons === 1 ? `their lemon` : `one of their lemons`}.`)
+                : bot.say(chatroom, `${userNickname} sketched ${user.lemons === 1 ? `their lemon` : `one of their lemons`} on a piece of paper.`)
+}
+function admireLemon(bot, chatroom, user, suffix, target) {
+    const singular = user.lemons === 1
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName || null
+
+    if (allLemons) {
+        if (target) {
+            if (target.lemons === 0) {
+                bot.say(chatroom, `${targetNickname} does not have any lemons!`)
+                return
+            }
+            coinFlip()
+                ? bot.say(chatroom, `${userNickname} admired ${targetNickname}'s stash of ${pluralize(target.lemons, `lemon`, `lemons`)}!`)
+                : bot.say(chatroom, `${userNickname} gazed longingly at ${targetNickname}'s ${pluralize(target.lemons, `lemon`, `lemons`)}.`)
+        } else {
+            coinFlip()
+                ? bot.say(chatroom, `${userNickname} beheld their stash of ${pluralize(user.lemons, `lemon`, `lemons`)}!`)
+                : bot.say(chatroom, `${userNickname} held their ${pluralize(user.lemons, `lemon`, `lemons`)} in high esteem.`)
+        }
+    } else {
+        if (target) {
+            if (target.lemons === 0) {
+                bot.say(chatroom, `${targetNickname} does not have any lemons!`)
+                return
+            }
+            coinFlip()
+                ? bot.say(chatroom, `${userNickname} appreciated the shape of ${target.lemons === 1 ? `${targetNickname}'s lemon` : `one of ${targetNickname}'s lemons`}.`)
+                : bot.say(chatroom, `${userNickname} admired ${target.lemons === 1 ? `${targetNickname}'s lemon` : `one of ${targetNickname}'s lemons`}!`)
+        } else {
+            coinFlip()
+                ? bot.say(chatroom, `${userNickname} admired ${singular ? `their lemon` : `the top lemon in their pile`}!`)
+                : bot.say(chatroom, `${userNickname} gazed at ${singular ? `their lemon` : `one of their finest lemons`} with adoration.`)
+        }
+    }
 }
 function nullVerb(bot, chatroom, user, suffix, target, verb) {
     const allLemons = [`s`, `z`].includes(suffix)
@@ -1772,7 +1808,34 @@ const keyVerbs = {
     'design': drawLemon,
     'represent': drawLemon,
     'outline': drawLemon,
-    'draft': drawLemon
+    'draft': drawLemon,
+
+    'admire': admireLemon,
+    'appreciate': admireLemon,
+    'consider': admireLemon,
+    'drinkin': admireLemon,
+    'approve': admireLemon,
+    'approveof': admireLemon,
+    'delightin': admireLemon,
+    'relish': admireLemon,
+    'prize': admireLemon,
+    'adulate': admireLemon,
+    'like': admireLemon,
+    'enjoy': admireLemon,
+    'worship': admireLemon,
+    'venerate': admireLemon,
+    'revere': admireLemon,
+    'idolize': admireLemon,
+    'behold': admireLemon,
+    'adore': admireLemon,
+    'respect': admireLemon,
+    'gaze': admireLemon,
+    'gazeat': admireLemon,
+    'esteem': admireLemon,
+    'value': admireLemon,
+    'valuate': admireLemon,
+    'evaluate': admireLemon,
+    'cherish': admireLemon
 }
 
 module.exports = function useLemon(props, splitMessage) {
@@ -1801,10 +1864,12 @@ module.exports = function useLemon(props, splitMessage) {
     const creationVerbs = [`create`, `manufacture`, `generate`, `manifest`, `farm`, `find`, `giveme`, `givemea`, `build`, `conceive`, `construct`, `devise`, `discover`, `forge`, `form`, `invent`, `produce`, `setup`, `spawn`, `actualize`, `beget`, `compose`, `concoct`, `constitute`, `contrive`, `effect`, `erect`, `fabricate`, `fashion`, `formulate`, `imagine`, `institute`, `procreate`]
     const cleanVerbs = [`clean`, `cleanup`, `cleanse`, `bathe`, `disinfect`, `rinse`, `soak`, `wash`, `washup`, `douse`, `drench`, `hose`, `shower`, `wet`]
     const touchVerbs = [`touch`, `feel`, `fiddle`, `fiddlewith`, `play`, `playwith`, `fidget`, `fidgetwith`, `tinker`, `tinkerwith`, `mess`, `messwith`, `toy`, `toywith`, `trifle`, `triflewith`, `grope`, `brush`, `finger`, `paw`, `thumb`, `poke`, `pokeat`, `pick`, `pickat`]
+    const admireVerbs = [`admire`, `appreciate`, `consider`, `drinkin`, `approve`, `approveof`, `delightin`, `relish`, `prize`, `adulate`, `like`, `enjoy`, `worship`, `venerate`, `revere`, `idolize`, `behold`, `adore`, `respect`, `gaze`, `gazeat`, `esteem`, `value`, `valuate`, `evaluate`, `cherish`]
     if (user.lemons === 0
         && (!theftVerbs.includes(verb) || (theftVerbs.includes(verb) && !target))
         && (!cleanVerbs.includes(verb) || (cleanVerbs.includes(verb) && !target))
         && (!touchVerbs.includes(verb) || (touchVerbs.includes(verb) && !target))
+        && (!admireVerbs.includes(verb) || (admireVerbs.includes(verb) && !target))
         && !creationVerbs.includes(verb)) {
         bot.say(chatroom, `${userNickname} has no lemons!`)
         return
