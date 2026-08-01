@@ -151,7 +151,7 @@ module.exports = {
                     : console.log(shardId, `Unassigned shard${sessionId ? ` - sessionId: ${sessionId}` : ``}`)
         })
     },
-    sayWebSocketSessionId(props) {
+    sayWebSocketSessionId(props) { // funNumber 30
         const { bot, chatroom, channel } = props
         logMessage([`> sayWebSocketSessionId(channel: '${channel}')`])
 

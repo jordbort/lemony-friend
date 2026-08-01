@@ -9,7 +9,7 @@ const { sayWebSocketSessionId } = require(`../events/webSockets`)
 const { getRandomUser, getRandomChannelMessage } = require(`./getInfo`)
 const { getIndefiniteArticle, makePlural, addVerbSuffix } = require(`./insult`)
 
-function makePyramid(props) {
+function makePyramid(props) { // funNumber 0
     const { bot, chatroom, message, channel } = props
     const firstWord = message.split(` `)[0]
     logMessage([`> makePyramid(channel: '${channel}', firstWord: '${firstWord}')`])
@@ -183,7 +183,7 @@ const currencies = [
         zeroes: `0000000000000000`
     }
 ]
-function giveMeMoney(props) {
+function giveMeMoney(props) { // funNumber 1
     const { bot, chatroom, userChannel } = props
     const msgCount = userChannel.msgCount
     const currency = currencies[Math.floor(Math.random() * currencies.length)]
@@ -191,7 +191,7 @@ function giveMeMoney(props) {
 
     setTimeout(() => bot.say(chatroom, `Give me ${currency.symbol}${msgCount}${currency.zeroes} ${currency.abbreviation.toUpperCase()}`), 3000)
 }
-function transferMeMoney(props) {
+function transferMeMoney(props) { // funNumber 2
     const { bot, chatroom, userChannel } = props
     const msgCount = userChannel.msgCount
     const currency = currencies[Math.floor(Math.random() * currencies.length)]
@@ -217,7 +217,7 @@ function transferMeMoney(props) {
     setTimeout(() => bot.say(chatroom, `${paymentMethods[paymentMethod]} ${msgCount}${currency.zeroes} ${currency.name}`), 3000)
 }
 
-function useRedemption(props) {
+function useRedemption(props) { // funNumber 3
     const { bot, chatroom, channel } = props
     logMessage([`> useRedemption(channel: '${channel}', redeems.length: ${lemonyFresh[channel].redeems.length})`])
     if (lemonyFresh[channel].redeems.length === 0) {
@@ -229,7 +229,7 @@ function useRedemption(props) {
     setTimeout(() => bot.say(chatroom, redeem), 3000)
 }
 
-function givePoints(props) {
+function givePoints(props) { // funNumber 4
     const { bot, chatroom, userChannel, channel, username } = props
     const msgCount = userChannel.msgCount
     logMessage([`> givePoints(channel: '${channel}', username: '${username}', msgCount: ${msgCount}, points: ${users[BOT_USERNAME].channels[channel]?.points})`])
@@ -249,7 +249,7 @@ function givePoints(props) {
     } else { logMessage([`-> StreamElements not present in ${channel}'s channel`]) }
 }
 
-function lemonifyRandomUser(props) {
+function lemonifyRandomUser(props) { // funNumber 5
     const { bot, chatroom } = props
     logMessage([`> lemonifyRandomUser()`])
 
@@ -259,7 +259,7 @@ function lemonifyRandomUser(props) {
     setTimeout(() => bot.say(chatroom, lemonMsg), 3000)
 }
 
-function useUndertaleBot(props) {
+function useUndertaleBot(props) { // funNumber 6
     const { bot, chatroom, channel } = props
     logMessage([`> useUndertaleBot()`])
 
@@ -274,25 +274,25 @@ function useUndertaleBot(props) {
     } else { logMessage([`-> UndertaleBot not present in ${channel}'s channel`]) }
 }
 
-function reportChance(props) {
+function reportChance(props) { // funNumber 7
     const { bot, chatroom } = props
     logMessage([`> reportChance(funNumberCount: ${settings.funNumberCount}, funNumberTotal: ${settings.funNumberTotal})`])
     setTimeout(() => bot.say(chatroom, `This message has a 1/${(settings.funNumberCount * settings.funNumberTotal).toLocaleString()} chance of appearing`), 3000)
 }
 
-function sayMessageID(props) {
+function sayMessageID(props) { // funNumber 8
     const { bot, chatroom, tags } = props
     logMessage([`> sayMessageID(tags: ${logArr(Object.keys(tags))})`])
     setTimeout(() => bot.say(chatroom, `${tags.id}`), 3000)
 }
 
-function sayTime(props) {
+function sayTime(props) { // funNumber 9
     const { bot, chatroom, currentTime } = props
     logMessage([`> sayTime(currentTime: ${currentTime})`])
     setTimeout(() => bot.say(chatroom, `${currentTime}`), 3000)
 }
 
-async function askAboutGame(props) {
+async function askAboutGame(props) { // funNumber 10
     const { bot, chatroom, channel } = props
     const broadcasterId = lemonyFresh[channel].id
     const twitchChannel = await apiGetTwitchChannel(broadcasterId)
@@ -312,7 +312,7 @@ async function askAboutGame(props) {
     setTimeout(() => bot.say(chatroom, reply), 3000)
 }
 
-function awardLemon(props) {
+function awardLemon(props) { // funNumber 11
     const { bot, chatroom, channel, username, userNickname } = props
     logMessage([`> awardLemon(channel: '${channel}', userNickname: '${userNickname}')`])
 
@@ -321,7 +321,7 @@ function awardLemon(props) {
     bot.say(chatroom, `${userNickname} earned one (1) lemon! ${lemonEmote}`)
 }
 
-function useBTTVEmote(props) {
+function useBTTVEmote(props) { // funNumber 12
     const { bot, chatroom, channel } = props
     logMessage([`> useBTTVEmote(channel: '${channel}', bttvEmotes: ${lemonyFresh[channel].bttvEmotes.length})`])
 
@@ -338,7 +338,7 @@ function useBTTVEmote(props) {
     setTimeout(() => bot.say(chatroom, `w! h! ${effect}${emote}`), 3000)
 }
 
-function restartFunTimer(props) {
+function restartFunTimer(props) { // funNumber 13-15
     const { bot, chatroom, channel, username } = props
     logMessage([`> restartFunTimer(channel: '${channel}', username: '${username}')`])
 
@@ -366,7 +366,7 @@ function restartFunTimer(props) {
     lemonyFresh[channel].funTimer = Number(timer)
 }
 
-function getViewers(props) {
+function getViewers(props) { // funNumber 16
     const { bot, chatroom, channel, channelNickname } = props
     const viewers = lemonyFresh[channel].viewers.filter(viewer => viewer !== channel && !settings.ignoredBots.includes(viewer))
     logMessage([`> getViewers(channel: '${channel}', viewers: ${viewers.length})`])
@@ -386,7 +386,7 @@ function getViewers(props) {
     } else { logMessage([`-> ${channel} only has ${pluralize(viewers.length, `viewer`, `viewers`)}`]) }
 }
 
-function getLurker(props) {
+function getLurker(props) { // funNumber 17
     const { bot, chatroom, channel } = props
     const notChatted = lemonyFresh[channel].viewers.filter(username => !(username in users) || !(channel in users[username].channels))
     if (notChatted.includes(channel)) { notChatted.splice(notChatted.indexOf(channel), 1) }
@@ -402,7 +402,7 @@ function getLurker(props) {
     setTimeout(() => bot.say(chatroom, `Has anyone heard from ${lurker}? ${dumbEmote}`), 3000)
 }
 
-function awardLemonToRecentChatters(props) {
+function awardLemonToRecentChatters(props) { // funNumber 18
     const { bot, currentTime, chatroom, channel } = props
     logMessage([`> awardLemonToRecentChatters(channel: '${channel}')`])
 
@@ -420,7 +420,7 @@ function awardLemonToRecentChatters(props) {
     bot.say(chatroom, `${pluralize(recipients.length, `person`, `people`)} just received one lemon each! ${lemonEmote}`)
 }
 
-function useTwoEmotes(props) {
+function useTwoEmotes(props) { // funNumber 19
     const { bot, chatroom, channel } = props
     logMessage([`> useTwoEmotes(channel: '${channel}', followEmotes: ${lemonyFresh[channel].followEmotes.length}, subEmotes: ${lemonyFresh[channel].subEmotes.length})`])
 
@@ -439,7 +439,7 @@ function useTwoEmotes(props) {
     setTimeout(() => bot.say(chatroom, `${emoteOne} ${emoteTwo}`), 3000)
 }
 
-function useFunnyCommand(props) {
+function useFunnyCommand(props) { // funNumber 20
     const { bot, message, chatroom, channel, username } = props
     logMessage([`> useFunnyCommand(channel: '${channel}'`])
 
@@ -512,7 +512,7 @@ function useFunnyCommand(props) {
     setTimeout(() => bot.say(chatroom, response), 3000)
 }
 
-function imagineLemons(props) {
+function imagineLemons(props) { // funNumber 21
     const { bot, chatroom, channel } = props
     const randNum = Math.ceil(Math.random() * 999)
     const lemonEmote = getContextEmote(`lemon`, channel)
@@ -520,7 +520,7 @@ function imagineLemons(props) {
     setTimeout(() => bot.say(chatroom, `Imagine having ${pluralize(randNum, `lemon`, `lemons`)}... Heck, imagine having ${spellOutNumber(randNum + 1)} lemons... ${lemonEmote}`), 3000)
 }
 
-function makeInsultSentence(props) {
+function makeInsultSentence(props) { // funNumber 22
     const { bot, chatroom } = props
 
     const nouns = [...wordBank.nouns]
@@ -552,7 +552,7 @@ function makeInsultSentence(props) {
     setTimeout(() => bot.say(chatroom, message), 3000)
 }
 
-function reportRandomLemCmdUsage(props) {
+function reportRandomLemCmdUsage(props) { // funNumber 23
     const { bot, chatroom, channel } = props
     const neutralEmote = getContextEmote(`neutral`, channel)
     const negativeEmote = getContextEmote(`negative`, channel)
@@ -575,7 +575,7 @@ function reportRandomLemCmdUsage(props) {
     setTimeout(() => bot.say(chatroom, reply), 3000)
 }
 
-function sayPastHangmanAnswer(props) {
+function sayPastHangmanAnswer(props) { // funNumber 24
     const { bot, chatroom, channel } = props
     const pastAnswer = lemonyFresh[channel].hangman.answer
     logMessage([`> sayPastHangmanAnswer(pastAnswer: '${pastAnswer}')`])
@@ -589,7 +589,7 @@ function sayPastHangmanAnswer(props) {
     }
 }
 
-function sayPastHangmanSpaces(props) {
+function sayPastHangmanSpaces(props) { // funNumber 25
     const { bot, chatroom, channel } = props
     const arr = lemonyFresh[channel].hangman.spaces
     logMessage([`> sayPastHangmanSpaces(arr: '${arr.join(` `)}')`])
@@ -602,7 +602,7 @@ function sayPastHangmanSpaces(props) {
     }
 }
 
-function sayPastHangmanGuessedLetters(props) {
+function sayPastHangmanGuessedLetters(props) { // funNumber 26
     const { bot, chatroom, channel } = props
     const arr = lemonyFresh[channel].hangman.guessedLetters
     logMessage([`> sayPastHangmanGuessedLetters(arr: '${arr.join(``)}')`])
@@ -615,7 +615,7 @@ function sayPastHangmanGuessedLetters(props) {
     }
 }
 
-async function sayGameId(props) {
+async function sayGameId(props) { // funNumber 27
     const { bot, chatroom, channel } = props
     const broadcasterId = lemonyFresh[channel].id
     const twitchChannel = await apiGetTwitchChannel(broadcasterId)
@@ -629,7 +629,7 @@ async function sayGameId(props) {
     setTimeout(() => bot.say(chatroom, reply), 3000)
 }
 
-function rememberPastMessage(props) {
+function rememberPastMessage(props) { // funNumber 28
     const { bot, chatroom, channel, userNickname, message } = props
     if (containsInaccessibleEmotes(message, channel) || containsUnrecognizedEmotes(message)) { return }
     logMessage([`> rememberPastMessage(message: '${message}')`])
@@ -641,7 +641,7 @@ function rememberPastMessage(props) {
         : setTimeout(() => bot.say(chatroom, `I'm still thinking about when ${userNickname} said "... ${msg.splice(4, 6).join(` `)} ..." ${neutralEmote}`), 600000)
 }
 
-function lookForNumbers(props) {
+function lookForNumbers(props) { // funNumber 29
     const { bot, chatroom, message, username } = props
     const msg = message.split(` `)
     const numerals = []
@@ -685,7 +685,7 @@ function lookForNumbers(props) {
         : logMessage([`-> No numbers found in ${username}'s message`])
 }
 
-function reportOneSixteenthChance(props) {
+function reportOneSixteenthChance(props) { // funNumber 31
     const bit1 = coinFlip()
     const bit2 = coinFlip()
     const bit3 = coinFlip()
@@ -700,7 +700,7 @@ function reportOneSixteenthChance(props) {
 
 }
 
-function transformMessage(props) {
+function transformMessage(props) { // funNumber 32
     const { bot, chatroom, message } = props
     const types = [
         `superscript`,
@@ -731,7 +731,7 @@ function transformMessage(props) {
     setTimeout(() => bot.say(chatroom, reply), 3000)
 }
 
-function makeInsultPhrase(props) {
+function makeInsultPhrase(props) { // funNumber 33
     const { bot, chatroom } = props
     const { nouns, verbs, adjectives } = wordBank
     const getRandomNoun = () => nouns[Math.floor(Math.random() * nouns.length)] || `friend`
@@ -748,7 +748,7 @@ function makeInsultPhrase(props) {
     setTimeout(() => bot.say(chatroom, reply), 3000)
 }
 
-function lookForNumerals(props) {
+function lookForNumerals(props) { // funNumber 34
     const { bot, chatroom, message } = props
     logMessage([`> lookForNumerals()`])
 
