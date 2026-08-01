@@ -24,7 +24,7 @@ async function apiGetTwitchAppAccessToken() {
             return null
         }
     } catch (err) {
-        logMessage([`apiGetTwitchAppAccessToken ${err}`])
+        await logMessage([`apiGetTwitchAppAccessToken ${err}`])
         return false
     }
 }
@@ -61,7 +61,7 @@ async function apiGetOAUTHToken(username, authCode) {
             return null
         }
     } catch (err) {
-        logMessage([`apiGetOAUTHToken ${err}`])
+        await logMessage([`apiGetOAUTHToken ${err}`])
         return false
     }
 }
@@ -103,7 +103,7 @@ async function apiGetTwitchUser(username, attempt = 1) {
             return null
         }
     } catch (err) {
-        logMessage([`apiGetTwitchUser ${err}`])
+        await logMessage([`apiGetTwitchUser ${err}`])
         return false
     }
 }
@@ -141,7 +141,7 @@ async function apiGetTwitchChannel(broadcasterId, attempt = 1) {
             return null
         }
     } catch (err) {
-        logMessage([`apiGetTwitchChannel ${err}`])
+        await logMessage([`apiGetTwitchChannel ${err}`])
         return false
     }
 }
@@ -191,7 +191,7 @@ async function apiUpdateTwitchChannel(channel, requestBody, attempt = 1) {
         }
         return true
     } catch (err) {
-        logMessage([`apiUpdateTwitchChannel ${err}`])
+        await logMessage([`apiUpdateTwitchChannel ${err}`])
         return false
     }
 }
@@ -234,7 +234,7 @@ async function apiGetGame(query, attempt = 1) {
             return null
         }
     } catch (err) {
-        logMessage([`apiGetGame ${err}`])
+        await logMessage([`apiGetGame ${err}`])
         return false
     }
 }
@@ -270,7 +270,7 @@ async function apiRefreshToken(username, refreshToken) {
             return null
         }
     } catch (err) {
-        logMessage([`apiRefreshToken ${err}`])
+        await logMessage([`apiRefreshToken ${err}`])
         return false
     }
 }
@@ -311,7 +311,7 @@ async function apiGetTokenScope(channel, attempt = 1) {
             return null
         }
     } catch (err) {
-        logMessage([`apiGetTokenScope ${err}`])
+        await logMessage([`apiGetTokenScope ${err}`])
         return false
     }
 }
@@ -369,7 +369,7 @@ async function apiCreateEventSub(userId, type, version, attempt = 1) {
             return null
         }
     } catch (err) {
-        logMessage([`apiCreateEventSub ${channel} '${type}' ${err}`])
+        await logMessage([`apiCreateEventSub ${channel} '${type}' ${err}`])
         return false
     }
 }
@@ -408,7 +408,7 @@ async function apiGetEventSubs(userId = null, attempt = 1) {
             return null
         }
     } catch (err) {
-        logMessage([`apiGetEventSubs ${err}`])
+        await logMessage([`apiGetEventSubs ${err}`])
         return false
     }
 }
@@ -445,7 +445,7 @@ async function apiDeleteEventSub(id, type, status, attempt = 1) {
             return null
         }
     } catch (err) {
-        logMessage([`apiDeleteEventSub '${type}' ${err}`])
+        await logMessage([`apiDeleteEventSub '${type}' ${err}`])
         return false
     }
 }
@@ -542,7 +542,7 @@ async function apiShoutOut(fromId, toId, moderatorName, moderatorId, accessToken
             return null
         }
     } catch (err) {
-        logMessage([`apiShoutOut ${err}`])
+        await logMessage([`apiShoutOut ${err}`])
         return false
     }
 }
@@ -589,7 +589,7 @@ async function apiPostAnnouncement(channel, broadcasterId, moderatorId, moderato
             return null
         }
     } catch (err) {
-        logMessage([`apiPostAnnouncement ${err}`])
+        await logMessage([`apiPostAnnouncement ${err}`])
         return false
     }
 }
@@ -641,7 +641,7 @@ async function apiStartPoll(channel, broadcasterId, title, arrChoices, duration,
             return null
         }
     } catch (err) {
-        logMessage([`apiStartPoll ${err}`])
+        await logMessage([`apiStartPoll ${err}`])
         return false
     }
 }
@@ -684,7 +684,7 @@ async function apiEndPoll(channel, broadcasterId, pollId, status, accessToken, r
             return null
         }
     } catch (err) {
-        logMessage([`apiEndPoll ${err}`])
+        await logMessage([`apiEndPoll ${err}`])
         return false
     }
 }
@@ -747,7 +747,7 @@ async function apiBanUsers(broadcasterId, moderatorName, moderatorId, arrUsers, 
                 return null
             }
         } catch (err) {
-            logMessage([`apiBanUsers ${err}`])
+            await logMessage([`apiBanUsers ${err}`])
             return false
         }
     }
@@ -788,7 +788,7 @@ async function apiGetStreamTwitchEmotes(broadcasterId, attempt = 1) {
             return null
         }
     } catch (err) {
-        logMessage([`apiGetStreamTwitchEmotes ${err}`])
+        await logMessage([`apiGetStreamTwitchEmotes ${err}`])
         return false
     }
 }
@@ -826,7 +826,7 @@ async function apiGetGlobalTwitchEmotes(attempt = 1) {
             return null
         }
     } catch (err) {
-        logMessage([`apiGetGlobalTwitchEmotes ${err}`])
+        await logMessage([`apiGetGlobalTwitchEmotes ${err}`])
         return false
     }
 }

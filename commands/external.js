@@ -16,7 +16,7 @@ async function apiGetGlobalBttvEmotes() {
         }
         return data
     } catch (err) {
-        logMessage([`apiGetGlobalBttvEmotes ${err}`])
+        await logMessage([`apiGetGlobalBttvEmotes ${err}`])
     }
 }
 
@@ -32,7 +32,7 @@ async function apiGetStreamBttvEmotes(broadcasterId) {
             ? data
             : null
     } catch (err) {
-        logMessage([`apiGetStreamBttvEmotes ${err}`])
+        await logMessage([`apiGetStreamBttvEmotes ${err}`])
     }
 }
 
@@ -66,7 +66,7 @@ module.exports = {
                             : bot.say(chatroom, `:(`)
                 : bot.say(chatroom, `:O`)
         } catch (err) {
-            logMessage([`checkSentiment ${err}`])
+            await logMessage([`checkSentiment ${err}`])
             bot.say(chatroom, `:O`)
         }
     },
@@ -88,7 +88,7 @@ module.exports = {
                 ? bot.say(chatroom, data.joke)
                 : bot.say(chatroom, `Error getting dad joke! ${negativeEmote}`)
         } catch (err) {
-            logMessage([`getDadJoke ${err}`])
+            await logMessage([`getDadJoke ${err}`])
         }
     },
     async getDefinition(props) {
@@ -133,7 +133,7 @@ module.exports = {
                 bot.say(chatroom, definition)
             }
         } catch (err) {
-            logMessage([`getDefinition ${err}`])
+            await logMessage([`getDefinition ${err}`])
         }
     },
     async getPokemon(props) {
@@ -193,7 +193,7 @@ module.exports = {
                 const species = await response.json()
                 reply += `Gen ${generations[species.generation.name]} - `
             } catch (err) {
-                logMessage([`getPokemon species '${data.species.name}' ${err}`])
+                await logMessage([`getPokemon species '${data.species.name}' ${err}`])
             }
 
             // Add abilities and stats
@@ -213,7 +213,7 @@ module.exports = {
                     typeData.damage_relations.half_damage_from.forEach(damageType => damageType.name in halfDamageFrom ? halfDamageFrom[damageType.name]++ : halfDamageFrom[damageType.name] = 1)
                     typeData.damage_relations.no_damage_from.forEach(damageType => { if (!immuneFrom.includes(damageType.name)) immuneFrom.push(damageType.name) })
                 } catch (err) {
-                    logMessage([`getPokemon type '${type}' ${err}`])
+                    await logMessage([`getPokemon type '${type}' ${err}`])
                 }
             }
 
@@ -242,7 +242,7 @@ module.exports = {
 
             bot.say(chatroom, reply)
         } catch (err) {
-            logMessage([`getPokemon ${err}`])
+            await logMessage([`getPokemon ${err}`])
         }
     },
     async getPokemonAbility(props) {
@@ -288,7 +288,7 @@ module.exports = {
                 }
             }
         } catch (err) {
-            logMessage([`getPokemonAbility ${err}`])
+            await logMessage([`getPokemonAbility ${err}`])
         }
     },
     async getUrbanDictionaryDefinition(props) {
@@ -318,7 +318,7 @@ module.exports = {
 
             bot.say(chatroom, reply)
         } catch (err) {
-            logMessage([`getUrbanDictionaryDefinition ${err}`])
+            await logMessage([`getUrbanDictionaryDefinition ${err}`])
             bot.say(chatroom, `Error getting definition! ${negativeEmote}`)
         }
     },
@@ -384,11 +384,11 @@ module.exports = {
                     }
                     valid = data.valid
                 } catch (err) {
-                    logMessage([`(Validating word) ${err}`])
+                    await logMessage([`(Validating word) ${err}`])
                     return false
                 }
             } catch (err) {
-                logMessage([`apiGetRandomWord ${err}`])
+                await logMessage([`apiGetRandomWord ${err}`])
                 return false
             }
         } while (!valid)
