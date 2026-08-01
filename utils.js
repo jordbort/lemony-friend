@@ -1678,17 +1678,19 @@ module.exports = {
             .replace(/ᶻ|𝐙|𝑍|𝒁|𝖹|𝗭|𝘡|𝙕|𝒵|𝓩|ℨ|𝖅|𝚉|ℤ/g, `Z`)
     },
     msToElapsedTime(ms) {
-        const days = Math.floor(ms / (1000 * 60 * 60 * 24))
+        const years = Math.floor(ms / (1000 * 60 * 60 * 24 * 365))
+        const days = Math.floor((ms / (1000 * 60 * 60 * 24)) % 365)
         const hours = Math.floor((ms / (1000 * 60 * 60)) % 24)
         const minutes = Math.floor((ms / (1000 * 60)) % 60)
         const seconds = Math.floor((ms / 1000) % 60)
 
         const duration = []
+        if (years) { duration.push(pluralize(years, `year`, `years`)) }
         if (days) { duration.push(pluralize(days, `day`, `days`)) }
         if (hours) { duration.push(pluralize(hours, `hour`, `hours`)) }
         if (minutes) { duration.push(pluralize(minutes, `minute`, `minutes`)) }
         if (seconds) { duration.push(pluralize(seconds, `second`, `seconds`)) }
 
-        return duration.length ? `${arrToList(duration)} ago` : `just now`
+        return arrToList(duration)
     }
 }

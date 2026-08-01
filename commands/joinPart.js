@@ -28,6 +28,7 @@ module.exports = {
             const maxUses = Math.max(...arrLemCmds.map(cmd => lemCmds[cmd].uses))
             const mostUsedLemcmd = arrLemCmds.filter(cmd => lemCmds[cmd].uses === maxUses)
             const randomLemCmd = arrLemCmds[Math.floor(Math.random() * arrLemCmds.length)]
+            const lastUsed = msToElapsedTime(Date.now() - lemCmds[randomLemCmd].lastUsedDate)
 
             const joinMessages = [
                 `Let's see how long before I crash ${dumbEmote}`,
@@ -39,7 +40,7 @@ module.exports = {
                 `It has been ${Date.now().toLocaleString(`en-US`)} milliseconds since January 1, 1970, 12:00:00 AM UTC ${lemonEmote}`,
                 `${BOT_USERNAME} has entered the chat ${lemonEmote}`,
                 `${pluralize(totalLemons, `lemon is`, `lemons are`)} in circulation! ${lemonEmote}`,
-                `Lemon command "${randomLemCmd}" was last used ${msToElapsedTime(Date.now() - lemCmds[randomLemCmd].lastUsedDate)}!`,
+                `Lemon command "${randomLemCmd}" was last used ${lastUsed ? `${lastUsed} ago` : `just now`}!`,
                 `I have ${numUsers <= 999
                     ? `${spellOutNumber(numUsers)} (${numUsers}) friend${numUsers === 1 ? `` : `s`}`
                     : pluralize(numUsers, `friend`, `friends`)}! ${numUsers === 0
