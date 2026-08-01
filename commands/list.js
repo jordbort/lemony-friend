@@ -229,7 +229,7 @@ function clearList(bot, chatroom, channel, list, resetName, isModOrVIP) {
     bot.say(chatroom, `${listName} has been ${resetName ? `reset` : `cleared`}! ${positiveEmote}`)
 }
 
-function searchList(bot, chatroom, channel, query) {
+function searchList(bot, chatroom, channel, list, query) {
     logMessage([`-> searchList(query: '${query}')`])
     const neutralEmote = getContextEmote(`neutral`, channel)
     const negativeEmote = getContextEmote(`negative`, channel)
@@ -239,16 +239,16 @@ function searchList(bot, chatroom, channel, query) {
     }
 
     const indexes = []
-    lemonyFresh[channel].list.forEach((item, idx) => {
-        if (new RegExp(`^${query}$`, `i`).test(item)) {
+    list.forEach((item, idx) => {
+        if (new RegExp(`${query}`, `i`).test(item)) {
             indexes.push(idx)
         }
     })
 
-    const listName = lemonyFresh[channel].list[0] || `the list`
+    const listName = list[0] || `the list`
     const positiveEmote = getContextEmote(`positive`, channel)
     const reply = indexes.length
-        ? `"${query}" is ${arrToList(indexes.map(i => `#${i}`))} in ${listName}! ${positiveEmote}`
+        ? `I found ${arrToList(indexes.map(i => `${i}) ${list[i]}`))} in ${listName}! ${positiveEmote}`
         : `I couldn't find "${query}" in ${listName}! ${negativeEmote}`
 
     bot.say(chatroom, reply)
