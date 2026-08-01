@@ -21,7 +21,7 @@ const { insultUser, manageVerbs, manageNouns, manageAdjectives } = require(`./in
 const { getLastMessage, getMessageCount, sayOnlineTime, sayFriends, getColor, getLemons } = require(`./getInfo`)
 const { getDadJoke, getPokemon, getDefinition, getPokemonAbility, getUrbanDictionaryDefinition } = require(`./external`)
 const { sayGoodnight, handleGreet, chant, handleRaid, setAway, yell, makeMultiTwitchLink, tiny, bold, cursive, doubleStruck } = require(`./conversation`)
-const { handleShoutout, getBotToken, makeAnnouncement, authorizeToken, banUsers, startPoll, endPoll, updateStreamGame, updateStreamTitle, checkToken } = require(`./twitch`)
+const { handleShoutout, getBotToken, makeAnnouncement, authorizeToken, banUsers, startPoll, endPoll, updateStreamGame, updateStreamTitle, checkToken, getFollowDuration } = require(`./twitch`)
 const { createConduit, getConduit, updateConduitShardCount, deleteConduit, getConduitShards, logJoinedChatrooms, getEventSubs, connectWebSocket, disconnectWebSocket, refreshEventSubs, shutdown, writeMemoryFile, kms, logChannelInfo, logUserInfo, logModInfo, logChannelViewers, logTags, logSettings, logBotChannels, yellAcrossChannels, streamFriendlyOn, streamFriendlyOff, testFunNumber, checkPoints, collectUserData, countEmptyUsers, deleteEmptyUsers } = require(`./dev`)
 
 const commands = {
@@ -148,7 +148,9 @@ const commands = {
 
     '!ud': getUrbanDictionaryDefinition,
 
-    '!usage': getMemoryUsage
+    '!usage': getMemoryUsage,
+
+    '!followage': getFollowDuration
 }
 
 const devCommands = {

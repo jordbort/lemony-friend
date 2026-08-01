@@ -4,7 +4,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET
 const REDIRECT_URI = process.env.REDIRECT_URI
 
 const { settings, lemonyFresh, mods, users } = require(`../data`)
-const { getContextEmote, resetCooldownTimer, getToUser, renderObj, pluralize, logMessage, arrToList, logArr } = require(`../utils`)
+const { getContextEmote, resetCooldownTimer, getToUser, renderObj, pluralize, logMessage, arrToList, logArr, msToElapsedTime } = require(`../utils`)
 
 async function apiGetTwitchAppAccessToken() {
     await logMessage([`> apiGetTwitchAppAccessToken()`])
@@ -831,6 +831,47 @@ async function apiGetGlobalTwitchEmotes(attempt = 1) {
     }
 }
 
+async function apiGetFollowerData(broadcasterId, userId, attempt = 1) {
+    const channel = Object.keys(lemonyFresh).filter(streamer => lemonyFresh[streamer].id === broadcasterId)[0]
+    const username = Object.keys(users).filter(user => users[user].id === userId)[0]
+    await logMessage([`> apiGetFollowerData(channel: ${channel}, username: ${username}, attempt: ${attempt})`])
+
+    const endpoint = `https://api.twitch.tv/helix/channels/followers?broadcaster_id=${broadcasterId}&user_id=${userId}`
+    const options = {
+        headers: {
+            authorization: `Bearer ${lemonyFresh[channel].accessToken}`,
+            'Client-Id': CLIENT_ID
+        }
+    }
+
+    try {
+        const response = await fetch(endpoint, options)
+        const twitchData = await response.json()
+
+        if (response.status === 200) {
+            return twitchData.data[0]
+        } else {
+            if (response.status === 401) {
+                if (attempt < 3) {
+                    const retry = await apiRefreshToken(channel, lemonyFresh[channel].refreshToken)
+                    if (retry) {
+                        attempt++
+                        return apiGetFollowerData(broadcasterId, userId, attempt)
+                    }
+                } else {
+                    await logMessage([`-> Failed to get follower data after ${pluralize(attempt, `attempt`, `attempts`)}`])
+                }
+            } else {
+                await logMessage([`apiGetFollowerData`, response.status, renderObj(twitchData, `twitchData`)])
+            }
+            return null
+        }
+    } catch (err) {
+        await logMessage([`apiGetFollowerData ${err}`])
+        return false
+    }
+}
+
 module.exports = {
     apiGetTwitchAppAccessToken, // used in conduits.js
     apiGetTwitchUser, // used in joinPart.js
@@ -1318,5 +1359,27 @@ module.exports = {
         lemonyFresh[channel].followEmotes = [...followEmotes]
         lemonyFresh[channel].subEmotes = [...subEmotes]
         await logMessage([`-> ${pluralize(lemonyFresh[channel].followEmotes.length, `follower emote`, `follower emotes`)} and ${pluralize(lemonyFresh[channel].subEmotes.length, `sub emote`, `sub emotes`)} for '${channel}'`])
+    },
+    async getFollowDuration(props) {
+        const { bot, chatroom, currentTime, channel, channelNickname, user, userNickname, target, targetNickname } = props
+        const follower = await apiGetFollowerData(lemonyFresh[channel].id, target ? target.id : user.id)
+
+        if (follower) {
+            const neutralEmote = getContextEmote(`neutral`, channel)
+            const positiveEmote = getContextEmote(`positive`, channel)
+            const hypeEmote = getContextEmote(`hype`, channel)
+
+            const followDate = new Date(follower.followed_at).getTime()
+            const month = 1000 * 60 * 60 * 24 * 30
+            const year = 1000 * 60 * 60 * 24 * 365
+            const duration = currentTime - followDate
+            const followDuration = msToElapsedTime(duration)
+
+            const reply = `${targetNickname || userNickname} ${followDuration ? `has been following ${channelNickname} for ${followDuration}` : `just followed ${channelNickname}`}! ${duration < month ? neutralEmote : duration < year ? positiveEmote : hypeEmote}`
+            bot.say(chatroom, reply)
+        } else {
+            const negativeEmote = getContextEmote(`negative`, channel)
+            bot.say(chatroom, `Couldn't find ${targetNickname || userNickname}'s follow information for ${channelNickname}! ${negativeEmote}`)
+        }
     }
 }
