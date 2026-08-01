@@ -217,13 +217,13 @@ function updateContextEmotes(bot, chatroom, obj, message, name, args) {
     const options = {
         [/^lemon(Emotes)?$|^lem$/i]: { name: `lemonEmotes`, func: updateArr },
         [/^neutral(Emotes)?$|^neu$/i]: { name: `neutralEmotes`, func: updateArr },
-        [/^hype(Emotes)?$/i]: { name: `hypeEmotes`, func: updateArr },
+        [/^hype(Emotes)?$|^h$/i]: { name: `hypeEmotes`, func: updateArr },
         [/^positive(Emotes)?$|^pos$/i]: { name: `positiveEmotes`, func: updateArr },
         [/^upset(Emotes)?$|^up$/i]: { name: `upsetEmotes`, func: updateArr },
         [/^negative(Emotes)?$|^neg$/i]: { name: `negativeEmotes`, func: updateArr },
         [/^greeting(Emotes)?$|^greet$/i]: { name: `greetingEmotes`, func: updateArr },
-        [/^bye(Emotes)?$/i]: { name: `byeEmotes`, func: updateArr },
-        [/^dumb(Emotes)?$|^dumb?$/i]: { name: `dumbEmotes`, func: updateArr }
+        [/^bye(Emotes)?$|^b$/i]: { name: `byeEmotes`, func: updateArr },
+        [/^dumb?(Emotes)?$|^d$/i]: { name: `dumbEmotes`, func: updateArr }
     }
 
     for (const option in options) {
@@ -236,7 +236,7 @@ function updateContextEmotes(bot, chatroom, obj, message, name, args) {
         }
     }
 
-    bot.say(chatroom, `/me ${message} options: lemon (lem), neutral (neu), hype, positive (pos), upset (up), negative (neg), greeting (greet), bye, dumb (dum)`)
+    bot.say(chatroom, `/me ${message} options: lemon (lem), neutral (neu), hype (h), positive (pos), upset (up), negative (neg), greeting (greet), bye (b), dumb (d)`)
 }
 
 function deleteUser(bot, chatroom, obj, message, name, args) {
@@ -528,12 +528,12 @@ function updateBaseEmotesDev(bot, chatroom, args) {
         [/^lemon$|^lem$/i]: { name: `lemonEmotes`, func: updateArr },
         [/^neutral$|^neu$/i]: { name: `neutralEmotes`, func: updateArr },
         [/^hype$|^h$/i]: { name: `hypeEmotes`, func: updateArr },
-        [/^positive$|^p$/i]: { name: `positiveEmotes`, func: updateArr },
+        [/^positive$|^pos$/i]: { name: `positiveEmotes`, func: updateArr },
         [/^upset$|^up$/i]: { name: `upsetEmotes`, func: updateArr },
         [/^negative$|^neg$/i]: { name: `negativeEmotes`, func: updateArr },
-        [/^greeting$|^g$/i]: { name: `greetingEmotes`, func: updateArr },
+        [/^greeting$|^greet$/i]: { name: `greetingEmotes`, func: updateArr },
         [/^bye$|^b$/i]: { name: `byeEmotes`, func: updateArr },
-        [/^dumb$|^d$/i]: { name: `dumbEmotes`, func: updateArr }
+        [/^dumb?$|^d$/i]: { name: `dumbEmotes`, func: updateArr }
     }
 
     for (const option in options) {
