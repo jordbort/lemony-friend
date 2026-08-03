@@ -15,7 +15,7 @@ const { getSubs } = require(`./help`)
 const { handleLemonify } = require(`./lemonify`)
 const { handleJoin, handlePart } = require(`./joinPart`)
 const { handleLemCmd, getLemCmds } = require(`./lemCmds`)
-const { getDocs, getStats, accessInstructions } = require(`./help`)
+const { getDocs, accessInstructions } = require(`./help`)
 const { manageHangman, joinHangman } = require(`../patterns/hangman`)
 const { insultUser, manageVerbs, manageNouns, manageAdjectives } = require(`./insult`)
 const { getLastMessage, getMessageCount, sayOnlineTime, sayFriends, getColor, getLemons } = require(`./getInfo`)
@@ -82,7 +82,6 @@ const commands = {
     '!lemcmds': getLemCmds,
 
     '!docs': getDocs,
-    '!mystats': getStats,
 
     '!hangman': manageHangman,
     '!play': joinHangman,

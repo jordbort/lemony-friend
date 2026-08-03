@@ -4,43 +4,12 @@ const REDIRECT_URI = process.env.REDIRECT_URI
 const { users } = require(`../data`)
 const { getContextEmote, logMessage, renderObj } = require(`../utils`)
 
-function renderData(obj, objName) {
-    const data = [`${objName ? `${objName}: ` : ``}{`]
-    if (Object.keys(obj).length) {
-        const keys = Object.keys(obj).map((key) => typeof obj[key] === `string`
-            ? `${key}: '${obj[key]}'`
-            : typeof obj[key] === `object`
-                ? obj[key] === null
-                    ? `${key}: ${obj[key]}`
-                    : `${key}: ${renderData(obj[key], ``)}`
-                : `${key}: ${obj[key]}`)
-            .join(`, `)
-        data.push(keys)
-        data.push(`}`)
-    } else { data[0] += `}` }
-    return data.join(``)
-}
-
 module.exports = {
     getDocs(props) {
         const { bot, chatroom } = props
         logMessage([`> getDocs(chatroom: ${chatroom})`])
 
         bot.say(chatroom, `Check out the docs here: https://github.com/jordbort/lemony-friend/blob/main/README.md`)
-    },
-    getStats(props) {
-        const { bot, chatroom, username, user, toUser, target } = props
-        logMessage([`> getStats(chatroom: "${chatroom}", user: "${toUser || username}")`])
-        if (toUser && !(toUser in users)) {
-            logMessage([`-> "${toUser}" isn't a known user!`])
-            return
-        }
-
-        const stats = target || user
-        logMessage([renderObj(stats, toUser || username)])
-
-        const data = renderData(stats, toUser || username)
-        bot.say(chatroom, data)
     },
     getSubs(props) {
         const { bot, chatroom, channel } = props
