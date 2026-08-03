@@ -10,7 +10,6 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 
 ## Commands for lemony_friend info 🍋️
 - `!time` - This command can be used to get the current time, optionally in a provided time zone and locale. For example, you can use `!time Australia/Sydney` to get the time in Sydney, and `!time Asia/Seoul ko-KR` to get the current time in Seoul in the Korean date and time format. By default, this command falls back on whichever time zone and locale are specified in Lemony Friend's settings.
-- `!mystats` - Use this command to get the JSON data of a user.
 - `!color` (or `!colour`) - Use this command to get a user's chat message color.
 - `!lastmsg` - This command can be used to get a user's last message in the current channel, or use `!lastmsg <user>` to specify a different user. You can also specify a channel, as in `!lastmsg <user> <channel>`. If the specified user hasn't spoken in the specified channel, it falls back on the current channel. If the specified user isn't known to lemony_friend, it falls back on the user of the command.
 - `!msgcount` - This command can be used to get a count of all messages sent by a user across all Lemony Fresh channels. Use `!msgcount <user>` to specify another user.
@@ -74,7 +73,7 @@ Each channel lemony_friend is in has a generic, unnamed list, empty by default. 
 - `!list <number>` - Recall a specific item from the list by its number.
 - `!list <number1> to <number2>` or `!list <number1>-<number2>` - Recall a range of items from the list. Both numbers must exist within the list.
 - `!list random` - Recall an item from the list at random.
-- `!list search <query>` or `!list find <query>` - Look for an item in the list. The query is not case-sensitive, but it must exactly match the item's spelling and punctuation. Will find all occurrences of the query.
+- `!list search <query>` or `!list find <query>` - Look for items in the list. The query is not case-sensitive, but will find all occurrences of the query, so longer is better.
 - `!list add <...>` - Add an item to the list. Only available to mods, VIPs, and the channel owner.
 - `!list edit <number> <...>` - Update the contents of a specific number in the list. Only available to mods, VIPs, and the channel owner.
 - `!list delete <number>` - Delete a specific item from the list, shifting the items after it back by one. Only available to mods, VIPs, and the channel owner.
@@ -95,14 +94,20 @@ There are also variables you can use in commands that will be replaced with argu
 - `{usernn}` is the nickname of the user of the command (falling back on display name if there's no nickname defined).
 - `{touser}` is the display name of a specified user (falling back on whatever was input, if that user isn't known, or the user of the command if no input).
 - `{tousernn}` is the nickname of a specified user (works like `{touser}`).
+- `{streamer}` is the name of whose chatroom the command is used in.
+- `{streamernn}` is the nickname of whose chatroom the command is used in (falling back on display name if there's no nickname defined).
 - `{viewer}` will choose a random viewer in chat (who is not an ignored bot), even if they haven't spoken yet.
+- `{viewernn}` is the nickname of a random viewer, falling back on display name if there's no nickname defined (works like `{viewer}`).
 - `{viewer1}` `{viewer2}` `{viewer3}` can be used to choose up to three different random viewers (who are not ignored bots).
-- `{number#}` will choose a random number between 1 and `#`, where `#` is the number supplied by the user. Supplying a 0 or negative number will choose a number between that number and zero.
-- `{streamer}` is the nickname of whose chatroom the command is used in.
+- `{viewer1nn}`, `{viewer2nn}`, and `{viewer3nn}` work like `{viewer1}`, `{viewer2}`, and `{viewer3}`, except with nicknames.
+- `{number#}` will choose a random number between 1 and `#`, where `#` is an integer supplied by the user. Supplying a 0 or negative number will choose a number between that number and zero. You may also do math using `+` `-` `*` `/` to adjust the number. For example, `{number -9 - 1}` will yield numbers -1 through -9, and `{number 9 * 10}` will yield multiples of 10 from 10 to 90. Spaces are optional between numbers.
 - `{random "one" "two" "et cetera"}` can be used to provide a list (separate items with quotes) of words/phrases for lemony_friend to choose from at random.
-- `{n}` or `{noun}`, `{v}` or `{verb}`, `{adj}` or `{adjective}` will be replaced with a noun, verb, or adjective from the insult word bank.
+- `{n}` and `{noun}` will be replaced with a noun from the insult word bank.
+- `{pln}` and `{plnoun}` will be replaced with a noun made plural from the insult word bank.
+- `{v}` and `{verb}` will be replaced with a verb from the insult word bank. You can optionally use a hypen to change the ending of the verb. For example, `{verb-ing}` will add an -ing ending, and `{verb-ed}` will add an -ed ending (will not double a final "e").
+- `{adj}` or `{adjective}` will be replaced with an adjective from the insult word bank.
 - `{1}` through `{9}` take whatever arguments are supplied, in order, falling back on an empty string if not used.
-- The 9 types of context emotes can also be used: `{lemon}` (or `{lem}`), `{neutral}` (or `{neu}`), `{positive}` (or `{pos}`), `{negative}` (or `{neg}`), `{hype}`, `{upset}` (or `{up}`), `{greeting}` (or `{greet}`), `{bye}`, and `{dumb}` (or `{dum}`)
+- The 9 types of context emotes can also be used: `{lemon}` (or `{lem}`), `{neutral}` (or `{neu}`), `{positive}` (or `{pos}`), `{negative}` (or `{neg}`), `{hype}` (or `{h}`), `{upset}` (or `{up}`), `{greeting}` (or `{greet}`), `{bye}` (or `{b}`), and `{dumb}` (or `{dum}`)
 
 Example: Using `!lemcmd !diceroll {user} rolled a {number6}!` would create a command called `!diceroll` that simulates the user of the command rolling a six-sided die.
 
@@ -116,18 +121,6 @@ Use `cli channel` or `cli c` to access settings for the current channel (if you 
 - `cli channel timers <timer_name> listening` or `cli c t <timer_name> l`
 
 Use this command to adjust the cooldown and "listening" status of timers for bot commands and reply types. Having a cooldown prevents the same command from being responded to multiple times within that time period. Changing the "listening" status of a command or reply type to `false` prevents the bot from acknowledging the message. For example, if you already have a bot in your channel that handles shoutouts, and don't want lemony_friend to give them, you can use `cli channel timer !so listening false` to disable this behavior. Here is a current list of all timers that can be adjusted and/or enabled/disabled: `!so` The command for giving shoutouts, `!raid` The command for saying the raid message(s), `!count` The command for viewing/adjusting the count, `streak` Listening for message/emote streaks, `new-chatter` Greeting new chatters in a chatroom (does not include spam detection), `greet` Saying hi to one user, `mass-greet` Saying hi to multiple users, `say-goodnight` Saying bye/goodnight to a user, `say-thanks` Saying thanks to a user, `say-youre-welcome` Saying you're welcome to a user, `say-mood` Responding to "how are you" messages
-
-- `cli channel followEmotes` or `cli c fe` (array of strings)
-
-Use this command to update the list of follower emotes lemony_friend knows within a channel. Lemony_friend automatically learns a channel's emotes when it connects or reconnects, so this usually doesn't need to be updated unless follower emotes have been added or removed recently, and the list needs to be updated ASAP.
-
-- `cli channel subEmotes` or `cli c se` (array of strings)
-
-Use this command to update the list of subscriber emotes lemony_friend knows within a channel. Lemony_friend automatically learns a channel's emotes when it connects or reconnects, so this usually doesn't need to be updated unless subscriber emotes have been added or removed recently, and the list needs to be updated ASAP.
-
-- `cli channel bttvEmotes` or `cli c bttv` (array of strings)
-
-Use this command to update the list of BTTV emotes lemony_friend knows within a channel. Lemony_friend automatically learns a channel's BTTV emotes when it connects or reconnects, so this usually doesn't need to be updated unless BTTV emotes have been added or removed recently, and the list needs to be updated ASAP.
 
 - `cli channel contextEmote` or `cli c ce` (emote type, array of strings)
 
@@ -145,20 +138,20 @@ Use this command to update lemony_friend's response to the `!raid` command. The 
 
 By default, lemony_friend posts a random message in chat after another chatter's every Nth message. Use this command to turn on or off this behavior.
 
+- `cli channel streakThreshold` or `cli c st` (number)
+
+When enough users (usually 3) say the exact same message in chat within a certain amount of time, lemony_friend will also join in repeating that message, provided it doesn't contain emotes lemony_friend thinks it doesn't have access to. Adjust this number to set how many distinct users have to have said the same message.
+
+- `cli channel streamerEmoteStreakThreshold` or `cli c sest` (number)
+
+When enough users (usually 4) use the same streamer's emotes within a certain amount of time, lemony_friend will find the most-used emote, and paste it the total number of times it was used, provided it has access to that emote. Adjust this number to set how many distinct users have to have used that streamer's emotes.
+
 ### `cli users`
 Use `cli users` or `cli u` to access settings for a specific user. Using, or not using, an @ when entering the username are both acceptable. In the case of non-English display names, the username must be used, as the display name will not be recognized.
 
 - `cli user <@?username> nickname` or `cli u <@?username> nn` (string)
 
 Use this command to adjust the nickname of a user. This will be used by the bot when addressing the user, or use their display name as a fallback if the nickname is empty.
-
-- `cli user <@?username> away` or `cli u <@?username> a` (boolean)
-
-Use this command to mark a user as known by the bot to be away. The bot will welcome them back upon their first message in chat.
-
-- `cli user <@?username> awayMessage` or `cli u <@?username> am` (string)
-
-Use this command to update a user's away message. This is mentioned by the bot if the user marked as being away is mentioned in chat.
 
 ### `cli settings`
 Use `cli settings` or `cli s` to access lemony_friend's settings. These are global (not specific to a certain channel).
@@ -178,12 +171,3 @@ Use this command to control whether or not Lemony_friend will attempt to catch a
 - `cli settings pokeballQuantity` or `cli s pq` (number)
 
 Use this command to change the amount of pokeballs lemony_friend will attempt to purchase if PokemonCommunityGame says it doesn't have pokeballs. This can be used to help lemony_friend avoid a loop of continually trying and failing to use pokeballs and purchasing them when it runs out and can't afford to purchase the quantity currently set.
-
-- `cli settings usedPokeball` or `cli s up` (string)
-
-Use this command to change the type of pokeball lemony_friend will use when catching a Pokémon with PokemonCommunityGame (default 'pokeball').
-
-- `cli settings chantEmote` or `cli s ce` (string)
-
-Use this command to change or remove the emote/emoji used to separate chants (default 👏).
-
