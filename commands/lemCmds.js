@@ -2,7 +2,8 @@ const { settings, lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
 const { getContextEmote, logMessage, pluralize, logArr, chooseFrom } = require(`../utils`)
 const { makePlural, addVerbSuffix } = require(`./insult`)
 
-const regexNumber = /\{\s?number\s?(-?\d+)\s?\}/gi
+const regexNumber = /\{\s?number\s?(\-?\d+)\s?([\+\-\*\/]\s?(\d+\.?\d*|\d?\.\d+))?\s?\}/gi
+const regexOperation = /\d+\s?([\+\-\*\/])/
 const regexRandom = /\{\s?random\s?("[^"]+"\s?)+\s?\}/gi
 const regexExclusion = /^$|^\s$|^\s?\}$|^\{\s?random\s?$/i
 const regexQuote = /"(.+?)"/
@@ -60,8 +61,18 @@ function applyVariables(str, props) {
         .replace(/\{\s?viewer\s?2\s?nn\s?\}/gi, users[randomViewerTwo]?.nickname || users[randomViewerTwo]?.displayName || randomViewerTwo)
         .replace(/\{\s?viewer\s?3\s?nn\s?\}/gi, users[randomViewerThree]?.nickname || users[randomViewerThree]?.displayName || randomViewerThree)
 
-        // {numberX} - Random number from 1 to X (can also be negative)
-        .replace(regexNumber, (occurrence) => Math.ceil(Math.random() * Number(occurrence.split(regexNumber)[1])))
+        // {numberX}, {numberX+X} - Random number from 1 to X (integer, can be negative) optionally + - * / another number (cannot be negative, but can be a decimal)
+        .replace(regexNumber, (occurrence) => {
+            const number = Math.ceil(Math.random() * Number(occurrence.replace().split(regexNumber)[1]))
+            if (regexOperation.test(occurrence)) {
+                const operator = occurrence.replace(/\{|\}/g, ``).split(regexOperation)[1]
+                const operand = Number(occurrence.replace(/\{|\}/g, ``).split(regexOperation)[2])
+                const result = operator === `+` ? number + operand : operator === `-` ? number - operand : operator === `*` ? number * operand : number / operand
+                console.log(number, operator, operand, `=`, result)
+                return result
+            }
+            return number
+        })
 
         // Context emotes
         .replace(/\{\s?lem(on)?\s?\}/gi, () => getContextEmote(`lemon`, channel))
