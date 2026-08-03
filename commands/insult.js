@@ -48,7 +48,7 @@ module.exports = {
             args.shift()
             const removals = []
             args.forEach(el => {
-                if (wordBank.verbs.includes(el)) {
+                if (wordBank.verbs.includes(el.toLowerCase())) {
                     wordBank.verbs.splice(wordBank.verbs.indexOf(el), 1)
                     removals.push(el)
                 }
@@ -81,7 +81,7 @@ module.exports = {
             args.shift()
             const removals = []
             args.forEach(el => {
-                if (wordBank.nouns.includes(el)) {
+                if (wordBank.nouns.includes(el.toLowerCase())) {
                     wordBank.nouns.splice(wordBank.nouns.indexOf(el), 1)
                     removals.push(el)
                 }
@@ -114,7 +114,7 @@ module.exports = {
             args.shift()
             const removals = []
             args.forEach(el => {
-                if (wordBank.adjectives.includes(el)) {
+                if (wordBank.adjectives.includes(el.toLowerCase())) {
                     wordBank.adjectives.splice(wordBank.adjectives.indexOf(el), 1)
                     removals.push(el)
                 }
