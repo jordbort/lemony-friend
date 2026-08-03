@@ -7,6 +7,8 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
+            `Updated !lemcmd {number#} to allow for + - * / offset`,
+            `Removed !mystats command`,
             `Updated !lemcm variables to include {streamernn} and {viewernn}`,
             `Added !followage command`,
             `Adjusted !list search functionality`,
