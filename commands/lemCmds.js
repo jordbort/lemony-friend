@@ -1,5 +1,6 @@
 const { settings, lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
 const { getContextEmote, logMessage, pluralize, logArr, chooseFrom } = require(`../utils`)
+const { makePlural, addVerbSuffix } = require(`./insult`)
 
 const regexNumber = /\{\s?number\s?(-?\d+)\s?\}/gi
 const regexRandom = /\{\s?random\s?("[^"]+"\s?)+\s?\}/gi
@@ -73,9 +74,10 @@ function applyVariables(str, props) {
         .replace(/\{\s?b(ye)?\s?\}/gi, () => getContextEmote(`bye`, channel))
         .replace(/\{\s?dumb?\s?\}/gi, () => getContextEmote(`dumb`, channel))
 
-        // {n}, {noun}, {v}, {verb}, {a}, {adj}, and {adjective} - Random nouns, verbs, and adjectives
+        // {n}, {noun}, {pln}, {plnoun}, {v}, {verb}, {v-suffix}, {verb-suffix}, {a}, {adj}, and {adjective} - Random nouns, plural nouns, verbs, verb with suffixes, and adjectives
         .replace(/\{\s?n(oun)?\s?\}/gi, () => chooseFrom(nouns))
-        .replace(/\{\s?v(erb)?\s?\}/gi, () => chooseFrom(verbs))
+        .replace(/\{\s?pln(oun)?\s?\}/gi, () => makePlural(chooseFrom(nouns)))
+        .replace(/\{\s?v(erb)?(-[a-z]+)?\s?\}/gi, (occurrence) => /-/.test(occurrence) ? addVerbSuffix(chooseFrom(verbs), occurrence.replace(/\{|\}/g, ``).split(`-`)[1]) : chooseFrom(verbs))
         .replace(/\{\s?(a(djective)?|adj(ective)?)\s?\}/gi, () => chooseFrom(adjectives))
 
         // {1} through {9} - Individual words from the message
