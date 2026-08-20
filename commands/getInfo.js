@@ -7,17 +7,12 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
+            `Updated Hangman messaging and shuffle algorithm`,
             `Updated !lemcmd {number#} to allow for + - * / offset`,
-            `Removed !mystats command`,
             `Updated !lemcm variables to include {streamernn} and {viewernn}`,
             `Added !followage command`,
             `Adjusted !list search functionality`,
-            `Created more insult phrases`,
             `Added "length" as !list keyword`,
-            `Implemented created/last used dates for lemon commands`,
-            `Added more lemon uses`,
-            `Built attempt to salvage context emotes if emote prefix changes`,
-            `Made Hangman whole word guesses have to match given clues`,
             `Cleanup and bug fixes`
         ]
 
