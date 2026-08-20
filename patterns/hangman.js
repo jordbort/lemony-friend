@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { settings, lemonyFresh, users } = require(`../data`)
-const { pluralize, getContextEmote, logMessage, arrToList } = require(`../utils`)
+const { pluralize, getContextEmote, logMessage, arrToList, shuffle } = require(`../utils`)
 
 const { apiGetRandomWord } = require(`../commands/external`)
 
@@ -162,7 +162,7 @@ function hangmanAnnounce(bot, chatroom, userNickname) {
     hangman.signup = Number(setTimeout(() => {
         hangman.signup = false
         logMessage([`-> ${settings.hangmanSignupSeconds} seconds has elapsed, signup window closed - players: ${hangman.players.join(`, `)}`])
-        hangman.players.sort(() => Math.random() - 0.5)
+        hangman.players = shuffle(hangman.players)
         const firstPlayer = users[hangman.players[0]].nickname || users[hangman.players[0]].displayName
         const reply = `${pluralize(hangman.players.length, `player`, `players`)} signed up for Hangman! It's ${[8, 11].includes(hangman.answer.length) ? `an` : `a`} ${hangman.answer.length}-letter word. You go first, ${firstPlayer}! ${positiveEmote}`
         bot.say(chatroom, reply)
