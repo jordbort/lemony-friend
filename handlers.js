@@ -58,8 +58,8 @@ module.exports = {
         const time = new Date().toLocaleTimeString(settings.timeLocale, { timeZone: settings.timeZone })
         if (settings.firstConnection) {
             printLemon()
-            logMessage([`Session started: ${settings.startDate.toLocaleDateString(`en-US`, { weekday: `long`, month: `long`, day: `numeric`, year: `numeric`, timeZone: settings.timeZone })} at ${settings.startDate.toLocaleTimeString(`en-US`, { hour: `numeric`, minute: `numeric`, second: `numeric`, timeZone: settings.timeZone, timeZoneName: `short` })}\n[${time}] 🍋 Connected to ${addr}:${port}`])
-            getOrCreateConduit()
+            logMessage([`Session started: ${settings.startDate.toLocaleDateString(`en-US`, { weekday: `long`, month: `long`, day: `numeric`, year: `numeric`, timeZone: settings.timeZone })} at ${settings.startDate.toLocaleTimeString(`en-US`, { hour: `numeric`, minute: `numeric`, second: `numeric`, timeZone: settings.timeZone, timeZoneName: `short` })}\n[${time}] 🍋 Connected to ${address}:${port}`])
+            if (!settings.devMode) { getOrCreateConduit() }
         } else {
             logMessage([`[${time}] 🍋 Re-connected to ${addr}:${port}`])
         }
@@ -81,15 +81,19 @@ module.exports = {
             // Setup channel data
             initChannel(channel)
             addNewChattersBatch(channel)
-            getStreamTwitchEmotes(channel)
-            getStreamBttvEmotes(channel)
+            if (!settings.devMode) {
+                getStreamTwitchEmotes(channel)
+                getStreamBttvEmotes(channel)
+            }
 
             // Say join message
             if (settings.sayJoinMessage) { sayJoinMessage(this, chatroom) }
 
             // Create WebSocket session
-            addNotificationsBatch(channel)
-            initWebSocket(this, channel)
+            if (!settings.devMode) {
+                addNotificationsBatch(channel)
+                initWebSocket(this, channel)
+            }
         }
 
         if (!lemonyFresh[channel].viewers.includes(username)) {

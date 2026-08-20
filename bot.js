@@ -12,11 +12,14 @@ const { handleUncaughtException } = require(`./utils`)
 // Import client
 const client = require(`./client`)
 
-process.on(`uncaughtException`, async (err) => {
-    const errorStack = err.stack.split(`\n`)[1].split(`/`)
-    const errorPosition = errorStack[0].substring(4) + errorStack[errorStack.length - 1]
-    await handleUncaughtException(client, err, errorPosition)
-    process.exit(1)
-})
+const { settings } = require(`./data`)
+if (!settings.devMode) {
+    process.on(`uncaughtException`, async (err) => {
+        const errorStack = err.stack.split(`\n`)[1].split(`/`)
+        const errorPosition = errorStack[0].substring(4) + errorStack[errorStack.length - 1]
+        await handleUncaughtException(client, err, errorPosition)
+        process.exit(1)
+    })
+}
 
 client.connect()
