@@ -339,14 +339,10 @@ async function printMemory(arr) {
     }, null, 4))
 }
 
-function arrToList(arr, conjunction = `and`) {
-    return arr
-        .map((element, idx) => idx !== 0 && idx + 1 === arr.length
-            ? `${conjunction} ${element}`
-            : element)
-        .join(arr.length > 2
-            ? `, `
-            : ` `)
+function arrToList(arr, conjunction = `and`, forceCommas = false) {
+    return [...arr]
+        .map((element, idx) => idx !== 0 && idx + 1 === arr.length ? `${conjunction} ${element}` : element)
+        .join(arr.length > 2 || forceCommas ? `, ` : ` `)
 }
 
 function findEmotePrefix(username) {
