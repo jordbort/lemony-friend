@@ -528,7 +528,7 @@ function makeInsultSentence(props) { // funNumber 22
     const filteredNouns = nouns.filter((el, idx) => nouns.indexOf(el) === idx)
     const filteredVerbs = verbs.filter((el, idx) => verbs.indexOf(el) === idx)
 
-    logMessage([`> makeInsultSentence(filteredNouns: ${logArr(filteredNouns)}, filteredVerbs: ${logArr(filteredVerbs)})`])
+    logMessage([`> makeInsultSentence(filteredNouns: ${filteredNouns.length < 10 ? logArr(filteredNouns) : filteredNouns.length}, filteredVerbs: ${filteredVerbs.length < 10 ? logArr(filteredVerbs) : filteredVerbs.length})`])
     if (filteredNouns.length < 1 || filteredVerbs.length < 2) {
         logMessage([`-> Not enough words to make a sentence`])
         return

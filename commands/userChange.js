@@ -32,7 +32,7 @@ module.exports = {
 
         const positiveEmote = getContextEmote(`positive`, channel)
         if (modStatus) {
-            bot.say(chatroom, `Wow, ${userNickname} became a mod! ${positiveEmote}`)
+            bot.say(chatroom, `Wow, ${userNickname} is a mod! ${positiveEmote}`)
         } else {
             while (mods[username].isModIn.includes(chatroom)) {
                 mods[username].isModIn.splice(mods[username].isModIn.indexOf(chatroom), 1)

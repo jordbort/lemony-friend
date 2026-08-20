@@ -443,7 +443,6 @@ module.exports = {
             Object.keys(users)
                 .filter(username => channel in users[username].channels)
                 .forEach(username => {
-                    console.log(username, `spoke in`, channel)
                     if (channel in mostRecentMessages) {
                         if (users[username].channels[channel].sentAt > mostRecentMessages[channel]) {
                             mostRecentMessages[channel] = users[username].channels[channel].sentAt

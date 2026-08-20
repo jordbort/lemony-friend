@@ -68,7 +68,6 @@ function applyVariables(str, props) {
                 const operator = occurrence.replace(/\{|\}/g, ``).split(regexOperation)[1]
                 const operand = Number(occurrence.replace(/\{|\}/g, ``).split(regexOperation)[2])
                 const result = operator === `+` ? number + operand : operator === `-` ? number - operand : operator === `*` ? number * operand : number / operand
-                console.log(number, operator, operand, `=`, result)
                 return result
             }
             return number
@@ -183,7 +182,7 @@ module.exports = {
     },
     useLemCmd(props) {
         const { bot, chatroom, command, currentTime } = props
-        logMessage([`> useLemCmd(command: ${command}, response: '${lemCmds[command].response}', origin: '${lemCmds[command].origin}', createdBy: '${lemCmds[command].createdBy}', uses: ${lemCmds[command].uses})`])
+        logMessage([`> useLemCmd(command: ${command}, origin: '${lemCmds[command].origin}', createdBy: '${lemCmds[command].createdBy}', uses: ${lemCmds[command].uses})`])
 
         const response = applyVariables(lemCmds[command].response, props)
         lemCmds[command].lastUsedDate = currentTime

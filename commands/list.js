@@ -141,10 +141,7 @@ function swapItems(bot, chatroom, channel, list, args, isModOrVIP) {
         return
     }
 
-    const value = list[idxOne]
-    list[idxOne] = list[idxTwo]
-    list[idxTwo] = value
-
+    [list[idxOne], list[idxTwo]] = [list[idxTwo], list[idxOne]]
     bot.say(chatroom, `Swapped #${idxOne} and #${idxTwo} in ${listName}! ${positiveEmote}`)
 }
 
