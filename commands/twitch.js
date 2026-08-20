@@ -1340,9 +1340,12 @@ module.exports = {
             return
         }
 
-        const twitchEmotes = data.map(obj => obj.name)
-        settings.globalEmotes.twitch = [...twitchEmotes]
-        await logMessage([`-> Found ${pluralize(settings.globalEmotes.twitch.length, `Twitch global emote`, `Twitch global emotes`)}`])
+        const newTwitchEmotes = data
+            .map(obj => obj.name)
+            .filter(emote => !settings.globalEmotes.twitch.includes(emote))
+
+        settings.globalEmotes.twitch.push(...newTwitchEmotes)
+        await logMessage([`-> Found ${pluralize(newTwitchEmotes.length, `new Twitch global emote`, `new Twitch global emotes`)}`])
     },
     async getStreamTwitchEmotes(channel) {
         await logMessage([`> getStreamTwitchEmotes(channel: '${channel}')`])

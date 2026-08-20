@@ -90,20 +90,20 @@ async function getOrCreateConduit() {
 }
 
 module.exports = {
-    onConnectedHandler(addr, port) {
+    onConnectedHandler(address, port) {
         const time = new Date().toLocaleTimeString(settings.timeLocale, { timeZone: settings.timeZone })
         if (settings.firstConnection) {
             printLemon()
             logMessage([`Session started: ${settings.startDate.toLocaleDateString(`en-US`, { weekday: `long`, month: `long`, day: `numeric`, year: `numeric`, timeZone: settings.timeZone })} at ${settings.startDate.toLocaleTimeString(`en-US`, { hour: `numeric`, minute: `numeric`, second: `numeric`, timeZone: settings.timeZone, timeZoneName: `short` })}\n[${time}] 🍋 Connected to ${address}:${port}`])
             if (!settings.devMode) { getOrCreateConduit() }
         } else {
-            logMessage([`[${time}] 🍋 Re-connected to ${addr}:${port}`])
+            logMessage([`[${time}] 🍋 Re-connected to ${address}:${port}`])
         }
         settings.firstConnection = false
 
-        // Get global emotes, if not set
-        if (!settings.globalEmotes.twitch.length) { getGlobalTwitchEmotes() }
-        if (!settings.globalEmotes.bttv.length) { getGlobalBttvEmotes() }
+        // Update global emotes
+        getGlobalTwitchEmotes()
+        getGlobalBttvEmotes()
     },
     onJoinedHandler(chatroom, username, self) {
         logMessage([`${username} joined ${chatroom}`])
