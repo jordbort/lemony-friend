@@ -1,6 +1,6 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
-const { settings, joinedChatrooms, lemonyFresh, users, lemCmds } = require(`./data`)
+const { joinedChatrooms, settings, lemonyFresh, users, lemCmds } = require(`./data`)
 const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListener, logMessage, appendLogs } = require(`./utils`)
 
 const useCommand = require(`./commands`)
@@ -19,6 +19,42 @@ const { addNotificationsBatch, deleteNotificationsBatch } = require(`./events/no
 const { apiGetTwitchChannel, getGlobalTwitchEmotes, getStreamTwitchEmotes } = require(`./commands/twitch`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
 const { addNewChattersBatch, handleNewChatter, welcomeBack, reportAway, funTimerGuess, pyramidListener } = require(`./commands/conversation`)
+
+function handleMetadata(chatroom, tags, msg, self, timeStamp, username, color) {
+    // Compile any available metadata from Twitch
+    tagsListener(tags)
+    // If shared chat, check for unknown channel ID's name
+    addSourceToKnownChannels(tags)
+    // Log incoming message and capture message tags
+    appendLogs(chatroom, tags, msg, self, timeStamp, username, color)
+}
+
+function updateUser(bot, chatroom, tags, self, username, channel, message, currentTime) {
+    // Initialize new user
+    if (!(username in users)) { initUser(bot, chatroom, tags, self) }
+
+    // Add mod/update isModIn list
+    if (tags.mod) { updateMod(chatroom, tags, self, username) }
+
+    // Initialize user in a new chatroom
+    if (!(channel in users[username].channels)) { initUserChannel(tags, username, channel) }
+    users[username].channels[channel].msgCount++
+    users[username].channels[channel].lastMessage = message
+    users[username].channels[channel].sentAt = currentTime
+}
+
+function handleUserChange(props) {
+    const { tags, username, user, userChannel } = props
+    const subChange = userChannel.sub !== tags.subscriber
+    const modChange = userChannel.mod !== tags.mod
+    const vipChange = userChannel.vip !== (!!tags.vip || !!tags.badges?.vip)
+    const colorChange = tags.color !== user.color && user.color !== ``
+
+    if (subChange) { handleSubChange(props) }
+    if (modChange) { handleModChange(props) }
+    if (vipChange) { handleVIPChange(props) }
+    if (colorChange) { handleColorChange(props) }
+}
 
 function acknowledgeGigantifiedEmote(bot, chatroom, msg) {
     const emoteUsed = msg.split(` `)[msg.split(` `).length - 1]
@@ -141,32 +177,15 @@ module.exports = {
             return
         }
 
-        // Compile any available metadata from Twitch
-        tagsListener(tags)
-
-        // If shared chat, check for unknown channel ID's name
-        addSourceToKnownChannels(tags)
-
-        // Log incoming message and capture message tags
-        appendLogs(chatroom, tags, msg, self, timeStamp, username, color)
+        // Update known tags and unknown shared chat channel, and append logs
+        handleMetadata(chatroom, tags, msg, self, timeStamp, username, color)
 
         // Stop listening here if shared chat, and not the origin channel
         if (`source-room-id` in tags && tags[`source-room-id`] !== tags[`room-id`]) { return }
 
-        // Initialize new user
-        if (!(username in users)) { initUser(this, chatroom, tags, self) }
-
-        // Add mod/update isModIn list
-        if (tags.mod) { updateMod(chatroom, tags, self, username) }
-
-        // Initialize user in a new chatroom
-        if (!(channel in users[username].channels)) { initUserChannel(tags, username, channel) }
-
+        // Update user/mod, and last message in channel
         const currentTime = Number(tags[`tmi-sent-ts`]) || Date.now()
-        const userChannel = users[username].channels[channel]
-        userChannel.msgCount++
-        userChannel.lastMessage = msg
-        userChannel.sentAt = currentTime
+        updateUser(this, chatroom, tags, self, username, channel, msg, currentTime)
 
         // Listen for emote/text pyramid
         const aprilFools = new Date(date).getMonth() === 3 && new Date(date).getDate() === 1
@@ -179,6 +198,7 @@ module.exports = {
         const args = msg.split(` `)
         const command = args.shift().toLowerCase()
         const toUser = getToUser(args[0])
+        const userChannel = users[username].channels[channel]
 
         const props = {
             bot: this,
@@ -205,14 +225,7 @@ module.exports = {
         }
 
         // User attribute change detection
-        const subChange = userChannel.sub !== tags.subscriber
-        const modChange = userChannel.mod !== tags.mod
-        const vipChange = userChannel.vip !== (!!tags.vip || !!tags.badges?.vip)
-        const colorChange = tags.color !== users[username].color && users[username].color !== ``
-        if (subChange) { handleSubChange(props) }
-        if (modChange) { handleModChange(props) }
-        if (vipChange) { handleVIPChange(props) }
-        if (colorChange) { handleColorChange(props) }
+        handleUserChange(props)
 
         // Acknowledge gigantified emote
         if (tags[`msg-id`] === `gigantified-emote-message`) {
