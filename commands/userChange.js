@@ -1,4 +1,4 @@
-const { mods, users } = require(`../data`)
+const { mods } = require(`../data`)
 const { chatColors, getContextEmote, logMessage } = require(`../utils`)
 
 module.exports = {
