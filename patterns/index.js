@@ -30,7 +30,7 @@ const seSplitMessagePatterns = {
 
 const pcgPatterns = {
     [/Catch it using !pokecatch \(winners revealed in 90s\)/]: checkPokemon,
-    [new RegExp(`${BOT_USERNAME} .+ registered in Pokédex: ❌`)]: catchPokemon,
+    [new RegExp(`${BOT_USERNAME} .+ registered in (Pokédex|Alt\. Dex): ❌`)]: catchPokemon,
     [new RegExp(`${BOT_USERNAME} Purchase successful!`)]: catchPokemon,
     [new RegExp(`${BOT_USERNAME} You don.t own that ball\. Check the extension to see your items\.`)]: buyPokeballs,
     [new RegExp(`has been caught by: .*${BOT_USERNAME}`, `i`)]: acknowledgeCaughtPokemon
