@@ -45,6 +45,7 @@ settings.lemonLeaderCount = settings.lemonLeaderCount ?? 5
 settings.maxCountdownDuration = settings.maxCountdownDuration ?? 7200000
 settings.maxWelcomeBackMinutes = settings.maxWelcomeBackMinutes ?? 640
 settings.minWelcomeBackMinutes = settings.minWelcomeBackMinutes ?? 120
+settings.maxDefinitionLength = settings.maxDefinitionLength ?? 10
 settings.pokeballQuantity = settings.pokeballQuantity ?? 10
 settings.autoBan = settings.autoBan || []
 

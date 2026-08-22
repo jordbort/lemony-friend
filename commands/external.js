@@ -38,8 +38,8 @@ async function apiGetStreamBttvEmotes(broadcasterId) {
 
 module.exports = {
     async checkSentiment(props) {
-        const { bot, chatroom, message, aprilFools } = props
-        await logMessage([`> checkSentiment(chatroom: ${chatroom}, message: ${message})`])
+        const { bot, chatroom, message, username, aprilFools } = props
+        await logMessage([`> checkSentiment(chatroom: ${chatroom}, username: '${username}')`])
 
         const sanitizedMsg = message.replace(/[\\{`}%^|]/g, ``)
         const endpoint = `https://api.api-ninjas.com/v1/sentiment?text=${sanitizedMsg}`
@@ -121,16 +121,21 @@ module.exports = {
                 bot.say(chatroom, `Definition of "${data.word}": ${data.definition.replace(/\n/g, ` `)}`)
             } else {
                 let definition = `Definition of "${data.word}": `
-                const splitDefinition = data.definition.replace(/\n/g, ` `).split(`. `).filter(el => el !== `\n`)
+                const splitDefinition = data.definition.replace(/\n/g, ` `).split(/[\.|\)|\]]\s/).filter(el => el && el !== `\n`)
 
                 if (!splitDefinition.includes(`1`)) {
                     definition += splitDefinition[0]
                 } else {
-                    if (splitDefinition.includes(`1`)) { definition += `1) ${splitDefinition[splitDefinition.indexOf(`1`) + 1]}. ` }
-                    if (splitDefinition.includes(`2`)) { definition += `2) ${splitDefinition[splitDefinition.indexOf(`2`) + 1]}. ` }
-                    if (splitDefinition.includes(`3`)) { definition += `3) ${splitDefinition[splitDefinition.indexOf(`3`) + 1]}. ` }
+                    for (let i = 1; i <= settings.maxDefinitionLength; i++) {
+                        if (splitDefinition.includes(`${i}`)) {
+                            const nextEntry = splitDefinition[splitDefinition.indexOf(`${i}`) + 1].trim()
+                            if (definition.length + nextEntry.length + 4 <= 500) {
+                                definition += `${i}) ${nextEntry}. `
+                            } else break
+                        } else break
+                    }
                 }
-                bot.say(chatroom, definition)
+                bot.say(chatroom, definition.trim())
             }
         } catch (err) {
             await logMessage([`getDefinition ${err}`])

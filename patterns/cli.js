@@ -493,6 +493,7 @@ function updateSettingsDev(props, args) {
         [/^streakMinutesThreshold$|^smt$/i]: { name: `streakMinutesThreshold`, func: updateNum },
         // [/^chantCount$|^cc$/i]: { name: `chantCount`, func: updateNum },
         // [/^realRPS$|^rps$/i]: { name: `realRPS`, func: updateBool },
+        [/^maxDefinitionLength$|^mdl$/i]: { name: `maxDefinitionLength`, func: updateNum },
         [/^playPCG$|^pcg$/i]: { name: `playPCG`, func: updateBool },
         [/^pokeballQuantity$|^pq$/i]: { name: `pokeballQuantity`, func: updateNum },
         [/^usedPokeball$|^up$/i]: { name: `usedPokeball`, func: updateStr },
@@ -523,6 +524,7 @@ function updateSettings(props, args) {
         [/^ignoredBots?$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
         // [/^chantEmote$|^ce$/i]: { name: `chantEmote`, func: updateStr },
         // [/^hangmanChances$|^hc$/i]: { name: `hangmanChances`, func: updateNum },
+        [/^maxDefinitionLength$|^mdl$/i]: { name: `maxDefinitionLength`, func: updateNum },
         [/^playPCG$|^pcg$/i]: { name: `playPCG`, func: updateBool },
         // [/^pokeballQuantity$|^pq$/i]: { name: `pokeballQuantity`, func: updateNum },
         // [/^usedPokeball$|^up$/i]: { name: `usedPokeball`, func: updateStr }
