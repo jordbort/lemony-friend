@@ -7,6 +7,8 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
+            `Created CLI channel configuration 'anonymousFollows' or 'af'`,
+            `Created CLI settings configuration 'maxDefinitionLength' or 'mdl'`,
             `Updated Hangman messaging and shuffle algorithm`,
             `Updated !lemcmd {number#} to allow for + - * / offset`,
             `Updated !lemcm variables to include {streamernn} and {viewernn}`,
