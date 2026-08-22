@@ -94,7 +94,6 @@ function handleChannelFollow(bot, event) {
         logMessage([`-> Not thanking self for following`])
         return
     }
-    const obj = batch[channel].follows
 
     const streamer = channel in users
         ? users[channel].nickname || users[channel].displayName
@@ -104,15 +103,21 @@ function handleChannelFollow(bot, event) {
         ? users[username].nickname || users[username].displayName
         : displayName
 
-    obj.names.push(followerName)
     const greetingEmote = getContextEmote(`greeting`, channel)
     const hypeEmote = getContextEmote(`hype`, channel)
 
-    clearTimeout(obj.timer)
-    obj.timer = setTimeout(() => {
-        bot.say(`#${channel}`, `Thank you ${arrToList(obj.names)} for following ${streamer}! ${obj.names >= 3 ? hypeEmote : greetingEmote}`)
-        resetChannelBatch(`follows`, channel)
-    }, 1000)
+    if (lemonyFresh[channel].anonymousFollows) {
+        bot.say(`#${channel}`, `Thank you for following ${streamer}! ${greetingEmote}`)
+    } else {
+        const obj = batch[channel].follows
+        obj.names.push(followerName)
+
+        clearTimeout(obj.timer)
+        obj.timer = setTimeout(() => {
+            bot.say(`#${channel}`, `Thank you ${arrToList(obj.names)} for following ${streamer}! ${obj.names > 2 ? hypeEmote : greetingEmote}`)
+            resetChannelBatch(`follows`, channel)
+        }, 1000)
+    }
 }
 
 function handleChannelAddVIP(bot, event) {

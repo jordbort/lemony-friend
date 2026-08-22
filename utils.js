@@ -1432,6 +1432,7 @@ module.exports = {
         lemonyFresh[channel].funnyCommands = lemonyFresh[channel].funnyCommands || []
         lemonyFresh[channel].redeems = lemonyFresh[channel].redeems || []
         lemonyFresh[channel].rollFunNumber = lemonyFresh[channel].rollFunNumber ?? true
+        lemonyFresh[channel].anonymousFollows = lemonyFresh[channel].anonymousFollows ?? false
         lemonyFresh[channel].funTimer = lemonyFresh[channel].funTimer ?? 0
         lemonyFresh[channel].funTimerGuesser = lemonyFresh[channel].funTimerGuesser ?? ``
         lemonyFresh[channel].pollId = lemonyFresh[channel].pollId ?? ``
