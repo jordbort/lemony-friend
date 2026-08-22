@@ -441,7 +441,7 @@ module.exports = {
         bot.channels.forEach(chatroom => {
             const channel = chatroom.substring(1)
             Object.keys(users)
-                .filter(username => channel in users[username].channels)
+                .filter(username => !settings.ignoredBots.includes(username) && channel in users[username].channels)
                 .forEach(username => {
                     if (channel in mostRecentMessages) {
                         if (users[username].channels[channel].sentAt > mostRecentMessages[channel]) {
