@@ -761,6 +761,21 @@ function lookForNumerals(props) { // funNumber 34
         : logMessage([`-> No numerals found`])
 }
 
+function reportHangmanWins(props) { // funNumber 35
+    const { bot, chatroom, channel, username, userNickname, user } = props
+    logMessage([`> reportHangmanWins(channel: '${channel}', username: '${username}')`])
+
+    const positiveEmote = getContextEmote(`positive`, channel)
+    const neutralEmote = getContextEmote(`neutral`, channel)
+
+    const reply = `${userNickname} has played ${pluralize(user.hangmanGamesPlayed, `game`, `games`)} of Hangman, and has `
+    user.hangmanGamesPlayed
+        ? user.hangmanWins
+            ? bot.say(chatroom, `${reply}correctly guessed ${pluralize(user.hangmanGamesPlayed, `word`, `words`)}! ${positiveEmote}`)
+            : bot.say(chatroom, `${reply}not guessed the word yet! ${neutralEmote}`)
+        : logMessage([`-> '${username}' has not played Hangman yet`])
+}
+
 module.exports = function rollFunNumber(props, funNumber) {
     const { bot, chatroom, tags, message, channel, username, aprilFools } = props
     logMessage([`> rollFunNumber(channel: '${channel}', tags: ${Object.keys(tags).length}, username: '${username}', message: '${message}', funNumber: ${funNumber})`])
@@ -805,7 +820,8 @@ module.exports = function rollFunNumber(props, funNumber) {
         31: reportOneSixteenthChance,
         32: transformMessage,
         33: makeInsultPhrase,
-        34: lookForNumerals
+        34: lookForNumerals,
+        35: reportHangmanWins
     }
 
     if (funNumber in outcomes) {
