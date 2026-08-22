@@ -10,6 +10,7 @@ const commandLemonInterface = require(`./cli`)
 
 const { checkSentiment } = require(`../commands/external`)
 const { checkPokemon, catchPokemon, buyPokeballs, acknowledgeCaughtPokemon } = require(`./pokemoncommunitygame`)
+const { fightBack, reloadSave, mercyUser, parseVictory, parseSelfData, parseInventory } = require(`./undertalebot`)
 const { handleSetPoints, handleGivenPoints, subtractPoints, handleLoseAllPoints, acceptDuel } = require(`./streamelements`)
 const { handleGreetOne, sayGoodnight, sayThanks, sayYoureWelcome, sayMood, contextReact } = require(`../commands/conversation`)
 const { checkEmotes, checkSelfSub, checkSelfMod, checkSelfVIP, checkTargetSub, checkTargetMod, checkTargetVIP } = require(`./checkChannelInfo`)
@@ -34,6 +35,15 @@ const pcgPatterns = {
     [new RegExp(`${BOT_USERNAME} Purchase successful!`)]: catchPokemon,
     [new RegExp(`${BOT_USERNAME} You don.t own that ball\. Check the extension to see your items\.`)]: buyPokeballs,
     [new RegExp(`has been caught by: .*${BOT_USERNAME}`, `i`)]: acknowledgeCaughtPokemon
+}
+
+const undertaleBotPatterns = {
+    [new RegExp(`\\* (.+) attacks ${BOT_USERNAME}`, `i`)]: fightBack,
+    [new RegExp(`${BOT_USERNAME}! Stay determined`, `i`)]: reloadSave,
+    [new RegExp(`\\* (.+) tried to spare ${BOT_USERNAME}`, `i`)]: mercyUser,
+    [new RegExp(`${BOT_USERNAME} earned \\d+ EXP and (\\d+) G\\.\\s?`, `i`)]: parseVictory,
+    [new RegExp(`"${BOT_USERNAME}" LV: (\\d+), HP: (\\d+)\\/\\d+, AT: \\d+\\(\\d+\\), DF: \\d+\\(\\d+\\), EXP: \\d+, NEXT: \\d+, WEAPON: ([a-z\\s']+), ARMOR: ([a-z\\s']+), GOLD: (\\d+)`, `i`)]: parseSelfData,
+    [new RegExp(`${BOT_USERNAME}'s items: (([a-z\\s'\\.\\?]+),?\\s?)+`, `gi`)]: parseInventory,
 }
 
 const mentionedPatterns = {
@@ -184,6 +194,23 @@ module.exports = function usePattern(props) {
             if (regex.test(message)) {
                 logMessage([`${username.toUpperCase()} MATCHED REGEX PATTERN:`, regex, `[Function: ${pcgPatterns[regex].name}]`])
                 pcgPatterns[regex](props)
+                return true
+            }
+        }
+        logMessage([`${username.toUpperCase()} DID NOT MATCH REGEX PATTERNS`])
+    }
+
+    // Interaction with UndertaleBot
+    if (username === `undertalebot`) {
+        // const pat = new RegExp(`"${BOT_USERNAME}" LV: (\\d+), HP: (\\d+)\\/\\d+, AT: \\d+\\(\\d+\\), DF: \\d+\\(\\d+\\), EXP: \\d+, NEXT: \\d+, WEAPON: [a-z\\s']+, ARMOR: [a-z\\s']+, GOLD: (\\d+)`, `i`)
+        for (const pattern in undertaleBotPatterns) {
+            const splitPattern = pattern.split(`/`)
+            // console.log(pattern, splitPattern.length, splitPattern)
+            const regex = new RegExp(splitPattern.slice(1, splitPattern.length - 1).join(`/`), splitPattern[splitPattern.length - 1])
+            // console.log(regex, regex.test(message))
+            if (regex.test(message)) {
+                logMessage([`${username.toUpperCase()} MATCHED REGEX PATTERN:`, regex, `[Function: ${undertaleBotPatterns[regex].name}]`])
+                undertaleBotPatterns[regex](props, regex)
                 return true
             }
         }
