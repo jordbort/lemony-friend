@@ -130,7 +130,7 @@ module.exports = {
 
         const lemonEmote = getContextEmote(`lemon`, channel)
         target
-            ? bot.say(chatroom, `${target.displayName} has ${target.lemons} lemon${target.lemons === 1 ? `` : `s`}! ${lemonEmote}`)
-            : bot.say(chatroom, `${user.displayName} has ${user.lemons} lemon${user.lemons === 1 ? `` : `s`}! ${lemonEmote}`)
+            ? bot.say(chatroom, `${target.nickname || target.displayName} has ${target.lemons} lemon${target.lemons === 1 ? `` : `s`}! ${lemonEmote}`)
+            : bot.say(chatroom, `${user.nickname || user.displayName} has ${user.lemons} lemon${user.lemons === 1 ? `` : `s`}! ${lemonEmote}`)
     }
 }
