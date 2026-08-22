@@ -1445,13 +1445,16 @@ module.exports = {
         }
         lemonyFresh[channel].list = lemonyFresh[channel].list || [``]
         lemonyFresh[channel].hangman = {
+            signupSeconds: 30,
+            lemonThreshold: 2,
+            totalChances: 0,
+            remainingChances: 0,
             listening: false,
             signup: false,
             answer: ``,
             spaces: [],
             players: [],
             guessedLetters: [],
-            chances: settings.hangmanChances,
             currentPlayer: 0,
             ...lemonyFresh[channel].hangman
         }

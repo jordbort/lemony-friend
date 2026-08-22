@@ -239,6 +239,27 @@ function updateContextEmotes(bot, chatroom, obj, message, name, args) {
     bot.say(chatroom, `/me ${message} options: lemon (lem), neutral (neu), hype (h), positive (pos), upset (up), negative (neg), greeting (greet), bye (b), dumb (d)`)
 }
 
+function updateHangman(bot, chatroom, obj, message, name, args) {
+    logMessage([`> updateHangman(chatroom: '${chatroom}', name: '${name}', args: ${logArr(args)})`])
+
+    const options = {
+        [/^totalChances?$|^tc$/i]: { name: `totalChances`, func: updateNum },
+        [/^signupSeconds$|^ss$/i]: { name: `signupSeconds`, func: updateNum },
+        [/^lemonThreshold$|^lt$/i]: { name: `lemonThreshold`, func: updateNum }
+    }
+
+    for (const option in options) {
+        const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
+        if (regex.test(args[0])) {
+            args.shift()
+            options[regex].func(bot, chatroom, obj[name], `${message.replace(/"/g, ``)} "${options[regex].name}"`, options[regex].name, args)
+            return
+        }
+    }
+
+    bot.say(chatroom, `/me ${message} options: ${makeList(options)}`)
+}
+
 function deleteUser(bot, chatroom, obj, message, name, args) {
     logMessage([`> deleteUser(chatroom: '${chatroom}', name: '${name}', args: ${logArr(args)})`])
     delete users[name]
@@ -259,6 +280,7 @@ function updateChannelDev(props, args) {
         [/^subEmotes?$|^se$/i]: { name: `subEmotes`, func: updateArr },
         [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
         [/^contextEmotes?$|^ce$/i]: { name: `contextEmotes`, func: updateContextEmotes },
+        [/^hangman$|^h$/i]: { name: `hangman`, func: updateHangman },
         [/^rollFunNumber$|^rfn$/i]: { name: `rollFunNumber`, func: updateBool },
         [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
         [/^noSubRaidMessage$|^nsrm$/i]: { name: `noSubRaidMessage`, func: updateStr },
@@ -293,6 +315,7 @@ function updateChannel(props, args) {
         // [/^subEmotes?$|^se$/i]: { name: `subEmotes`, func: updateArr },
         // [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
         [/^contextEmotes?$|^ce$/i]: { name: `contextEmotes`, func: updateContextEmotes },
+        // [/^hangman$|^h$/i]: { name: `hangman`, func: updateHangman },
         [/^rollFunNumber$|^rfn$/i]: { name: `rollFunNumber`, func: updateBool },
         [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
         [/^noSubRaidMessage$|^nsrm$/i]: { name: `noSubRaidMessage`, func: updateStr },
@@ -468,9 +491,6 @@ function updateSettingsDev(props, args) {
         [/^funNumberCount$|^fnc$/i]: { name: `funNumberCount`, func: updateNum },
         [/^funNumberTotal$|^fnt$/i]: { name: `funNumberTotal`, func: updateNum },
         [/^streakMinutesThreshold$|^smt$/i]: { name: `streakMinutesThreshold`, func: updateNum },
-        // [/^hangmanChances?$|^hc$/i]: { name: `hangmanChances`, func: updateNum },
-        // [/^hangmanSignupSeconds$|^hss$/i]: { name: `hangmanSignupSeconds`, func: updateNum },
-        // [/^hangmanLemonThreshold$|^hlt$/i]: { name: `hangmanLemonThreshold`, func: updateNum },
         // [/^chantCount$|^cc$/i]: { name: `chantCount`, func: updateNum },
         // [/^realRPS$|^rps$/i]: { name: `realRPS`, func: updateBool },
         [/^playPCG$|^pcg$/i]: { name: `playPCG`, func: updateBool },
