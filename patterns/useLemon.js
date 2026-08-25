@@ -63,8 +63,7 @@ function createLemon(bot, chatroom, user, suffix, target) {
                 : bot.say(chatroom, `${userNickname} somehow managed to generate a lemon for ${targetNickname}!`)
             : (user.lemons++, coinFlip())
                 ? bot.say(chatroom, `${userNickname} somehow managed to create a lemon out of thin air!`)
-                : bot.say(chatroom, `${userNickname} suser.lemons--
-        targetomehow managed to manifest a lemon!`)
+                : bot.say(chatroom, `${userNickname} somehow managed to manifest a lemon!`)
 }
 function giveLemon(bot, chatroom, user, suffix, target) {
     const allLemons = [`s`, `z`].includes(suffix)
