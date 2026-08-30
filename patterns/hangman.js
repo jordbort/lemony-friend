@@ -1,7 +1,7 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { lemonyFresh, users } = require(`../data`)
-const { pluralize, getContextEmote, logMessage, arrToList, shuffle } = require(`../utils`)
+const { pluralize, getContextEmote, logMessage, arrToList, shuffle, logArr } = require(`../utils`)
 
 const { apiGetRandomWord } = require(`../commands/external`)
 
@@ -166,7 +166,7 @@ function hangmanAnnounce(bot, chatroom, userNickname) {
     // After signup timer ID has expired, close signup window, shuffle players, and start game
     hm.signup = Number(setTimeout(() => {
         hm.signup = false
-        logMessage([`-> ${hm.signupSeconds} seconds has elapsed, signup window closed - players: ${hm.players.join(`, `)}`])
+        logMessage([`-> ${hm.signupSeconds} seconds has elapsed, signup window closed - players: ${logArr(hm.players)}`])
         hm.players = shuffle(hm.players)
         const firstPlayer = users[hm.players[0]].nickname || users[hm.players[0]].displayName
         const reply = `${pluralize(hm.players.length, `player`, `players`)} signed up for Hangman! It's ${[8, 11].includes(hm.answer.length) ? `an` : `a`} ${hm.answer.length}-letter word. You go first, ${firstPlayer}! ${positiveEmote}`
@@ -235,15 +235,15 @@ module.exports = {
         if (hm.listening) {
             if (hm.signup) {
                 if (hm.players.includes(username)) {
-                    logMessage([`-> ${username} already in ${channel}'s Hangman players: ${hm.players.join(`, `)}`])
+                    logMessage([`-> ${username} already in ${channel}'s Hangman players: ${logArr(hm.players)}`])
                 } else {
                     hm.players.push(username)
-                    logMessage([`-> ${username} added to ${channel}'s Hangman players: ${hm.players.join(`, `)}`])
+                    logMessage([`-> ${username} added to ${channel}'s Hangman players: ${logArr(hm.players)}`])
                 }
             } else if (!hm.players.includes(username)) {
                 const lastPlayer = users[hm.players[hm.players.length - 1]].nickname || users[hm.players[hm.players.length - 1]].displayName
                 hm.players.push(username)
-                logMessage([`-> ${username} added to ${channel}'s Hangman players: ${hm.players.join(`, `)}}`])
+                logMessage([`-> ${username} added to ${channel}'s Hangman players: ${logArr(hm.players)}}`])
                 const positiveEmote = getContextEmote(`positive`, channel)
                 bot.say(chatroom, `${userNickname}, you can still hop in, you'll go after ${lastPlayer}! ${positiveEmote}`)
             }
