@@ -161,6 +161,30 @@ module.exports = {
     logChannelViewers(props) { if (settings.debug) props.toUser in lemonyFresh ? console.log(lemonyFresh[props.toUser].viewers) : console.log(lemonyFresh[channel].props.viewers) },
     logTags(props) { if (settings.debug) console.log(props.tags) },
     logSettings() { if (settings.debug) console.log(settings) },
+    logUsersInChannel(props) {
+        const { bot, chatroom, args, channel } = props
+        if (/^in$/i.test(args[0]) && args[1]) {
+            const arr = args[1] in lemonyFresh
+                ? Object.keys(users).filter(username => args[1] in users[username].channels)
+                : Object.keys(users).filter(username => !Object.keys(users[username].channels).length)
+            if (settings.debug) console.log(arr.length, arr)
+
+            const hypeEmote = getContextEmote(`hype`, channel)
+            const positiveEmote = getContextEmote(`positive`, channel)
+            const neutralEmote = getContextEmote(`neutral`, channel)
+            const negativeEmote = getContextEmote(`negative`, channel)
+            const upsetEmote = getContextEmote(`upset`, channel)
+
+            const percentage = Math.round(arr.length / Object.keys(users).length * 10000) / 100
+            if (args[1] in lemonyFresh) {
+                const reply = `There ${arr.length === 1 ? `is` : `are`} ${pluralize(arr.length, `user`, `users`)} who ${arr.length === 1 ? `has` : `have`} chatted in ${args[1]}'s channel. That's ${percentage}% of them! ${percentage < 50 ? percentage < 25 ? neutralEmote : positiveEmote : hypeEmote}`
+                bot.say(chatroom, reply)
+            } else if (/^none$/i.test(args[1])) {
+                const reply = `There ${arr.length === 1 ? `is` : `are`} ${pluralize(arr.length, `user`, `users`)} who ${arr.length === 1 ? `hasn't` : `haven't`} chatted in any channel. That's ${percentage}% of them! ${percentage < 50 ? percentage < 25 ? neutralEmote : negativeEmote : upsetEmote}`
+                bot.say(chatroom, reply)
+            }
+        }
+    },
     yellAcrossChannels(props) { props.bot.channels.forEach(chatroom => props.bot.say(chatroom, `${props.message.substring(11)}`)) },
     streamFriendlyOn(props) {
         const { bot, chatroom } = props

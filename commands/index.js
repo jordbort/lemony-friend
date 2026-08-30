@@ -25,7 +25,7 @@ const { handleShoutout, getBotToken, makeAnnouncement, authorizeToken, banUsers,
 const {
     createConduit, getConduit, updateConduitShardCount, deleteConduit, getConduitShards, logJoinedChatrooms,
     getEventSubs, refreshEventSubs, connectWebSocket, disconnectWebSocket,
-    logChannelInfo, logChannelViewers, logModInfo, logUserInfo, logSettings, logTags,
+    logChannelInfo, logChannelViewers, logModInfo, logUserInfo, logSettings, logTags, logUsersInChannel,
     yellAcrossChannels,
     writeMemoryFile, shutdown, kms,
     streamFriendlyOn, streamFriendlyOff,
@@ -185,6 +185,7 @@ const devCommands = {
     'user': logUserInfo,
     'settings': logSettings,
     'tags': logTags,
+    'users': logUsersInChannel,
 
     // For messaging across all channels
     '!broadcast': yellAcrossChannels,
