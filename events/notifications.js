@@ -1,8 +1,9 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
-const { lemonyFresh, mods, users, joinedChatrooms } = require(`../data`)
+const { lemonyFresh, mods, users } = require(`../data`)
 const { logMessage, getContextEmote, updateMod, pluralize, arrToList, renderObj, printMemory, chooseFrom } = require(`../utils`)
 
+const { setChannelOnline } = require(`../graphics/hud`)
 const { getStreamBttvEmotes } = require(`../commands/external`)
 const { apiGetTwitchChannel, getStreamTwitchEmotes } = require(`../commands/twitch`)
 
@@ -19,6 +20,7 @@ function resetChannelBatch(type, channel) {
 async function handleStreamOnline(bot, event) {
     const { broadcaster_user_login: channel } = event
     logMessage([`* ONLINE: ${channel} started streaming`])
+    setChannelOnline(channel, true)
 
     await getStreamTwitchEmotes(channel)
     await getStreamBttvEmotes(channel)
@@ -61,6 +63,7 @@ async function handleStreamOnline(bot, event) {
 function handleStreamOffline(bot, event) {
     const { broadcaster_user_login: channel } = event
     logMessage([`* OFFLINE: ${channel} stopped streaming`])
+    setChannelOnline(channel, false)
     printMemory(bot.channels)
 
     const streamer = channel in users

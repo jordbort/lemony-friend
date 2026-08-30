@@ -5,16 +5,16 @@ const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListen
 
 const useCommand = require(`./commands`)
 const usePattern = require(`./patterns`)
-const printLemon = require(`./commands/printLemon`)
 const streakListener = require(`./commands/streaks`)
 const rollFunNumber = require(`./commands/funNumber`)
 
 const { useLemCmd } = require(`./commands/lemCmds`)
 const { sayJoinMessage } = require(`./commands/joinPart`)
 const { hangmanListener } = require(`./patterns/hangman`)
+const { initHUD, renderLineHUD } = require(`./graphics/hud`)
 const { apiGetConduits, apiCreateConduit } = require(`./events/conduits`)
 const { getGlobalBttvEmotes, getStreamBttvEmotes } = require(`./commands/external`)
-const { initWebSocket, closeWebSocket, removeWebSocket } = require(`./events/webSockets`)
+const { initWebSocket, closeWebSocket, removeWebSocket, getWebSocket } = require(`./events/webSockets`)
 const { addNotificationsBatch, removeNotificationsBatch } = require(`./events/notifications`)
 const { apiGetTwitchChannel, getGlobalTwitchEmotes, getStreamTwitchEmotes } = require(`./commands/twitch`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
@@ -41,10 +41,13 @@ function updateUser(bot, chatroom, tags, self, username, channel, message, curre
     users[username].channels[channel].msgCount++
     users[username].channels[channel].lastMessage = message
     users[username].channels[channel].sentAt = currentTime
+
+    const webSocketStatus = getWebSocket(channel)
+    renderLineHUD(chatroom, webSocketStatus, username, message, currentTime)
 }
 
 function handleUserChange(props) {
-    const { tags, username, user, userChannel } = props
+    const { tags, user, userChannel } = props
     const subChange = userChannel.sub !== tags.subscriber
     const modChange = userChannel.mod !== tags.mod
     const vipChange = userChannel.vip !== (!!tags.vip || !!tags.badges?.vip)
@@ -93,12 +96,12 @@ module.exports = {
     onConnectedHandler(address, port) {
         const time = new Date().toLocaleTimeString(settings.timeLocale, { timeZone: settings.timeZone })
         if (settings.firstConnection) {
-            printLemon()
             logMessage([`Session started: ${settings.startDate.toLocaleDateString(`en-US`, { weekday: `long`, month: `long`, day: `numeric`, year: `numeric`, timeZone: settings.timeZone })} at ${settings.startDate.toLocaleTimeString(`en-US`, { hour: `numeric`, minute: `numeric`, second: `numeric`, timeZone: settings.timeZone, timeZoneName: `short` })}\n[${time}] 🍋 Connected to ${address}:${port}`])
             if (!settings.devMode) { getOrCreateConduit() }
         } else {
             logMessage([`[${time}] 🍋 Re-connected to ${address}:${port}`])
         }
+        if (!settings.debug) { initHUD() }
         settings.firstConnection = false
 
         // Update global emotes
@@ -166,16 +169,19 @@ module.exports = {
             return
         }
 
-        const msg = message.replace(/ +/g, ` `)
-        const channel = chatroom.substring(1)
-        const date = new Date().toLocaleString(settings.timeLocale, { timeZone: settings.timeZone })
-        const timeStamp = new Date(date).toLocaleTimeString(settings.timeLocale)
-        const color = tags.color || ``
+        // Ignore self and avoid missing username
         const username = tags.username
         if (!username) {
             logMessage([`Error: No username found`])
             return
         }
+        if (username === BOT_USERNAME && !self) { return }
+
+        const msg = message.replace(/ +/g, ` `)
+        const channel = chatroom.substring(1)
+        const date = new Date().toLocaleString(settings.timeLocale, { timeZone: settings.timeZone })
+        const timeStamp = new Date(date).toLocaleTimeString(settings.timeLocale)
+        const color = tags.color || ``
 
         // Update known tags and unknown shared chat channel, and append logs
         handleMetadata(chatroom, tags, msg, self, timeStamp, username, color)
@@ -211,7 +217,7 @@ module.exports = {
             command: command,
             channel: channel,
             channelNickname: users[channel]?.nickname || users[channel]?.displayName || channel,
-            username: tags.username,
+            username: username,
             isMod: tags.mod || username === channel,
             isModOrVIP: !!tags.badges?.vip || !!tags.vip || tags.mod || username === channel,
             isLemonyFreshMember: username in lemonyFresh,

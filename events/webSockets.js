@@ -4,6 +4,7 @@ const { logMessage } = require(`../utils`)
 const { joinedChatrooms, settings } = require(`../data`)
 
 const { assignToConduit } = require(`./conduits`)
+const { renderLineHUD } = require(`../graphics/hud`)
 const { updateEventSubs } = require(`../commands/twitch`)
 const { handleNotification } = require(`./notifications`)
 
@@ -64,6 +65,7 @@ function handleClose(bot, channel, event) {
 
     // Reopen unless closed on purpose (unless keepAlive timed out)
     const { code, reason, wasClean } = event
+    renderLineHUD(`#${channel}`, ws.timedOut ? `timeout` : wasClean ? `closed` : `died`)
     if (settings.reportWebSocketActivity || ws.reportClosure) {
         logMessage([`> WebSocket connection for '${channel}' ${wasClean ? `closed` : `died unexpectedly`} with code ${code}${reason ? `: '${reason}'` : ``}`])
         if (ws.reportClosure) ws.reportClosure = false
@@ -77,6 +79,7 @@ function handleClose(bot, channel, event) {
 }
 
 function handleWelcome(channel, event) {
+    renderLineHUD(`#${channel}`, `connected`)
     const { id, status } = event.payload.session
     logMessage([`* WELCOME '${channel}' status: ${status}`])
 
@@ -91,12 +94,14 @@ function handleWelcome(channel, event) {
 }
 
 function handleReconnect(bot, channel, event) {
+    renderLineHUD(`#${channel}`, `reconnecting`)
     const { status, reconnect_url } = event.payload.session
     logMessage([`* RECONNECT '${channel}' status: ${status}`])
     openWebSocket(bot, channel, reconnect_url)
 }
 
 function handleRevocation(channel, event) {
+    renderLineHUD(`#${channel}`, `revoked`)
     logMessage([`* REVOKED '${channel}' status: ${event.payload.session.status}`])
     updateEventSubs(channel, webSockets[channel].sessionId)
 }
@@ -162,5 +167,14 @@ module.exports = {
         if (sessionId) {
             bot.say(chatroom, sessionId)
         }
+    },
+    getWebSocket(channel) {
+        return channel in webSockets
+            ? webSockets[channel].arr.length === 1
+                ? webSockets[channel].arr[0]._closeFrameSent || webSockets[channel].arr[0]._closeFrameReceived
+                    ? `closed`
+                    : `connected`
+                : `reconnecting`
+            : `none`
     }
 }

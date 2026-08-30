@@ -1,12 +1,13 @@
 require(`dotenv`).config()
 
-const fs = require(`fs/promises`)
-
-fs.writeFile(`lemony_logs.txt`, `🍋️ LEMONY LOGS 🍋️\n`, (err) => {
-    if (err) { console.log(`Error writing logs:`, err) }
-})
-
-// Import helper functions
+// Show the cursor when the process exits HUD
+if (!settings.debug) {
+    process.on(`exit`, () => process.stdout.write(`\x1b[?25h`));
+    [`SIGINT`, `SIGTERM`, `SIGQUIT`].forEach(signal => process.on(signal, () => {
+        process.stdout.write(`\x1b[?25h`)
+        process.exit()
+    }))
+}
 const { handleUncaughtException } = require(`./utils`)
 
 // Import client

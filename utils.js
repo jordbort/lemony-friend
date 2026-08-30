@@ -55,6 +55,8 @@ const chatColors = {
     '#ADFF2F': { name: `yellow-green`, terminalColor: terminalColors.yellowTxt }
 }
 
+const getTerminalChatColor = (code) => code in chatColors ? chatColors[code].terminalColor : terminalColors.whiteTxt
+
 const twitchUsernamePattern = /^[a-z0-9_]{4,25}$/i
 const emotePattern = /\b([a-z][a-z0-9]{2,9}[A-Z0-9][a-zA-Z0-9]{0,19})\b/
 
@@ -1184,6 +1186,7 @@ const doubleStruckTable = {
 module.exports = {
     terminalColors,
     chatColors,
+    getTerminalChatColor,
     twitchUsernamePattern,
     printMemory,
     pluralize,

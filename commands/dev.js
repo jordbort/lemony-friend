@@ -5,9 +5,11 @@ const { settings, lemonyFresh, users, mods, joinedChatrooms } = require(`../data
 const { logMessage, printMemory, pluralize, getContextEmote, getToUser } = require(`../utils`)
 
 const rollFunNumber = require(`./funNumber`)
+const printLemon = require(`../graphics/printLemon`)
 
 const { updateEventSubs, apiGetEventSubs } = require(`./twitch`)
-const { initWebSocket, closeWebSocket, checkWebSockets } = require(`../events/webSockets`)
+const { drawColumnTitles, renderLineHUD, setChannelOnline } = require(`../graphics/hud`)
+const { initWebSocket, closeWebSocket, checkWebSockets, getWebSocket } = require(`../events/webSockets`)
 const { apiCreateConduit, apiGetConduits, apiUpdateConduit, apiDeleteConduit, apiGetConduitShards } = require(`../events/conduits`)
 
 module.exports = {
@@ -270,5 +272,18 @@ module.exports = {
         const neutralEmote = getContextEmote(`neutral`, channel)
         const reply = `Deleted ${pluralize(emptyUsers.length, `empty user`, `empty users`)}! ${neutralEmote}`
         bot.say(chatroom, reply)
+    },
+    setOnline(props) { if (props.toUser in lemonyFresh) setChannelOnline(props.toUser, true) },
+    setOffline(props) { if (props.toUser in lemonyFresh) setChannelOnline(props.toUser, false) },
+    redrawHUD() {
+        process.stdout.write(`\x1b[?25l`)
+        process.stdout.write(`\x1b[2J`)
+        process.stdout.write(`\x1b[H`)
+        printLemon()
+        process.stdout.write(`\n`)
+        drawColumnTitles()
+        for (let i = 0; i < joinedChatrooms.length; i++) { process.stdout.write(`\n`) }
+        joinedChatrooms.forEach(chatroom => renderLineHUD(chatroom, getWebSocket(chatroom.substring(1))))
+        process.stdout.write(`\x1b[?25h`)
     }
 }

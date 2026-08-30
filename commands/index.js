@@ -199,7 +199,12 @@ const devCommands = {
     // For data management
     '!empty': countEmptyUsers,
     '!cleanup': deleteEmptyUsers,
-    'chart': collectUserData
+    'chart': collectUserData,
+
+    // For updating the HUD
+    'online': setOnline,
+    'offline': setOffline,
+    'redraw': redrawHUD
 }
 
 module.exports = function useCommand(props) {
