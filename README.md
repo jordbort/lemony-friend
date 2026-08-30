@@ -122,7 +122,7 @@ Use `cli channel` or `cli c` to access settings for the current channel (if you 
 
 Use this command to adjust the cooldown and "listening" status of timers for bot commands and reply types. Having a cooldown prevents the same command from being responded to multiple times within that time period. Changing the "listening" status of a command or reply type to `false` prevents the bot from acknowledging the message. For example, if you already have a bot in your channel that handles shoutouts, and don't want lemony_friend to give them, you can use `cli channel timer !so listening false` to disable this behavior. Here is a current list of all timers that can be adjusted and/or enabled/disabled: `!so` The command for giving shoutouts, `!raid` The command for saying the raid message(s), `!count` The command for viewing/adjusting the count, `streak` Listening for message/emote streaks, `new-chatter` Greeting new chatters in a chatroom (does not include spam detection), `greet` Saying hi to one user, `mass-greet` Saying hi to multiple users, `say-goodnight` Saying bye/goodnight to a user, `say-thanks` Saying thanks to a user, `say-youre-welcome` Saying you're welcome to a user, `say-mood` Responding to "how are you" messages
 
-- `cli channel contextEmote` or `cli c ce` (emote type, array of strings)
+- `cli channel contextEmotes` or `cli c ce` (emote type, array of strings)
 
 Use this command to update the 9 categories of emotes lemony_friend will draw from at random, defined for each channel. The categories are: `lemonEmotes` (`lem`), `neutralEmotes` (`neu`), `hypeEmotes` (`hype`), `positiveEmotes` (`pos`), `upsetEmotes` (`up`), `negativeEmotes` (`neg`), `greetingEmotes` (`greet`), `byeEmotes` (`bye`), `dumbEmotes` (`dumb`)
 
@@ -133,6 +133,10 @@ Use this command to update lemony_friend's response to the `!raid` command. The 
 - `cli channel noSubRaidMessage` or `cli c nsrm` (string)
 
 Use this command to update lemony_friend's response to the `!raid` command. The "no sub" raid message is intended for raid messages which do not use emotes that require a subscription to the channel (accessible to anyone).
+
+- `cli channel anonymousFollows` or `cli c af` (boolean)
+
+By default, lemony_friend thanks users by name for following the channel. Use this command to choose whether followers are thanked anonymously.
 
 - `cli channel rollFunNumber` or `cli c rfn` (boolean)
 
