@@ -1317,6 +1317,65 @@ function admireLemon(bot, chatroom, user, suffix, target) {
         }
     }
 }
+function embraceLemon(bot, chatroom, user, suffix, target) {
+    const singular = user.lemons === 1
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName || null
+    const preciousAdjective = [`dear`, `precious`, `favorite`, `special`][Math.floor(Math.random() * 4)]
+
+
+    if (allLemons) {
+        if (target) {
+            coinFlip()
+                ? bot.say(chatroom, `${userNickname} embraced ${singular ? `their lemon` : `all ${user.lemons} of their lemons`} in front of ${targetNickname}!`)
+                : bot.say(chatroom, `${userNickname} gave a hug to ${singular ? `their lemon` : `each of their ${user.lemons} lemons`} in front of ${targetNickname}!`)
+        } else {
+            coinFlip()
+                ? bot.say(chatroom, `${userNickname} embraced ${singular ? `their lemon` : `all ${user.lemons} of their lemons`}!`)
+                : bot.say(chatroom, `${userNickname} gave a hug to ${singular ? `their lemon` : `each of their ${user.lemons} lemons`}!`)
+        }
+    } else {
+        if (target) {
+            coinFlip()
+                ? bot.say(chatroom, `${userNickname} embraced ${singular ? `their ${[`one`, `sole`, `favorite`][Math.floor(Math.random() * 3)]}` : `their most ${preciousAdjective}`} lemon in front of ${targetNickname}!`)
+                : bot.say(chatroom, `${userNickname} gave a hug to ${singular ? `their ${[`one`, `sole`, `favorite`][Math.floor(Math.random() * 3)]}` : `their most ${preciousAdjective}`} lemon in front of ${targetNickname}.`)
+        } else {
+            coinFlip()
+                ? bot.say(chatroom, `${userNickname} embraced ${singular ? `their ${[`one`, `sole`, `favorite`][Math.floor(Math.random() * 3)]}` : `their most ${preciousAdjective}`} lemon!`)
+                : bot.say(chatroom, `${userNickname} gave a hug to ${singular ? `their ${[`one`, `sole`, `favorite`][Math.floor(Math.random() * 3)]}` : `their most ${preciousAdjective}`} lemon.`)
+        }
+    }
+}
+function praiseLemon(bot, chatroom, user, suffix, target) {
+    const singular = user.lemons === 1
+    const allLemons = [`s`, `z`].includes(suffix)
+    const userNickname = user.nickname || user.displayName
+    const targetNickname = target?.nickname || target?.displayName || null
+
+
+    if (allLemons) {
+        if (target) {
+            coinFlip()
+                ? bot.say(chatroom, `${userNickname} cheered for ${singular ? `their lemon` : `all ${user.lemons} of their lemons`} as ${targetNickname} watched!`)
+                : bot.say(chatroom, `${userNickname} commended ${singular ? `their lemon` : `each of their ${user.lemons} lemons`} in front of ${targetNickname}.`)
+        } else {
+            coinFlip()
+                ? bot.say(chatroom, `${userNickname} told ${singular ? `their lemon it was` : `all ${user.lemons} of their lemons they were`} doing a good job!`)
+                : bot.say(chatroom, `${userNickname} praised ${singular ? `their lemon` : `each of their ${user.lemons} lemons`}.`)
+        }
+    } else {
+        if (target) {
+            coinFlip()
+                ? bot.say(chatroom, `${userNickname} applauded ${singular ? `their lemon` : `one of their ${user.lemons} lemons`} as ${targetNickname} watched!`)
+                : bot.say(chatroom, `${userNickname} commended ${singular ? `their lemon` : `one of their ${user.lemons} lemons`} in front of ${targetNickname}.`)
+        } else {
+            coinFlip()
+                ? bot.say(chatroom, `${userNickname} told ${singular ? `their lemon` : `one of their ${user.lemons} lemons`} it was doing a good job!`)
+                : bot.say(chatroom, `${userNickname} praised ${singular ? `their lemon` : `one of their ${user.lemons} lemons`}.`)
+        }
+    }
+}
 function nullVerb(bot, chatroom, user, suffix, target, verb) {
     const allLemons = [`s`, `z`].includes(suffix)
     const userNickname = user.nickname || user.displayName
@@ -1834,7 +1893,48 @@ const keyVerbs = {
     'value': admireLemon,
     'valuate': admireLemon,
     'evaluate': admireLemon,
-    'cherish': admireLemon
+    'cherish': admireLemon,
+
+    'embrace': embraceLemon,
+    'hug': embraceLemon,
+    'cradle': embraceLemon,
+    'hold': embraceLemon,
+    'holdonto': embraceLemon,
+    'cling': embraceLemon,
+    'clingto': embraceLemon,
+    'clinch': embraceLemon,
+    'clutch': embraceLemon,
+    'clasp': embraceLemon,
+    'wrap': embraceLemon,
+    'seize': embraceLemon,
+    'grasp': embraceLemon,
+    'blanket': embraceLemon,
+    'smother': embraceLemon,
+    'cocoon': embraceLemon,
+    'lovebomb': embraceLemon,
+    'embosom': embraceLemon,
+    'enwrap': embraceLemon,
+    'encase': embraceLemon,
+    'encircle': embraceLemon,
+    'envelop': embraceLemon,
+    'enfold': embraceLemon,
+    'cuddle': embraceLemon,
+    'snuggle': embraceLemon,
+
+    'praise': praiseLemon,
+    'commend': praiseLemon,
+    'applaud': praiseLemon,
+    'cheer': praiseLemon,
+    'cheerfor': praiseLemon,
+    'hail': praiseLemon,
+    'laud': praiseLemon,
+    'celebrate': praiseLemon,
+    'extol': praiseLemon,
+    'acclaim': praiseLemon,
+    'distinguish': praiseLemon,
+    'glaze': praiseLemon,
+    'flatter': praiseLemon,
+    'bless': praiseLemon
 }
 
 module.exports = function useLemon(props, splitMessage) {
