@@ -102,14 +102,15 @@ function renderObj(obj, objName, indentation = ``) {
 
 async function logMessage(messages, time, channel, username, color, self) {
     // Colorize chat messages
-    const { resetTxt, grayTxt, whiteTxt, yellowBg } = terminalColors
+    const { resetTxt, grayTxt, yellowBg } = terminalColors
 
     // Display date change
     const currentDate = new Date().toLocaleDateString(settings.timeLocale, { year: `numeric`, month: `long`, day: `numeric`, timeZone: settings.timeZone })
     if (currentDate !== settings.currentDate) {
         settings.currentDate = currentDate
-        console.log(settings.currentDate)
-        await fs.appendFile(`lemony_logs.txt`, `${settings.currentDate}\n`, (err) => {
+        if (settings.debug) { console.log(settings.currentDate) }
+
+        await fs.appendFile(`logs.txt`, `${settings.currentDate}\n`, (err) => {
             if (err) { console.log(`Error writing logs:`, err) }
         })
     }
@@ -117,30 +118,27 @@ async function logMessage(messages, time, channel, username, color, self) {
     // Log chat message or debug message
     const channelName = settings.knownChannels[channel] || channel
     const log = messages.join(` `)
-    if (username) {
-        await fs.appendFile(`lemony_logs.txt`, `[${time}] <${channelName}> ${username}: ${log}\n`, (err) => {
-            if (err) { console.log(`Error writing logs:`, err) }
-        })
-        if (!settings.hideNonDevChannel || channelName === DEV) {
-            self && settings.highlightBotMessage
-                ? console.log(`${yellowBg}${settings.logTime
-                    ? `[${time}] `
-                    : ``}${settings.hideNonDevChannel
-                        ? ``
-                        : `<${channelName}> `}${username}: ${log}${resetTxt}`)
-                : console.log(`${settings.logTime
-                    ? `[${time}] `
-                    : ``}${settings.hideNonDevChannel
-                        ? ``
-                        : `<${channelName}> `}${color in chatColors ? chatColors[color].terminalColor : whiteTxt}${username}: ${log}${resetTxt}`)
+    if (settings.debug) {
+        if (username) {
+            if (!settings.hideNonDevChannel || channelName === DEV) {
+                process.stdout.write(self && settings.highlightBotMessage ? yellowBg : ``)
+                process.stdout.write(settings.logTime ? `[${time}] ` : ``)
+                process.stdout.write(settings.hideNonDevChannel ? `` : `<${channelName}> `)
+                process.stdout.write(self ? `` : getTerminalChatColor(color))
+                process.stdout.write(`${username}: ${log}${resetTxt}\n`)
+            }
+        } else {
+            console.log(`${grayTxt}${log}${resetTxt}`)
         }
     }
-    else {
-        await fs.appendFile(`lemony_logs.txt`, `${log}\n`, (err) => {
-            if (err) { console.log(`Error writing logs:`, err) }
-        })
-        if (settings.debug) { console.log(`${grayTxt}${log}${resetTxt}`) }
-    }
+
+    // Append logs.txt
+    const newLine = username
+        ? `[${time}] <${channelName}> ${username}: ${log}\n`
+        : `${log}\n`
+    await fs.appendFile(`logs.txt`, newLine, (err) => {
+        if (err) { console.log(`Error writing logs:`, err) }
+    })
 }
 
 const numbers = [
