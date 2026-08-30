@@ -1,11 +1,7 @@
-const { onMessageHandler, onJoinedHandler, onPartedHandler, onWhisperHandler, onConnectedHandler } = require(`./handlers`)
+const { joinedChatrooms, settings } = require(`./data`)
 
-// Create bot client
-const tmi = require(`tmi.js`)
 const BOT_USERNAME = process.env.BOT_USERNAME
 const OAUTH_TOKEN = process.env.OAUTH_TOKEN
-
-const { joinedChatrooms, settings } = require(`./data`)
 
 const options = {
     identity: {
@@ -17,7 +13,11 @@ const options = {
         : joinedChatrooms
 }
 
+// Create bot client
+const tmi = require(`tmi.js`)
 const client = new tmi.client(options)
+
+const { onConnectedHandler, onMessageHandler, onJoinedHandler, onPartedHandler, onWhisperHandler } = require(`./handlers`)
 
 client.on(`connected`, onConnectedHandler)
 client.on(`message`, onMessageHandler)

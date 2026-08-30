@@ -1,7 +1,7 @@
 const DEV = process.env.DEV
 const BOT_USERNAME = process.env.BOT_USERNAME
 
-const { settings, lemonyFresh, users, mods, joinedChatrooms } = require(`../data`)
+const { joinedChatrooms, settings, lemonyFresh, mods, users } = require(`../data`)
 const { logMessage, printMemory, pluralize, getContextEmote, getToUser } = require(`../utils`)
 
 const rollFunNumber = require(`./funNumber`)
@@ -63,9 +63,7 @@ module.exports = {
         const data = await apiGetConduitShards(settings.conduitId)
         checkWebSockets(data)
     },
-    logJoinedChatrooms() {
-        console.log(joinedChatrooms.length, joinedChatrooms)
-    },
+    logJoinedChatrooms() { console.log(joinedChatrooms.length, joinedChatrooms) },
     async getEventSubs(props) {
         const { bot, args, chatroom } = props
         const reply = []
@@ -144,9 +142,7 @@ module.exports = {
         await logMessage([`> Done`])
         process.exit(0)
     },
-    async writeMemoryFile(props) {
-        await printMemory(props.bot.channels)
-    },
+    async writeMemoryFile(props) { await printMemory(props.bot.channels) },
     kms(props) {
         const message = `Error${props.args.length
             ? ` with value${props.args.length === 1
@@ -179,19 +175,9 @@ module.exports = {
             ? console.log(lemonyFresh[toUser].viewers)
             : console.log(lemonyFresh[channel].viewers)
     },
-    logTags(props) {
-        console.log(props.tags)
-    },
-    logSettings() {
-        console.log(settings)
-    },
-    logBotChannels(props) {
-        console.log(props.bot.channels)
-    },
-    yellAcrossChannels(props) {
-        const { bot, message } = props
-        bot.channels.forEach(chatroom => bot.say(chatroom, `${message.substring(11)}`))
-    },
+    logTags(props) { console.log(props.tags) },
+    logSettings() { console.log(settings) },
+    yellAcrossChannels(props) { props.bot.channels.forEach(chatroom => props.bot.say(chatroom, `${props.message.substring(11)}`)) },
     streamFriendlyOn(props) {
         const { bot, chatroom } = props
         settings.hideNonDevChannel = true
@@ -208,12 +194,7 @@ module.exports = {
         settings.debug = true
         bot.say(chatroom, `/me Settings hideNonDevChannel: ${settings.hideNonDevChannel}, highlightBotMessage: ${settings.highlightBotMessage}, logTime: ${settings.logTime}, debug: ${settings.debug}`)
     },
-    testFunNumber(props) {
-        const { args } = props
-        if (!isNaN(args[0])) {
-            rollFunNumber(props, Number(args[0]))
-        }
-    },
+    testFunNumber(props) { if (!isNaN(props.args[0])) rollFunNumber(props, Number(props.args[0])) },
     checkPoints(props) {
         const { bot, chatroom, channel } = props
         logMessage([`> checkPoints(chatroom: ${chatroom})`])
@@ -222,7 +203,7 @@ module.exports = {
             ? bot.say(chatroom, `I have ${pluralize(users[BOT_USERNAME].channels[channel].points, `point`, `points`)}!`)
             : bot.say(chatroom, `I don't know how many points I have!`)
     },
-    collectUserData(props) {
+    collectUserData() {
         const floatTwo = (num) => Math.round(num * 100) / 100
 
         const totalUsers = Object.keys(users).length
@@ -276,7 +257,6 @@ module.exports = {
     setOnline(props) { if (props.toUser in lemonyFresh) setChannelOnline(props.toUser, true) },
     setOffline(props) { if (props.toUser in lemonyFresh) setChannelOnline(props.toUser, false) },
     redrawHUD() {
-        process.stdout.write(`\x1b[?25l`)
         process.stdout.write(`\x1b[2J`)
         process.stdout.write(`\x1b[H`)
         printLemon()
@@ -284,6 +264,5 @@ module.exports = {
         drawColumnTitles()
         for (let i = 0; i < joinedChatrooms.length; i++) { process.stdout.write(`\n`) }
         joinedChatrooms.forEach(chatroom => renderLineHUD(chatroom, getWebSocket(chatroom.substring(1))))
-        process.stdout.write(`\x1b[?25h`)
     }
 }

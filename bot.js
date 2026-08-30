@@ -1,5 +1,8 @@
 require(`dotenv`).config()
 
+// Set up process handlers
+const { settings } = require(`./data`)
+
 // Show the cursor when the process exits HUD
 if (!settings.debug) {
     process.on(`exit`, () => process.stdout.write(`\x1b[?25h`));
@@ -8,12 +11,14 @@ if (!settings.debug) {
         process.exit()
     }))
 }
+
+// Import crash handler
 const { handleUncaughtException } = require(`./utils`)
 
 // Import client
 const client = require(`./client`)
 
-const { settings } = require(`./data`)
+// Write memory.json on crash
 if (!settings.devMode) {
     process.on(`uncaughtException`, async (err) => {
         const errorStack = err.stack.split(`\n`)[1].split(`/`)
@@ -28,4 +33,6 @@ const fs = require(`fs/promises`)
 fs.writeFile(`logs.txt`, `🍋️ LEMONY LOGS 🍋️\n`, (err) => {
     if (err) { console.log(`Error writing logs:`, err) }
 })
+
+// Connect to Twitch IRC
 client.connect()

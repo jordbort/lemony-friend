@@ -1330,10 +1330,13 @@ module.exports = {
         users[newUsername] = {
             id: self ? BOT_ID : Number(tags[`user-id`]),
             displayName: tags[`display-name`],
-            nickname: '',
+            nickname: ``,
             color: tags.color || ``,
             lemons: 0,
+            hangmanGamesPlayed: 0,
             hangmanWins: 0,
+            blackjackRoundsPlayed: 0,
+            blackjackNetGains: 0,
             channels: {}
         }
 
@@ -1358,7 +1361,7 @@ module.exports = {
                 }
                 for (const mod in mods) {
                     if (mods[mod].isModIn.includes(`#${oldUsername}`)) {
-                        console.log(`-> Swapping '#${newUsername}' in for '#${oldUsername}' from ${mod}'s moderated channels`)
+                        logMessage([`-> Swapping '#${newUsername}' in for '#${oldUsername}' from ${mod}'s moderated channels`])
                         mods[mod].isModIn[mods[mod].isModIn.indexOf(`#${oldUsername}`)] = `#${newUsername}`
                         while (mods[mod].isModIn.includes(`#${oldUsername}`)) mods[mod].isModIn.splice(mods[mod].isModIn.indexOf(`#${oldUsername}`), 1)
                     }
@@ -1449,14 +1452,14 @@ module.exports = {
         lemonyFresh[channel].hangman = {
             signupSeconds: 30,
             lemonThreshold: 2,
-            totalChances: 0,
+            totalChances: 6,
             remainingChances: 0,
             listening: false,
             signup: false,
             answer: ``,
             spaces: [],
-            players: [],
             guessedLetters: [],
+            players: [],
             currentPlayer: 0,
             ...lemonyFresh[channel].hangman
         }

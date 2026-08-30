@@ -179,7 +179,6 @@ const devCommands = {
     'viewers': logChannelViewers,
     'tags': logTags,
     'settings': logSettings,
-    'channels': logBotChannels,
 
     // For messaging across all channels
     '!broadcast': yellAcrossChannels,

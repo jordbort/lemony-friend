@@ -205,9 +205,7 @@ module.exports = function usePattern(props) {
         // const pat = new RegExp(`"${BOT_USERNAME}" LV: (\\d+), HP: (\\d+)\\/\\d+, AT: \\d+\\(\\d+\\), DF: \\d+\\(\\d+\\), EXP: \\d+, NEXT: \\d+, WEAPON: [a-z\\s']+, ARMOR: [a-z\\s']+, GOLD: (\\d+)`, `i`)
         for (const pattern in undertaleBotPatterns) {
             const splitPattern = pattern.split(`/`)
-            // console.log(pattern, splitPattern.length, splitPattern)
             const regex = new RegExp(splitPattern.slice(1, splitPattern.length - 1).join(`/`), splitPattern[splitPattern.length - 1])
-            // console.log(regex, regex.test(message))
             if (regex.test(message)) {
                 logMessage([`${username.toUpperCase()} MATCHED REGEX PATTERN:`, regex, `[Function: ${undertaleBotPatterns[regex].name}]`])
                 undertaleBotPatterns[regex](props, regex)
