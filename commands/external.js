@@ -121,7 +121,10 @@ module.exports = {
                 bot.say(chatroom, `Definition of "${data.word}": ${data.definition.replace(/\n/g, ` `)}`)
             } else {
                 let definition = `Definition of "${data.word}": `
-                const splitDefinition = data.definition.replace(/\n/g, ` `).split(/[\.|\)|\]]\s/).filter(el => el && el !== `\n`)
+                const splitDefinition = data.definition
+                    .replace(/\n/g, ` `)
+                    .split(/\.\s/)
+                    .filter(el => el && el !== `\n`)
 
                 if (!splitDefinition.includes(`1`)) {
                     definition += splitDefinition[0]
