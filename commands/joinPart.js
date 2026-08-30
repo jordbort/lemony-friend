@@ -15,20 +15,22 @@ module.exports = {
             const lemonEmote = getContextEmote(`lemon`, channel)
             const neutralEmote = getContextEmote(`neutral`, channel)
             const positiveEmote = getContextEmote(`positive`, channel)
+            const negativeEmote = getContextEmote(`negative`, channel)
             const hypeEmote = getContextEmote(`hype`, channel)
             const greetingEmote = getContextEmote(`greeting`, channel)
             const dumbEmote = getContextEmote(`dumb`, channel)
+
             const numUsers = Object.keys(users).length
             const randNum = Math.ceil(Math.random() * 999)
             const totalLemons = Object.keys(users).map(user => users[user].lemons).reduce((acc, curr) => acc + curr, 0)
             const percentNicknames = Math.round(Object.keys(users).map(user => users[user].nickname).filter(el => el).length / Object.keys(users).length * 10000) / 100
             const hangmanWinners = Object.keys(users).filter(user => users[user].hangmanWins).length
-            const hangmanAverageWins = Math.round(Object.keys(users).map(user => users[user].hangmanWins).reduce((acc, curr) => acc + curr, 0) / hangmanWinners * 100) / 100
+            const hangmanAverageWins = Math.round(Object.keys(users).map(user => users[user].hangmanWins).reduce((acc, curr) => acc + curr, 0) / hangmanWinners * 100) / 100 || 0
             const arrLemCmds = Object.keys(lemCmds)
             const maxUses = Math.max(...arrLemCmds.map(cmd => lemCmds[cmd].uses))
             const mostUsedLemcmd = arrLemCmds.filter(cmd => lemCmds[cmd].uses === maxUses)
             const randomLemCmd = chooseFrom(arrLemCmds)
-            const lastUsed = msToElapsedTime(Date.now() - lemCmds[randomLemCmd].lastUsedDate)
+            const lastUsed = msToElapsedTime(Date.now() - lemCmds[randomLemCmd]?.lastUsedDate)
 
             const joinMessages = [
                 `Let's see how long before I crash ${dumbEmote}`,
@@ -37,6 +39,7 @@ module.exports = {
                 `(Windows XP startup sound plays)`,
                 `I'm onl`,
                 `Let's play Hangman! ${positiveEmote}`,
+                `Let's play Blackjack! ${positiveEmote}`,
                 `It has been ${Date.now().toLocaleString(`en-US`)} milliseconds since January 1, 1970, 12:00:00 AM UTC ${lemonEmote}`,
                 `${BOT_USERNAME} has entered the chat ${lemonEmote}`,
                 `${pluralize(totalLemons, `lemon is`, `lemons are`)} in circulation! ${lemonEmote}`,
@@ -83,9 +86,17 @@ module.exports = {
                             : hypeEmote}`
             ]
 
-            if (lemonyFresh[channel].followEmotes.length) { joinMessages.push(`I know ${pluralize(lemonyFresh[channel].followEmotes.length, `follow emote`, `follow emotes`)} in ${channel}'s channel! ${positiveEmote}`) }
-            if (lemonyFresh[channel].subEmotes.length) { joinMessages.push(`I know ${pluralize(lemonyFresh[channel].subEmotes.length, `sub emote`, `sub emotes`)} in ${channel}'s channel! ${positiveEmote}`) }
-            if (lemonyFresh[channel].bttvEmotes.length) { joinMessages.push(`I know ${pluralize(lemonyFresh[channel].bttvEmotes.length, `BTTV emote`, `BTTV emotes`)} in ${channel}'s channel! ${positiveEmote}`) }
+            if (lemonyFresh[channel].followEmotes.length) joinMessages.push(`I know ${pluralize(lemonyFresh[channel].followEmotes.length, `follow emote`, `follow emotes`)} in ${channel}'s channel! ${positiveEmote}`)
+            if (lemonyFresh[channel].subEmotes.length) joinMessages.push(`I know ${pluralize(lemonyFresh[channel].subEmotes.length, `sub emote`, `sub emotes`)} in ${channel}'s channel! ${positiveEmote}`)
+            if (lemonyFresh[channel].bttvEmotes.length) joinMessages.push(`I know ${pluralize(lemonyFresh[channel].bttvEmotes.length, `BTTV emote`, `BTTV emotes`)} in ${channel}'s channel! ${positiveEmote}`)
+            if (users[BOT_USERNAME]?.blackjackRoundsPlayed) {
+                const roundsPlayed = `I have played ${pluralize(users[BOT_USERNAME].blackjackRoundsPlayed, `round`, `rounds`)} of Blackjack, and have `
+                users[BOT_USERNAME].blackjackNetGains === 0
+                    ? joinMessages.push(`${roundsPlayed}broken even in lemons! ${neutralEmote}`)
+                    : users[BOT_USERNAME].blackjackNetGains > 0
+                        ? joinMessages.push(`${roundsPlayed}earned a net total of ${pluralize(users[BOT_USERNAME].blackjackNetGains, `lemon`, `lemons`)}! ${positiveEmote}`)
+                        : joinMessages.push(`${roundsPlayed}lost a net total of ${pluralize(Math.abs(users[BOT_USERNAME].blackjackNetGains), `lemon`, `lemons`)}! ${negativeEmote}`)
+            }
 
             const joinMessage = chooseFrom(joinMessages)
             bot.say(chatroom, joinMessage)

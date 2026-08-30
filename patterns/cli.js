@@ -198,16 +198,16 @@ function updateDuration(bot, chatroom, obj, message, name, args) {
     bot.say(chatroom, `/me ${message} must be between 0-120 (currently: ${obj[name]} seconds)`)
 }
 
-function updateLargeNum(bot, chatroom, obj, message, name, args) {
-    logMessage([`> updateLargeNum(chatroom: '${chatroom}', name: '${name}', args: ${logArr(args)})`])
+function updateMilliseconds(bot, chatroom, obj, message, name, args) {
+    logMessage([`> updateMilliseconds(chatroom: '${chatroom}', name: '${name}', args: ${logArr(args)})`])
 
     if (Number(args[0]) >= 1 && Number(args[0]) <= 9999999) {
         obj[name] = Math.round(Number(args[0]))
-        bot.say(chatroom, `/me ${message} set to: ${obj[name]}`)
+        bot.say(chatroom, `/me ${message} set to: ${obj[name]} ms`)
         return
     }
 
-    bot.say(chatroom, `/me ${message} must be between 1-9999999 (currently: ${obj[name]})`)
+    bot.say(chatroom, `/me ${message} must be between 1-9999999 ms (currently: ${obj[name]})`)
 }
 
 function updateContextEmotes(bot, chatroom, obj, message, name, args) {
@@ -257,6 +257,30 @@ function updateHangman(bot, chatroom, obj, message, name, args) {
         }
     }
 
+    // bot.say(chatroom, `/me ${message} options - ${makeList(options, obj[name])}`)
+    bot.say(chatroom, `/me ${message} options: ${makeList(options)}`)
+}
+
+function updateBlackjack(bot, chatroom, obj, message, name, args) {
+    logMessage([`> updateBlackjack(chatroom: '${chatroom}', name: '${name}', args: ${logArr(args)})`])
+
+    const options = {
+        [/^signupSeconds$|^ss$/i]: { name: `signupSeconds`, func: updateNum },
+        [/^messageDelay$|^md$/i]: { name: `messageDelay`, func: updateMilliseconds },
+        [/^numberOfDecks$|^nd$/i]: { name: `numberOfDecks`, func: updateNum },
+        [/^hitSoft17$|^hs17$/i]: { name: `hitSoft17`, func: updateBool }
+    }
+
+    for (const option in options) {
+        const regex = new RegExp(option.split(`/`)[1], option.split(`/`)[2])
+        if (regex.test(args[0])) {
+            args.shift()
+            options[regex].func(bot, chatroom, obj[name], `${message.replace(/"/g, ``)} "${options[regex].name}"`, options[regex].name, args)
+            return
+        }
+    }
+
+    // bot.say(chatroom, `/me ${message} options - ${makeList(options, obj[name])}`)
     bot.say(chatroom, `/me ${message} options: ${makeList(options)}`)
 }
 
@@ -281,6 +305,7 @@ function updateChannelDev(props, args) {
         [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
         [/^contextEmotes?$|^ce$/i]: { name: `contextEmotes`, func: updateContextEmotes },
         [/^hangman$|^h$/i]: { name: `hangman`, func: updateHangman },
+        [/^blackjack$|^bj$/i]: { name: `blackjack`, func: updateBlackjack },
         [/^rollFunNumber$|^rfn$/i]: { name: `rollFunNumber`, func: updateBool },
         [/^anonymousFollows$|^af$/i]: { name: `anonymousFollows`, func: updateBool },
         [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
@@ -317,6 +342,7 @@ function updateChannel(props, args) {
         // [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
         [/^contextEmotes?$|^ce$/i]: { name: `contextEmotes`, func: updateContextEmotes },
         // [/^hangman$|^h$/i]: { name: `hangman`, func: updateHangman },
+        // [/^blackjack$|^bj$/i]: { name: `blackjack`, func: updateBlackjack },
         [/^rollFunNumber$|^rfn$/i]: { name: `rollFunNumber`, func: updateBool },
         [/^anonymousFollows$|^af$/i]: { name: `anonymousFollows`, func: updateBool },
         [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
@@ -484,7 +510,7 @@ function updateSettingsDev(props, args) {
         [/^timeZone$|^tz$/i]: { name: `timeZone`, func: updateTimeZone },
         // [/^timeLocale$|^tl$/i]: { name: `timeLocale`, func: updateTimeLocale },
         // [/^joinMessage$|^jm$/i]: { name: `joinMessage`, func: updateStr },
-        // [/^maxCountdownDuration$|^mcd$/i]: { name: `maxCountdownDuration`, func: updateLargeNum },
+        // [/^maxCountdownDuration$|^mcd$/i]: { name: `maxCountdownDuration`, func: updateMilliseconds },
         // [/^sayJoinMessage$|^sjm$/i]: { name: `sayJoinMessage`, func: updateBool },
         // [/^sayPartMessage$|^spm$/i]: { name: `sayPartMessage`, func: updateBool },
         // [/^highlightBotMessage$|^hbm$/i]: { name: `highlightBotMessage`, func: updateBool },

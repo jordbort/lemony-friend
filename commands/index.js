@@ -17,6 +17,7 @@ const { handleJoin, handlePart } = require(`./joinPart`)
 const { handleLemCmd, getLemCmds } = require(`./lemCmds`)
 const { getDocs, accessInstructions } = require(`./help`)
 const { manageHangman, joinHangman } = require(`../patterns/hangman`)
+const { playBlackjack, hit, split, doubleDown, stay } = require(`./blackjack`)
 const { insultUser, manageVerbs, manageNouns, manageAdjectives } = require(`./insult`)
 const { getLastMessage, getMessageCount, sayOnlineTime, sayFriends, getColor, getLemons } = require(`./getInfo`)
 const { getDadJoke, getPokemon, getDefinition, getPokemonAbility, getUrbanDictionaryDefinition } = require(`./external`)
@@ -96,6 +97,16 @@ const commands = {
 
     '!hangman': manageHangman,
     '!play': joinHangman,
+
+    '!blackjack': playBlackjack,
+    '!bj': playBlackjack,
+    '!hit': hit,
+    '!hitme': hit,
+    '!split': split,
+    '!doubledown': doubleDown,
+    '!dd': doubleDown,
+    '!stay': stay,
+    '!stand': stay,
 
     '!lastmsg': getLastMessage,
     '!msgcount': getMessageCount,

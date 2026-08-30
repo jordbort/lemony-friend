@@ -776,6 +776,24 @@ function reportHangmanWins(props) { // funNumber 35
         : logMessage([`-> '${username}' has not played Hangman yet`])
 }
 
+function reportBlackjackEarnings(props) { // funNumber 36
+    const { bot, chatroom, channel, username, userNickname, user } = props
+    logMessage([`> reportBlackjackEarnings(channel: '${channel}', username: '${username}')`])
+
+    const positiveEmote = getContextEmote(`positive`, channel)
+    const negativeEmote = getContextEmote(`negative`, channel)
+    const neutralEmote = getContextEmote(`neutral`, channel)
+
+    const reply = `${userNickname} has played ${pluralize(user.blackjackRoundsPlayed, `round`, `rounds`)} of Blackjack, and has `
+    user.blackjackRoundsPlayed
+        ? user.blackjackNetGains > 0
+            ? bot.say(chatroom, `${reply}won a net total of ${pluralize(user.blackjackNetGains, `lemon`, `lemons`)}! ${positiveEmote}`)
+            : user.blackjackNetGains < 0
+                ? bot.say(chatroom, `${reply}lost a net total of ${pluralize(Math.abs(user.blackjackNetGains), `lemon`, `lemons`)}! ${negativeEmote}`)
+                : bot.say(chatroom, `${reply}broken even in lemons! ${neutralEmote}`)
+        : logMessage([`-> '${username}' has not played Blackjack yet`])
+}
+
 module.exports = function rollFunNumber(props, funNumber) {
     const { bot, chatroom, tags, message, channel, username, aprilFools } = props
     logMessage([`> rollFunNumber(channel: '${channel}', tags: ${Object.keys(tags).length}, username: '${username}', message: '${message}', funNumber: ${funNumber})`])
@@ -821,7 +839,8 @@ module.exports = function rollFunNumber(props, funNumber) {
         32: transformMessage,
         33: makeInsultPhrase,
         34: lookForNumerals,
-        35: reportHangmanWins
+        35: reportHangmanWins,
+        36: reportBlackjackEarnings
     }
 
     if (funNumber in outcomes) {

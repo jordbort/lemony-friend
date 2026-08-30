@@ -1461,6 +1461,19 @@ module.exports = {
             currentPlayer: 0,
             ...lemonyFresh[channel].hangman
         }
+        lemonyFresh[channel].blackjack = {
+            numberOfDecks: 1,
+            signupSeconds: 15,
+            messageDelay: 2000,
+            listening: false,
+            signup: false,
+            hitSoft17: false,
+            deck: [],
+            discardPile: [],
+            players: [],
+            currentPlayer: 0,
+            ...lemonyFresh[channel].blackjack
+        }
         lemonyFresh[channel].timers = {
             '!so': { cooldown: 4, listening: true },
             '!raid': { cooldown: 6, listening: true },
@@ -1708,5 +1721,46 @@ module.exports = {
             [newArr[i], newArr[j]] = [newArr[j], newArr[i]]
         }
         return newArr
+    },
+    getOrdinalNumeralSuffix(num) {
+        num = String(num)
+        const lastTwo = num.substring(num.length - 2)
+        switch (lastTwo) {
+            case `1`:
+            case `01`:
+            case `21`:
+            case `31`:
+            case `41`:
+            case `51`:
+            case `61`:
+            case `71`:
+            case `81`:
+            case `91`:
+                return num + `st`
+            case `2`:
+            case `02`:
+            case `22`:
+            case `32`:
+            case `42`:
+            case `52`:
+            case `62`:
+            case `72`:
+            case `82`:
+            case `92`:
+                return num + `nd`
+            case `3`:
+            case `03`:
+            case `23`:
+            case `33`:
+            case `43`:
+            case `53`:
+            case `63`:
+            case `73`:
+            case `83`:
+            case `93`:
+                return num + `rd`
+            default:
+                return num + `th`
+        }
     }
 }
