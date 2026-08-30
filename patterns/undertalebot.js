@@ -1,7 +1,6 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
 
 const { users } = require(`../data`)
-const { logMessage } = require(`../utils`)
 
 const data = {
     fightTimer: 0,
@@ -56,7 +55,6 @@ function upgradeArmor(bot, chatroom) {
 
 module.exports = {
     parseSelfData(props, regex) {
-        logMessage([`> parseSelfData()`])
         const { bot, chatroom, message } = props
         data.lv = Number(message.split(regex)[1])
         data.hp = Number(message.split(regex)[2])
@@ -67,25 +65,21 @@ module.exports = {
         setTimeout(() => upgradeArmor(bot, chatroom), 3000)
     },
     mercyUser(props, regex) {
-        logMessage([`> mercyUser()`])
         const { bot, chatroom, message } = props
         const username = parseUsername(message.split(regex)[1])
         setTimeout(() => bot.say(chatroom, `!mercy ${username}`), 3000)
     },
     fightBack(props, regex) {
-        logMessage([`> fightBack()`])
         const { bot, chatroom, message } = props
         const username = parseUsername(message.split(regex)[1])
         data.fightTimer = setTimeout(() => bot.say(chatroom, `!fight ${username}`), 3000)
     },
     reloadSave(props, regex) {
-        logMessage([`> reloadSave()`])
-        const { bot, chatroom, message } = props
+        const { bot, chatroom } = props
         clearTimeout(data.fightTimer)
         setTimeout(() => bot.say(chatroom, `!load`), 3000)
     },
     parseVictory(props, regex) {
-        logMessage([`> parseVictory()`])
         const { bot, chatroom, message } = props
         const foundGold = Number(message.split(regex)[1])
         data.gold += foundGold
@@ -104,7 +98,6 @@ module.exports = {
         setTimeout(() => upgradeArmor(bot, chatroom), 3000)
     },
     parseInventory(props, regex) {
-        logMessage([`> parseInventory()`])
         const { bot, chatroom, message } = props
         data.items = message.match(/[^\s:,][a-z\s'\.\?]+/gi).slice(2)
         upgradeWeapon(bot, chatroom)

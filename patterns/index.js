@@ -212,6 +212,13 @@ module.exports = function usePattern(props) {
                 return true
             }
         }
+
+        // Bot otherwise mentioned as a result of someone else's action
+        if (RegExp(`\\* .+\\b${BOT_USERNAME}`, `i`).test(message)) {
+            checkSentiment(props)
+            return
+        }
+
         logMessage([`${username.toUpperCase()} DID NOT MATCH REGEX PATTERNS`])
     }
 
