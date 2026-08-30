@@ -1,5 +1,5 @@
 const { settings, lemonyFresh, users } = require(`../data`)
-const { chatColors, getContextEmote, pluralize, getToUser, logMessage, arrToList, logArr, parseTargetByNickname, spellOutNumber, msToElapsedTime, chooseFrom } = require(`../utils`)
+const { chatColors, getContextEmote, pluralize, getToUser, logMessage, logArr, parseTargetByNickname, spellOutNumber, msToElapsedTime, chooseFrom } = require(`../utils`)
 
 module.exports = {
     sayOnlineTime(props) {
@@ -7,6 +7,9 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
+            `Updated CLI channel configurations 'hangman' or 'h', and 'blackjack' or 'bj' for dev`,
+            `Implemented Blackjack game`,
+            `Added more uses for lemons`,
             `Created CLI channel configuration 'anonymousFollows' or 'af'`,
             `Created CLI settings configuration 'maxDefinitionLength' or 'mdl'`,
             `Updated Hangman messaging and shuffle algorithm`,
