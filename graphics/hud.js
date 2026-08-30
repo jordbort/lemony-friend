@@ -39,8 +39,8 @@ function fillWhitespace(maxLength, entry = ``) {
 const isOnline = {}
 const cursor = { x: 0, y: 0 }
 const colWidths = {
-    channelName: 25,
-    lastChatter: 25,
+    channelName: 26,
+    lastChatter: 26,
     viewers: 8,
     lastMessage: 80,
     sentAt: 18,
