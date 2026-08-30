@@ -41,7 +41,7 @@ const cursor = { x: 0, y: 0 }
 const colWidths = {
     channelName: 25,
     lastChatter: 25,
-    // lastMessage: 100,
+    viewers: 8,
     lastMessage: 80,
     sentAt: 18,
     contextEmotes: 4,
@@ -76,24 +76,28 @@ function drawColumnTitles() {
     process.stdout.write(underlined)
     process.stdout.write(channelColumn)
 
+    // Viewers column
+    const viewersColumn = fillWhitespace(colWidths.viewers, `Viewers`)
+    process.stdout.write(viewersColumn)
+
     // Last chatter column
-    const lastChatterColumn = `${fillWhitespace(colWidths.lastChatter, `Last chatter`)}`
+    const lastChatterColumn = fillWhitespace(colWidths.lastChatter, `Last chatter`)
     process.stdout.write(lastChatterColumn)
 
     // Last message column
-    const lastMessageColumn = `${fillWhitespace(colWidths.lastMessage, `Last message`)}`
+    const lastMessageColumn = fillWhitespace(colWidths.lastMessage, `Last message`)
     process.stdout.write(lastMessageColumn)
 
     // Last message column
-    const sentAtColumn = `${fillWhitespace(colWidths.sentAt, `Sent at`)}`
+    const sentAtColumn = fillWhitespace(colWidths.sentAt, `Sent at`)
     process.stdout.write(sentAtColumn)
 
     // CEs column
-    const contextEmotesColumn = `${fillWhitespace(colWidths.contextEmotes, `CEs`)}`
+    const contextEmotesColumn = fillWhitespace(colWidths.contextEmotes, `CEs`)
     process.stdout.write(contextEmotesColumn)
 
     // Token column
-    const accessTokenColumn = `${fillWhitespace(colWidths.accessToken, `Token?`)}`
+    const accessTokenColumn = fillWhitespace(colWidths.accessToken, `Token?`)
     process.stdout.write(accessTokenColumn)
 
     // WebSocket column
@@ -124,6 +128,12 @@ function initHUD() {
         const channelColumn = fillWhitespace(colWidths.channelName, channel)
         process.stdout.write(grayTxt)
         process.stdout.write(channelColumn)
+
+        // Viewers column
+        const viewers = lemonyFresh[channel].viewers.length.toLocaleString(settings.timeLocale)
+        const viewersColumn = fillWhitespace(colWidths.viewers, viewers)
+        process.stdout.write(yellowTxt)
+        process.stdout.write(viewersColumn)
 
         // Import most recent message from channels
         const [lastChatter, lastMessage, sentAt] = getMostRecentMsg(channel)
@@ -183,6 +193,12 @@ function renderLineHUD(chatroom, webSocketStatus = ``, username = ``, message = 
     colWidths.channelName = Math.max(8, Math.max(...joinedChatrooms.map(chatroom => chatroom.length)))
     const channelColumn = fillWhitespace(colWidths.channelName, channel)
     process.stdout.write(channelColumn)
+
+    // Viewers column
+    const viewers = lemonyFresh[channel].viewers.length.toLocaleString(settings.timeLocale)
+    const viewersColumn = fillWhitespace(colWidths.viewers, viewers)
+    process.stdout.write(yellowTxt)
+    process.stdout.write(viewersColumn)
 
     // Use or import most recent message from channel
     const [lastChatter, lastMessage, sentAt] = username ? [username, message, currentTime] : getMostRecentMsg(channel)
