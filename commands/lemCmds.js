@@ -9,7 +9,7 @@ const regexExclusion = /^$|^\s$|^\s?\}$|^\{\s?random\s?$/i
 const regexQuote = /"(.+?)"/
 
 function applyVariables(str, props) {
-    const { args, channel, channelNickname, username, toUser } = props
+    const { args, channel, username, toUser } = props
     logMessage([`-> applyVariables(str: ${str}, args: ${logArr(args)})`])
 
     // Prepare viewers
