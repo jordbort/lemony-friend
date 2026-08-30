@@ -22,7 +22,18 @@ const { getLastMessage, getMessageCount, sayOnlineTime, sayFriends, getColor, ge
 const { getDadJoke, getPokemon, getDefinition, getPokemonAbility, getUrbanDictionaryDefinition } = require(`./external`)
 const { sayGoodnight, handleGreet, chant, handleRaid, setAway, yell, makeMultiTwitchLink, tiny, bold, cursive, doubleStruck } = require(`./conversation`)
 const { handleShoutout, getBotToken, makeAnnouncement, authorizeToken, banUsers, startPoll, endPoll, updateStreamGame, updateStreamTitle, checkToken, getFollowDuration } = require(`./twitch`)
-const { createConduit, getConduit, updateConduitShardCount, deleteConduit, getConduitShards, logJoinedChatrooms, getEventSubs, connectWebSocket, disconnectWebSocket, refreshEventSubs, shutdown, writeMemoryFile, kms, logChannelInfo, logUserInfo, logModInfo, logChannelViewers, logTags, logSettings, logBotChannels, yellAcrossChannels, streamFriendlyOn, streamFriendlyOff, testFunNumber, checkPoints, collectUserData, countEmptyUsers, deleteEmptyUsers } = require(`./dev`)
+const {
+    createConduit, getConduit, updateConduitShardCount, deleteConduit, getConduitShards, logJoinedChatrooms,
+    getEventSubs, refreshEventSubs, connectWebSocket, disconnectWebSocket,
+    logChannelInfo, logChannelViewers, logModInfo, logUserInfo, logSettings, logTags,
+    yellAcrossChannels,
+    writeMemoryFile, shutdown, kms,
+    streamFriendlyOn, streamFriendlyOff,
+    testFunNumber,
+    countEmptyUsers, deleteEmptyUsers, collectUserData,
+    redrawHUD, setOnline, setOffline,
+    checkPoints
+} = require(`./dev`)
 
 const commands = {
     '!so': handleShoutout,
@@ -163,25 +174,25 @@ const devCommands = {
 
     // For WebSockets
     'getsubs': getEventSubs,
+    'updatesubs': refreshEventSubs,
     'openws': connectWebSocket,
     'closews': disconnectWebSocket,
-    'updatesubs': refreshEventSubs,
-
-    // For saving memory file
-    '_shutdown': shutdown,
-    '_print': writeMemoryFile,
-    '_crash': kms,
 
     // For individual data
     'channel': logChannelInfo,
-    'user': logUserInfo,
-    'mod': logModInfo,
     'viewers': logChannelViewers,
-    'tags': logTags,
+    'mod': logModInfo,
+    'user': logUserInfo,
     'settings': logSettings,
+    'tags': logTags,
 
     // For messaging across all channels
     '!broadcast': yellAcrossChannels,
+
+    // For saving memory file
+    '_print': writeMemoryFile,
+    '_shutdown': shutdown,
+    '_crash': kms,
 
     // For stream-friendly log view
     '!streamon': streamFriendlyOn,
@@ -190,20 +201,20 @@ const devCommands = {
     // For testing funCumber outcomes
     'test': testFunNumber,
 
-    'sepoints': checkPoints,
-    '!subs': getSubs,
-    '!join': handleJoin,
-    '!part': handlePart,
-
     // For data management
     '!empty': countEmptyUsers,
     '!cleanup': deleteEmptyUsers,
     'chart': collectUserData,
 
     // For updating the HUD
+    'redraw': redrawHUD,
     'online': setOnline,
     'offline': setOffline,
-    'redraw': redrawHUD
+
+    'sepoints': checkPoints,
+    '!subs': getSubs,
+    '!join': handleJoin,
+    '!part': handlePart
 }
 
 module.exports = function useCommand(props) {
