@@ -35,7 +35,7 @@ function updateUser(bot, chatroom, tags, self, username, channel, message, curre
     if (!(username in users)) { initUser(bot, chatroom, tags, self) }
 
     // Add mod/update isModIn list
-    if (tags.mod) { updateMod(chatroom, tags, self, username) }
+    if (tags.mod) updateMod(chatroom, tags, self, username)
 
     // Initialize user in a new chatroom
     if (!(channel in users[username].channels)) { initUserChannel(tags, username, channel) }
@@ -56,10 +56,10 @@ function handleUserChange(props) {
     const vipChange = userChannel.vip !== (!!tags.vip || !!tags.badges?.vip)
     const colorChange = tags.color !== user.color && user.color !== ``
 
-    if (subChange) { handleSubChange(props) }
-    if (modChange) { handleModChange(props) }
-    if (vipChange) { handleVIPChange(props) }
-    if (colorChange) { handleColorChange(props) }
+    if (subChange) handleSubChange(props)
+    if (modChange) handleModChange(props)
+    if (vipChange) handleVIPChange(props)
+    if (colorChange) handleColorChange(props)
 }
 
 function acknowledgeGigantifiedEmote(bot, chatroom, msg) {
@@ -129,7 +129,7 @@ module.exports = {
             }
 
             // Say join message
-            if (settings.sayJoinMessage) { sayJoinMessage(this, chatroom) }
+            if (settings.sayJoinMessage) sayJoinMessage(this, chatroom)
 
             // Create WebSocket session
             if (!settings.devMode) {
@@ -209,7 +209,7 @@ module.exports = {
         pyramidListener(this, chatroom, channel, msg, self, username, aprilFools)
 
         // Bot stops listening
-        if (self) { return }
+        if (self) return
 
         // Parse args
         const args = msg.split(` `)
@@ -281,8 +281,7 @@ module.exports = {
         }
 
         // Listening for a message to be repeated by at least two other users
-        if (lemonyFresh[channel].timers.streak.listening) { streakListener(props) }
-        else { logMessage([`> checkStreak must wait for 'streak' cooldown`]) }
+        lemonyFresh[channel].timers.streak.listening ? streakListener(props) : logMessage([`> checkStreak must wait for 'streak' cooldown`])
 
         // *** FUN NUMBER! ***
         if (userChannel.msgCount % settings.funNumberCount === 0) {

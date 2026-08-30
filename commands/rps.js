@@ -19,7 +19,7 @@ function realRPS(playerChoice, channel) {
         || (playerChoice === `scissors` && botChoice === `paper`)) {
         reply += `. You win! ${hypeEmote}`
     }
-    else { reply += `, too. It's a tie! :O` }
+    else reply += `, too. It's a tie! :O`
 
     return reply
 }

@@ -56,7 +56,7 @@ function addItem(bot, chatroom, channel, list, args, isModOrVIP) {
     if (newItem) {
         list.push(newItem)
         bot.say(chatroom, `Added #${list.length - 1} "${newItem}" to ${listName}! ${positiveEmote}`)
-    } else { bot.say(chatroom, `Nothing added to ${listName}! ${dumbEmote}`) }
+    } else bot.say(chatroom, `Nothing added to ${listName}! ${dumbEmote}`)
 }
 
 function editItem(bot, chatroom, channel, list, args, isModOrVIP) {
@@ -220,7 +220,7 @@ function clearList(bot, chatroom, channel, list, resetName, isModOrVIP) {
     const positiveEmote = getContextEmote(`positive`, channel)
 
     list.length = 1
-    if (resetName) { list[0] = `` }
+    if (resetName) list[0] = ``
     const listName = list[0] || `The list`
 
     bot.say(chatroom, `${listName} has been ${resetName ? `reset` : `cleared`}! ${positiveEmote}`)

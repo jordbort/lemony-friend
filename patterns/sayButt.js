@@ -12,5 +12,5 @@ module.exports = function sayButt(props, splitMessage) {
         const dumbEmote = getContextEmote(`dumb`, channel)
         bot.say(chatroom, `But${suffix}? More like BUTT-${suffix} ${dumbEmote}`)
 
-    } else { logMessage([`-> Timer in ${channel} 'say-butt' is not currently listening`]) }
+    } else logMessage([`-> Timer in ${channel} 'say-butt' is not currently listening`])
 }

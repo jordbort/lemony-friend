@@ -44,7 +44,7 @@ function checkStreamerEmoteStreak(bot, chatroom, channel, currentTime, emoteOwne
                 && users[username].channels[channel].lastMessage.includes(emote)
                 && currentTime - users[username].channels[channel].sentAt <= settings.streakMinutesThreshold * 60000) {
                 emoteStreakUsers.push(username)
-                if (emoteStreakUsers.length) { logMessage([`-> Found`, emoteStreakUsers.length, `out of`, lemonyFresh[channel].streamerEmoteStreakThreshold, `${emoteOwner} emotes: ${emoteStreakUsers.join(`, `)}`]) }
+                if (emoteStreakUsers.length) logMessage([`-> Found`, emoteStreakUsers.length, `out of`, lemonyFresh[channel].streamerEmoteStreakThreshold, `${emoteOwner} emotes: ${emoteStreakUsers.join(`, `)}`])
                 break
             }
         }
@@ -91,5 +91,5 @@ module.exports = function streakListener(props) {
             const emoteOwner = Object.keys(lemonyFresh).filter(channel => [...lemonyFresh[channel].followEmotes, ...lemonyFresh[channel].subEmotes].some(emote => message.includes(emote)))[0]
             checkStreamerEmoteStreak(bot, chatroom, channel, currentTime, emoteOwner)
         }
-    } else { logMessage([`> Timer in ${channel} 'streak' is not currently listening`]) }
+    } else logMessage([`> Timer in ${channel} 'streak' is not currently listening`])
 }

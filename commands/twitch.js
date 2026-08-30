@@ -503,7 +503,7 @@ async function updateEventSubs(channel) {
                     if (!enabled.includes(`channel.hype_train.begin`)) { await apiCreateEventSub(userId, `channel.hype_train.begin`, 2) }
             }
         }
-    } else { await logMessage([`-> Failed to get EventSubs for '${channel}'`]) }
+    } else await logMessage([`-> Failed to get EventSubs for '${channel}'`])
 }
 
 async function apiShoutOut(fromId, toId, moderatorName, moderatorId, accessToken, refreshToken, attempt = 1) {
@@ -978,7 +978,7 @@ module.exports = {
                 bot.say(chatroom, `Error: Please don't use angle brackets in the seconds! ${neutralEmote}`)
                 return
             }
-            else { duration = Number(seconds.split(regex)[1]) }
+            else duration = Number(seconds.split(regex)[1])
 
         }
         if (isNaN(duration) || duration < 15 || duration > 1800) {
@@ -1126,7 +1126,7 @@ module.exports = {
                 apiShoutOut(fromId, toId, moderatorName, moderatorId, accessToken, refreshToken)
             }
 
-        } else { await logMessage([`-> Timer in ${channel} '!so' is not currently listening`]) }
+        } else await logMessage([`-> Timer in ${channel} '!so' is not currently listening`])
     },
     async updateStreamGame(props) {
         const { bot, chatroom, args, username, channel, channelNickname, isMod } = props

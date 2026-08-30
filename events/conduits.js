@@ -33,7 +33,7 @@ async function apiGetConduits(attempt = 1) {
                     await logMessage([`-> Failed to get Twitch conduits after ${pluralize(attempt, `attempt`, `attempts`)}`])
                     return null
                 }
-            } else { return null }
+            } else return null
         }
     } catch (err) {
         await logMessage([`apiGetConduits ${err}`])
@@ -76,7 +76,7 @@ async function apiUpdateConduit(conduitId, shardCount, attempt = 1) {
                     await logMessage([`-> Failed to create Twitch conduit after ${pluralize(attempt, `attempt`, `attempts`)}`])
                     return null
                 }
-            } else { return null }
+            } else return null
         }
     } catch (err) {
         await logMessage([`apiUpdateConduit ${err}`])

@@ -56,7 +56,7 @@ function handleGreetOne(props) {
         }
         bot.say(chatroom, response)
 
-    } else { logMessage([`-> Timer in ${channel} 'greet' is not currently listening`]) }
+    } else logMessage([`-> Timer in ${channel} 'greet' is not currently listening`])
 }
 
 function handleGreetMany(bot, chatroom, arr, channel) {
@@ -83,7 +83,7 @@ function handleGreetMany(bot, chatroom, arr, channel) {
         })
         bot.say(chatroom, response.join(` `))
 
-    } else { logMessage([`-> Timer in ${channel} 'massGreet' is not currently listening`]) }
+    } else logMessage([`-> Timer in ${channel} 'massGreet' is not currently listening`])
 }
 
 function handleGreetAll(bot, chatroom, channel, username) {
@@ -120,7 +120,7 @@ function handleGreetAll(bot, chatroom, channel, username) {
         const response = usersToGreet.map((user) => `${randomGreeting} ${user} ${greetingEmote}`)
         bot.say(chatroom, response.join(` `))
 
-    } else { logMessage([`-> Timer in ${channel} 'greetAll' is not currently listening`]) }
+    } else logMessage([`-> Timer in ${channel} 'greetAll' is not currently listening`])
 }
 
 const newChatters = {}
@@ -176,20 +176,20 @@ module.exports = {
                 resetNewChatters(channel)
             }, 5000)
 
-        } else { logMessage([`-> Timer in ${channel} 'newChatter' is not currently listening`]) }
+        } else logMessage([`-> Timer in ${channel} 'newChatter' is not currently listening`])
     },
     handleGreet(props) {
         const { bot, chatroom, args, channel, username, userNickname, target, targetNickname } = props
         logMessage([`> handleGreet(channel: '${channel}', args: ${logArr(args)}, userNickname: '${userNickname}', targetNickname: '${targetNickname}')`])
 
         // If !greet all
-        if (/^all$/i.test(args[0])) { handleGreetAll(bot, chatroom, channel, username) }
+        if (/^all$/i.test(args[0])) handleGreetAll(bot, chatroom, channel, username)
         // If one (known) username is used, greet normally
-        else if (target && !args[1]) { handleGreetOne(props) }
+        else if (target && !args[1]) handleGreetOne(props)
         // If multiple args are used, or toUser is not known
-        else if (args.length) { handleGreetMany(bot, chatroom, args, channel) }
+        else if (args.length) handleGreetMany(bot, chatroom, args, channel)
         // If no args are used
-        else { bot.say(chatroom, `Greetings, ${userNickname}! ${getContextEmote(`greeting`, channel)}`) }
+        else bot.say(chatroom, `Greetings, ${userNickname}! ${getContextEmote(`greeting`, channel)}`)
     },
     sayGoodnight(props) {
         const { bot, chatroom, message, args, channel, userNickname, toUser, targetNickname } = props
@@ -227,7 +227,7 @@ module.exports = {
             response += `! ${byeEmote}`
             setTimeout(() => bot.say(chatroom, response), 1000)
 
-        } else { logMessage([`-> Timer in ${channel} 'sayGoodnight' is not currently listening`]) }
+        } else logMessage([`-> Timer in ${channel} 'sayGoodnight' is not currently listening`])
     },
     sayYoureWelcome(props) {
         const { bot, chatroom, channel, user, userNickname } = props
@@ -257,7 +257,7 @@ module.exports = {
             response += `! ${positiveEmote}`
             setTimeout(() => bot.say(chatroom, response), 1000)
 
-        } else { logMessage([`-> Timer in ${channel} 'sayYoureWelcome' is not currently listening`]) }
+        } else logMessage([`-> Timer in ${channel} 'sayYoureWelcome' is not currently listening`])
     },
     sayThanks(props) {
         const { bot, chatroom, channel, user, userNickname } = props
@@ -293,7 +293,7 @@ module.exports = {
             response += `! ${positiveEmote}`
             setTimeout(() => bot.say(chatroom, response), 1000)
 
-        } else { logMessage([`-> Timer in ${channel} 'sayThanks' is not currently listening`]) }
+        } else logMessage([`-> Timer in ${channel} 'sayThanks' is not currently listening`])
     },
     sayMood(props) {
         const { bot, chatroom, channel, user, userNickname } = props
@@ -351,7 +351,7 @@ module.exports = {
             reply += ` ${botMoods[settings.botMood].emote}`
             setTimeout(() => bot.say(chatroom, reply), 1000)
 
-        } else { logMessage([`-> Timer in ${channel} 'sayMood' is not currently listening`]) }
+        } else logMessage([`-> Timer in ${channel} 'sayMood' is not currently listening`])
     },
     handleRaid(props) {
         const { bot, chatroom, channel, username, isModOrVIP } = props
@@ -371,7 +371,7 @@ module.exports = {
             const delay = users[BOT_USERNAME].channels[channel].mod || users[BOT_USERNAME].channels[channel].vip ? 1000 : 2000
             const positiveEmote = getContextEmote(`positive`, channel)
 
-            if (subRaidMessage) { bot.say(chatroom, subRaidMessage) }
+            if (subRaidMessage) bot.say(chatroom, subRaidMessage)
             if (noSubRaidMessage) {
                 setTimeout(() => {
                     bot.say(chatroom, noSubRaidMessage)
@@ -383,7 +383,7 @@ module.exports = {
                 }, delay * 2)
             }
 
-        } else { logMessage([`-> Timer in ${channel} '!raid' is not currently listening`]) }
+        } else logMessage([`-> Timer in ${channel} '!raid' is not currently listening`])
     },
     welcomeBack(props) {
         const { bot, chatroom, channel, userChannel, userNickname } = props
@@ -434,7 +434,7 @@ module.exports = {
         bot.say(chatroom, `📣️ ${response}`)
     },
     yell(props) {
-        const { bot, message, userNickname, currentTime } = props
+        const { bot, message, currentTime, userNickname } = props
 
         // Create table of most recently-sent message times from non-bots
         const mostRecentMessages = {}
@@ -464,7 +464,7 @@ module.exports = {
         logMessage([`> setAway(channel: '${channel}', username: '${username}', args: ${logArr(args)})`])
 
         userChannel.away = true
-        if (args.length) { userChannel.awayMessage = args.join(` `) }
+        if (args.length) userChannel.awayMessage = args.join(` `)
 
         const byeEmote = getContextEmote(`bye`, channel)
         if (command !== `!lurk`) {

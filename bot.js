@@ -31,7 +31,7 @@ if (!settings.devMode) {
 // Start new log file
 const fs = require(`fs/promises`)
 fs.writeFile(`logs.txt`, `🍋️ LEMONY LOGS 🍋️\n`, (err) => {
-    if (err) { console.log(`Error writing logs:`, err) }
+    if (err) console.log(`Error writing logs:`, err)
 })
 
 // Connect to Twitch IRC

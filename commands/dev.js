@@ -29,9 +29,7 @@ module.exports = {
             return
         }
         const data = await apiGetConduits()
-        if (data) {
-            bot.say(chatroom, `${pluralize(data[0].shard_count, `shard`, `shards`)}`)
-        }
+        if (data) bot.say(chatroom, `${pluralize(data[0].shard_count, `shard`, `shards`)}`)
     },
     updateConduitShardCount(props) {
         const { bot, chatroom, args } = props
@@ -108,7 +106,7 @@ module.exports = {
                     if (streamer in lemonyFresh) { initWebSocket(bot, streamer) }
                 }
             }
-        } else { initWebSocket(bot, channel) }
+        } else initWebSocket(bot, channel)
     },
     disconnectWebSocket(props) {
         const { bot, args, channel } = props
@@ -121,7 +119,7 @@ module.exports = {
                     if (streamer in lemonyFresh) { closeWebSocket(streamer, true) }
                 }
             }
-        } else { closeWebSocket(channel, true) }
+        } else closeWebSocket(channel, true)
     },
     refreshEventSubs(props) {
         const { bot, args, channel } = props
@@ -134,7 +132,7 @@ module.exports = {
                     if (streamer in lemonyFresh) { updateEventSubs(streamer) }
                 }
             }
-        } else { updateEventSubs(channel) }
+        } else updateEventSubs(channel)
     },
     async shutdown(props) {
         const { bot, chatroom, channel } = props

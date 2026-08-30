@@ -246,7 +246,7 @@ function givePoints(props) { // funNumber 4
                 : `${msgCount * 25}`
             : `${msgCount * 25}`
         setTimeout(() => bot.say(chatroom, `!give ${username} ${pointsToGive}`), 3000)
-    } else { logMessage([`-> StreamElements not present in ${channel}'s channel`]) }
+    } else logMessage([`-> StreamElements not present in ${channel}'s channel`])
 }
 
 function lemonifyRandomUser(props) { // funNumber 5
@@ -271,7 +271,7 @@ function useUndertaleBot(props) { // funNumber 6
             `!mercy ${randomUser}`
         ]
         setTimeout(() => bot.say(chatroom, chooseFrom(actions)), 3000)
-    } else { logMessage([`-> UndertaleBot not present in ${channel}'s channel`]) }
+    } else logMessage([`-> UndertaleBot not present in ${channel}'s channel`])
 }
 
 function reportChance(props) { // funNumber 7
@@ -383,7 +383,7 @@ function getViewers(props) { // funNumber 16
                     ? positiveEmote
                     : hypeEmote}`
         ), 3000)
-    } else { logMessage([`-> ${channel} only has ${pluralize(viewers.length, `viewer`, `viewers`)}`]) }
+    } else logMessage([`-> ${channel} only has ${pluralize(viewers.length, `viewer`, `viewers`)}`])
 }
 
 function getLurker(props) { // funNumber 17

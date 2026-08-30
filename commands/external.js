@@ -238,11 +238,12 @@ module.exports = {
 
             // Calculate weaknesses and resistances
             const quadrupleDamageFrom = Object.keys(doubleDamageFrom).filter(typeName => doubleDamageFrom[typeName] === 2)
-            if (quadrupleDamageFrom.length) { reply += `4x weak to ${quadrupleDamageFrom.join(`/`)}-type moves. ` }
+            if (quadrupleDamageFrom.length) reply += `4x weak to ${quadrupleDamageFrom.join(`/`)}-type moves. `
             if (Object.keys(doubleDamageFrom).filter(typeName => doubleDamageFrom[typeName] === 1).length) { reply += `2x weak to ${Object.keys(doubleDamageFrom).filter(typeName => doubleDamageFrom[typeName] === 1).join(`/`)}-type moves. ` }
             if (Object.keys(halfDamageFrom).filter(typeName => halfDamageFrom[typeName] === 1).length) { reply += `2x resistance to ${Object.keys(halfDamageFrom).filter(typeName => halfDamageFrom[typeName] === 1).join(`/`)}-type moves. ` }
+
             const quarterDamageFrom = Object.keys(halfDamageFrom).filter(typeName => halfDamageFrom[typeName] === 2)
-            if (quarterDamageFrom.length) { reply += `4x resistance to ${quarterDamageFrom.join(`/`)}-type moves. ` }
+            if (quarterDamageFrom.length) reply += `4x resistance to ${quarterDamageFrom.join(`/`)}-type moves. `
             if (immuneFrom.length > 0) { reply += `No effect from ${immuneFrom.join(`/`)}-type moves.` }
 
             bot.say(chatroom, reply)
@@ -370,7 +371,7 @@ module.exports = {
                 const data = await response.json()
                 await logMessage([`-> Random word:`, data])
 
-                if (aprilFools) { return data[0].toLowerCase() }
+                if (aprilFools) return data[0].toLowerCase()
 
                 if (data[0] !== data[0].toLowerCase()) {
                     await logMessage([`--> '${data[0]}' may be a proper noun, retrying...`])

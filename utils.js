@@ -108,10 +108,10 @@ async function logMessage(messages, time, channel, username, color, self) {
     const currentDate = new Date().toLocaleDateString(settings.timeLocale, { year: `numeric`, month: `long`, day: `numeric`, timeZone: settings.timeZone })
     if (currentDate !== settings.currentDate) {
         settings.currentDate = currentDate
-        if (settings.debug) { console.log(settings.currentDate) }
+        if (settings.debug) console.log(settings.currentDate)
 
         await fs.appendFile(`logs.txt`, `${settings.currentDate}\n`, (err) => {
-            if (err) { console.log(`Error writing logs:`, err) }
+            if (err) console.log(`Error writing logs:`, err)
         })
     }
 
@@ -127,9 +127,7 @@ async function logMessage(messages, time, channel, username, color, self) {
                 process.stdout.write(self ? `` : getTerminalChatColor(color))
                 process.stdout.write(`${username}: ${log}${resetTxt}\n`)
             }
-        } else {
-            console.log(`${grayTxt}${log}${resetTxt}`)
-        }
+        } else console.log(`${grayTxt}${log}${resetTxt}`)
     }
 
     // Append logs.txt
@@ -137,7 +135,7 @@ async function logMessage(messages, time, channel, username, color, self) {
         ? `[${time}] <${channelName}> ${username}: ${log}\n`
         : `${log}\n`
     await fs.appendFile(`logs.txt`, newLine, (err) => {
-        if (err) { console.log(`Error writing logs:`, err) }
+        if (err) console.log(`Error writing logs:`, err)
     })
 }
 
@@ -1695,11 +1693,11 @@ module.exports = {
         const seconds = Math.floor((ms / 1000) % 60)
 
         const duration = []
-        if (years) { duration.push(pluralize(years, `year`, `years`)) }
-        if (days) { duration.push(pluralize(days, `day`, `days`)) }
-        if (hours) { duration.push(pluralize(hours, `hour`, `hours`)) }
-        if (minutes) { duration.push(pluralize(minutes, `minute`, `minutes`)) }
-        if (seconds) { duration.push(pluralize(seconds, `second`, `seconds`)) }
+        if (years) duration.push(pluralize(years, `year`, `years`))
+        if (days) duration.push(pluralize(days, `day`, `days`))
+        if (hours) duration.push(pluralize(hours, `hour`, `hours`))
+        if (minutes) duration.push(pluralize(minutes, `minute`, `minutes`))
+        if (seconds) duration.push(pluralize(seconds, `second`, `seconds`))
 
         return arrToList(duration)
     },
