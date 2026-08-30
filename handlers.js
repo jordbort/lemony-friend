@@ -5,6 +5,7 @@ const { initUser, initUserChannel, initChannel, updateMod, getToUser, tagsListen
 
 const useCommand = require(`./commands`)
 const usePattern = require(`./patterns`)
+const printLemon = require(`./graphics/printLemon`)
 const streakListener = require(`./commands/streaks`)
 const rollFunNumber = require(`./commands/funNumber`)
 
@@ -42,8 +43,10 @@ function updateUser(bot, chatroom, tags, self, username, channel, message, curre
     users[username].channels[channel].lastMessage = message
     users[username].channels[channel].sentAt = currentTime
 
-    const webSocketStatus = getWebSocket(channel)
-    renderLineHUD(chatroom, webSocketStatus, username, message, currentTime)
+    if (!settings.debug) {
+        const webSocketStatus = getWebSocket(channel)
+        renderLineHUD(chatroom, webSocketStatus, username, message, currentTime)
+    }
 }
 
 function handleUserChange(props) {
@@ -95,13 +98,13 @@ async function getOrCreateConduit() {
 module.exports = {
     onConnectedHandler(address, port) {
         const time = new Date().toLocaleTimeString(settings.timeLocale, { timeZone: settings.timeZone })
+        settings.debug ? printLemon() : initHUD()
         if (settings.firstConnection) {
             logMessage([`Session started: ${settings.startDate.toLocaleDateString(`en-US`, { weekday: `long`, month: `long`, day: `numeric`, year: `numeric`, timeZone: settings.timeZone })} at ${settings.startDate.toLocaleTimeString(`en-US`, { hour: `numeric`, minute: `numeric`, second: `numeric`, timeZone: settings.timeZone, timeZoneName: `short` })}\n[${time}] 🍋 Connected to ${address}:${port}`])
             if (!settings.devMode) { getOrCreateConduit() }
         } else {
             logMessage([`[${time}] 🍋 Re-connected to ${address}:${port}`])
         }
-        if (!settings.debug) { initHUD() }
         settings.firstConnection = false
 
         // Update global emotes
@@ -137,6 +140,10 @@ module.exports = {
 
         if (!lemonyFresh[channel].viewers.includes(username)) {
             lemonyFresh[channel].viewers.push(username)
+            if (!settings.debug) {
+                const webSocketStatus = getWebSocket(channel)
+                renderLineHUD(chatroom, webSocketStatus)
+            }
         }
     },
     onPartedHandler(chatroom, username, self) {
@@ -152,6 +159,10 @@ module.exports = {
 
         while (lemonyFresh[channel].viewers.includes(username)) {
             lemonyFresh[channel].viewers.splice(lemonyFresh[channel].viewers.indexOf(username), 1)
+            if (!settings.debug) {
+                const webSocketStatus = getWebSocket(channel)
+                renderLineHUD(chatroom, webSocketStatus)
+            }
         }
     },
     onWhisperHandler(fromRoom, tags, message, err) {
