@@ -63,7 +63,7 @@ module.exports = {
         const data = await apiGetConduitShards(settings.conduitId)
         checkWebSockets(data)
     },
-    logJoinedChatrooms() { console.log(joinedChatrooms.length, joinedChatrooms) },
+    logJoinedChatrooms() { if (settings.debug) console.log(joinedChatrooms.length, joinedChatrooms) },
     async getEventSubs(props) {
         const { bot, args, chatroom } = props
         const reply = []
@@ -73,8 +73,10 @@ module.exports = {
                     const twitchData = await apiGetEventSubs(lemonyFresh[channel].id)
                     const enabled = twitchData.data.filter(el => el.status === `enabled`).map(el => el.type)
                     const disabled = twitchData.data.filter(el => el.status !== `enabled`).map(el => el.type)
-                    console.log(`${channel} ENABLED:`, enabled)
-                    console.log(`${channel} DISABLED:`, disabled)
+                    if (settings.debug) {
+                        console.log(`${channel} ENABLED:`, enabled)
+                        console.log(`${channel} DISABLED:`, disabled)
+                    }
                     reply.push(`${channel}:${enabled.length ? ` ${enabled.length} enabled` : ``}${disabled.length ? ` ${disabled.length} disabled` : ``}${!enabled.length && !disabled.length ? ` No EventSubs` : ``}`)
                 }
             }
@@ -84,8 +86,10 @@ module.exports = {
                     const twitchData = await apiGetEventSubs(lemonyFresh[arg].id)
                     const enabled = twitchData.data.filter(el => el.status === `enabled`).map(el => el.type)
                     const disabled = twitchData.data.filter(el => el.status !== `enabled`).map(el => el.type)
-                    console.log(`${arg} ENABLED:`, enabled)
-                    console.log(`${arg} DISABLED:`, disabled)
+                    if (settings.debug) {
+                        console.log(`${arg} ENABLED:`, enabled)
+                        console.log(`${arg} DISABLED:`, disabled)
+                    }
                     reply.push(`${arg}:${enabled.length ? ` ${enabled.length} enabled` : ``}${disabled.length ? ` ${disabled.length} disabled` : ``}${!enabled.length && !disabled.length ? ` No EventSubs` : ``}`)
                 }
             }
@@ -151,32 +155,12 @@ module.exports = {
             : ``}`
         throw Error(message)
     },
-    logChannelInfo(props) {
-        const { channel, toUser } = props
-        toUser in lemonyFresh
-            ? console.log(lemonyFresh[toUser])
-            : console.log(lemonyFresh[channel])
-    },
-    logUserInfo(props) {
-        const { username, toUser } = props
-        toUser in users
-            ? console.log(users[toUser])
-            : console.log(users[username])
-    },
-    logModInfo(props) {
-        const { username, toUser } = props
-        toUser in mods
-            ? console.log(mods[toUser])
-            : console.log(mods[username])
-    },
-    logChannelViewers(props) {
-        const { channel, toUser } = props
-        toUser in lemonyFresh
-            ? console.log(lemonyFresh[toUser].viewers)
-            : console.log(lemonyFresh[channel].viewers)
-    },
-    logTags(props) { console.log(props.tags) },
-    logSettings() { console.log(settings) },
+    logChannelInfo(props) { if (settings.debug) props.toUser in lemonyFresh ? console.log(lemonyFresh[props.toUser]) : console.log(lemonyFresh[props.channel]) },
+    logUserInfo(props) { if (settings.debug) props.toUser in users ? console.log(users[props.toUser]) : console.log(users[props.username]) },
+    logModInfo(props) { if (settings.debug) props.toUser in mods ? console.log(mods[props.toUser]) : console.log(mods[props.username]) },
+    logChannelViewers(props) { if (settings.debug) props.toUser in lemonyFresh ? console.log(lemonyFresh[props.toUser].viewers) : console.log(lemonyFresh[channel].props.viewers) },
+    logTags(props) { if (settings.debug) console.log(props.tags) },
+    logSettings() { if (settings.debug) console.log(settings) },
     yellAcrossChannels(props) { props.bot.channels.forEach(chatroom => props.bot.say(chatroom, `${props.message.substring(11)}`)) },
     streamFriendlyOn(props) {
         const { bot, chatroom } = props
@@ -214,29 +198,31 @@ module.exports = {
 
         const usersWithNicknames = usersNicknames.filter(el => el).length
         const percentUsersWithNicknames = floatTwo(usersWithNicknames / totalUsers * 100)
-        console.log(`${percentUsersWithNicknames}% of users have nicknames (${usersWithNicknames} out of ${totalUsers})`)
+        if (settings.debug) console.log(`${percentUsersWithNicknames}% of users have nicknames (${usersWithNicknames} out of ${totalUsers})`)
 
         const totalUsersLemons = usersLemons.reduce((acc, curr) => acc + curr, 0)
         const averageUsersLemons = floatTwo(totalUsersLemons / totalUsers)
-        console.log(`The average user has ${averageUsersLemons} lemons - ${totalUsersLemons} total`)
+        if (settings.debug) console.log(`The average user has ${averageUsersLemons} lemons - ${totalUsersLemons} total`)
 
         const usersWithLemons = usersLemons.filter(el => el)
         const averageLemonsOfUsersWithLemons = floatTwo(usersWithLemons.reduce((acc, curr) => acc + curr, 0) / usersWithLemons.length)
-        console.log(`${floatTwo(usersWithLemons.length / totalUsers * 100)}% of users have 1+ lemons (${usersWithLemons.length}) - the average user with lemons has ${averageLemonsOfUsersWithLemons}`, totalUsersLemons === usersWithLemons.reduce((acc, curr) => acc + curr, 0))
+        if (settings.debug) console.log(`${floatTwo(usersWithLemons.length / totalUsers * 100)}% of users have 1+ lemons (${usersWithLemons.length}) - the average user with lemons has ${averageLemonsOfUsersWithLemons}`, totalUsersLemons === usersWithLemons.reduce((acc, curr) => acc + curr, 0))
 
         const totalUsersHangmanWins = usersHangmanWins.reduce((acc, curr) => acc + curr, 0)
         const averageUsersHangmanWins = floatTwo(totalUsersHangmanWins / usersHangmanWins.length)
-        console.log(`The average user has ${averageUsersHangmanWins} Hangman wins - ${totalUsersHangmanWins} total`)
+        if (settings.debug) console.log(`The average user has ${averageUsersHangmanWins} Hangman wins - ${totalUsersHangmanWins} total`)
 
         const usersWithHangmanWins = usersHangmanWins.filter(el => el)
         const averageHangmanWinsOfUsersWithHangmanWins = floatTwo(usersWithHangmanWins.filter(el => el).reduce((acc, curr) => acc + curr, 0) / usersWithHangmanWins.length)
-        console.log(`${floatTwo(usersWithHangmanWins.length / totalUsers * 100)}% of users have 1+ Hangman wins (${usersWithHangmanWins.length}) - the average user with Hangman wins has ${averageHangmanWinsOfUsersWithHangmanWins}`, totalUsersHangmanWins === usersWithHangmanWins.reduce((acc, curr) => acc + curr, 0))
+        if (settings.debug) console.log(`${floatTwo(usersWithHangmanWins.length / totalUsers * 100)}% of users have 1+ Hangman wins (${usersWithHangmanWins.length}) - the average user with Hangman wins has ${averageHangmanWinsOfUsersWithHangmanWins}`, totalUsersHangmanWins === usersWithHangmanWins.reduce((acc, curr) => acc + curr, 0))
 
         const usersWithChannels = usersChannels.filter(el => el)
         const usersWithNoChannels = usersChannels.filter(el => el === 0)
         const averageChannelsOfUsersWithChannels = floatTwo(usersWithChannels.filter(el => el).reduce((acc, curr) => acc + curr, 0) / usersWithChannels.length)
-        console.log(`${floatTwo(usersWithNoChannels.length / (totalUsers - 2) * 100)}% of users are in zero channels (${usersWithNoChannels.length}) - ${floatTwo(usersWithChannels.length / (totalUsers - 2) * 100)}% of users are in 1+ channel (${usersWithChannels.length})`)
-        console.log(`The average user with channels is in ${averageChannelsOfUsersWithChannels} channels`)
+        if (settings.debug) {
+            console.log(`${floatTwo(usersWithNoChannels.length / (totalUsers - 2) * 100)}% of users are in zero channels (${usersWithNoChannels.length}) - ${floatTwo(usersWithChannels.length / (totalUsers - 2) * 100)}% of users are in 1+ channel (${usersWithChannels.length})`)
+            console.log(`The average user with channels is in ${averageChannelsOfUsersWithChannels} channels`)
+        }
     },
     countEmptyUsers(props) {
         const { bot, chatroom, channel } = props
