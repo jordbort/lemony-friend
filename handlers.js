@@ -15,8 +15,8 @@ const { hangmanListener } = require(`./patterns/hangman`)
 const { initHUD, renderLineHUD } = require(`./graphics/hud`)
 const { apiGetConduits, apiCreateConduit } = require(`./events/conduits`)
 const { getGlobalBttvEmotes, getStreamBttvEmotes } = require(`./commands/external`)
-const { initWebSocket, closeWebSocket, removeWebSocket, getWebSocket } = require(`./events/webSockets`)
 const { addNotificationsBatch, removeNotificationsBatch } = require(`./events/notifications`)
+const { initWebSocket, closeWebSocket, removeWebSocket, getWebSocket } = require(`./events/webSockets`)
 const { apiGetTwitchChannel, getGlobalTwitchEmotes, getStreamTwitchEmotes } = require(`./commands/twitch`)
 const { handleColorChange, handleSubChange, handleModChange, handleVIPChange } = require(`./commands/userChange`)
 const { addNewChattersBatch, handleNewChatter, welcomeBack, reportAway, funTimerGuess, pyramidListener } = require(`./commands/conversation`)
@@ -98,8 +98,8 @@ async function getOrCreateConduit() {
 module.exports = {
     onConnectedHandler(address, port) {
         const time = new Date().toLocaleTimeString(settings.timeLocale, { timeZone: settings.timeZone })
-        settings.debug ? printLemon() : initHUD()
         if (settings.firstConnection) {
+            settings.debug ? printLemon() : initHUD()
             logMessage([`Session started: ${settings.startDate.toLocaleDateString(`en-US`, { weekday: `long`, month: `long`, day: `numeric`, year: `numeric`, timeZone: settings.timeZone })} at ${settings.startDate.toLocaleTimeString(`en-US`, { hour: `numeric`, minute: `numeric`, second: `numeric`, timeZone: settings.timeZone, timeZoneName: `short` })}\n[${time}] 🍋 Connected to ${address}:${port}`])
             if (!settings.devMode) { getOrCreateConduit() }
         } else {
