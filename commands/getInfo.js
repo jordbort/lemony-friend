@@ -9,6 +9,7 @@ module.exports = {
         const newFeatures = [
             `Updated CLI channel configurations 'hangman' or 'h', and 'blackjack' or 'bj' for dev`,
             `Implemented Blackjack game`,
+            `Created HUD for non-debug mode`,
             `Added more uses for lemons`,
             `Created CLI channel configuration 'anonymousFollows' or 'af'`,
             `Created CLI settings configuration 'maxDefinitionLength' or 'mdl'`,
