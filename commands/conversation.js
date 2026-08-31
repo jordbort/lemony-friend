@@ -440,17 +440,10 @@ module.exports = {
         const mostRecentMessages = {}
         bot.channels.forEach(chatroom => {
             const channel = chatroom.substring(1)
-            Object.keys(users)
+            mostRecentMessages[channel] = Math.max(...Object.keys(users)
                 .filter(username => !settings.ignoredBots.includes(username) && channel in users[username].channels)
-                .forEach(username => {
-                    if (channel in mostRecentMessages) {
-                        if (users[username].channels[channel].sentAt > mostRecentMessages[channel]) {
-                            mostRecentMessages[channel] = users[username].channels[channel].sentAt
-                        }
-                    } else {
-                        mostRecentMessages[channel] = users[username].channels[channel].sentAt
-                    }
-                })
+                .map(username => users[username].channels[channel].sentAt)
+            )
         })
 
         // Filter out channels that have had message activity more than an hour ago
