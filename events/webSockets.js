@@ -35,6 +35,16 @@ function openWebSocket(bot, channel, path = `wss://eventsub.wss.twitch.tv/ws`) {
     ws.onerror = function (error) { if (settings.reportWebSocketActivity) logMessage([`> WebSocket error for '${channel}':`, error.message || `(no message)`]) }
 }
 
+function getWebSocket(channel) {
+    return channel in webSockets
+        ? webSockets[channel].arr.length === 1
+            ? webSockets[channel].arr[0]._closeFrameSent || webSockets[channel].arr[0]._closeFrameReceived
+                ? `closed`
+                : `connected`
+            : `reconnecting`
+        : `none`
+}
+
 function handleMessage(bot, channel, event) {
     keepAlive(channel)
     const message = JSON.parse(event.data)
@@ -65,11 +75,13 @@ function handleClose(bot, channel, event) {
 
     // Reopen unless closed on purpose (unless keepAlive timed out)
     const { code, reason, wasClean } = event
-    renderLineHUD(`#${channel}`, ws.timedOut ? `timeout` : wasClean ? `closed` : `died`)
+    renderLineHUD(`#${channel}`, ws.arr.length ? getWebSocket(channel) : ws.timedOut ? `timeout` : wasClean ? `closed` : `died`)
+
     if (settings.reportWebSocketActivity || ws.reportClosure) {
         logMessage([`> WebSocket connection for '${channel}' ${wasClean ? `closed` : `died unexpectedly`} with code ${code}${reason ? `: '${reason}'` : ``}`])
         if (ws.reportClosure) ws.reportClosure = false
     }
+
     if (ws.timedOut) {
         ws.timedOut = false
         openWebSocket(bot, channel)
@@ -129,10 +141,9 @@ function closeWebSocket(channel, onPurpose = false) {
 module.exports = {
     initWebSocket, // is in: handlers.js, dev.js
     closeWebSocket, // is in: handlers.js, dev.js
+    getWebSocket, // is in: handlers.js, dev.js
     removeWebSocket(channel) { // is in: handlers.js
-        if (channel in webSockets) {
-            delete webSockets[channel]
-        }
+        if (channel in webSockets) delete webSockets[channel]
     },
     checkWebSockets(arrShards) { // is in: dev.js
         const channels = joinedChatrooms.map(str => str.substring(1))
@@ -167,14 +178,5 @@ module.exports = {
         if (sessionId) {
             bot.say(chatroom, sessionId)
         }
-    },
-    getWebSocket(channel) {
-        return channel in webSockets
-            ? webSockets[channel].arr.length === 1
-                ? webSockets[channel].arr[0]._closeFrameSent || webSockets[channel].arr[0]._closeFrameReceived
-                    ? `closed`
-                    : `connected`
-                : `reconnecting`
-            : `none`
     }
 }
