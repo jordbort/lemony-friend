@@ -9,7 +9,7 @@ const options = {
         password: OAUTH_TOKEN
     },
     channels: settings.devMode
-        ? [`#lemony_friend`]
+        ? [`#${BOT_USERNAME}`]
         : joinedChatrooms
 }
 
