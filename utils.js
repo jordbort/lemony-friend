@@ -54,90 +54,20 @@ const chatColors = {
     '#00FF7F': { name: `spring green`, terminalColor: terminalColors.greenTxt },
     '#ADFF2F': { name: `yellow-green`, terminalColor: terminalColors.yellowTxt }
 }
-
 const getTerminalChatColor = (code) => code in chatColors ? chatColors[code].terminalColor : terminalColors.whiteTxt
 
 const twitchUsernamePattern = /^[a-z0-9_]{4,25}$/i
 const emotePattern = /\b([a-z][a-z0-9]{2,9}[A-Z0-9][a-zA-Z0-9]{0,19})\b/
 
+const coinFlip = () => chooseFrom([true, false])
+
 const formatMegabytes = (num) => Math.round(num / 1024 / 1024 * 100) / 100
+
+const arrToList = (arr, conjunction = `and`, forceCommas = false) => arr.map((el, idx) => idx !== 0 && idx + 1 === arr.length ? `${conjunction} ${el}` : el).join(arr.length > 2 || forceCommas ? `, ` : ` `)
 
 const chooseFrom = (arr) => arr[Math.floor(Math.random() * arr.length)]
 
-const coinFlip = () => chooseFrom([true, false])
-
-function pluralize(num, singularForm, pluralForm) {
-    return Number(num) === 1
-        ? `${Number(num).toLocaleString(settings.timeLocale)} ${singularForm}`
-        : `${Number(num).toLocaleString(settings.timeLocale)} ${pluralForm}`
-}
-
-function renderObj(obj, objName, indentation = ``) {
-    if (!Object.keys(obj).length) return `${objName}: {}`
-    const tab = `${indentation}\t`
-    const data = [`${objName ? `${objName}: ` : ``}{`]
-    const keys = `\n${Object.keys(obj).map((key) => {
-        return typeof obj[key] === `string`
-            ? `${tab}${key}: '${obj[key]}'`
-            : typeof obj[key] === `object` && obj[key] !== null
-                ? Array.isArray(obj[key])
-                    ? `${tab}${key}: [${obj[key].length
-                        ? obj[key].map((val) => {
-                            return typeof val === `string`
-                                ? `'${val}'`
-                                : typeof val === `object` && val !== null && !Array.isArray(val)
-                                    ? renderObj(val, ``, tab)
-                                    : val
-                        }).join(`, `)
-                        : ``
-                    }]`
-                    : `${tab}${renderObj(obj[key], key, tab)}`
-                : `${tab}${key}: ${obj[key]}`
-    }).join(`,\n`)}`
-
-    data.push(keys)
-    data.push(`\n${indentation}}`)
-    return data.join(``)
-}
-
-async function logMessage(messages, time, channel, username, color, self) {
-    // Colorize chat messages
-    const { resetTxt, grayTxt, yellowBg } = terminalColors
-
-    // Display date change
-    const currentDate = new Date().toLocaleDateString(settings.timeLocale, { year: `numeric`, month: `long`, day: `numeric`, timeZone: settings.timeZone })
-    if (currentDate !== settings.currentDate) {
-        settings.currentDate = currentDate
-        if (settings.debug) console.log(settings.currentDate)
-
-        await fs.appendFile(`logs.txt`, `${settings.currentDate}\n`, (err) => {
-            if (err) console.log(`Error writing logs:`, err)
-        })
-    }
-
-    // Log chat message or debug message
-    const channelName = settings.knownChannels[channel] || channel
-    const log = messages.join(` `)
-    if (settings.debug) {
-        if (username) {
-            if (!settings.hideNonDevChannel || channelName === DEV) {
-                process.stdout.write(self && settings.highlightBotMessage ? yellowBg : ``)
-                process.stdout.write(settings.logTime ? `[${time}] ` : ``)
-                process.stdout.write(settings.hideNonDevChannel ? `` : `<${channelName}> `)
-                process.stdout.write(self ? `` : getTerminalChatColor(color))
-                process.stdout.write(`${username}: ${log}${resetTxt}\n`)
-            }
-        } else console.log(`${grayTxt}${log}${resetTxt}`)
-    }
-
-    // Append logs.txt
-    const newLine = username
-        ? `[${time}] <${channelName}> ${username}: ${log}\n`
-        : `${log}\n`
-    await fs.appendFile(`logs.txt`, newLine, (err) => {
-        if (err) console.log(`Error writing logs:`, err)
-    })
-}
+const pluralize = (num, singularForm, pluralForm) => `${Number(num).toLocaleString(settings.timeLocale)} ${Number(num) === 1 ? singularForm : pluralForm}`
 
 const numbers = [
     `zero`,
@@ -241,131 +171,6 @@ const numbers = [
     `ninety-eight`,
     `ninety-nine`
 ]
-
-function spellOutNumber(num) {
-    if (isNaN(Number(num))) { return NaN }
-
-    const output = []
-    if (num < 0) {
-        output.push(`negative`)
-        num = Math.abs(num)
-    }
-    if (num === Infinity) {
-        output.push(`infinity`)
-        return output.join(` `)
-    }
-    if (num >= 10 ** 15) {
-        output.push(`uncountable`)
-        return output.join(` `)
-    }
-
-    const placeValues = {
-        hundred: 0,
-        thousand: 0,
-        million: 0,
-        billion: 0,
-        trillion: 0
-    }
-
-    while (num >= 10 ** 12) {
-        placeValues.trillion++
-        num -= 10 ** 12
-    }
-    while (num >= 10 ** 9) {
-        placeValues.billion++
-        num -= 10 ** 9
-    }
-    while (num >= 10 ** 6) {
-        placeValues.million++
-        num -= 10 ** 6
-    }
-    while (num >= 10 ** 3) {
-        placeValues.thousand++
-        num -= 10 ** 3
-    }
-    while (num >= 100) {
-        placeValues.hundred++
-        num -= 100
-    }
-
-    if (placeValues.trillion) {
-        output.push(spellOutNumber(placeValues.trillion), `trillion`)
-    }
-    if (placeValues.billion) {
-        output.push(spellOutNumber(placeValues.billion), `billion`)
-    }
-    if (placeValues.million) {
-        output.push(spellOutNumber(placeValues.million), `million`)
-    }
-    if (placeValues.thousand) {
-        output.push(spellOutNumber(placeValues.thousand), `thousand`)
-    }
-    if (placeValues.hundred) {
-        output.push(spellOutNumber(placeValues.hundred), `hundred`)
-    }
-
-    const afterDecimal = num.toString().split(`.`)[1] || ``
-    num = Math.trunc(num)
-
-    if (num || num === 0) {
-        output.push(numbers[num])
-    }
-    if (afterDecimal.length) {
-        output.push(`point`)
-        afterDecimal.forEach(digit => output.push(numbers[Number(digit)]))
-    }
-
-    return output.join(` `)
-}
-
-function logArr(arr) {
-    const typeArr = arr.map(el => typeof el === `string` ? `'${el}'` : `${el}`)
-    return `[${typeArr.length ? ` ${typeArr.join(`, `)} ` : ``}]`
-}
-
-async function printMemory(arr) {
-    await logMessage([`> printMemory(joinedChatrooms: ${logArr(arr)})`])
-    await fs.writeFile(`./memory.json`, JSON.stringify({
-        joinedChatrooms: arr,
-        settings,
-        lemonyFresh,
-        mods,
-        users,
-        knownTags,
-        lemCmds,
-        wordBank
-    }, null, 4))
-}
-
-function arrToList(arr, conjunction = `and`, forceCommas = false) {
-    return [...arr]
-        .map((element, idx) => idx !== 0 && idx + 1 === arr.length ? `${conjunction} ${element}` : element)
-        .join(arr.length > 2 || forceCommas ? `, ` : ` `)
-}
-
-function findEmotePrefix(username) {
-    const arr = [...lemonyFresh[username].followEmotes, ...lemonyFresh[username].subEmotes]
-    if (arr.length < 2) {
-        const prefix = [...lemonyFresh[username].followEmotes, ...lemonyFresh[username].subEmotes]
-            .map(str => str.search(/[A-Z]/))
-            .filter((el, idx, self) => self.indexOf(el) === idx && el !== -1)
-            .map(num => [...lemonyFresh[username].followEmotes, ...lemonyFresh[username].subEmotes][0].substring(0, num))
-        return prefix[0] || ``
-    } else {
-        const firstEmote = arr[0]
-        const lengths = []
-        for (let j = 1; j < arr.length; j++) {
-            let i = 0
-            while (i < arr[j].length && firstEmote[i] === arr[j][i] && !/[A-Z]/.test(arr[j][i])) { i++ }
-            lengths.push(i)
-        }
-        const prefixLengths = lengths.filter((el, idx, self) => idx === self.indexOf(el))
-        if (prefixLengths.length !== 1) {
-            logMessage([`Warning: Consensus for ${username}'s emote prefix length was not reached: ${logArr(prefixLengths)} Returning '${arr[0].substring(0, prefixLengths[0])}'`])
-        }
-        return arr[0].substring(0, prefixLengths[0])
-    }
-}
 
 const superscriptTable = {
     a: `ᵃ`,
@@ -1179,21 +984,193 @@ const doubleStruckTable = {
     Z: `ℤ`
 }
 
+async function printMemory(arr) {
+    await logMessage([`> printMemory(joinedChatrooms: ${logArr(arr)})`])
+    await fs.writeFile(`./memory.json`, JSON.stringify({
+        joinedChatrooms: arr,
+        settings,
+        lemonyFresh,
+        mods,
+        users,
+        knownTags,
+        lemCmds,
+        wordBank
+    }, null, 4))
+}
+
+async function logMessage(messages, time, channel, username, color, self) {
+    // Colorize chat messages
+    const { resetTxt, grayTxt, yellowBg } = terminalColors
+
+    // Display date change
+    const currentDate = new Date().toLocaleDateString(settings.timeLocale, { year: `numeric`, month: `long`, day: `numeric`, timeZone: settings.timeZone })
+    if (currentDate !== settings.currentDate) {
+        settings.currentDate = currentDate
+        if (settings.debug) console.log(settings.currentDate)
+
+        await fs.appendFile(`logs.txt`, `${settings.currentDate}\n`, (err) => {
+            if (err) console.log(`Error writing logs:`, err)
+        })
+    }
+
+    // Log chat message or debug message
+    const channelName = settings.knownChannels[channel] || channel
+    const log = messages.join(` `)
+    if (settings.debug) {
+        if (username) {
+            if (!settings.hideNonDevChannel || channelName === DEV) {
+                process.stdout.write(self && settings.highlightBotMessage ? yellowBg : ``)
+                process.stdout.write(settings.logTime ? `[${time}] ` : ``)
+                process.stdout.write(settings.hideNonDevChannel ? `` : `<${channelName}> `)
+                process.stdout.write(self ? `` : getTerminalChatColor(color))
+                process.stdout.write(`${username}: ${log}${resetTxt}\n`)
+            }
+        } else console.log(`${grayTxt}${log}${resetTxt}`)
+    }
+
+    // Append logs.txt
+    const newLine = username
+        ? `[${time}] <${channelName}> ${username}: ${log}\n`
+        : `${log}\n`
+    await fs.appendFile(`logs.txt`, newLine, (err) => {
+        if (err) console.log(`Error writing logs:`, err)
+    })
+}
+
+function logArr(arr) {
+    const typeArr = arr.map(el => typeof el === `string` ? `'${el}'` : `${el}`)
+    return `[${typeArr.length ? ` ${typeArr.join(`, `)} ` : ``}]`
+}
+
+function spellOutNumber(num) {
+    if (isNaN(Number(num))) return NaN
+
+    const output = []
+    if (num < 0) {
+        output.push(`negative`)
+        num = Math.abs(num)
+    }
+    if (num === Infinity) {
+        output.push(`infinity`)
+        return output.join(` `)
+    }
+    if (num >= 10 ** 15) {
+        output.push(`uncountable`)
+        return output.join(` `)
+    }
+
+    const placeValues = {
+        hundred: 0,
+        thousand: 0,
+        million: 0,
+        billion: 0,
+        trillion: 0
+    }
+
+    while (num >= 10 ** 12) {
+        placeValues.trillion++
+        num -= 10 ** 12
+    }
+    while (num >= 10 ** 9) {
+        placeValues.billion++
+        num -= 10 ** 9
+    }
+    while (num >= 10 ** 6) {
+        placeValues.million++
+        num -= 10 ** 6
+    }
+    while (num >= 10 ** 3) {
+        placeValues.thousand++
+        num -= 10 ** 3
+    }
+    while (num >= 100) {
+        placeValues.hundred++
+        num -= 100
+    }
+
+    if (placeValues.trillion) output.push(spellOutNumber(placeValues.trillion), `trillion`)
+    if (placeValues.billion) output.push(spellOutNumber(placeValues.billion), `billion`)
+    if (placeValues.million) output.push(spellOutNumber(placeValues.million), `million`)
+    if (placeValues.thousand) output.push(spellOutNumber(placeValues.thousand), `thousand`)
+    if (placeValues.hundred) output.push(spellOutNumber(placeValues.hundred), `hundred`)
+
+    const afterDecimal = num.toString().split(`.`)[1] || ``
+    num = Math.trunc(num)
+
+    if (num || num === 0) output.push(numbers[num])
+
+    if (afterDecimal.length) {
+        output.push(`point`)
+        afterDecimal.forEach(digit => output.push(numbers[Number(digit)]))
+    }
+
+    return output.join(` `)
+}
+
+function renderObj(obj, objName = null, indentation = ``) {
+    const brackets = Array.isArray(obj) ? `[]` : `{}`
+    const tab = `${indentation}\t`
+    const data = [`${objName ? `${objName}: ` : ``}${brackets[0]}`]
+
+    if (!Object.keys(obj).length) return objName ? `${objName}: ${brackets}` : brackets
+
+    const keys = Array.isArray(obj)
+        ? `\n${obj.map(el => typeof el === `string`
+            ? `${tab}'${el}'`
+            : typeof el === `object` && el !== null
+                ? `${tab}${renderObj(el, null, tab)}`
+                : `${tab}${el}`).join(`,\n`)}`
+        : `\n${Object.keys(obj).map(key => typeof obj[key] === `string`
+            ? `${tab}${key}: '${obj[key]}'`
+            : typeof obj[key] === `object` && obj[key] !== null
+                ? `${tab}${renderObj(obj[key], key, tab)}`
+                : `${tab}${key}: ${obj[key]}`).join(`,\n`)}`
+
+    data.push(keys)
+    data.push(`\n${indentation}${brackets[1]}`)
+
+    return data.join(``)
+}
+
+function findEmotePrefix(username) {
+    const arr = [...lemonyFresh[username].followEmotes, ...lemonyFresh[username].subEmotes]
+    if (arr.length < 2) {
+        const prefix = [...lemonyFresh[username].followEmotes, ...lemonyFresh[username].subEmotes]
+            .map(str => str.search(/[A-Z]/))
+            .filter((el, idx, self) => self.indexOf(el) === idx && el !== -1)
+            .map(num => [...lemonyFresh[username].followEmotes, ...lemonyFresh[username].subEmotes][0].substring(0, num))
+        return prefix[0] || ``
+    } else {
+        const firstEmote = arr[0]
+        const lengths = []
+        for (let j = 1; j < arr.length; j++) {
+            let i = 0
+            while (i < arr[j].length && firstEmote[i] === arr[j][i] && !/[A-Z]/.test(arr[j][i])) { i++ }
+            lengths.push(i)
+        }
+        const prefixLengths = lengths.filter((el, idx, self) => idx === self.indexOf(el))
+        if (prefixLengths.length !== 1) {
+            logMessage([`Warning: Consensus for ${username}'s emote prefix length was not reached: ${logArr(prefixLengths)} Returning '${arr[0].substring(0, prefixLengths[0])}'`])
+        }
+        return arr[0].substring(0, prefixLengths[0])
+    }
+}
+
 module.exports = {
     terminalColors,
     chatColors,
     getTerminalChatColor,
     twitchUsernamePattern,
-    printMemory,
-    pluralize,
-    renderObj,
-    logMessage,
-    logArr,
-    numbers,
-    spellOutNumber,
-    arrToList,
     chooseFrom,
     coinFlip,
+    pluralize,
+    arrToList,
+    numbers,
+    printMemory,
+    logMessage,
+    logArr,
+    spellOutNumber,
+    renderObj,
     async handleUncaughtException(bot, err, location) {
         await printMemory(bot.channels)
         await logMessage([`> handleUncaughtException(err.message: '${err.message}', location: '${location}')`])
@@ -1317,11 +1294,8 @@ module.exports = {
         const list = Object.keys(obj).map(key => `${key}: ${formatMegabytes(obj[key])} MB`)
         bot.say(chatroom, `Currently using ${formatMegabytes(totalUsage)} MB (${list.join(`, `)})`)
     },
-    getToUser(str) {
-        return str
-            ? str.replace(/^[@#]/g, ``).toLowerCase()
-            : null
-    },
+    getUsername: str => str && str.replace(/^[@#]/g, ``).match(twitchUsernamePattern) ? str.replace(/^[@#]/g, ``) : null,
+    getToUser: str => str ? str.replace(/^[@#]/g, ``).toLowerCase() : null,
     initUser(bot, chatroom, tags, self) {
         const newUsername = tags.username
         logMessage([`> initUser(tags.username: '${newUsername}')`])
@@ -1396,6 +1370,7 @@ module.exports = {
     },
     initUserChannel(tags, username, channel) {
         logMessage([`> initUserChannel(username: '${username}', channel: '${channel}')`])
+
         users[username].channels[channel] = {
             sub: tags.subscriber,
             mod: tags.mod,
@@ -1411,6 +1386,7 @@ module.exports = {
     },
     initChannel(channel) {
         logMessage([`> initChannel(channel: '${channel}')`])
+
         lemonyFresh[channel] = { ...lemonyFresh[channel] }
         lemonyFresh[channel].accessToken = lemonyFresh[channel].accessToken || mods[channel]?.accessToken || ``
         lemonyFresh[channel].refreshToken = lemonyFresh[channel].refreshToken || mods[channel]?.refreshToken || ``
@@ -1504,14 +1480,15 @@ module.exports = {
             mods[username] = {
                 id: self ? BOT_ID : Number(tags[`user-id`]),
                 accessToken: ``,
-                refreshToken: ``
+                refreshToken: ``,
+                isModIn: []
             }
             if (username in lemonyFresh) {
                 mods[username].accessToken = lemonyFresh[username].accessToken
                 mods[username].refreshToken = lemonyFresh[username].refreshToken
             }
         }
-        mods[username].isModIn = mods[username].isModIn || []
+
         if (!mods[username].isModIn.includes(chatroom)) {
             logMessage([`> updateMod ${username}: '${chatroom}'`])
             mods[username].isModIn.push(chatroom)
@@ -1520,6 +1497,7 @@ module.exports = {
     resetCooldownTimer(channel, name) {
         const timer = lemonyFresh[channel].timers[name]
         logMessage([`> resetCooldownTimer(channel: '${channel}', timer: '${name}', cooldown: ${pluralize(timer.cooldown, `second`, `seconds`)})`])
+
         timer.listening = false
         clearTimeout(timer.timerId)
         timer.timerId = Number(setTimeout(() => {
@@ -1527,7 +1505,6 @@ module.exports = {
             logMessage([`-> Listening for '${name}' again!`])
         }, timer.cooldown * 1000))
     },
-    // (For debugging/discovery) Add to list of known message tags
     tagsListener(tags) {
         for (const tag in tags) {
             const type = typeof tags[tag] === `object`
@@ -1557,13 +1534,6 @@ module.exports = {
                 ? tags[tag].replace(/'/g, `’`)
                 : tags[tag]
         }
-    },
-    getUsername(str) {
-        return str
-            ? str.replace(/^[@#]/g, ``).match(twitchUsernamePattern)
-                ? str.replace(/^[@#]/g, ``)
-                : null
-            : null
     },
     findUserByNickname(str) {
         const nicknames = Object.fromEntries(
@@ -1642,62 +1612,60 @@ module.exports = {
                     : logMessage([msg], timeStamp, tags[`source-room-id`], username, color, self)
             : logMessage([msg], timeStamp, channel, username, color, self)
     },
-    normalize(str) {
-        return str
-            .replace(/ᵃ|𝐚|𝑎|𝒂|𝖺|𝗮|𝘢|𝙖|𝒶|𝓪|𝔞|𝖆|𝚊|𝕒|ᘛ|ᘡ/g, `a`)
-            .replace(/ᵇ|𝐛|𝑏|𝒃|𝖻|𝗯|𝘣|𝙗|𝒷|𝓫|𝔟|𝖇|𝚋|𝕓/g, `b`)
-            .replace(/ᶜ|𝐜|𝑐|𝒄|𝖼|𝗰|𝘤|𝙘|𝒸|𝓬|𝔠|𝖈|𝚌|𝕔/g, `c`)
-            .replace(/ᵈ|𝐝|𝑑|𝒅|𝖽|𝗱|𝘥|𝙙|𝒹|𝓭|𝔡|𝖉|𝚍|𝕕/g, `d`)
-            .replace(/ᵉ|𝐞|𝑒|𝒆|𝖾|𝗲|𝘦|𝙚|ℯ|𝓮|𝔢|𝖊|𝚎|𝕖|ᘓ/g, `e`)
-            .replace(/ᶠ|𝐟|𝑓|𝒇|𝖿|𝗳|𝘧|𝙛|𝒻|𝓯|𝔣|𝖋|𝚏|𝕗/g, `f`)
-            .replace(/ᵍ|𝐠|𝑔|𝒈|𝗀|𝗴|𝘨|𝙜|ℊ|𝓰|𝔤|𝖌|𝚐|𝕘/g, `g`)
-            .replace(/ʰ|𝐡|ℎ|𝒉|𝗁|𝗵|𝘩|𝙝|𝒽|𝓱|𝔥|𝖍|𝚑|𝕙/g, `h`)
-            .replace(/ᶦ|𝐢|𝑖|𝒊|𝗂|𝗶|𝘪|𝙞|𝒾|𝓲|𝔦|𝖎|𝚒|𝕚/g, `i`)
-            .replace(/ʲ|𝐣|𝑗|𝒋|𝗃|𝗷|𝘫|𝙟|𝒿|𝓳|𝔧|𝖏|𝚓|𝕛/g, `j`)
-            .replace(/ᵏ|𝐤|𝑘|𝒌|𝗄|𝗸|𝘬|𝙠|𝓀|𝓴|𝔨|𝖐|𝚔|𝕜/g, `k`)
-            .replace(/ˡ|𝐥|𝑙|𝒍|𝗅|𝗹|𝘭|𝙡|𝓁|𝓵|𝔩|𝖑|𝚕|𝕝/g, `l`)
-            .replace(/ᵐ|𝐦|𝑚|𝒎|𝗆|𝗺|𝘮|𝙢|𝓂|𝓶|𝔪|𝖒|𝚖|𝕞/g, `m`)
-            .replace(/ⁿ|𝐧|𝑛|𝒏|𝗇|𝗻|𝘯|𝙣|𝓃|𝓷|𝔫|𝖓|𝚗|𝕟|ᑎ|ᘣ|ᘩ|ᙁ/g, `n`)
-            .replace(/ᵒ|𝐨|𝑜|𝒐|𝗈|𝗼|𝘰|𝙤|ℴ|𝓸|𝔬|𝖔|𝚘|𝕠|ᴏ/g, `o`)
-            .replace(/ᵖ|𝐩|𝑝|𝒑|𝗉|𝗽|𝘱|𝙥|𝓅|𝓹|𝔭|𝖕|𝚙|𝕡/g, `p`)
-            .replace(/ᑫ|𝐪|𝑞|𝒒|𝗊|𝗾|𝘲|𝙦|𝓆|𝓺|𝔮|𝖖|𝚚|𝕢/g, `q`)
-            .replace(/ʳ|𝐫|𝑟|𝒓|𝗋|𝗿|𝘳|𝙧|𝓇|𝓻|𝔯|𝖗|𝚛|𝕣/g, `r`)
-            .replace(/ˢ|𝐬|𝑠|𝒔|𝗌|𝘀|𝘴|𝙨|𝓈|𝓼|𝔰|𝖘|𝚜|𝕤/g, `s`)
-            .replace(/ᵗ|𝐭|𝑡|𝒕|𝗍|𝘁|𝘵|𝙩|𝓉|𝓽|𝔱|𝖙|𝚝|𝕥/g, `t`)
-            .replace(/ᵘ|𝐮|𝑢|𝒖|𝗎|𝘂|𝘶|𝙪|𝓊|𝓾|𝔲|𝖚|𝚞|𝕦/g, `u`)
-            .replace(/ᵛ|𝐯|𝑣|𝒗|𝗏|𝘃|𝘷|𝙫|𝓋|𝓿|𝔳|𝖛|𝚟|𝕧/g, `v`)
-            .replace(/ʷ|𝐰|𝑤|𝒘|𝗐|𝘄|𝘸|𝙬|𝓌|𝔀|𝔴|𝖜|𝚠|𝕨/g, `w`)
-            .replace(/ˣ|𝐱|𝑥|𝒙|𝗑|𝘅|𝘹|𝙭|𝓍|𝔁|𝔵|𝖝|𝚡|𝕩/g, `x`)
-            .replace(/ʸ|𝐲|𝑦|𝒚|𝗒|𝘆|𝘺|𝙮|𝓎|𝔂|𝔶|𝖞|𝚢|𝕪/g, `y`)
-            .replace(/ᶻ|𝐳|𝑧|𝒛|𝗓|𝘇|𝘻|𝙯|𝓏|𝔃|𝔷|𝖟|𝚣|𝕫/g, `z`)
-            .replace(/ᴬ|𝐀|𝐴|𝑨|𝖠|𝗔|𝘈|𝘼|𝒜|𝓐|𝔄|𝕬|𝙰|𝔸|ᗩ|ᗣ|ᗝ|ᗅ|ᗋ|ᐃ|ᐱ/g, `A`)
-            .replace(/ᴮ|𝐁|𝐵|𝑩|𝖡|𝗕|𝘉|𝘽|ℬ|𝓑|𝔅|𝕭|𝙱|𝔹|ᗷ|ᗽ|ᗱ/g, `B`)
-            .replace(/ᶜ|𝐂|𝐶|𝑪|𝖢|𝗖|𝘊|𝘾|𝒞|𝓒|ℭ|𝕮|𝙲|ℂ|ᘇ|ᘧ|ᘭ|ᘳ|ᘹ|ᙅ/g, `C`)
-            .replace(/ᴰ|𝐃|𝐷|𝑫|𝖣|𝗗|𝘋|𝘿|𝒟|𝓓|𝔇|𝕯|𝙳|𝔻|ᗪ|ᗫ|ᗬ|ᗞ|ᗟ|ᗠ|ᘅ|ᙃ/g, `D`)
-            .replace(/ᴱ|𝐄|𝐸|𝑬|𝖤|𝗘|𝘌|𝙀|ℰ|𝓔|𝔈|𝕰|𝙴|𝔼|ᘍ|ᘿ|ᙓ/g, `E`)
-            .replace(/ᶠ|𝐅|𝐹|𝑭|𝖥|𝗙|𝘍|𝙁|ℱ|𝓕|𝔉|𝕱|𝙵|𝔽/g, `F`)
-            .replace(/ᴳ|𝐆|𝐺|𝑮|𝖦|𝗚|𝘎|𝙂|𝒢|𝓖|𝔊|𝕲|𝙶|𝔾/g, `G`)
-            .replace(/ᴴ|𝐇|𝐻|𝑯|𝖧|𝗛|𝘏|𝙃|ℋ|𝓗|ℌ|𝕳|𝙷|ℍ|ᕼ/g, `H`)
-            .replace(/ᴵ|𝐈|𝐼|𝑰|𝖨|𝗜|𝘐|𝙄|ℐ|𝓘|ℑ|𝕴|𝙸|𝕀/g, `I`)
-            .replace(/ᴶ|𝐉|𝐽|𝑱|𝖩|𝗝|𝘑|𝙅|𝒥|𝓙|𝔍|𝕵|𝙹|𝕁/g, `J`)
-            .replace(/ᴷ|𝐊|𝐾|𝑲|𝖪|𝗞|𝘒|𝙆|𝒦|𝓚|𝔎|𝕶|𝙺|𝕂/g, `K`)
-            .replace(/ᴸ|𝐋|𝐿|𝑳|𝖫|𝗟|𝘓|𝙇|ℒ|𝓛|𝔏|𝕷|𝙻|𝕃/g, `L`)
-            .replace(/ᴹ|𝐌|𝑀|𝑴|𝖬|𝗠|𝘔|𝙈|ℳ|𝓜|𝔐|𝕸|𝙼|𝕄|ᗰ|ᘻ|ᘉ|ᙏ/g, `M`)
-            .replace(/ᴺ|𝐍|𝑁|𝑵|𝖭|𝗡|𝘕|𝙉|𝒩|𝓝|𝔑|𝕹|𝙽|ℕ/g, `N`)
-            .replace(/ᴼ|𝐎|𝑂|𝑶|𝖮|𝗢|𝘖|𝙊|𝒪|𝓞|𝔒|𝕺|𝙾|𝕆/g, `O`)
-            .replace(/ᴾ|𝐏|𝑃|𝑷|𝖯|𝗣|𝘗|𝙋|𝒫|𝓟|𝔓|𝕻|𝙿|ℙ|ᑭ/g, `P`)
-            .replace(/Q|𝐐|𝑄|𝑸|𝖰|𝗤|𝘘|𝙌|𝒬|𝓠|𝔔|𝕼|𝚀|ℚ/g, `Q`)
-            .replace(/ᴿ|𝐑|𝑅|𝑹|𝖱|𝗥|𝘙|𝙍|ℛ|𝓡|ℜ|𝕽|𝚁|ℝ|ᖇ/g, `R`)
-            .replace(/ˢ|𝐒|𝑆|𝑺|𝖲|𝗦|𝘚|𝙎|𝒮|𝓢|𝔖|𝕾|𝚂|𝕊/g, `S`)
-            .replace(/ᵀ|𝐓|𝑇|𝑻|𝖳|𝗧|𝘛|𝙏|𝒯|𝓣|𝔗|𝕿|𝚃|𝕋|ᴛ/g, `T`)
-            .replace(/ᵁ|𝐔|𝑈|𝑼|𝖴|𝗨|𝘜|𝙐|𝒰|𝓤|𝔘|𝖀|𝚄|𝕌|ᘢ|ᘨ|ᘮ|ᘴ|ᙀ|ᙈ/g, `U`)
-            .replace(/ⱽ|𝐕|𝑉|𝑽|𝖵|𝗩|𝘝|𝙑|𝒱|𝓥|𝔙|𝖁|𝚅|𝕍|ᐯ/g, `V`)
-            .replace(/ᵂ|𝐖|𝑊|𝑾|𝖶|𝗪|𝘞|𝙒|𝒲|𝓦|𝔚|𝖂|𝚆|𝕎|ᗯ|ᘈ|ᘺ|ᙎ/g, `W`)
-            .replace(/ˣ|𝐗|𝑋|𝑿|𝖷|𝗫|𝘟|𝙓|𝒳|𝓧|𝔛|𝖃|𝚇|𝕏/g, `X`)
-            .replace(/ʸ|𝐘|𝑌|𝒀|𝖸|𝗬|𝘠|𝙔|𝒴|𝓨|𝔜|𝖄|𝚈|𝕐/g, `Y`)
-            .replace(/ᶻ|𝐙|𝑍|𝒁|𝖹|𝗭|𝘡|𝙕|𝒵|𝓩|ℨ|𝖅|𝚉|ℤ/g, `Z`)
-            .replace(/_/g, ` `)
-    },
+    normalize: str => str
+        .replace(/ᵃ|𝐚|𝑎|𝒂|𝖺|𝗮|𝘢|𝙖|𝒶|𝓪|𝔞|𝖆|𝚊|𝕒|ᘛ|ᘡ/g, `a`)
+        .replace(/ᵇ|𝐛|𝑏|𝒃|𝖻|𝗯|𝘣|𝙗|𝒷|𝓫|𝔟|𝖇|𝚋|𝕓/g, `b`)
+        .replace(/ᶜ|𝐜|𝑐|𝒄|𝖼|𝗰|𝘤|𝙘|𝒸|𝓬|𝔠|𝖈|𝚌|𝕔/g, `c`)
+        .replace(/ᵈ|𝐝|𝑑|𝒅|𝖽|𝗱|𝘥|𝙙|𝒹|𝓭|𝔡|𝖉|𝚍|𝕕/g, `d`)
+        .replace(/ᵉ|𝐞|𝑒|𝒆|𝖾|𝗲|𝘦|𝙚|ℯ|𝓮|𝔢|𝖊|𝚎|𝕖|ᘓ/g, `e`)
+        .replace(/ᶠ|𝐟|𝑓|𝒇|𝖿|𝗳|𝘧|𝙛|𝒻|𝓯|𝔣|𝖋|𝚏|𝕗/g, `f`)
+        .replace(/ᵍ|𝐠|𝑔|𝒈|𝗀|𝗴|𝘨|𝙜|ℊ|𝓰|𝔤|𝖌|𝚐|𝕘/g, `g`)
+        .replace(/ʰ|𝐡|ℎ|𝒉|𝗁|𝗵|𝘩|𝙝|𝒽|𝓱|𝔥|𝖍|𝚑|𝕙/g, `h`)
+        .replace(/ᶦ|𝐢|𝑖|𝒊|𝗂|𝗶|𝘪|𝙞|𝒾|𝓲|𝔦|𝖎|𝚒|𝕚|ᓰ/g, `i`)
+        .replace(/ʲ|𝐣|𝑗|𝒋|𝗃|𝗷|𝘫|𝙟|𝒿|𝓳|𝔧|𝖏|𝚓|𝕛/g, `j`)
+        .replace(/ᵏ|𝐤|𝑘|𝒌|𝗄|𝗸|𝘬|𝙠|𝓀|𝓴|𝔨|𝖐|𝚔|𝕜/g, `k`)
+        .replace(/ˡ|𝐥|𝑙|𝒍|𝗅|𝗹|𝘭|𝙡|𝓁|𝓵|𝔩|𝖑|𝚕|𝕝/g, `l`)
+        .replace(/ᵐ|𝐦|𝑚|𝒎|𝗆|𝗺|𝘮|𝙢|𝓂|𝓶|𝔪|𝖒|𝚖|𝕞/g, `m`)
+        .replace(/ⁿ|𝐧|𝑛|𝒏|𝗇|𝗻|𝘯|𝙣|𝓃|𝓷|𝔫|𝖓|𝚗|𝕟|ᑎ|ᘣ|ᘩ|ᙁ/g, `n`)
+        .replace(/ᵒ|𝐨|𝑜|𝒐|𝗈|𝗼|𝘰|𝙤|ℴ|𝓸|𝔬|𝖔|𝚘|𝕠|ᴏ|ᓍ/g, `o`)
+        .replace(/ᵖ|𝐩|𝑝|𝒑|𝗉|𝗽|𝘱|𝙥|𝓅|𝓹|𝔭|𝖕|𝚙|𝕡/g, `p`)
+        .replace(/ᑫ|𝐪|𝑞|𝒒|𝗊|𝗾|𝘲|𝙦|𝓆|𝓺|𝔮|𝖖|𝚚|𝕢/g, `q`)
+        .replace(/ʳ|𝐫|𝑟|𝒓|𝗋|𝗿|𝘳|𝙧|𝓇|𝓻|𝔯|𝖗|𝚛|𝕣/g, `r`)
+        .replace(/ˢ|𝐬|𝑠|𝒔|𝗌|𝘀|𝘴|𝙨|𝓈|𝓼|𝔰|𝖘|𝚜|𝕤/g, `s`)
+        .replace(/ᵗ|𝐭|𝑡|𝒕|𝗍|𝘁|𝘵|𝙩|𝓉|𝓽|𝔱|𝖙|𝚝|𝕥|ᖶ/g, `t`)
+        .replace(/ᵘ|𝐮|𝑢|𝒖|𝗎|𝘂|𝘶|𝙪|𝓊|𝓾|𝔲|𝖚|𝚞|𝕦/g, `u`)
+        .replace(/ᵛ|𝐯|𝑣|𝒗|𝗏|𝘃|𝘷|𝙫|𝓋|𝓿|𝔳|𝖛|𝚟|𝕧/g, `v`)
+        .replace(/ʷ|𝐰|𝑤|𝒘|𝗐|𝘄|𝘸|𝙬|𝓌|𝔀|𝔴|𝖜|𝚠|𝕨/g, `w`)
+        .replace(/ˣ|𝐱|𝑥|𝒙|𝗑|𝘅|𝘹|𝙭|𝓍|𝔁|𝔵|𝖝|𝚡|𝕩/g, `x`)
+        .replace(/ʸ|𝐲|𝑦|𝒚|𝗒|𝘆|𝘺|𝙮|𝓎|𝔂|𝔶|𝖞|𝚢|𝕪/g, `y`)
+        .replace(/ᶻ|𝐳|𝑧|𝒛|𝗓|𝘇|𝘻|𝙯|𝓏|𝔃|𝔷|𝖟|𝚣|𝕫/g, `z`)
+        .replace(/ᴬ|𝐀|𝐴|𝑨|𝖠|𝗔|𝘈|𝘼|𝒜|𝓐|𝔄|𝕬|𝙰|𝔸|ᗩ|ᗣ|ᗝ|ᗅ|ᗋ|ᐃ|ᐱ/g, `A`)
+        .replace(/ᴮ|𝐁|𝐵|𝑩|𝖡|𝗕|𝘉|𝘽|ℬ|𝓑|𝔅|𝕭|𝙱|𝔹|ᗷ|ᗽ|ᗱ/g, `B`)
+        .replace(/ᶜ|𝐂|𝐶|𝑪|𝖢|𝗖|𝘊|𝘾|𝒞|𝓒|ℭ|𝕮|𝙲|ℂ|ᑕ|ᑢ|ᘇ|ᘧ|ᘭ|ᘳ|ᘹ|ᙅ/g, `C`)
+        .replace(/ᴰ|𝐃|𝐷|𝑫|𝖣|𝗗|𝘋|𝘿|𝒟|𝓓|𝔇|𝕯|𝙳|𝔻|ᗪ|ᗫ|ᗬ|ᗞ|ᗟ|ᗠ|ᕲ|ᘅ|ᙃ/g, `D`)
+        .replace(/ᴱ|𝐄|𝐸|𝑬|𝖤|𝗘|𝘌|𝙀|ℰ|𝓔|𝔈|𝕰|𝙴|𝔼|ᘍ|ᘿ|ᙓ/g, `E`)
+        .replace(/ᶠ|𝐅|𝐹|𝑭|𝖥|𝗙|𝘍|𝙁|ℱ|𝓕|𝔉|𝕱|𝙵|𝔽|ᖴ/g, `F`)
+        .replace(/ᴳ|𝐆|𝐺|𝑮|𝖦|𝗚|𝘎|𝙂|𝒢|𝓖|𝔊|𝕲|𝙶|𝔾|ᘜ/g, `G`)
+        .replace(/ᴴ|𝐇|𝐻|𝑯|𝖧|𝗛|𝘏|𝙃|ℋ|𝓗|ℌ|𝕳|𝙷|ℍ|ᕼ/g, `H`)
+        .replace(/ᴵ|𝐈|𝐼|𝑰|𝖨|𝗜|𝘐|𝙄|ℐ|𝓘|ℑ|𝕴|𝙸|𝕀/g, `I`)
+        .replace(/ᴶ|𝐉|𝐽|𝑱|𝖩|𝗝|𝘑|𝙅|𝒥|𝓙|𝔍|𝕵|𝙹|𝕁/g, `J`)
+        .replace(/ᴷ|𝐊|𝐾|𝑲|𝖪|𝗞|𝘒|𝙆|𝒦|𝓚|𝔎|𝕶|𝙺|𝕂/g, `K`)
+        .replace(/ᴸ|𝐋|𝐿|𝑳|𝖫|𝗟|𝘓|𝙇|ℒ|𝓛|𝔏|𝕷|𝙻|𝕃|ᒪ/g, `L`)
+        .replace(/ᴹ|𝐌|𝑀|𝑴|𝖬|𝗠|𝘔|𝙈|ℳ|𝓜|𝔐|𝕸|𝙼|𝕄|ᗰ|ᘻ|ᘉ|ᙏ/g, `M`)
+        .replace(/ᴺ|𝐍|𝑁|𝑵|𝖭|𝗡|𝘕|𝙉|𝒩|𝓝|𝔑|𝕹|𝙽|ℕ/g, `N`)
+        .replace(/ᴼ|𝐎|𝑂|𝑶|𝖮|𝗢|𝘖|𝙊|𝒪|𝓞|𝔒|𝕺|𝙾|𝕆/g, `O`)
+        .replace(/ᴾ|𝐏|𝑃|𝑷|𝖯|𝗣|𝘗|𝙋|𝒫|𝓟|𝔓|𝕻|𝙿|ℙ|ᑭ|ᕵ/g, `P`)
+        .replace(/Q|𝐐|𝑄|𝑸|𝖰|𝗤|𝘘|𝙌|𝒬|𝓠|𝔔|𝕼|𝚀|ℚ/g, `Q`)
+        .replace(/ᴿ|𝐑|𝑅|𝑹|𝖱|𝗥|𝘙|𝙍|ℛ|𝓡|ℜ|𝕽|𝚁|ℝ|ᖇ/g, `R`)
+        .replace(/ˢ|𝐒|𝑆|𝑺|𝖲|𝗦|𝘚|𝙎|𝒮|𝓢|𝔖|𝕾|𝚂|𝕊|ᔕ/g, `S`)
+        .replace(/ᵀ|𝐓|𝑇|𝑻|𝖳|𝗧|𝘛|𝙏|𝒯|𝓣|𝔗|𝕿|𝚃|𝕋|ᴛ/g, `T`)
+        .replace(/ᵁ|𝐔|𝑈|𝑼|𝖴|𝗨|𝘜|𝙐|𝒰|𝓤|𝔘|𝖀|𝚄|𝕌|ᑌ|ᑘ|ᘢ|ᘨ|ᘮ|ᘴ|ᙀ|ᙈ/g, `U`)
+        .replace(/ⱽ|𝐕|𝑉|𝑽|𝖵|𝗩|𝘝|𝙑|𝒱|𝓥|𝔙|𝖁|𝚅|𝕍|ᐯ/g, `V`)
+        .replace(/ᵂ|𝐖|𝑊|𝑾|𝖶|𝗪|𝘞|𝙒|𝒲|𝓦|𝔚|𝖂|𝚆|𝕎|ᗯ|ᘈ|ᘺ|ᙎ/g, `W`)
+        .replace(/ˣ|𝐗|𝑋|𝑿|𝖷|𝗫|𝘟|𝙓|𝒳|𝓧|𝔛|𝖃|𝚇|𝕏|᙭/g, `X`)
+        .replace(/ʸ|𝐘|𝑌|𝒀|𝖸|𝗬|𝘠|𝙔|𝒴|𝓨|𝔜|𝖄|𝚈|𝕐|ᖻ/g, `Y`)
+        .replace(/ᶻ|𝐙|𝑍|𝒁|𝖹|𝗭|𝘡|𝙕|𝒵|𝓩|ℨ|𝖅|𝚉|ℤ/g, `Z`)
+        .replace(/_/g, ` `),
     msToElapsedTime(ms) {
         const years = Math.floor(ms / (1000 * 60 * 60 * 24 * 365))
         const days = Math.floor((ms / (1000 * 60 * 60 * 24)) % 365)
