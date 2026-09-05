@@ -11,7 +11,8 @@ const deckOfCards = [
 ]
 
 const name = (username) => users[username].nickname || users[username].displayName
-const article = (card) => `${card.startsWith(`8`) || card.startsWith(`A`) ? `an` : `a`} [${card}]`
+const renderCards = (arr) => `[${arr.join(`, `)}]`
+const article = (card) => `${card.startsWith(`8`) || card.startsWith(`A`) ? `an` : `a`} ${renderCards([card])}`
 const getPlayer = (game, username) => game.players.filter(p => p.name === username)[0]
 const addPlayer = (game, username, bet) => game.players.push({ name: username, hands: [{ cards: [], score: 0, bet: bet }], currentHand: 0 })
 
@@ -210,7 +211,7 @@ function dealCard(game, idxPlayer, idxHand) {
     cards.push(dealtCard)
     processScore(game, idxPlayer, idxHand)
 
-    // logMessage([`> dealCard(idxPlayer: ${idxPlayer}, idxHand: ${idxHand}, dealtCard: [${dealtCard}])`])
+    // logMessage([`> dealCard(idxPlayer: ${idxPlayer}, idxHand: ${idxHand}, dealtCard: ${renderCards([dealtCard])})`])
     return dealtCard
 }
 
@@ -225,23 +226,23 @@ function dealToSelf(channel, messageQueue) {
     const upsetEmote = getContextEmote(`upset`, channel)
 
     if (dealerMustHit(bj, dealerHand)) {
-        messageQueue.push(`I have ${dealerHand.score} showing [${dealerHand.cards.join(`, `)}] - I'll hit! ${neutralEmote}`)
+        messageQueue.push(`I have ${dealerHand.score} showing ${renderCards(dealerHand.cards)} - I'll hit! ${neutralEmote}`)
         while (dealerMustHit(bj, dealerHand)) {
             const dealtCard = dealCard(bj, bj.players.length - 1, 0)
 
             if (dealerMustHit(bj, dealerHand)) {
-                const hitMessage = `I got ${article(dealtCard)} and have ${dealerHand.score} showing [${dealerHand.cards.join(`, `)}] - I'll hit again! ${neutralEmote}`
+                const hitMessage = `I got ${article(dealtCard)} and have ${dealerHand.score} showing ${renderCards(dealerHand.cards)} - I'll hit again! ${neutralEmote}`
                 messageQueue.push(hitMessage)
             } else if (dealerHand.score > 21) {
-                const bustMessage = `I got ${article(dealtCard)} and have ${dealerHand.score} showing [${dealerHand.cards.join(`, `)}] - I busted! ${upsetEmote}`
+                const bustMessage = `I got ${article(dealtCard)} and have ${dealerHand.score} showing ${renderCards(dealerHand.cards)} - I busted! ${upsetEmote}`
                 messageQueue.push(bustMessage)
             } else {
-                const stayMessage = `I got ${article(dealtCard)} and have ${dealerHand.score} showing [${dealerHand.cards.join(`, `)}]${dealerHand.score !== 21 ? ` - I'll stay!` : ``} ${dealerHand.score === 21 ? hypeEmote : dealerHand.score >= 17 ? positiveEmote : neutralEmote}`
+                const stayMessage = `I got ${article(dealtCard)} and have ${dealerHand.score} showing ${renderCards(dealerHand.cards)}${dealerHand.score !== 21 ? ` - I'll stay!` : ``} ${dealerHand.score === 21 ? hypeEmote : dealerHand.score >= 17 ? positiveEmote : neutralEmote}`
                 messageQueue.push(stayMessage)
             }
         }
     } else {
-        messageQueue.push(`I have [${dealerHand.cards.join(`, `)}] and will stay with ${dealerHand.score} ${dealerHand.score === 21 ? hypeEmote : dealerHand.score >= 17 ? positiveEmote : neutralEmote}`)
+        messageQueue.push(`I have ${renderCards(dealerHand.cards)} and will stay with ${dealerHand.score} ${dealerHand.score === 21 ? hypeEmote : dealerHand.score >= 17 ? positiveEmote : neutralEmote}`)
     }
     return messageQueue
 }
@@ -262,9 +263,9 @@ function gameOver(bot, chatroom, channel, messageQueue) {
     if (playerScores.includes(false)) {
         messageQueue = dealToSelf(channel, messageQueue)
     } else if (!bj.deck.length) {
-        messageQueue.push(`I have ${dealerHand.score} showing [${dealerHand.cards.join(`, `)}] and can't draw a card ${dumbEmote}`)
+        messageQueue.push(`I have ${dealerHand.score} showing ${renderCards(dealerHand.cards)} and can't draw a card ${dumbEmote}`)
     } else {
-        messageQueue.push(`I have ${dealerHand.score} showing [${dealerHand.cards.join(`, `)}] and ${bj.players.length > 2 ? `everyone else` : name(bj.players[0].name)} busted ${dumbEmote}`)
+        messageQueue.push(`I have ${dealerHand.score} showing ${renderCards(dealerHand.cards)} and ${bj.players.length > 2 ? `everyone else` : name(bj.players[0].name)} busted ${dumbEmote}`)
     }
 
     payout(bot, chatroom, channel, messageQueue)
@@ -286,11 +287,11 @@ function setUpNextHand(bot, chatroom, channel, messageQueue) {
         const dealtCard = dealCard(bj, bj.currentPlayer, p.currentHand)
 
         if (nextHand.score === 21) {
-            messageQueue.push(`Also, ${nickname}'s ${getOrdinalNumeralSuffix(p.currentHand + 1)} hand was dealt ${article(dealtCard)} and has ${nextHand.score}! ${hypeEmote} [${nextHand.cards.join(`, `)}]`)
+            messageQueue.push(`Also, ${nickname}'s ${getOrdinalNumeralSuffix(p.currentHand + 1)} hand was dealt ${article(dealtCard)} and has ${nextHand.score}! ${hypeEmote} ${renderCards(nextHand.cards)}`)
             setUpNextHand(bot, chatroom, channel, messageQueue)
         } else {
             const options = [`!hit`, `!stay`]
-            messageQueue.push(`Now, ${nickname}'s ${getOrdinalNumeralSuffix(p.currentHand + 1)} hand was dealt ${article(dealtCard)} and has ${nextHand.score} showing ${nextHand.score >= 17 ? positiveEmote : neutralEmote} [${nextHand.cards.join(`, `)}] - You may ${arrToList(options, `or`)}`)
+            messageQueue.push(`Now, ${nickname}'s ${getOrdinalNumeralSuffix(p.currentHand + 1)} hand was dealt ${article(dealtCard)} and has ${nextHand.score} showing ${nextHand.score >= 17 ? positiveEmote : neutralEmote} ${renderCards(nextHand.cards)} - You may ${arrToList(options, `or`)}`)
             dispatchMessages(bot, chatroom, bj, messageQueue)
         }
     } else {
@@ -304,13 +305,13 @@ function setUpNextHand(bot, chatroom, channel, messageQueue) {
             const npHand = np.hands[0]
 
             if (npHand.score === 21) {
-                messageQueue.push(`Now, ${npNickname} has ${npHand.score} showing! ${hypeEmote} [${npHand.cards.join(`, `)}]`)
+                messageQueue.push(`Now, ${npNickname} has ${npHand.score} showing! ${hypeEmote} ${renderCards(npHand.cards)}`)
                 setUpNextHand(bot, chatroom, channel, messageQueue)
             } else {
                 const options = [`!hit`, `!stay`]
                 if (npHand.bet && users[np.name].lemons >= npHand.bet) { options.push(`!doubledown`) }
                 if (evaluate(npHand.cards[0]) === evaluate(npHand.cards[1]) && users[np.name].lemons >= npHand.bet) { options.push(`!split`) }
-                messageQueue.push(`Now, ${npNickname} has ${npHand.score} showing ${npHand.score >= 17 ? positiveEmote : neutralEmote} [${npHand.cards.join(`, `)}] - You may ${arrToList(options, `or`)}`)
+                messageQueue.push(`Now, ${npNickname} has ${npHand.score} showing ${npHand.score >= 17 ? positiveEmote : neutralEmote} ${renderCards(npHand.cards)} - You may ${arrToList(options, `or`)}`)
                 dispatchMessages(bot, chatroom, bj, messageQueue)
             }
         }
@@ -361,8 +362,8 @@ function initBlackjack(bot, chatroom, channel, username, bet) {
 
         const table = arrToList(bj.players
             .map(p => p.name === BOT_USERNAME
-                ? `${name(p.name)} is showing [${p.hands[0].cards[0]}, ???]`
-                : `${name(p.name)} and has [${p.hands[0].cards.join(`, `)}]`))
+                ? `${name(p.name)} is showing ${renderCards([p.hands[0].cards[0], `???`])}`
+                : `${name(p.name)} and has ${renderCards(p.hands[0].cards)}`))
         bot.say(chatroom, `${reshuffleDeck ? `I have shuffled the deck! ` : ``}After dealing, ${table}`)
 
         setTimeout(() => {
@@ -370,17 +371,17 @@ function initBlackjack(bot, chatroom, channel, username, bet) {
             const fpNickname = name(fp.name)
             const fpHand = fp.hands[0]
             if (fpHand.score === 21) {
-                const message = `${fpNickname} has ${fpHand.score} showing! ${hypeEmote} [${fpHand.cards.join(`, `)}]`
+                const message = `${fpNickname} has ${fpHand.score} showing! ${hypeEmote} ${renderCards(fpHand.cards)}`
                 setUpNextHand(bot, chatroom, channel, [message])
             } else {
                 const options = [`!hit`, `!stay`]
                 if (fpHand.bet && users[fp.name].lemons >= fpHand.bet) { options.push(`!doubledown`) }
                 if (evaluate(fpHand.cards[0]) === evaluate(fpHand.cards[1]) && users[fp.name].lemons >= fpHand.bet) { options.push(`!split`) }
-                const reply = `${fpNickname} has ${fpHand.score} showing ${fpHand.score === 21 ? hypeEmote : fpHand.score >= 17 ? positiveEmote : neutralEmote} [${fpHand.cards.join(`, `)}] - You may ${arrToList(options, `or`)} `
+                const reply = `${fpNickname} has ${fpHand.score} showing ${fpHand.score === 21 ? hypeEmote : fpHand.score >= 17 ? positiveEmote : neutralEmote} ${renderCards(fpHand.cards)} - You may ${arrToList(options, `or`)} `
                 bot.say(chatroom, reply)
             }
         }, bj.messageDelay)
-    }, bj.signupSeconds * 1000)) // 1000
+    }, bj.signupSeconds * 1000))
 }
 
 function changeBet(bot, chatroom, channel, player, bet) {
@@ -411,9 +412,8 @@ function processBet(username, bet) {
     if (user.lemons >= bet) {
         user.lemons -= bet
         return true
-    } else {
-        return false
     }
+    return false
 }
 
 function invalidBet(bot, chatroom, channel, username, bet) {
@@ -496,16 +496,16 @@ module.exports = {
             const nickname = name(p.name)
             if (hand.score > 21) {
                 const upsetEmote = getContextEmote(`upset`, channel)
-                const message = `${nickname} got ${article(dealtCard)} - You busted with ${hand.score}! ${upsetEmote} [${hand.cards.join(`, `)}]`
+                const message = `${nickname} got ${article(dealtCard)} - You busted with ${hand.score}! ${upsetEmote} ${renderCards(hand.cards)}`
                 setUpNextHand(bot, chatroom, channel, [message])
             } else if (hand.score === 21) {
                 const hypeEmote = getContextEmote(`hype`, channel)
-                const message = `${nickname} got ${article(dealtCard)} and has ${hand.score}! ${hypeEmote} [${hand.cards.join(`, `)}]`
+                const message = `${nickname} got ${article(dealtCard)} and has ${hand.score}! ${hypeEmote} ${renderCards(hand.cards)}`
                 setUpNextHand(bot, chatroom, channel, [message])
             } else {
                 const positiveEmote = getContextEmote(`positive`, channel)
                 const neutralEmote = getContextEmote(`neutral`, channel)
-                const message = `${nickname} got ${article(dealtCard)} and has ${hand.score} showing ${hand.score >= 17 ? positiveEmote : neutralEmote} [${hand.cards.join(`, `)}] - You can !hit or !stay`
+                const message = `${nickname} got ${article(dealtCard)} and has ${hand.score} showing ${hand.score >= 17 ? positiveEmote : neutralEmote} ${renderCards(hand.cards)} - You can !hit or !stay`
                 bot.say(chatroom, message)
             }
         }
@@ -550,7 +550,7 @@ module.exports = {
                 gameOver(bot, chatroom, channel, [`Oops, I ran out of cards...`])
                 return
             }
-            const message = `${nickname} doubled down and got ${article(dealtCard)} - They ${hand.score > 21 ? `busted with ${hand.score}! ${upsetEmote}` : `have ${hand.score} showing${hand.score === 21 ? `! ${hypeEmote}` : hand.score >= 17 ? `! ${positiveEmote}` : ` ${neutralEmote}`}`} [${hand.cards.join(`, `)}]`
+            const message = `${nickname} doubled down and got ${article(dealtCard)} - They ${hand.score > 21 ? `busted with ${hand.score}! ${upsetEmote}` : `have ${hand.score} showing${hand.score === 21 ? `! ${hypeEmote}` : hand.score >= 17 ? `! ${positiveEmote}` : ` ${neutralEmote}`}`} ${renderCards(hand.cards)}`
             setUpNextHand(bot, chatroom, channel, [message])
         }
     },
@@ -591,12 +591,12 @@ module.exports = {
             const cardValue = evaluate(hand.cards[0]) === 11 ? `ace` : evaluate(hand.cards[0])
 
             if (hand.score === 21) {
-                const message = `${nickname} split their ${cardValue}s into separate hands. They were dealt ${article(hand.cards[1])} to their ${getOrdinalNumeralSuffix(p.currentHand + 1)} hand and have ${hand.score} showing! ${hypeEmote} [${hand.cards.join(`, `)}]`
+                const message = `${nickname} split their ${cardValue}s into separate hands. They were dealt ${article(hand.cards[1])} to their ${getOrdinalNumeralSuffix(p.currentHand + 1)} hand and have ${hand.score} showing! ${hypeEmote} ${renderCards(hand.cards)}`
                 setUpNextHand(bot, chatroom, channel, [message])
             } else {
                 const options = [`!hit`, `!stay`]
                 if (evaluate(hand.cards[0]) === evaluate(hand.cards[1]) && users[p.name].lemons >= hand.bet) { options.push(`!split`) }
-                bot.say(chatroom, `${nickname} split their ${cardValue}s into separate hands. They were dealt ${article(hand.cards[1])} to their ${getOrdinalNumeralSuffix(p.currentHand + 1)} hand and have ${hand.score} showing ${hand.score >= 17 ? positiveEmote : neutralEmote} [${hand.cards.join(`, `)}] - You may ${arrToList(options, `or`)}`)
+                bot.say(chatroom, `${nickname} split their ${cardValue}s into separate hands. They were dealt ${article(hand.cards[1])} to their ${getOrdinalNumeralSuffix(p.currentHand + 1)} hand and have ${hand.score} showing ${hand.score >= 17 ? positiveEmote : neutralEmote} ${renderCards(hand.cards)} - You may ${arrToList(options, `or`)}`)
             }
         }
     },
@@ -611,7 +611,7 @@ module.exports = {
             const neutralEmote = getContextEmote(`neutral`, channel)
 
             const hand = p.hands[p.currentHand]
-            const message = `${name(p.name)} stands at ${hand.score}! ${hand.score >= 17 ? positiveEmote : neutralEmote} [${hand.cards.join(`, `)}]`
+            const message = `${name(p.name)} stands at ${hand.score}! ${hand.score >= 17 ? positiveEmote : neutralEmote} ${renderCards(hand.cards)}`
             setUpNextHand(bot, chatroom, channel, [message])
         }
     }
