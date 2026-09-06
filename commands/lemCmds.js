@@ -4,9 +4,9 @@ const { makePlural, addVerbSuffix } = require(`./insult`)
 
 const regexNumber = /\{\s?number\s?(\-?\d+)\s?([\+\-\*\/]\s?(\d+\.?\d*|\d?\.\d+))?\s?\}/gi
 const regexOperation = /\d+\s?([\+\-\*\/])/
-const regexRandom = /\{\s?random\s?("[^"]+"\s?)+\s?\}/gi
+const regexRandom = /\{\s?random\s?(["“«][^"“„”«»]+["„”»]\s?)+\s?\}/gi
 const regexExclusion = /^$|^\s$|^\s?\}$|^\{\s?random\s?$/i
-const regexQuote = /"(.+?)"/
+const regexQuote = /["“«](.+?)["„”»]/
 
 function applyVariables(str, props) {
     const { args, channel, username, toUser } = props
