@@ -7,18 +7,13 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
+            `Allowed for smart quotes in lemmon command variables`,
             `Updated CLI channel configurations 'hangman' or 'h', and 'blackjack' or 'bj' for dev`,
             `Implemented Blackjack game`,
             `Created HUD for non-debug mode`,
             `Added more uses for lemons`,
             `Created CLI channel configuration 'anonymousFollows' or 'af'`,
             `Created CLI settings configuration 'maxDefinitionLength' or 'mdl'`,
-            `Updated Hangman messaging and shuffle algorithm`,
-            `Updated !lemcmd {number#} to allow for + - * / offset`,
-            `Updated !lemcm variables to include {streamernn} and {viewernn}`,
-            `Added !followage command`,
-            `Adjusted !list search functionality`,
-            `Added "length" as !list keyword`,
             `Cleanup and bug fixes`
         ]
 
