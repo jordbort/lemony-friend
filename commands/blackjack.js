@@ -363,7 +363,7 @@ function initBlackjack(bot, chatroom, channel, username, bet) {
         const table = arrToList(bj.players
             .map(p => p.name === BOT_USERNAME
                 ? `${name(p.name)} is showing ${renderCards([p.hands[0].cards[0], `???`])}`
-                : `${name(p.name)} and has ${renderCards(p.hands[0].cards)}`))
+                : `${name(p.name)} has ${renderCards(p.hands[0].cards)}`))
         bot.say(chatroom, `${reshuffleDeck ? `I have shuffled the deck! ` : ``}After dealing, ${table}`)
 
         setTimeout(() => {
