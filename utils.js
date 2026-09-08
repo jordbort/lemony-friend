@@ -1188,11 +1188,19 @@ module.exports = {
         const baseType = `${type}Emotes`
         const emotes = [...settings.baseEmotes[baseType]]
 
+        // Exceptions for alternate BTTV emotes
         if (channel === `jpegstripes` && !users[BOT_USERNAME]?.channels.jpegstripes?.sub) {
             if (type === `hype`) { emotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
             if (type === `positive`) { emotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
             if (type === `greeting`) { emotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
             if (type === `bye`) { emotes.push(`WhitneyVibe`) }
+        }
+        if (channel === `thetarastark` && !users[BOT_USERNAME]?.channels.thetarastark?.sub) {
+            if (type === `hype`) { emotes.push(`POGGERS`, `LULW`) }
+            if (type === `positive`) { emotes.push(`POGGERS`, `LULW`) }
+            if (type === `greeting`) { emotes.push(`POGGERS`, `LULW`, `Sadge`, `Blep`, `Pennsylvania`) }
+            if (type === `bye`) { emotes.push(`taraLeave`) }
+            if (type === `dumb`) { emotes.push(`Blep`) }
         }
 
         for (const member in lemonyFresh) {
