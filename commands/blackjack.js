@@ -21,7 +21,7 @@ const hasSoft17 = (hand) => hand.score === 17 && hand.cards.map(card => evaluate
 const dealerMustHit = (game, hand) => hand.score < 17 || (hasSoft17(hand) && game.hitSoft17)
 
 function addToBlackjack(bot, chatroom, channel, username, bet) {
-    logMessage([`> addToBlackjack(channel: '${channel}', username: '${username}', bet: ${bet})`])
+    logMessage([`-> addToBlackjack(channel: '${channel}', username: '${username}', bet: ${bet}, remaining lemons: ${users[username].lemons})`])
     addPlayer(lemonyFresh[channel].blackjack, username, bet)
 
     const neutralEmote = getContextEmote(`neutral`, channel)
@@ -329,7 +329,7 @@ function splitHand(game, idxPlayer, idxHand) {
 }
 
 function initBlackjack(bot, chatroom, channel, username, bet) {
-    logMessage([`> initBlackjack(channel: ${channel}, username: ${username}, bet: ${bet})`])
+    logMessage([`-> initBlackjack(channel: '${channel}', username: '${username}', bet: ${bet}, remaining lemons: ${users[username].lemons})`])
     const bj = lemonyFresh[channel].blackjack
     const positiveEmote = getContextEmote(`positive`, channel)
 
@@ -385,6 +385,7 @@ function initBlackjack(bot, chatroom, channel, username, bet) {
 }
 
 function changeBet(bot, chatroom, channel, player, bet) {
+    logMessage([`-> changeBet(channel: '${channel}', username: '${player.name}', bet: ${bet}, remaining lemons: ${users[player.name].lemons})`])
     const bj = lemonyFresh[channel].blackjack
     const nickname = name(player.name)
 
@@ -462,6 +463,10 @@ module.exports = {
                     }
                     changeBet(bot, chatroom, channel, player, bet)
                 } else {
+                    if (!processBet(username, bet)) {
+                        bot.say(chatroom, `You don't have enough lemons to place that bet, ${nickname}! ${negativeEmote}`)
+                        return
+                    }
                     addToBlackjack(bot, chatroom, channel, username, bet)
                 }
             } else {
