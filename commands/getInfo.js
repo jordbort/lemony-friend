@@ -7,6 +7,9 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
+            `Migrated CLI setting 'playPCG' to be a channel configuration`,
+            `Created CLI settings configuration 'useBttvEmotes' or 'bttv'`,
+            `You can no longer steal all of the bot's lemons at once`,
             `Allowed for smart quotes in lemmon command variables`,
             `Updated CLI channel configurations 'hangman' or 'h', and 'blackjack' or 'bj' for dev`,
             `Implemented Blackjack game`,
