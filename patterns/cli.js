@@ -245,7 +245,7 @@ function updateHangman(bot, chatroom, obj, message, name, args) {
     const options = {
         [/^totalChances?$|^tc$/i]: { name: `totalChances`, func: updateNum },
         [/^signupSeconds$|^ss$/i]: { name: `signupSeconds`, func: updateNum },
-        [/^lemonThreshold$|^lt$/i]: { name: `lemonThreshold`, func: updateNum }
+        // [/^lemonThreshold$|^lt$/i]: { name: `lemonThreshold`, func: updateNum }
     }
 
     for (const option in options) {
@@ -266,9 +266,9 @@ function updateBlackjack(bot, chatroom, obj, message, name, args) {
 
     const options = {
         [/^signupSeconds$|^ss$/i]: { name: `signupSeconds`, func: updateNum },
-        [/^messageDelay$|^md$/i]: { name: `messageDelay`, func: updateMilliseconds },
         [/^numberOfDecks$|^nd$/i]: { name: `numberOfDecks`, func: updateNum },
-        [/^hitSoft17$|^hs17$/i]: { name: `hitSoft17`, func: updateBool }
+        [/^hitSoft17$|^hs17$/i]: { name: `hitSoft17`, func: updateBool },
+        [/^messageDelay$|^md$/i]: { name: `messageDelay`, func: updateMilliseconds }
     }
 
     for (const option in options) {
@@ -300,9 +300,6 @@ function updateChannelDev(props, args) {
         : channel
 
     const options = {
-        [/^followEmotes?$|^fe$/i]: { name: `followEmotes`, func: updateArr },
-        [/^subEmotes?$|^se$/i]: { name: `subEmotes`, func: updateArr },
-        [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
         [/^contextEmotes?$|^ce$/i]: { name: `contextEmotes`, func: updateContextEmotes },
         [/^hangman$|^h$/i]: { name: `hangman`, func: updateHangman },
         [/^blackjack$|^bj$/i]: { name: `blackjack`, func: updateBlackjack },
@@ -315,7 +312,11 @@ function updateChannelDev(props, args) {
         [/^streamerEmoteStreakThreshold$|^sest$/i]: { name: `streamerEmoteStreakThreshold`, func: updateNum },
         [/^funnyCommands?$|^fc$/i]: { name: `funnyCommands`, func: updateArr },
         [/^redeems?$|^r$/i]: { name: `redeems`, func: updateArr },
+        [/^funTimerGuesser$|^ftg$/i]: { name: `funTimerGuesser`, func: updateStr },
         [/^playPCG$|^pcg$/i]: { name: `playPCG`, func: updateBool },
+        [/^followEmotes?$|^fe$/i]: { name: `followEmotes`, func: updateArr },
+        [/^subEmotes?$|^se$/i]: { name: `subEmotes`, func: updateArr },
+        [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr }
     }
 
     for (const option in options) {
@@ -337,19 +338,20 @@ function updateChannel(props, args) {
     logMessage([`> updateChannel(username, '${username}', channel, '${channel}', args: ${logArr(args)})`])
 
     const options = {
-        // [/^followEmotes?$|^fe$/i]: { name: `followEmotes`, func: updateArr },
-        // [/^subEmotes?$|^se$/i]: { name: `subEmotes`, func: updateArr },
-        // [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr },
         [/^contextEmotes?$|^ce$/i]: { name: `contextEmotes`, func: updateContextEmotes },
-        // [/^hangman$|^h$/i]: { name: `hangman`, func: updateHangman },
-        // [/^blackjack$|^bj$/i]: { name: `blackjack`, func: updateBlackjack },
+        [/^hangman$|^h$/i]: { name: `hangman`, func: updateHangman },
+        [/^blackjack$|^bj$/i]: { name: `blackjack`, func: updateBlackjack },
         [/^rollFunNumber$|^rfn$/i]: { name: `rollFunNumber`, func: updateBool },
         [/^anonymousFollows$|^af$/i]: { name: `anonymousFollows`, func: updateBool },
         [/^subRaidMessage$|^srm$/i]: { name: `subRaidMessage`, func: updateStr },
         [/^noSubRaidMessage$|^nsrm$/i]: { name: `noSubRaidMessage`, func: updateStr },
         [/^timers?$|^t$/i]: { name: `timers`, func: updateTimer },
         [/^streakThreshold$|^st$/i]: { name: `streakThreshold`, func: updateNum },
+        [/^streamerEmoteStreakThreshold$|^sest$/i]: { name: `streamerEmoteStreakThreshold`, func: updateNum },
         [/^playPCG$|^pcg$/i]: { name: `playPCG`, func: updateBool },
+        [/^followEmotes?$|^fe$/i]: { name: `followEmotes`, func: updateArr },
+        [/^subEmotes?$|^se$/i]: { name: `subEmotes`, func: updateArr },
+        [/^bttvEmotes?$|^bttv$/i]: { name: `bttvEmotes`, func: updateArr }
     }
 
     for (const option in options) {
@@ -377,10 +379,8 @@ function updateUserDev(props, args) {
     }
 
     const options = {
-        // [/^displayName$|^dn$/i]: { name: `displayName`, func: updateStr },
         [/^nickname$|^nn$/i]: { name: `nickname`, func: updateStr },
         [/^lemons?$|^l$/i]: { name: `lemons`, func: updateNum },
-        [/^hangmanWins?$|^hw$/i]: { name: `hangmanWins`, func: updateNum },
         // [/^away$|^a$/i]: { name: `away`, func: updateBool },
         // [/^awayMessage$|^am$/i]: { name: `awayMessage`, func: updateStr },
         [/^delete$|^d$/i]: { name: `${toUser}`, func: deleteUser }
@@ -433,8 +433,7 @@ function updateUser(props, args) {
 
     const options = {
         [/^nickname$|^nn$/i]: { name: `nickname`, func: updateStr },
-        // [/^away$|^a$/i]: { name: `away`, func: updateBool },
-        // [/^awayMessage$|^am$/i]: { name: `awayMessage`, func: updateStr }
+        // [/^lemons?$|^l$/i]: { name: `lemons`, func: updateNum }
     }
 
     for (const option in options) {
