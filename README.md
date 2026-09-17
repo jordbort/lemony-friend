@@ -141,7 +141,7 @@ Use this command to update Hangman settings specific to a channel. Options inclu
 
 - `cli channel blackjack` or `cli c bj`
 
-Use this command to update Blackjack settings specific to a channel. Options include: `signupSeconds` (`ss`) the number of seconds in the period where others can join the game and/or update their bets before the game starts (default 20), `numberOfDecks` (`nd`) the total number of decks of cards shuffled into the "shoe" (default 1), `hitSoft17` (`hs17`) boolean value for whether the dealer hits on 17 with an ace in their hand (default false), and `messageDelay` the delay (in milliseconds) between concurrent messages about the game state (default 2000).
+Use this command to update Blackjack settings specific to a channel. Options include: `signupSeconds` (`ss`) the number of seconds in the period where others can join the game and/or update their bets before the game starts (default 20), `numberOfDecks` (`nd`) the total number of decks of cards shuffled into the "shoe" (default 1), `hitSoft17` (`hs17`) boolean value for whether the dealer hits on 17 with an ace in their hand (default false), and `messageDelay` (`md`) the delay (in milliseconds) between concurrent messages about the game state (default 2000).
 
 - `cli channel rollFunNumber` or `cli c rfn` (boolean)
 
