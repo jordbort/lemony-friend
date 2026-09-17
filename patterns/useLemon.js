@@ -1,4 +1,5 @@
 const BOT_USERNAME = process.env.BOT_USERNAME
+const BOT_ID = process.env.BOT_ID
 
 const { lemonyFresh, users } = require(`../data`)
 const { logMessage, pluralize, coinFlip, parseTargetByNickname, logArr, getContextEmote, chooseFrom } = require(`../utils`)
@@ -15,12 +16,22 @@ function stealLemon(bot, chatroom, user, suffix, target) {
                 return
             }
             const randomChance = Math.floor(Math.random() * 50)
-            if (randomChance) {
-                bot.say(chatroom, `${userNickname} tried to steal ${targetNickname}'s lemons, but it didn't work!`)
+            if (target.id === Number(BOT_ID)) {
+                if (randomChance) {
+                    bot.say(chatroom, `Don't steal my lemons, ${userNickname}!`)
+                } else {
+                    user.lemons += 1
+                    target.lemons -= 1
+                    bot.say(chatroom, `Okay ${userNickname}, if you really want a lemon, you can have ONE...`)
+                }
             } else {
-                user.lemons += target.lemons
-                target.lemons = 0
-                bot.say(chatroom, `${userNickname} managed to steal ALL of ${targetNickname}'s lemons!`)
+                if (randomChance) {
+                    bot.say(chatroom, `${userNickname} tried to steal ${targetNickname}'s lemons, but it didn't work!`)
+                } else {
+                    user.lemons += target.lemons
+                    target.lemons = 0
+                    bot.say(chatroom, `${userNickname} managed to steal ALL of ${targetNickname}'s lemons!`)
+                }
             }
         } else {
             bot.say(chatroom, `${userNickname} ran off with all ${user.lemons} of their own lemons! What a steal!`)
