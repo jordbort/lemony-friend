@@ -33,7 +33,6 @@ settings.reportWebSocketActivity = settings.reportWebSocketActivity ?? true
 settings.hideNonDevChannel = settings.hideNonDevChannel ?? false
 settings.highlightBotMessage = settings.highlightBotMessage ?? true
 settings.logTime = settings.logTime ?? true
-settings.playPCG = settings.playPCG ?? true
 settings.realRPS = settings.realRPS ?? true
 settings.sayJoinMessage = settings.sayJoinMessage ?? true
 settings.sayPartMessage = settings.sayPartMessage ?? true

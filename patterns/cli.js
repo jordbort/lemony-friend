@@ -315,7 +315,7 @@ function updateChannelDev(props, args) {
         [/^streamerEmoteStreakThreshold$|^sest$/i]: { name: `streamerEmoteStreakThreshold`, func: updateNum },
         [/^funnyCommands?$|^fc$/i]: { name: `funnyCommands`, func: updateArr },
         [/^redeems?$|^r$/i]: { name: `redeems`, func: updateArr },
-        [/^funTimerGuesser$|^ftg$/i]: { name: `funTimerGuesser`, func: updateStr }
+        [/^playPCG$|^pcg$/i]: { name: `playPCG`, func: updateBool },
     }
 
     for (const option in options) {
@@ -349,7 +349,7 @@ function updateChannel(props, args) {
         [/^noSubRaidMessage$|^nsrm$/i]: { name: `noSubRaidMessage`, func: updateStr },
         [/^timers?$|^t$/i]: { name: `timers`, func: updateTimer },
         [/^streakThreshold$|^st$/i]: { name: `streakThreshold`, func: updateNum },
-        [/^streamerEmoteStreakThreshold$|^sest$/i]: { name: `streamerEmoteStreakThreshold`, func: updateNum }
+        [/^playPCG$|^pcg$/i]: { name: `playPCG`, func: updateBool },
     }
 
     for (const option in options) {
@@ -523,7 +523,6 @@ function updateSettingsDev(props, args) {
         // [/^realRPS$|^rps$/i]: { name: `realRPS`, func: updateBool },
         [/^useBttvEmotes$|^bttv$/i]: { name: `useBttvEmotes`, func: updateBool },
         [/^maxDefinitionLength$|^mdl$/i]: { name: `maxDefinitionLength`, func: updateNum },
-        [/^playPCG$|^pcg$/i]: { name: `playPCG`, func: updateBool },
         [/^pokeballQuantity$|^pq$/i]: { name: `pokeballQuantity`, func: updateNum },
         [/^usedPokeball$|^up$/i]: { name: `usedPokeball`, func: updateStr },
         [/^globalEmotes$|^ge$/i]: { name: `globalEmotes`, func: updateGlobalEmotes },
@@ -552,9 +551,7 @@ function updateSettings(props, args) {
         [/^autoBan$|^ab$/i]: { name: `autoBan`, func: updatePhraseArr },
         [/^ignoredBots?$|^ib$/i]: { name: `ignoredBots`, func: updateArr },
         // [/^chantEmote$|^ce$/i]: { name: `chantEmote`, func: updateStr },
-        // [/^hangmanChances$|^hc$/i]: { name: `hangmanChances`, func: updateNum },
         [/^maxDefinitionLength$|^mdl$/i]: { name: `maxDefinitionLength`, func: updateNum },
-        [/^playPCG$|^pcg$/i]: { name: `playPCG`, func: updateBool },
         // [/^pokeballQuantity$|^pq$/i]: { name: `pokeballQuantity`, func: updateNum },
         // [/^usedPokeball$|^up$/i]: { name: `usedPokeball`, func: updateStr }
     }

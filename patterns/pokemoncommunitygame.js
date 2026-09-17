@@ -1,19 +1,19 @@
-const { settings } = require(`../data`)
+const { settings, lemonyFresh } = require(`../data`)
 const { getContextEmote, logMessage } = require(`../utils`)
 
 module.exports = {
     checkPokemon(props) {
-        const { bot, chatroom } = props
-        settings.playPCG
+        const { bot, chatroom, channel } = props
+        lemonyFresh[channel].playPCG
             ? bot.say(chatroom, `!pokecheck`)
-            : logMessage([`-> Playing PokemonCommunityGame is disabled, ignoring`])
+            : logMessage([`-> Playing PokemonCommunityGame is disabled in ${channel}'s channel, ignoring`])
     },
     catchPokemon(props) {
         const { bot, chatroom, channel } = props
-        logMessage([`> catchPokemon(channel: '${channel}', playPCG: ${settings.playPCG})`])
+        logMessage([`> catchPokemon(channel: '${channel}', playPCG: ${lemonyFresh[channel].playPCG})`])
 
-        if (!settings.playPCG) {
-            logMessage([`-> Playing PokemonCommunityGame is disabled, ignoring`])
+        if (!lemonyFresh[channel].playPCG) {
+            logMessage([`-> Playing PokemonCommunityGame is disabled in ${channel}'s channel, ignoring`])
             return
         }
 
