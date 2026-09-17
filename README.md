@@ -29,9 +29,6 @@ Lemony Friend is a Twitch chatbot built for the Lemony Fresh streamers and their
 - `!banuser` or `!banusers` - This command can only be used by the streamer or a moderator. It is used to ban one more users (separated by spaces) from the channel.
 
 ## Fun commands 🍋️
-- `!hangman` - This command initiates a game of Hangman and chooses a random word by using the [Rando API](https://random-word-api.vercel.app/). Join the game using `!play`, even after the game has started. A moderator can also manage the game by using `!hangman skip` to skip the current player's turn, and `!hangman end` to stop the game and reveal the answer.
-- `!play` - Use this command to join an active game of Hangman.
-- `!rps` - Use this command to challenge lemony_friend to a game of Rock, Paper, Scissors. You can use `!rps rock` `!rps paper` `!rps scissors` to specify your move, or simply use `!rps` and a move will be chosen at random.
 - `!chant` - Use this command to have lemony_friend chant a phrase in all caps in chat.
 - `!cursive` - Use this command with a message to have lemony_friend repeat it in cursive text.
 - `!tiny` (or `!small`) - Use this command with a message to have lemony_friend repeat it in superscript text.
@@ -83,6 +80,23 @@ Each channel lemony_friend is in has a generic, unnamed list, empty by default. 
 - `!list clear` - Delete all the contents of the list (keeps the list's name). Only available to mods, VIPs, and the channel owner.
 - `!list reset` - Delete all the contents of the list, and clear the list's name. Only available to mods, VIPs, and the channel owner.
 
+## Games 🍋️
+There are a few games that lemony_friend can play in chat, ranging from simple to more complex.
+
+### Rock, Paper, Scissors
+- `!rps` - Use this command to challenge lemony_friend to a game of Rock, Paper, Scissors. Your move will be selected at random.
+- `!rps rock` or `!rps paper` or `!rps scissors` - Specify your move.
+
+### Hangman
+- `!hangman` - This command initiates a game of Hangman and chooses a random word first by using the [Rando API](https://random-word-api.vercel.app/), using [API Ninjas](https://api-ninjas.com/) as a fallback.
+- `!play` - Use this command to join an active game of Hangman, even after it has started.
+- `!hangman skip` - Skip the current player's turn. Only available to mods and the channel owner.
+- `!hangman end` - Stop the game and reveal the answer. Only available to mods and the channel owner.
+
+### Blackjack
+- `!blackjack <lemons>` or `!bj <lemons>` - This command starts or joins a game of Blackjack, optionally with a gamble of lemons from the player's stash. Before the game starts, you can raise your bet to a higher amount by using the command again.
+- `!blackjack end` or `!bj end` - Stop the game, discard all cards, and return all lemons to the gamblers. Only available to mods and the channel owner.
+
 ## Lemon Commands 🍋️
 Lemon commands are custom commands that can be made on the fly by anyone, which follow a simple call-and-response pattern.
 - `!lemoncommand` (or `!lemcmd`) - This command is used to create custom commands. Use `!lemcmd <commandname> <response...>` to create/edit a command name and reply. You can also use `!lemcmd delete <commandname>` to delete a command, `!lemcmd rename <oldname> <newname>` to change the name of an existing command, and `!lemcmd check <commandname>` to view the contents of a command.
@@ -117,14 +131,29 @@ If lemony_friend is present in your Twitch channel, or you are a moderator of a 
 ### `cli channel`
 Use `cli channel` or `cli c` to access settings for the current channel (if you are the channel owner or a moderator of that channel), or your own channel. The current channel has priority, so if you are a moderator of the current channel, but would like to adjust settings for your own channel, you'll have to use this command either in your own channel, or where you are not a moderator but lemony_friend is present.
 
-- `cli channel timers <timer_name> cooldown` or `cli c t <timer_name> cd`
-- `cli channel timers <timer_name> listening` or `cli c t <timer_name> l`
-
-Use this command to adjust the cooldown and "listening" status of timers for bot commands and reply types. Having a cooldown prevents the same command from being responded to multiple times within that time period. Changing the "listening" status of a command or reply type to `false` prevents the bot from acknowledging the message. For example, if you already have a bot in your channel that handles shoutouts, and don't want lemony_friend to give them, you can use `cli channel timer !so listening false` to disable this behavior. Here is a current list of all timers that can be adjusted and/or enabled/disabled: `!so` The command for giving shoutouts, `!raid` The command for saying the raid message(s), `!count` The command for viewing/adjusting the count, `streak` Listening for message/emote streaks, `new-chatter` Greeting new chatters in a chatroom (does not include spam detection), `greet` Saying hi to one user, `mass-greet` Saying hi to multiple users, `say-goodnight` Saying bye/goodnight to a user, `say-thanks` Saying thanks to a user, `say-youre-welcome` Saying you're welcome to a user, `say-mood` Responding to "how are you" messages
-
 - `cli channel contextEmotes` or `cli c ce` (emote type, array of strings)
 
 Use this command to update the 9 categories of emotes lemony_friend will draw from at random, defined for each channel. The categories are: `lemonEmotes` (`lem`), `neutralEmotes` (`neu`), `hypeEmotes` (`hype`), `positiveEmotes` (`pos`), `upsetEmotes` (`up`), `negativeEmotes` (`neg`), `greetingEmotes` (`greet`), `byeEmotes` (`bye`), `dumbEmotes` (`dumb`)
+
+- `cli channel hangman` or `cli c h`
+
+Use this command to update Hangman settings specific to a channel. Options include: `totalChances` (`tc`) the number of wrong letter or word guesses until a game over (default 6), and `signupSeconds` (`ss`) the number of seconds in the period where others can say `!play` before the game starts (default 30).
+
+- `cli channel blackjack` or `cli c bj`
+
+Use this command to update Blackjack settings specific to a channel. Options include: `signupSeconds` (`ss`) the number of seconds in the period where others can join the game and/or update their bets before the game starts (default 20), `numberOfDecks` (`nd`) the total number of decks of cards shuffled into the "shoe" (default 1), `hitSoft17` (`hs17`) boolean value for whether the dealer hits on 17 with an ace in their hand (default false), and `messageDelay` the delay (in milliseconds) between concurrent messages about the game state (default 2000).
+
+- `cli channel rollFunNumber` or `cli c rfn` (boolean)
+
+By default, lemony_friend posts a random message in chat after another chatter's every Nth message. Use this command to turn on or off this behavior.
+
+- `cli channel anonymousFollows` or `cli c af` (boolean)
+
+By default, lemony_friend thanks users by name for following the channel. Use this command to choose whether followers are thanked anonymously.
+
+- `cli channel playPCG` or `cli c pcg` (boolean)
+
+Use this command to control whether or not Lemony_friend will attempt to catch a Pokémon in a channel where PokemonCommunityGame makes an announcement.
 
 - `cli channel subRaidMessage` or `cli c srm` (string)
 
@@ -134,13 +163,10 @@ Use this command to update lemony_friend's response to the `!raid` command. The 
 
 Use this command to update lemony_friend's response to the `!raid` command. The "no sub" raid message is intended for raid messages which do not use emotes that require a subscription to the channel (accessible to anyone).
 
-- `cli channel anonymousFollows` or `cli c af` (boolean)
+- `cli channel timers <timer_name> cooldown` or `cli c t <timer_name> cd`
+- `cli channel timers <timer_name> listening` or `cli c t <timer_name> l`
 
-By default, lemony_friend thanks users by name for following the channel. Use this command to choose whether followers are thanked anonymously.
-
-- `cli channel rollFunNumber` or `cli c rfn` (boolean)
-
-By default, lemony_friend posts a random message in chat after another chatter's every Nth message. Use this command to turn on or off this behavior.
+Use this command to adjust the cooldown and "listening" status of timers for bot commands and reply types. Having a cooldown prevents the same command from being responded to multiple times within that time period. Changing the "listening" status of a command or reply type to `false` prevents the bot from acknowledging the message. For example, if you already have a bot in your channel that handles shoutouts, and don't want lemony_friend to give them, you can use `cli channel timer !so listening false` to disable this behavior. Here is a current list of all timers that can be adjusted and/or enabled/disabled: `!so` the command for giving shoutouts, `!raid` the command for saying the raid message(s), `!count` the command for viewing/adjusting the count, `streak` listening for message/emote streaks, `new-chatter` greeting new chatters in a chatroom (does not include spam detection), `greet` saying hi to one user, `mass-greet` saying hi to multiple users, `say-goodnight` saying bye/goodnight to a user, `say-thanks` saying thanks to a user, `say-youre-welcome` saying you're welcome to a user, `say-mood` responding to "how are you" messages.
 
 - `cli channel streakThreshold` or `cli c st` (number)
 
@@ -168,10 +194,6 @@ Use this command to change lemony_friend's list of phrases from a first-time cha
 
 Use this command to update the list of usernames lemony_friend will ignore in certain situations. These include welcoming back the user if they haven't spoken in a while, being informed a user is marked as "away" when mentioning them, and being targeted with UndertaleBot, as well as other fun number responses.
 
-- `cli settings playPCG` or `cli s pcg` (boolean)
+- `cli settings maxDefinitionLength` or `cli s mdl` (number)
 
-Use this command to control whether or not Lemony_friend will attempt to catch a Pokémon when PokemonCommunityGame makes an announcement in chat.
-
-- `cli settings pokeballQuantity` or `cli s pq` (number)
-
-Use this command to change the amount of pokeballs lemony_friend will attempt to purchase if PokemonCommunityGame says it doesn't have pokeballs. This can be used to help lemony_friend avoid a loop of continually trying and failing to use pokeballs and purchasing them when it runs out and can't afford to purchase the quantity currently set.
+Use this command to set the maximum number of entries lemony_friend will use from the definition of a word using `!define`. It will usually try to keep the definition to one message.
