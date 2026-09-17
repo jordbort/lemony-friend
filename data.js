@@ -37,6 +37,7 @@ settings.playPCG = settings.playPCG ?? true
 settings.realRPS = settings.realRPS ?? true
 settings.sayJoinMessage = settings.sayJoinMessage ?? true
 settings.sayPartMessage = settings.sayPartMessage ?? true
+settings.useBttvEmotes = settings.useBttvEmotes ?? true
 settings.chantCount = settings.chantCount ?? 8
 settings.funNumberCount = settings.funNumberCount ?? 75
 settings.funNumberTotal = settings.funNumberTotal ?? 75

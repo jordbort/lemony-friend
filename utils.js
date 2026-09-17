@@ -1186,16 +1186,16 @@ module.exports = {
     },
     getContextEmote(type, channel) {
         const baseType = `${type}Emotes`
-        const emotes = [...settings.baseEmotes[baseType]]
+        const emotes = settings.baseEmotes[baseType].filter(el => settings.useBttvEmotes || !settings.globalEmotes.bttv.includes(el))
 
         // Exceptions for alternate BTTV emotes
-        if (channel === `jpegstripes` && !users[BOT_USERNAME]?.channels.jpegstripes?.sub) {
+        if (channel === `jpegstripes` && !users[BOT_USERNAME]?.channels.jpegstripes?.sub && settings.useBttvEmotes) {
             if (type === `hype`) { emotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
-            if (type === `positive`) { emotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
+            if (type === `positive`) { emotes.push(`ApolloFly`, `KyleSwish`) }
             if (type === `greeting`) { emotes.push(`ApolloFly`, `BamJAM`, `JulianGroove`, `KetchupWave`, `KyleSwish`, `LuckySway`, `ScootPatch`, `WhitneyVibe`) }
             if (type === `bye`) { emotes.push(`WhitneyVibe`) }
         }
-        if (channel === `thetarastark` && !users[BOT_USERNAME]?.channels.thetarastark?.sub) {
+        if (channel === `thetarastark` && !users[BOT_USERNAME]?.channels.thetarastark?.sub && settings.useBttvEmotes) {
             if (type === `hype`) { emotes.push(`POGGERS`, `LULW`) }
             if (type === `positive`) { emotes.push(`POGGERS`, `LULW`) }
             if (type === `greeting`) { emotes.push(`POGGERS`, `LULW`, `Sadge`, `Blep`, `Pennsylvania`) }
@@ -1231,9 +1231,9 @@ module.exports = {
                 if ((stream.followEmotes.includes(emote) && member === channel)
                     || (stream.followEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
                     || (stream.subEmotes.includes(emote) && users[BOT_USERNAME]?.channels[member]?.sub)
-                    || (stream.bttvEmotes.includes(emote) && member === channel)
                     || settings.globalEmotes.twitch.includes(emote)
-                    || settings.globalEmotes.bttv.includes(emote)) {
+                    || (settings.useBttvEmotes && stream.bttvEmotes.includes(emote) && member === channel)
+                    || (settings.useBttvEmotes && settings.globalEmotes.bttv.includes(emote))) {
                     emotes.push(emote)
                 }
             })

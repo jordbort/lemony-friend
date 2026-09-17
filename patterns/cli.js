@@ -521,6 +521,7 @@ function updateSettingsDev(props, args) {
         [/^streakMinutesThreshold$|^smt$/i]: { name: `streakMinutesThreshold`, func: updateNum },
         // [/^chantCount$|^cc$/i]: { name: `chantCount`, func: updateNum },
         // [/^realRPS$|^rps$/i]: { name: `realRPS`, func: updateBool },
+        [/^useBttvEmotes$|^bttv$/i]: { name: `useBttvEmotes`, func: updateBool },
         [/^maxDefinitionLength$|^mdl$/i]: { name: `maxDefinitionLength`, func: updateNum },
         [/^playPCG$|^pcg$/i]: { name: `playPCG`, func: updateBool },
         [/^pokeballQuantity$|^pq$/i]: { name: `pokeballQuantity`, func: updateNum },
