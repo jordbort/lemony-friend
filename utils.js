@@ -1447,7 +1447,7 @@ module.exports = {
         }
         lemonyFresh[channel].blackjack = {
             numberOfDecks: 1,
-            signupSeconds: 15,
+            signupSeconds: 20,
             messageDelay: 2000,
             listening: false,
             signup: false,
