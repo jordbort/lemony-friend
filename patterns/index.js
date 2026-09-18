@@ -123,9 +123,9 @@ const mentionedPatterns = {
 }
 
 const splitMessagePatterns = {
-    [/\bbut([a-s|u-z]+)\b/i]: sayButt,
-    [/^!([a-z]+)lemon([a-z]*)/i]: useLemon,
     [/^cli ?\b/i]: commandLemonInterface,
+    [/^!([a-z]+)lemon([a-z]*)/i]: useLemon,
+    [/\bbut([a-s|u-z]+)\b/i]: sayButt,
 
     [/how many emotes does (@?[a-z0-9_\s]+) have/i]: checkEmotes,
     [/how many emotes are in (@?[a-z0-9_\s]+)/i]: checkEmotes,
@@ -222,6 +222,16 @@ module.exports = function usePattern(props) {
         logMessage([`${username.toUpperCase()} DID NOT MATCH REGEX PATTERNS`])
     }
 
+    // Miscellaneous RegEx patterns
+    for (const pattern in splitMessagePatterns) {
+        const regex = new RegExp(pattern.split(`/`)[1], pattern.split(`/`)[2])
+        if (regex.test(message)) {
+            logMessage([`MESSAGE MATCHED REGEX PATTERN:`, regex, `[Function: ${splitMessagePatterns[regex].name}]`])
+            splitMessagePatterns[regex](props, message.split(regex))
+            return true
+        }
+    }
+
     // Bot mentioned
     if (RegExp(`\\b${BOT_NICKNAME_REGEX}\\b`, `i`).test(message)) {
         for (const pattern in mentionedPatterns) {
@@ -233,16 +243,6 @@ module.exports = function usePattern(props) {
             }
         }
         logMessage([`BOT MENTION DID NOT MATCH REGEX PATTERNS`])
-    }
-
-    // Miscellaneous RegEx patterns
-    for (const pattern in splitMessagePatterns) {
-        const regex = new RegExp(pattern.split(`/`)[1], pattern.split(`/`)[2])
-        if (regex.test(message)) {
-            logMessage([`MESSAGE MATCHED REGEX PATTERN:`, regex, `[Function: ${splitMessagePatterns[regex].name}]`])
-            splitMessagePatterns[regex](props, message.split(regex))
-            return true
-        }
     }
 
     return false
