@@ -4,9 +4,9 @@ const { makePlural, addVerbSuffix } = require(`./insult`)
 
 const regexNumber = /\{\s?number\s?(\-?\d+)\s?([\+\-\*\/]\s?(\d+\.?\d*|\d?\.\d+))?\s?\}/gi
 const regexOperation = /\d+\s?([\+\-\*\/])/
-const regexRandom = /\{\s?random\s?(["“«][^"“„”«»]+["„”»]\s?)+\s?\}/gi
+const regexRandom = /\{\s?random\s?(["”„“«»「」][^"”„“«»「」]+["”„“«»「」]\s?)+\s?\}/gi
 const regexExclusion = /^$|^\s$|^\s?\}$|^\{\s?random\s?$/i
-const regexQuote = /["“«](.+?)["„”»]/
+const regexQuote = /["”„“«»「」](.+?)["”„“«»「」]/
 
 function applyVariables(str, props) {
     const { args, channel, username, toUser } = props
@@ -182,11 +182,11 @@ module.exports = {
     },
     useLemCmd(props) {
         const { bot, chatroom, command, currentTime } = props
+        lemCmds[command].uses++
+        lemCmds[command].lastUsedDate = currentTime
         logMessage([`> useLemCmd(command: ${command}, origin: '${lemCmds[command].origin}', createdBy: '${lemCmds[command].createdBy}', uses: ${lemCmds[command].uses})`])
 
         const response = applyVariables(lemCmds[command].response, props)
-        lemCmds[command].lastUsedDate = currentTime
-        lemCmds[command].uses++
         bot.say(chatroom, response)
     }
 }
