@@ -116,10 +116,11 @@ There are also variables you can use in commands that will be replaced with argu
 - `{viewer1nn}`, `{viewer2nn}`, and `{viewer3nn}` work like `{viewer1}`, `{viewer2}`, and `{viewer3}`, except with nicknames.
 - `{number#}` will choose a random number between 1 and `#`, where `#` is an integer supplied by the user. Supplying a 0 or negative number will choose a number between that number and zero. You may also do math using `+` `-` `*` `/` to adjust the number. For example, `{number -9 - 1}` will yield numbers -1 through -9, and `{number 9 * 10}` will yield multiples of 10 from 10 to 90. Spaces are optional between numbers.
 - `{random "one" "two" "et cetera"}` can be used to provide a list of words/phrases for lemony_friend to choose from at random. Separate entries are enclosed with double quotes. "Straight" quotes, “curly” quotes, „inverted“ quotes, «guillemets» and 「brackets」 are supported.
-- `{n}` and `{noun}` will be replaced with a noun from the insult word bank.
-- `{pln}` and `{plnoun}` will be replaced with a noun made plural from the insult word bank.
-- `{v}` and `{verb}` will be replaced with a verb from the insult word bank. You can optionally use a hypen to change the ending of the verb. For example, `{verb-ing}` will add an -ing ending, and `{verb-ed}` will add an -ed ending (will not double a final "e").
-- `{adj}` or `{adjective}` will be replaced with an adjective from the insult word bank.
+- `{noun}` and `{n}` will be replaced with a noun from the insult word bank.
+- `{a noun}` and `{a n}` will be replaced with a noun from the insult word bank, preceded by the appropriate article (a/an).
+- `{plnoun}` and `{pln}` will be replaced with a noun made plural from the insult word bank.
+- `{verb}` and `{v}` will be replaced with a verb from the insult word bank. You can optionally use a hypen to change the ending of the verb. For example, `{verb-ing}` will add an -ing ending, and `{verb-ed}` will add an -ed ending (will not double a final "e").
+- `{adjective}` or `{adj}` will be replaced with an adjective from the insult word bank.
 - `{1}` through `{9}` take whatever arguments are supplied, in order, falling back on an empty string if not used.
 - The 9 types of context emotes can also be used: `{lemon}` (or `{lem}`), `{neutral}` (or `{neu}`), `{positive}` (or `{pos}`), `{negative}` (or `{neg}`), `{hype}` (or `{h}`), `{upset}` (or `{up}`), `{greeting}` (or `{greet}`), `{bye}` (or `{b}`), and `{dumb}` (or `{dum}`)
 
