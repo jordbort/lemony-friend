@@ -1,6 +1,6 @@
 const { settings, lemonyFresh, users, lemCmds, wordBank } = require(`../data`)
 const { getContextEmote, logMessage, pluralize, logArr, chooseFrom } = require(`../utils`)
-const { makePlural, addVerbSuffix } = require(`./insult`)
+const { makePlural, addVerbSuffix, getIndefiniteArticle } = require(`./insult`)
 
 const regexNumber = /\{\s?number\s?(\-?\d+)\s?([\+\-\*\/]\s?(\d+\.?\d*|\d?\.\d+))?\s?\}/gi
 const regexOperation = /\d+\s?([\+\-\*\/])/
@@ -84,8 +84,9 @@ function applyVariables(str, props) {
         .replace(/\{\s?b(ye)?\s?\}/gi, () => getContextEmote(`bye`, channel))
         .replace(/\{\s?dumb?\s?\}/gi, () => getContextEmote(`dumb`, channel))
 
-        // {n}, {noun}, {pln}, {plnoun}, {v}, {verb}, {v-suffix}, {verb-suffix}, {a}, {adj}, and {adjective} - Random nouns, plural nouns, verbs, verb with suffixes, and adjectives
+        // {n}, {noun}, {a noun}, {pln}, {plnoun}, {v}, {verb}, {v-suffix}, {verb-suffix}, {a}, {adj}, and {adjective} - Random nouns, plural nouns, verbs, verb with suffixes, and adjectives
         .replace(/\{\s?n(oun)?\s?\}/gi, () => chooseFrom(nouns))
+        .replace(/\{\s?a\sn(oun)?\s?\}/gi, () => getIndefiniteArticle(chooseFrom(nouns)))
         .replace(/\{\s?pln(oun)?\s?\}/gi, () => makePlural(chooseFrom(nouns)))
         .replace(/\{\s?v(erb)?(-[a-z]+)?\s?\}/gi, (occurrence) => /-/.test(occurrence) ? addVerbSuffix(chooseFrom(verbs), occurrence.replace(/\{|\}/g, ``).split(`-`)[1]) : chooseFrom(verbs))
         .replace(/\{\s?(a(djective)?|adj(ective)?)\s?\}/gi, () => chooseFrom(adjectives))
