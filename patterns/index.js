@@ -115,8 +115,8 @@ const mentionedPatterns = {
     // "no lemon"/"lemon no"
     [RegExp(`^n+o+\\s${BOT_NICKNAME_REGEX}\\b|^${BOT_NICKNAME_REGEX}\\sn+o+\\b`, `i`)]: (props) => contextReact(props, `negative`),
 
-    // good bot
-    [/\bg+o{2,}d+\sb+ot+\b/i]: (props) => contextReact(props, `hype`),
+    // good bot/boy
+    [/\bg+o{2,}d+\sb+o(t|y)+\b/i]: (props) => contextReact(props, `hype`),
 
     // Contains "you", "u", "u're", "yr", "yourself", "urself", etc.
     [/\b(y?o?u|y(e|u)?)['"]*r*e*(self)?\b/i]: checkSentiment
