@@ -538,7 +538,7 @@ module.exports = {
     },
     cursive(props) {
         const { bot, chatroom, args } = props
-        const message = transformText(`cursive`, args.join(` `))
+        const message = transformText(`script-normal`, args.join(` `))
         if (!message) {
             bot.say(chatroom, `𝒸𝓊𝓇𝓈𝒾𝓋𝑒`)
             return
