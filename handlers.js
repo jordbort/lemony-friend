@@ -202,6 +202,7 @@ module.exports = {
 
         // Update user/mod, and last message in channel
         const currentTime = Number(tags[`tmi-sent-ts`]) || Date.now()
+        const minutesSinceLastMsg = (currentTime - (users[username].channels[channel]?.sentAt || currentTime)) / 60000
         updateUser(this, chatroom, tags, self, username, channel, msg, currentTime)
 
         // Listen for emote/text pyramid
@@ -290,7 +291,6 @@ module.exports = {
         }
 
         // Checking whether enough time has passed to welcome back
-        const minutesSinceLastMsg = (currentTime - userChannel.sentAt) / 60000
         if (minutesSinceLastMsg > 1
             && minutesSinceLastMsg >= settings.minWelcomeBackMinutes
             && minutesSinceLastMsg < settings.maxWelcomeBackMinutes
