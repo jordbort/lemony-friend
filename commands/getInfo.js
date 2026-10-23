@@ -7,17 +7,11 @@ module.exports = {
         logMessage([`> sayOnlineTime(channel: '${channel}')`])
 
         const newFeatures = [
+            `Fixed bug regarding welcoming back users who were away`,
             `Migrated CLI setting 'playPCG' to be a channel configuration`,
             `Created CLI settings configuration 'useBttvEmotes' or 'bttv'`,
             `You can no longer steal all of the bot's lemons at once`,
-            `Allowed for smart quotes in lemon command variables`,
-            `Updated CLI channel configurations 'hangman' or 'h', and 'blackjack' or 'bj' for dev`,
-            `Implemented Blackjack game`,
-            `Created HUD for non-debug mode`,
-            `Added more uses for lemons`,
-            `Created CLI channel configuration 'anonymousFollows' or 'af'`,
-            `Created CLI settings configuration 'maxDefinitionLength' or 'mdl'`,
-            `Cleanup and bug fixes`
+            `Allowed for smart quotes in lemon command variables`
         ]
 
         const timeOptions = {
