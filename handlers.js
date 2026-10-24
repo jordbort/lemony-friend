@@ -202,7 +202,7 @@ module.exports = {
 
         // Update user/mod, and last message in channel
         const currentTime = Number(tags[`tmi-sent-ts`]) || Date.now()
-        const minutesSinceLastMsg = (currentTime - (users[username].channels[channel]?.sentAt || currentTime)) / 60000
+        const minutesSinceLastMsg = (currentTime - (users[username]?.channels[channel].sentAt || currentTime)) / 60000
         updateUser(this, chatroom, tags, self, username, channel, msg, currentTime)
 
         // Listen for emote/text pyramid
